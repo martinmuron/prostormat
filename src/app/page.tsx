@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { VenueCard } from "@/components/venue/venue-card"
 import { db } from "@/lib/db"
-import { Search } from "lucide-react"
+import { Search, Upload, MessageSquare, Euro } from "lucide-react"
 
 async function getFeaturedVenues() {
   try {
@@ -156,24 +156,60 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-20 px-6">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-title-1 text-black mb-6">
-            Máte vlastní prostor?
-          </h2>
-          <p className="text-body text-gray-600 mb-8 max-w-2xl mx-auto">
-            Připojte se k největší platformě pro event prostory v Praze a získejte více rezervací.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+      {/* CTA for Venue Owners */}
+      <section className="bg-gray-50 py-16">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center mb-12">
+            <h2 className="text-title-1 text-black mb-4">
+              Vlastníte event prostor?
+            </h2>
+            <p className="text-title-3 text-gray-600 max-w-3xl mx-auto">
+              Připojte se k tisícům spokojených provozovatelů a začněte vydělávat 
+              na svém prostoru už dnes
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+            <div className="text-center">
+              <div className="w-16 h-16 bg-black rounded-full flex items-center justify-center mx-auto mb-4">
+                <Upload className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-title-3 text-black mb-2">Přidejte prostor</h3>
+              <p className="text-body text-gray-600">
+                Vytvořte profil vašeho prostoru s fotografiami a všemi detaily
+              </p>
+            </div>
+            
+            <div className="text-center">
+              <div className="w-16 h-16 bg-black rounded-full flex items-center justify-center mx-auto mb-4">
+                <MessageSquare className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-title-3 text-black mb-2">Přijímejte dotazy</h3>
+              <p className="text-body text-gray-600">
+                Komunikujte přímo s organizátory a domlouvejte si akce
+              </p>
+            </div>
+            
+            <div className="text-center">
+              <div className="w-16 h-16 bg-black rounded-full flex items-center justify-center mx-auto mb-4">
+                <Euro className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-title-3 text-black mb-2">Vydělávejte</h3>
+              <p className="text-body text-gray-600">
+                Maximalizujte využití vašeho prostoru a generujte pravidelný příjem
+              </p>
+            </div>
+          </div>
+          
+          <div className="text-center">
             <Link href="/pridat-prostor">
-              <Button size="lg" className="w-full sm:w-auto">
-                Přidat prostor
+              <Button size="lg" className="mr-4">
+                Přidat prostor zdarma
               </Button>
             </Link>
-            <Link href="/pozadavky">
-              <Button variant="secondary" size="lg" className="w-full sm:w-auto">
-                Zobrazit požadavky
+            <Link href="/prostory">
+              <Button variant="secondary" size="lg">
+                Prohlédnout prostory
               </Button>
             </Link>
           </div>

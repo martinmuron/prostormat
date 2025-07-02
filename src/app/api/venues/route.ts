@@ -46,11 +46,13 @@ export async function POST(request: Request) {
       select: { role: true }
     })
 
-    if (user?.role !== "venue_manager" && user?.role !== "admin") {
-      return NextResponse.json(
-        { error: "Nemáte oprávnění k přidání prostoru" },
-        { status: 403 }
-      )
+    // If user is not a venue manager or admin, promote them to venue manager
+    // This allows new venue owners to onboard to the platform
+    if (user?.role === "user") {
+      await db.user.update({
+        where: { id: session.user.id },
+        data: { role: "venue_manager" }
+      })
     }
 
     const body = await request.json()

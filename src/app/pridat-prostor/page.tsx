@@ -109,20 +109,6 @@ export default function AddVenuePage() {
     return null
   }
 
-  if (session.user.role !== "venue_manager" && session.user.role !== "admin") {
-    return <div className="min-h-screen bg-white flex items-center justify-center">
-      <div className="text-center">
-        <h1 className="text-title-1 text-black mb-4">Nedostatečná oprávnění</h1>
-        <p className="text-body text-gray-600 mb-4">
-          Pro přidání prostoru musíte mít roli správce prostorů.
-        </p>
-        <Button onClick={() => router.push("/dashboard")}>
-          Zpět na dashboard
-        </Button>
-      </div>
-    </div>
-  }
-
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || [])
     
@@ -258,7 +244,8 @@ export default function AddVenuePage() {
         <div className="mb-8">
           <h1 className="text-title-1 text-black mb-2">Přidat nový prostor</h1>
           <p className="text-body text-gray-600">
-            Vyplňte informace o vašem event prostoru. Všechna pole označená * jsou povinná.
+            Staňte se součástí Prostormat.cz a nabídněte svůj event prostor tisícům organizátorů akcí. 
+            Vyplňte informace o vašem prostoru a začněte přijímat rezervace ještě dnes.
           </p>
         </div>
 

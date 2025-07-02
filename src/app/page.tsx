@@ -1,4 +1,7 @@
 import { Suspense } from "react"
+
+// Force dynamic rendering to avoid caching issues
+export const revalidate = 0
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -21,6 +24,8 @@ async function getFeaturedVenues() {
         createdAt: "desc",
       },
     })
+    
+    console.log("Featured venues query result:", venues.length, venues.map(v => ({ name: v.name, status: v.status })))
     
     // PostgreSQL returns arrays directly, no need to parse
     return venues

@@ -157,61 +157,63 @@ export default function HomePage() {
       </section>
 
       {/* CTA for Venue Owners */}
-      <section className="bg-gray-50 py-16">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center mb-12">
-            <h2 className="text-title-1 text-black mb-4">
+      <section className="bg-gray-50 py-12 sm:py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          <div className="text-center mb-8 sm:mb-12">
+            <h2 className="text-2xl sm:text-title-1 text-black mb-3 sm:mb-4 leading-tight">
               Vlastníte event prostor?
             </h2>
-            <p className="text-title-3 text-gray-600 max-w-3xl mx-auto">
+            <p className="text-lg sm:text-title-3 text-gray-600 max-w-3xl mx-auto leading-relaxed">
               Připojte se k tisícům spokojených provozovatelů a začněte vydělávat 
               na svém prostoru už dnes
             </p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8 mb-8 sm:mb-12">
             <div className="text-center">
-              <div className="w-16 h-16 bg-black rounded-full flex items-center justify-center mx-auto mb-4">
-                <Upload className="w-8 h-8 text-white" />
+              <div className="w-12 h-12 sm:w-16 sm:h-16 bg-black rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
+                <Upload className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
               </div>
-              <h3 className="text-title-3 text-black mb-2">Přidejte prostor</h3>
-              <p className="text-body text-gray-600">
+              <h3 className="text-lg sm:text-title-3 text-black mb-2">Přidejte prostor</h3>
+              <p className="text-sm sm:text-body text-gray-600 leading-relaxed">
                 Vytvořte profil vašeho prostoru s fotografiami a všemi detaily
               </p>
             </div>
             
             <div className="text-center">
-              <div className="w-16 h-16 bg-black rounded-full flex items-center justify-center mx-auto mb-4">
-                <MessageSquare className="w-8 h-8 text-white" />
+              <div className="w-12 h-12 sm:w-16 sm:h-16 bg-black rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
+                <MessageSquare className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
               </div>
-              <h3 className="text-title-3 text-black mb-2">Přijímejte dotazy</h3>
-              <p className="text-body text-gray-600">
+              <h3 className="text-lg sm:text-title-3 text-black mb-2">Přijímejte dotazy</h3>
+              <p className="text-sm sm:text-body text-gray-600 leading-relaxed">
                 Komunikujte přímo s organizátory a domlouvejte si akce
               </p>
             </div>
             
             <div className="text-center">
-              <div className="w-16 h-16 bg-black rounded-full flex items-center justify-center mx-auto mb-4">
-                <Euro className="w-8 h-8 text-white" />
+              <div className="w-12 h-12 sm:w-16 sm:h-16 bg-black rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
+                <Euro className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
               </div>
-              <h3 className="text-title-3 text-black mb-2">Vydělávejte</h3>
-              <p className="text-body text-gray-600">
+              <h3 className="text-lg sm:text-title-3 text-black mb-2">Vydělávejte</h3>
+              <p className="text-sm sm:text-body text-gray-600 leading-relaxed">
                 Maximalizujte využití vašeho prostoru a generujte pravidelný příjem
               </p>
             </div>
           </div>
           
           <div className="text-center">
-            <Link href="/pridat-prostor">
-              <Button size="lg" className="mr-4">
-                Přidat prostor zdarma
-              </Button>
-            </Link>
-            <Link href="/prostory">
-              <Button variant="secondary" size="lg">
-                Prohlédnout prostory
-              </Button>
-            </Link>
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center max-w-md sm:max-w-none mx-auto">
+              <Link href="/pridat-prostor">
+                <Button size="lg" className="w-full sm:w-auto min-h-[44px] sm:min-h-[48px]">
+                  Přidat prostor zdarma
+                </Button>
+              </Link>
+              <Link href="/prostory">
+                <Button variant="secondary" size="lg" className="w-full sm:w-auto min-h-[44px] sm:min-h-[48px]">
+                  Prohlédnout prostory
+                </Button>
+              </Link>
+            </div>
           </div>
         </div>
       </section>

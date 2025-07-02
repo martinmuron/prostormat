@@ -6,7 +6,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
@@ -16,12 +16,12 @@ model Account {
   type              String
   provider          String
   providerAccountId String
-  refresh_token     String? @db.Text
-  access_token      String? @db.Text
+  refresh_token     String?
+  access_token      String?
   expires_at        Int?
   token_type        String?
   scope             String?
-  id_token          String? @db.Text
+  id_token          String?
   session_state     String?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -73,11 +73,11 @@ model Venue {
   capacitySeated   Int?
   capacityStanding Int?
   venueType        String?
-  amenities        String[]
+  amenities        String // JSON array
   contactEmail     String?
   contactPhone     String?
   websiteUrl       String?
-  images           String[]
+  images           String // JSON array
   videoUrl         String?
   status           String   @default("draft") // draft, active, expired
   managerId        String
@@ -106,7 +106,7 @@ model EventRequest {
   contactPhone        String?
   contactName         String   // PUBLIC
   status              String   @default("active") // active, closed, expired
-  expiresAt           DateTime @default(dbgenerated("NOW() + INTERVAL '30 days'"))
+  expiresAt           DateTime
   createdAt           DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id])
@@ -145,11 +145,11 @@ model BlogPost {
   title           String
   slug            String   @unique
   excerpt         String?
-  content         String   @db.Text
+  content         String
   coverImage      String?
   status          String   @default("draft") // draft, published
   authorId        String
-  tags            String[]
+  tags            String // JSON array
   metaTitle       String?
   metaDescription String?
   publishedAt     DateTime?

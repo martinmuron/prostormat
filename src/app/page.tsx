@@ -21,7 +21,13 @@ async function getFeaturedVenues() {
         createdAt: "desc",
       },
     })
-    return venues
+    
+    // Transform JSON strings back to arrays for frontend compatibility
+    return venues.map(venue => ({
+      ...venue,
+      images: JSON.parse(venue.images || '[]'),
+      amenities: JSON.parse(venue.amenities || '[]'),
+    }))
   } catch (error) {
     console.error("Error fetching venues:", error)
     return []

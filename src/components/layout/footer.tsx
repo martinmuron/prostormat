@@ -1,4 +1,5 @@
 import Link from "next/link"
+import { Logo } from "@/components/ui/logo"
 
 export function Footer() {
   return (
@@ -7,9 +8,9 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Company Info */}
           <div className="col-span-1 md:col-span-2">
-            <h3 className="text-title-3 font-bold text-black mb-4">
-              Prostormat
-            </h3>
+            <div className="mb-4">
+              <Logo variant="black" size="md" href="/" />
+            </div>
             <p className="text-body text-gray-600 max-w-md">
               Největší katalog event prostorů v Praze. Spojujeme organizátory akcí s jedinečnými prostory.
             </p>
@@ -56,6 +57,11 @@ export function Footer() {
                 </Link>
               </li>
               <li>
+                <Link href="/faq" className="text-body text-gray-600 hover:text-black transition-colors">
+                  Časté otázky
+                </Link>
+              </li>
+              <li>
                 <Link href="/podminky" className="text-body text-gray-600 hover:text-black transition-colors">
                   Podmínky použití
                 </Link>
@@ -69,10 +75,24 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="border-t border-gray-200 mt-8 pt-8 text-center">
-          <p className="text-callout text-gray-500">
-            © {new Date().getFullYear()} Prostormat. Všechna práva vyhrazena.
-          </p>
+        {/* Bottom Bar */}
+        <div className="mt-12 pt-8 border-t border-gray-200">
+          <div className="flex flex-col md:flex-row justify-between items-center">
+            <p className="text-caption text-gray-500">
+              © 2024 Prostormat. Všechna práva vyhrazena.
+            </p>
+            <div className="flex space-x-6 mt-4 md:mt-0">
+              <Link href="/podminky" className="text-caption text-gray-500 hover:text-black transition-colors">
+                Podmínky
+              </Link>
+              <Link href="/soukromi" className="text-caption text-gray-500 hover:text-black transition-colors">
+                Soukromí
+              </Link>
+              <Link href="/kontakt" className="text-caption text-gray-500 hover:text-black transition-colors">
+                Kontakt
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
     </footer>

@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select } from "@/components/ui/select"
 import { Card, CardContent } from "@/components/ui/card"
+import { Logo } from "@/components/ui/logo"
 
 export default function RegisterPage() {
   const router = useRouter()
@@ -95,10 +96,10 @@ export default function RegisterPage() {
     <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-6">
       <div className="max-w-md w-full">
         <div className="text-center mb-8">
-          <Link href="/" className="text-title-2 font-bold text-black">
-            Prostormat
-          </Link>
-          <h1 className="text-title-3 text-black mt-6 mb-2">Registrace</h1>
+          <div className="mb-6">
+            <Logo variant="black" size="md" />
+          </div>
+          <h1 className="text-title-3 text-black mb-2">Registrace</h1>
           <p className="text-body text-gray-600">
             Vytvořte si účet a začněte organizovat akce
           </p>

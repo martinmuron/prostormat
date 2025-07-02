@@ -144,81 +144,93 @@ export default async function VenuesPage({
 }) {
   const resolvedSearchParams = await searchParams
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-gray-50">
       {/* Header - Not sticky on mobile, only on larger screens */}
-      <div className="bg-white border-b border-gray-200 lg:sticky lg:top-16 lg:z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-6">
-          <h1 className="text-xl sm:text-2xl lg:text-title-1 text-black mb-4 sm:mb-6">
+      <div className="bg-white border-b border-gray-200 lg:sticky lg:top-16 lg:z-10 shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+          <h1 className="text-xl sm:text-2xl lg:text-title-1 text-black mb-6 sm:mb-8 font-bold tracking-tight">
             Event prostory v Praze
           </h1>
           
           {/* Search and Filters */}
-          <form method="GET" className="space-y-3 sm:space-y-4">
+          <form method="GET" className="space-y-4 sm:space-y-6">
             {/* Search Bar */}
             <div className="relative">
-              <Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-gray-400" />
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
               <Input
                 name="q"
                 defaultValue={resolvedSearchParams.q}
-                className="pl-10 sm:pl-12 h-10 sm:h-12 text-sm sm:text-base"
+                className="pl-12 h-14 text-base rounded-2xl border-2 border-gray-200 focus:border-black transition-all duration-200 hover:border-gray-300 hover:shadow-lg font-medium shadow-sm"
                 placeholder="Hledat prostory..."
               />
             </div>
 
             {/* Filters - Responsive Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4">
-              <Select 
-                name="type" 
-                defaultValue={resolvedSearchParams.type}
-                className="h-10 sm:h-12 text-sm sm:text-base"
-              >
-                <option value="">Všechny typy</option>
-                {Object.entries(VENUE_TYPES).map(([key, label]) => (
-                  <option key={key} value={key}>
-                    {label}
-                  </option>
-                ))}
-              </Select>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-gray-700 block">Typ prostoru</label>
+                <Select 
+                  name="type" 
+                  defaultValue={resolvedSearchParams.type}
+                  className="h-14 text-base"
+                >
+                  <option value="">Všechny typy</option>
+                  {Object.entries(VENUE_TYPES).map(([key, label]) => (
+                    <option key={key} value={key}>
+                      {label}
+                    </option>
+                  ))}
+                </Select>
+              </div>
 
-              <Select 
-                name="district" 
-                defaultValue={resolvedSearchParams.district}
-                className="h-10 sm:h-12 text-sm sm:text-base"
-              >
-                <option value="">Všechny lokality</option>
-                {PRAGUE_DISTRICTS.map((district) => (
-                  <option key={district} value={district}>
-                    {district}
-                  </option>
-                ))}
-              </Select>
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-gray-700 block">Lokalita</label>
+                <Select 
+                  name="district" 
+                  defaultValue={resolvedSearchParams.district}
+                  className="h-14 text-base"
+                >
+                  <option value="">Všechny lokality</option>
+                  {PRAGUE_DISTRICTS.map((district) => (
+                    <option key={district} value={district}>
+                      {district}
+                    </option>
+                  ))}
+                </Select>
+              </div>
 
-              <Select 
-                name="capacity" 
-                defaultValue={resolvedSearchParams.capacity}
-                className="h-10 sm:h-12 text-sm sm:text-base"
-              >
-                <option value="">Všechny kapacity</option>
-                {CAPACITY_RANGES.map((range) => (
-                  <option key={range} value={range}>
-                    {range}
-                  </option>
-                ))}
-              </Select>
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-gray-700 block">Kapacita</label>
+                <Select 
+                  name="capacity" 
+                  defaultValue={resolvedSearchParams.capacity}
+                  className="h-14 text-base"
+                >
+                  <option value="">Všechny kapacity</option>
+                  {CAPACITY_RANGES.map((range) => (
+                    <option key={range} value={range}>
+                      {range}
+                    </option>
+                  ))}
+                </Select>
+              </div>
 
-              <Button 
-                type="submit" 
-                className="w-full h-10 sm:h-12 text-sm sm:text-base"
-              >
-                Filtrovat
-              </Button>
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-gray-700 block opacity-0">Filter</label>
+                <Button 
+                  type="submit" 
+                  className="w-full h-14 text-base rounded-2xl font-semibold magnetic-button hover-lift transition-all duration-200"
+                >
+                  Filtrovat
+                </Button>
+              </div>
             </div>
           </form>
         </div>
       </div>
       
       {/* Venue Grid */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
         <Suspense fallback={<VenueGridSkeleton />}>
           <VenueGrid searchParams={resolvedSearchParams} />
         </Suspense>

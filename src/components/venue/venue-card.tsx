@@ -24,7 +24,7 @@ export function VenueCard({ venue }: VenueCardProps) {
   const venueTypeLabel = venue.venueType ? VENUE_TYPES[venue.venueType as VenueType] || venue.venueType : null
 
   return (
-    <Card className="overflow-hidden hover-lift glass-card tilt-card transition-all duration-500 group border-0 bg-white/80 backdrop-blur-sm">
+    <Card className="overflow-hidden hover-lift transition-all duration-500 group border-2 border-gray-100 bg-white hover:border-black hover:shadow-2xl rounded-2xl">
       <Link href={`/prostory/${venue.slug}`}>
         <div className="aspect-[4/3] relative overflow-hidden">
           <Image
@@ -33,32 +33,32 @@ export function VenueCard({ venue }: VenueCardProps) {
             fill
             className="object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           {venueTypeLabel && (
-            <div className="absolute top-2 left-2 sm:top-4 sm:left-4">
-              <Badge variant="secondary" className="glass-card bg-white/95 text-gray-900 text-xs sm:text-sm font-semibold border-0 hover-glow">
+            <div className="absolute top-3 left-3 sm:top-4 sm:left-4">
+              <Badge variant="secondary" className="bg-white/95 text-black text-xs sm:text-sm font-semibold border-0 shadow-lg backdrop-blur-sm">
                 {venueTypeLabel}
               </Badge>
             </div>
           )}
-          <div className="absolute top-2 right-2 sm:top-4 sm:right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-            <div className="w-8 h-8 bg-white/90 rounded-full flex items-center justify-center">
-              <span className="text-xs font-bold text-gray-900">→</span>
+          <div className="absolute top-3 right-3 sm:top-4 sm:right-4 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0">
+            <div className="w-10 h-10 bg-white/95 rounded-full flex items-center justify-center shadow-lg backdrop-blur-sm">
+              <span className="text-sm font-bold text-black">→</span>
             </div>
           </div>
         </div>
         
-        <CardContent className="p-4 sm:p-6 bg-gradient-to-b from-white/95 to-white/90">
-          <h3 className="text-lg sm:text-title-3 text-gray-900 mb-2 group-hover:bg-gradient-to-r group-hover:from-blue-600 group-hover:to-purple-600 group-hover:bg-clip-text group-hover:text-transparent transition-all duration-300 leading-tight font-bold">
+        <CardContent className="p-4 sm:p-6 bg-white">
+          <h3 className="text-lg sm:text-title-3 text-black mb-3 group-hover:text-gray-500 transition-all duration-300 leading-tight font-bold tracking-tight">
             {venue.name}
           </h3>
           
-          <p className="text-sm sm:text-callout text-gray-600 mb-3 line-clamp-2 font-medium">
+          <p className="text-sm sm:text-callout text-gray-600 mb-3 font-medium">
             {venue.address}
           </p>
           
           {venue.description && (
-            <p className="text-sm sm:text-body text-gray-700 mb-3 sm:mb-4 line-clamp-2 leading-relaxed">
+            <p className="text-sm sm:text-body text-gray-700 mb-4 line-clamp-2 leading-relaxed">
               {venue.description}
             </p>
           )}
@@ -66,11 +66,17 @@ export function VenueCard({ venue }: VenueCardProps) {
           <div className="text-sm sm:text-callout">
             <div className="text-gray-600 leading-tight font-medium">
               {venue.capacitySeated && venue.capacityStanding ? (
-                <span className="px-2 py-1 bg-blue-50 rounded-lg">{venue.capacitySeated} sed. / {venue.capacityStanding} stoj.</span>
+                <span className="px-3 py-1.5 bg-gray-50 rounded-xl border border-gray-200 text-black font-semibold">
+                  {venue.capacitySeated} sed. / {venue.capacityStanding} stoj.
+                </span>
               ) : venue.capacitySeated ? (
-                <span className="px-2 py-1 bg-blue-50 rounded-lg">{venue.capacitySeated} sedících</span>
+                <span className="px-3 py-1.5 bg-gray-50 rounded-xl border border-gray-200 text-black font-semibold">
+                  {venue.capacitySeated} sedících
+                </span>
               ) : venue.capacityStanding ? (
-                <span className="px-2 py-1 bg-blue-50 rounded-lg">{venue.capacityStanding} stojících</span>
+                <span className="px-3 py-1.5 bg-gray-50 rounded-xl border border-gray-200 text-black font-semibold">
+                  {venue.capacityStanding} stojících
+                </span>
               ) : null}
             </div>
           </div>

@@ -47,7 +47,7 @@ export function HeroSearch() {
           onClick={() => setOpenDropdown(isOpen ? null : dropdownKey)}
         >
           <div className="flex items-center mb-4">
-            <Icon className="h-5 w-5 text-blue-400 mr-3" />
+            <Icon className="h-5 w-5 text-white mr-3" />
             <label className="text-lg font-semibold text-gray-200">{label}</label>
           </div>
           <div className="flex items-center justify-between">
@@ -134,7 +134,7 @@ export function HeroSearch() {
           <Button 
             type="submit" 
             size="lg"
-            className="magnetic-button hover-lift px-16 py-5 text-xl font-bold rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-2xl"
+            className="magnetic-button hover-lift px-16 py-5 text-xl font-bold rounded-2xl bg-white text-black hover:bg-gray-100 transition-all duration-300 shadow-2xl"
           >
             <Search className="mr-3 h-6 w-6" />
             Najít prostory

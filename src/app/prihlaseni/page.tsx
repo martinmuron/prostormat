@@ -7,6 +7,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Logo } from "@/components/ui/logo"
 
 function SignInForm() {
   const router = useRouter()
@@ -61,10 +62,10 @@ function SignInForm() {
     <div className="min-h-screen bg-gray-50 flex items-center justify-center py-8 sm:py-12 px-4 sm:px-6">
       <div className="max-w-md w-full">
         <div className="text-center mb-6 sm:mb-8">
-          <Link href="/" className="text-xl sm:text-title-2 font-bold text-black">
-            Prostormat
-          </Link>
-          <h1 className="text-xl sm:text-title-3 text-black mt-4 sm:mt-6 mb-2">Přihlášení</h1>
+          <div className="mb-4 sm:mb-6">
+            <Logo variant="black" size="md" />
+          </div>
+          <h1 className="text-xl sm:text-title-3 text-black mb-2">Přihlášení</h1>
           <p className="text-sm sm:text-body text-gray-600">
             Přihlaste se ke svému účtu
           </p>

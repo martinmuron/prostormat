@@ -3,6 +3,7 @@
 import Link from "next/link"
 import { useSession, signIn, signOut } from "next-auth/react"
 import { Button } from "@/components/ui/button"
+import { Logo } from "@/components/ui/logo"
 import { User, Menu, X } from "lucide-react"
 import { useState } from "react"
 
@@ -15,9 +16,7 @@ export function Header() {
       <div className="max-w-7xl mx-auto px-6">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link href="/" className="text-title-3 font-bold text-black">
-            Prostormat
-          </Link>
+          <Logo variant="black" size="md" />
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
@@ -38,42 +37,42 @@ export function Header() {
           {/* Desktop Auth */}
           <div className="hidden md:flex items-center space-x-4">
             {status === "loading" ? (
-              <div className="h-9 w-20 bg-gray-100 rounded-full animate-pulse" />
+              <div className="w-8 h-8 bg-gray-200 rounded-full animate-pulse" />
             ) : session ? (
-              <>
+              <div className="flex items-center space-x-3">
                 <Link href="/dashboard">
-                  <Button variant="ghost" size="sm" className="flex items-center gap-2">
+                  <Button variant="ghost" size="sm" className="flex items-center space-x-2">
                     <User className="h-4 w-4" />
-                    {session.user?.name || "Dashboard"}
+                    <span>{session.user?.name || session.user?.email}</span>
                   </Button>
                 </Link>
                 <Button variant="ghost" size="sm" onClick={() => signOut()}>
                   Odhlásit se
                 </Button>
-              </>
+              </div>
             ) : (
-              <>
-                <Button variant="ghost" size="sm" onClick={() => signIn()}>
-                  Přihlásit se
-                </Button>
-                <Link href="/registrace">
-                  <Button size="sm">
-                    Registrace
-                  </Button>
+              <div className="flex items-center space-x-3">
+                <Link href="/prihlaseni">
+                  <Button variant="ghost" size="sm">Přihlásit se</Button>
                 </Link>
-              </>
+                <Link href="/registrace">
+                  <Button size="sm">Registrace</Button>
+                </Link>
+              </div>
             )}
           </div>
 
           {/* Mobile Menu Button */}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="md:hidden"
+          <button
+            className="md:hidden p-2"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           >
-            {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-          </Button>
+            {isMobileMenuOpen ? (
+              <X className="h-6 w-6 text-gray-700" />
+            ) : (
+              <Menu className="h-6 w-6 text-gray-700" />
+            )}
+          </button>
         </div>
 
         {/* Mobile Menu */}
@@ -109,18 +108,22 @@ export function Header() {
                 Přidat prostor
               </Link>
               
-              <div className="pt-4 border-t border-gray-200 space-y-2">
-                {session ? (
-                  <>
+              {/* Mobile Auth */}
+              <div className="pt-4 border-t border-gray-200">
+                {status === "loading" ? (
+                  <div className="w-8 h-8 bg-gray-200 rounded-full animate-pulse" />
+                ) : session ? (
+                  <div className="space-y-2">
                     <Link href="/dashboard" onClick={() => setIsMobileMenuOpen(false)}>
                       <Button variant="ghost" size="sm" className="w-full justify-start">
-                        Dashboard
+                        <User className="h-4 w-4 mr-2" />
+                        {session.user?.name || session.user?.email}
                       </Button>
                     </Link>
                     <Button 
                       variant="ghost" 
                       size="sm" 
-                      className="w-full justify-start"
+                      className="w-full justify-start" 
                       onClick={() => {
                         signOut()
                         setIsMobileMenuOpen(false)
@@ -128,26 +131,20 @@ export function Header() {
                     >
                       Odhlásit se
                     </Button>
-                  </>
+                  </div>
                 ) : (
-                  <>
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      className="w-full justify-start"
-                      onClick={() => {
-                        signIn()
-                        setIsMobileMenuOpen(false)
-                      }}
-                    >
-                      Přihlásit se
-                    </Button>
+                  <div className="space-y-2">
+                    <Link href="/prihlaseni" onClick={() => setIsMobileMenuOpen(false)}>
+                      <Button variant="ghost" size="sm" className="w-full justify-start">
+                        Přihlásit se
+                      </Button>
+                    </Link>
                     <Link href="/registrace" onClick={() => setIsMobileMenuOpen(false)}>
-                      <Button size="sm" className="w-full">
+                      <Button size="sm" className="w-full justify-start">
                         Registrace
                       </Button>
                     </Link>
-                  </>
+                  </div>
                 )}
               </div>
             </nav>

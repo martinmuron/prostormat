@@ -1,4 +1,7 @@
 import { Suspense } from "react"
+
+// Force dynamic rendering to avoid caching issues
+export const revalidate = 0
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -29,6 +32,9 @@ async function getEventRequests() {
         }
       }
     })
+    
+    console.log("Event requests query result:", requests.length, "found at", new Date().toISOString())
+    
     return requests
   } catch (error) {
     console.error("Error fetching event requests:", error)

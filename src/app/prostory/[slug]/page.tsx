@@ -14,7 +14,7 @@ async function getVenue(slug: string) {
     const venue = await db.venue.findUnique({
       where: {
         slug,
-        status: "active",
+        status: { in: ["active", "draft"] },
       },
       include: {
         manager: {

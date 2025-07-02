@@ -14,7 +14,7 @@ async function getFeaturedVenues() {
   try {
     const venues = await db.venue.findMany({
       where: {
-        status: "active",
+        status: { in: ["active", "draft"] }, // Temporarily include draft venues
       },
       take: 6,
       orderBy: {

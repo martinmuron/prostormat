@@ -17,7 +17,7 @@ interface SearchParams {
 async function getVenues(searchParams: SearchParams) {
   try {
     const where: any = {
-      status: "active",
+      status: { in: ["active", "draft"] },
     }
 
     // Search query

@@ -26,7 +26,15 @@ async function getVenue(slug: string) {
         }
       }
     })
-    return venue
+    
+    if (!venue) return null
+    
+    // Transform JSON strings back to arrays for frontend compatibility
+    return {
+      ...venue,
+      images: JSON.parse(venue.images || '[]'),
+      amenities: JSON.parse(venue.amenities || '[]'),
+    }
   } catch (error) {
     console.error("Error fetching venue:", error)
     return null

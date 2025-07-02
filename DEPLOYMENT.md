@@ -52,11 +52,11 @@ In Railway project settings, add these environment variables:
 
 ```env
 # Database (automatically provided by Railway PostgreSQL service)
-DATABASE_URL=postgresql://...
+DATABASE_URL=postgresql://postgres:eGPFGkEqhqLVcnVoJFlXmOlMhiBDiDrC@interchange.proxy.rlwy.net:50365/railway
 
 # NextAuth
 NEXTAUTH_URL=https://prostormat.cz
-NEXTAUTH_SECRET=your-super-secret-key-at-least-32-chars
+NEXTAUTH_SECRET=099ca1d6c3e731e54bacfa894f15b414f8b8e94ef2a0a5f4accccca384e2caaa
 
 # OAuth (optional but recommended)
 GOOGLE_CLIENT_ID=your-google-client-id

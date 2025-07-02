@@ -25,7 +25,6 @@ async function getFeaturedVenues() {
       },
     })
     
-    console.log("Featured venues query result:", venues.length, venues.map(v => ({ name: v.name, status: v.status })))
     
     // PostgreSQL returns arrays directly, no need to parse
     return venues

@@ -14,7 +14,6 @@ interface VenueCardProps {
     address: string
     capacitySeated?: number | null
     capacityStanding?: number | null
-    priceRange?: string | null
     venueType?: string | null
     images: string[]
   }
@@ -64,7 +63,7 @@ export function VenueCard({ venue }: VenueCardProps) {
             </p>
           )}
           
-          <div className="flex justify-between items-end text-sm sm:text-callout">
+          <div className="text-sm sm:text-callout">
             <div className="text-gray-600 leading-tight font-medium">
               {venue.capacitySeated && venue.capacityStanding ? (
                 <span className="px-2 py-1 bg-blue-50 rounded-lg">{venue.capacitySeated} sed. / {venue.capacityStanding} stoj.</span>
@@ -74,12 +73,6 @@ export function VenueCard({ venue }: VenueCardProps) {
                 <span className="px-2 py-1 bg-blue-50 rounded-lg">{venue.capacityStanding} stojících</span>
               ) : null}
             </div>
-            
-            {venue.priceRange && (
-              <div className="font-bold text-gray-900 text-right leading-tight px-3 py-1 bg-gradient-to-r from-green-50 to-blue-50 rounded-lg">
-                {venue.priceRange}
-              </div>
-            )}
           </div>
         </CardContent>
       </Link>

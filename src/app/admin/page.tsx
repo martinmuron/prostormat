@@ -38,7 +38,6 @@ interface AdminVenue {
   venueType?: string
   capacitySeated?: number
   capacityStanding?: number
-  priceRange?: string
   createdAt: string
   manager: {
     name: string
@@ -346,11 +345,6 @@ export default function AdminPage() {
                               <div className="text-sm text-gray-500">
                                 {venue.address}
                               </div>
-                              {venue.priceRange && (
-                                <div className="text-xs text-gray-400">
-                                  {venue.priceRange}
-                                </div>
-                              )}
                             </div>
                           </td>
                           <td className="px-4 py-4">

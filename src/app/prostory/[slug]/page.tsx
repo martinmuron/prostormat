@@ -85,9 +85,9 @@ export default async function VenueDetailPage({
                 </div>
               )}
 
-              {/* Capacity & Pricing */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
-                {(venue.capacitySeated || venue.capacityStanding) && (
+              {/* Capacity */}
+              {(venue.capacitySeated || venue.capacityStanding) && (
+                <div className="mb-8">
                   <Card>
                     <CardHeader>
                       <CardTitle className="flex items-center gap-2">
@@ -110,19 +110,8 @@ export default async function VenueDetailPage({
                       )}
                     </CardContent>
                   </Card>
-                )}
-
-                {venue.priceRange && (
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Cenové rozpětí</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-title-3 text-black">{venue.priceRange}</p>
-                    </CardContent>
-                  </Card>
-                )}
-              </div>
+                </div>
+              )}
 
               {/* Amenities */}
               {venue.amenities.length > 0 && (

@@ -41,7 +41,6 @@ const venueFormSchema = z.object({
   address: z.string().min(5, "Adresa musí mít alespoň 5 znaků"),
   capacitySeated: z.string().optional(),
   capacityStanding: z.string().optional(),
-  priceRange: z.string().optional(),
   venueType: z.string().optional(),
   contactEmail: z.string().email("Neplatný email").optional().or(z.literal("")),
   contactPhone: z.string().optional(),
@@ -208,7 +207,6 @@ export default function AddVenuePage() {
         address: data.address,
         capacitySeated: data.capacitySeated ? parseInt(data.capacitySeated) : undefined,
         capacityStanding: data.capacityStanding ? parseInt(data.capacityStanding) : undefined,
-        priceRange: data.priceRange,
         venueType: data.venueType,
         contactEmail: data.contactEmail,
         contactPhone: data.contactPhone,
@@ -402,12 +400,12 @@ export default function AddVenuePage() {
             </CardContent>
           </Card>
 
-          {/* Capacity & Pricing */}
+          {/* Capacity */}
           <Card>
             <CardHeader className="pb-4 sm:pb-6">
               <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
                 <Users className="h-5 w-5 flex-shrink-0" />
-                Kapacita a ceny
+                Kapacita
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4 pt-0">
@@ -439,19 +437,7 @@ export default function AddVenuePage() {
                 </div>
               </div>
 
-              <div>
-                <label className="block text-sm sm:text-callout font-medium text-black mb-2">
-                  Cenové rozpětí
-                </label>
-                <Input
-                  {...register("priceRange")}
-                  placeholder="např. 10000-50000 Kč/den"
-                  className="h-11 sm:h-12"
-                />
-                <p className="text-xs sm:text-caption text-gray-500 mt-1">
-                  Uveďte orientační cenové rozpětí pro váš prostor
-                </p>
-              </div>
+
             </CardContent>
           </Card>
 

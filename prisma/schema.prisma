@@ -72,7 +72,6 @@ model Venue {
   address          String
   capacitySeated   Int?
   capacityStanding Int?
-  priceRange       String?
   venueType        String?
   amenities        String[]
   contactEmail     String?

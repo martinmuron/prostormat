@@ -126,7 +126,7 @@ export default async function VenueDetailPage({
                 <div className="mb-8">
                   <h2 className="text-title-3 text-black mb-4">Vybavení a služby</h2>
                   <div className="flex flex-wrap gap-2">
-                    {venue.amenities.map((amenity, index) => (
+                    {venue.amenities.map((amenity: string, index: number) => (
                       <Badge key={index} variant="outline">
                         {amenity}
                       </Badge>

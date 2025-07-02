@@ -1,7 +1,6 @@
 "use client"
 
 import { useState } from "react"
-import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -30,6 +29,13 @@ import {
 } from "lucide-react"
 
 const venueFormSchema = z.object({
+  // Account fields
+  userName: z.string().min(2, "Jméno musí mít alespoň 2 znaky"),
+  userEmail: z.string().email("Neplatný email"),
+  userPassword: z.string().min(6, "Heslo musí mít alespoň 6 znaků"),
+  userPhone: z.string().optional(),
+  
+  // Venue fields
   name: z.string().min(2, "Název musí mít alespoň 2 znaky"),
   description: z.string().optional(),
   address: z.string().min(5, "Adresa musí mít alespoň 5 znaků"),
@@ -74,7 +80,6 @@ function isValidYouTubeUrl(url: string): boolean {
 }
 
 export default function AddVenuePage() {
-  const { data: session, status } = useSession()
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [images, setImages] = useState<File[]>([])
@@ -93,21 +98,6 @@ export default function AddVenuePage() {
 
   const videoUrl = watch("videoUrl")
   const isYouTubeUrlValid = isValidYouTubeUrl(videoUrl || "")
-
-  // Check authentication and authorization
-  if (status === "loading") {
-    return <div className="min-h-screen bg-white flex items-center justify-center">
-      <div className="text-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-black mx-auto mb-4"></div>
-        <p className="text-body text-gray-600">Načítání...</p>
-      </div>
-    </div>
-  }
-
-  if (!session) {
-    router.push("/prihlaseni")
-    return null
-  }
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || [])
@@ -205,10 +195,25 @@ export default function AddVenuePage() {
       const uploadedImageUrls = await uploadImages()
 
       // Prepare data for API
-      const venueData = {
-        ...data,
+      const submitData = {
+        // Account data
+        userName: data.userName,
+        userEmail: data.userEmail,
+        userPassword: data.userPassword,
+        userPhone: data.userPhone,
+        
+        // Venue data
+        name: data.name,
+        description: data.description,
+        address: data.address,
         capacitySeated: data.capacitySeated ? parseInt(data.capacitySeated) : undefined,
         capacityStanding: data.capacityStanding ? parseInt(data.capacityStanding) : undefined,
+        priceRange: data.priceRange,
+        venueType: data.venueType,
+        contactEmail: data.contactEmail,
+        contactPhone: data.contactPhone,
+        websiteUrl: data.websiteUrl,
+        videoUrl: data.videoUrl,
         amenities,
         images: uploadedImageUrls,
       }
@@ -218,21 +223,23 @@ export default function AddVenuePage() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(venueData),
+        body: JSON.stringify(submitData),
       })
 
       const result = await response.json()
 
       if (response.ok) {
-        // Show success message before redirect
-        alert("Prostor byl úspěšně vytvořen!")
-        router.push(`/prostory/${result.venue.slug}`)
+        // Show success message
+        alert(`Gratulujeme! Váš účet i prostor "${data.name}" byly úspěšně vytvořeny. Nyní se můžete přihlásit a spravovat svůj prostor.`)
+        
+        // Redirect to login page with success message
+        router.push(`/prihlaseni?message=account-created&venue=${encodeURIComponent(data.name)}`)
       } else {
-        throw new Error(result.error || "Chyba při vytváření prostoru")
+        throw new Error(result.error || "Chyba při vytváření účtu a prostoru")
       }
     } catch (error) {
-      console.error("Error creating venue:", error)
-      alert("Došlo k chybě při vytváření prostoru. Zkuste to prosím znovu.")
+      console.error("Error creating account and venue:", error)
+      alert("Došlo k chybě při vytváření účtu a prostoru. Zkuste to prosím znovu.")
     } finally {
       setIsSubmitting(false)
     }
@@ -242,14 +249,85 @@ export default function AddVenuePage() {
     <div className="min-h-screen bg-white">
       <div className="max-w-4xl mx-auto px-6 py-12">
         <div className="mb-8">
-          <h1 className="text-title-1 text-black mb-2">Přidat nový prostor</h1>
+          <h1 className="text-title-1 text-black mb-2">Přidat prostor na Prostormat</h1>
           <p className="text-body text-gray-600">
-            Staňte se součástí Prostormat.cz a nabídněte svůj event prostor tisícům organizátorů akcí. 
-            Vyplňte informace o vašem prostoru a začněte přijímat rezervace ještě dnes.
+            Vytvořte si účet a přidejte svůj event prostor. Staňte se součástí největší platformy 
+            pro event prostory v Praze a začněte přijímat rezervace ještě dnes.
           </p>
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-4">
+            <p className="text-callout text-blue-800">
+              💡 <strong>Tip:</strong> Vyplněním tohoto formuláře vytvoříte účet i přidáte prostor najednou. 
+              Po odeslání se budete moci přihlásit a spravovat svůj prostor.
+            </p>
+          </div>
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+          {/* Account Creation */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Users className="h-5 w-5" />
+                Vytvořit účet
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-callout font-medium text-black mb-2">
+                    Vaše jméno *
+                  </label>
+                  <Input
+                    {...register("userName")}
+                    placeholder="Jan Novák"
+                  />
+                  {errors.userName && (
+                    <p className="text-caption text-red-600 mt-1">{errors.userName.message}</p>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-callout font-medium text-black mb-2">
+                    Váš telefon
+                  </label>
+                  <Input
+                    type="tel"
+                    {...register("userPhone")}
+                    placeholder="+420 123 456 789"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-callout font-medium text-black mb-2">
+                  Váš e-mail *
+                </label>
+                <Input
+                  type="email"
+                  {...register("userEmail")}
+                  placeholder="jan@email.cz"
+                />
+                {errors.userEmail && (
+                  <p className="text-caption text-red-600 mt-1">{errors.userEmail.message}</p>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-callout font-medium text-black mb-2">
+                  Heslo *
+                </label>
+                <Input
+                  type="password"
+                  {...register("userPassword")}
+                  placeholder="Minimálně 6 znaků"
+                />
+                {errors.userPassword && (
+                  <p className="text-caption text-red-600 mt-1">{errors.userPassword.message}</p>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+
           {/* Basic Information */}
           <Card>
             <CardHeader>
@@ -572,7 +650,7 @@ export default function AddVenuePage() {
               disabled={isSubmitting}
               className="flex-1"
             >
-              {isSubmitting ? "Vytvářím prostor..." : "Vytvořit prostor"}
+              {isSubmitting ? "Vytvářím účet a prostor..." : "Vytvořit účet a přidat prostor"}
             </Button>
           </div>
         </form>

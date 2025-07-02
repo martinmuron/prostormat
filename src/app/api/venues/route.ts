@@ -3,8 +3,16 @@ import { getServerSession } from "next-auth"
 import { z } from "zod"
 import { db } from "@/lib/db"
 import { authOptions } from "@/lib/auth"
+import bcrypt from "bcryptjs"
 
 const venueSchema = z.object({
+  // Account fields
+  userName: z.string().min(2, "Jméno musí mít alespoň 2 znaky"),
+  userEmail: z.string().email("Neplatný email"),
+  userPassword: z.string().min(6, "Heslo musí mít alespoň 6 znaků"),
+  userPhone: z.string().optional(),
+  
+  // Venue fields
   name: z.string().min(2, "Název musí mít alespoň 2 znaky"),
   description: z.string().optional(),
   address: z.string().min(5, "Adresa musí mít alespoň 5 znaků"),
@@ -31,34 +39,25 @@ function generateSlug(name: string): string {
 
 export async function POST(request: Request) {
   try {
-    const session = await getServerSession(authOptions)
-    
-    if (!session?.user?.id) {
-      return NextResponse.json(
-        { error: "Musíte být přihlášeni" },
-        { status: 401 }
-      )
-    }
-
-    // Check if user has venue_manager role
-    const user = await db.user.findUnique({
-      where: { id: session.user.id },
-      select: { role: true }
-    })
-
-    // If user is not a venue manager or admin, promote them to venue manager
-    // This allows new venue owners to onboard to the platform
-    if (user?.role === "user") {
-      await db.user.update({
-        where: { id: session.user.id },
-        data: { role: "venue_manager" }
-      })
-    }
-
     const body = await request.json()
     const validatedData = venueSchema.parse(body)
 
-    // Generate unique slug
+    // Check if user already exists
+    const existingUser = await db.user.findUnique({
+      where: { email: validatedData.userEmail },
+    })
+
+    if (existingUser) {
+      return NextResponse.json(
+        { error: "Uživatel s tímto emailem již existuje" },
+        { status: 400 }
+      )
+    }
+
+    // Hash password
+    const hashedPassword = await bcrypt.hash(validatedData.userPassword, 12)
+
+    // Generate unique slug for venue
     let baseSlug = generateSlug(validatedData.name)
     let slug = baseSlug
     let counter = 1
@@ -68,23 +67,53 @@ export async function POST(request: Request) {
       counter++
     }
 
-    // Create venue
-    const venue = await db.venue.create({
-      data: {
-        ...validatedData,
-        slug,
-        managerId: session.user.id,
-        status: "draft", // Start as draft, can be activated later
-        expiresAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000), // 1 year from now
-      },
+    // Create user and venue in a transaction
+    const result = await db.$transaction(async (tx) => {
+      // Create user
+      const user = await tx.user.create({
+        data: {
+          name: validatedData.userName,
+          email: validatedData.userEmail,
+          password: hashedPassword,
+          phone: validatedData.userPhone || null,
+          role: "venue_manager", // Automatically make them a venue manager
+        },
+      })
+
+      // Create venue
+      const venue = await tx.venue.create({
+        data: {
+          name: validatedData.name,
+          slug,
+          description: validatedData.description || null,
+          address: validatedData.address,
+          capacitySeated: validatedData.capacitySeated || null,
+          capacityStanding: validatedData.capacityStanding || null,
+          priceRange: validatedData.priceRange || null,
+          venueType: validatedData.venueType || null,
+          amenities: validatedData.amenities,
+          contactEmail: validatedData.contactEmail || null,
+          contactPhone: validatedData.contactPhone || null,
+          websiteUrl: validatedData.websiteUrl || null,
+          images: validatedData.images,
+          videoUrl: validatedData.videoUrl || null,
+          managerId: user.id,
+          status: "draft", // Start as draft
+          expiresAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000), // 1 year from now
+        },
+      })
+
+      return { user, venue }
     })
 
     return NextResponse.json({ 
       success: true, 
-      venue: { id: venue.id, slug: venue.slug }
+      message: "Účet a prostor byly úspěšně vytvořeny",
+      venue: { id: result.venue.id, slug: result.venue.slug },
+      user: { id: result.user.id, email: result.user.email }
     })
   } catch (error) {
-    console.error("Error creating venue:", error)
+    console.error("Error creating user and venue:", error)
     
     if (error instanceof z.ZodError) {
       return NextResponse.json(
@@ -94,7 +123,7 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json(
-      { error: "Došlo k chybě při vytváření prostoru" },
+      { error: "Došlo k chybě při vytváření účtu a prostoru" },
       { status: 500 }
     )
   }

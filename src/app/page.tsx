@@ -22,12 +22,8 @@ async function getFeaturedVenues() {
       },
     })
     
-    // Transform JSON strings back to arrays for frontend compatibility
-    return venues.map(venue => ({
-      ...venue,
-      images: JSON.parse(venue.images || '[]'),
-      amenities: JSON.parse(venue.amenities || '[]'),
-    }))
+    // PostgreSQL returns arrays directly, no need to parse
+    return venues
   } catch (error) {
     console.error("Error fetching venues:", error)
     return []

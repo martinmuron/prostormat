@@ -121,14 +121,14 @@ async function main() {
       capacitySeated: 80,
       capacityStanding: 120,
       venueType: 'restaurant',
-      amenities: JSON.stringify(['Klimatizace', 'Projektor', 'Zvukový systém', 'WiFi', 'Terasa', 'Parking']),
+      amenities: ['Klimatizace', 'Projektor', 'Zvukový systém', 'WiFi', 'Terasa', 'Parking'],
       contactEmail: 'info@restaurant-terasa.cz',
       contactPhone: '+420 222 333 444',
-      images: JSON.stringify([
+      images: [
         'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
         'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
         'https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
-      ]),
+      ],
       status: 'active',
       managerId: manager1.id,
       expiresAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000), // 1 year from now
@@ -146,10 +146,10 @@ async function main() {
       capacitySeated: 150,
       capacityStanding: 250,
       venueType: 'gallery',
-      amenities: JSON.stringify(['Multimediální vybavení', 'Catering možnosti', 'Výstavní systém', 'Bezpečnostní systém', 'Klimatizace']),
+      amenities: ['Multimediální vybavení', 'Catering možnosti', 'Výstavní systém', 'Bezpečnostní systém', 'Klimatizace'],
       contactEmail: 'rezervace@galerie-moderna.cz',
       contactPhone: '+420 111 222 333',
-      images: JSON.stringify([
+      images: [
         'https://images.unsplash.com/photo-1571115764595-644a1f56a55c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
         'https://images.unsplash.com/photo-1571115764595-644a1f56a55c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
       ]),
@@ -170,10 +170,10 @@ async function main() {
       capacitySeated: 60,
       capacityStanding: 100,
       venueType: 'rooftop',
-      amenities: JSON.stringify(['Bar', 'DJ booth', 'Vytápění', 'Zastřešená část', 'VIP sekce', 'Výhled na město']),
+      amenities: ['Bar', 'DJ booth', 'Vytápění', 'Zastřešená část', 'VIP sekce', 'Výhled na město'],
       contactEmail: 'events@skybar-prague.com',
       contactPhone: '+420 777 888 999',
-      images: JSON.stringify([
+      images: [
         'https://images.unsplash.com/photo-1551218808-94e220e084d2?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
         'https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
         'https://images.unsplash.com/photo-1567281935884-3ba5af2c951d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
@@ -196,11 +196,11 @@ async function main() {
       capacitySeated: 120,
       capacityStanding: 180,
       venueType: 'restaurant',
-      amenities: JSON.stringify(['Bar', 'Projektor', 'Zvukový systém', 'WiFi', 'Klimatizace', 'Soukromé salónky']),
+      amenities: ['Bar', 'Projektor', 'Zvukový systém', 'WiFi', 'Klimatizace', 'Soukromé salónky'],
       contactEmail: 'events@ribsofprague.cz',
       contactPhone: '+420 604 123 456',
       websiteUrl: 'https://www.ribsofprague.cz',
-      images: JSON.stringify([
+      images: [
         'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
         'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
         'https://images.unsplash.com/photo-1551218808-94e220e084d2?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
@@ -222,11 +222,11 @@ async function main() {
       capacitySeated: 65,
       capacityStanding: 90,
       venueType: 'restaurant',
-      amenities: JSON.stringify(['Historický interiér', 'Pivní kultura', 'WiFi', 'Soukromá místnost', 'Projektor']),
+      amenities: ['Historický interiér', 'Pivní kultura', 'WiFi', 'Soukromá místnost', 'Projektor'],
       contactEmail: 'rezervace@umalvaze.cz',
       contactPhone: '+420 777 234 567',
       websiteUrl: 'https://www.umalvaze.cz',
-      images: JSON.stringify([
+      images: [
         'https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
         'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
       ]),
@@ -247,12 +247,12 @@ async function main() {
       capacitySeated: 200,
       capacityStanding: 350,
       venueType: 'conference',
-      amenities: JSON.stringify(['Multimediální vybavení', 'Simultánní překlad', 'WiFi', 'Catering možnosti', 'Parkování', 'Klimatizace']),
+      amenities: ['Multimediální vybavení', 'Simultánní překlad', 'WiFi', 'Catering možnosti', 'Parkování', 'Klimatizace'],
       contactEmail: 'booking@medusaprague.com',
       contactPhone: '+420 606 345 678',
       websiteUrl: 'https://www.medusaprague.com',
       videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-      images: JSON.stringify([
+      images: [
         'https://images.unsplash.com/photo-1571115764595-644a1f56a55c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
         'https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
         'https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
@@ -274,10 +274,10 @@ async function main() {
       capacitySeated: 40,
       capacityStanding: 80,
       venueType: 'other',
-      amenities: JSON.stringify(['Flexibilní design', 'Bar', 'DJ booth', 'Instagram-worthy spot', 'WiFi']),
+      amenities: ['Flexibilní design', 'Bar', 'DJ booth', 'Instagram-worthy spot', 'WiFi'],
       contactEmail: 'hello@popupbar.cz',
       contactPhone: '+420 608 456 789',
-      images: JSON.stringify([
+      images: [
         'https://images.unsplash.com/photo-1567281935884-3ba5af2c951d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
         'https://images.unsplash.com/photo-1551218808-94e220e084d2?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
       ]),
@@ -402,7 +402,7 @@ async function main() {
       capacitySeated: 100,
       capacityStanding: 150,
       venueType: 'villa',
-      amenities: JSON.stringify(['Zahrada', 'Historický interiér', 'Parkování', 'Catering možnosti', 'WiFi']),
+      amenities: ['Zahrada', 'Historický interiér', 'Parkování', 'Catering možnosti', 'WiFi'],
       contactEmail: 'events@villalanna.cz',
       contactPhone: '+420 224 312 456',
       status: 'active',
@@ -416,7 +416,7 @@ async function main() {
       capacitySeated: 80,
       capacityStanding: 120,
       venueType: 'studio',
-      amenities: JSON.stringify(['Flexibilní prostory', 'Multimediální vybavení', 'WiFi', 'Kuchyňka', 'Terasa']),
+      amenities: ['Flexibilní prostory', 'Multimediální vybavení', 'WiFi', 'Kuchyňka', 'Terasa'],
       contactEmail: 'hello@karlinstudios.cz',
       contactPhone: '+420 775 123 987',
       status: 'active',
@@ -430,7 +430,7 @@ async function main() {
       capacitySeated: 60,
       capacityStanding: 100,
       venueType: 'boat',
-      amenities: JSON.stringify(['Paluba', 'Bar', 'Výhled na řeku', 'Catering', 'Klimatizace']),
+      amenities: ['Paluba', 'Bar', 'Výhled na řeku', 'Catering', 'Klimatizace'],
       contactEmail: 'rezervace@albatros.cz',
       contactPhone: '+420 261 007 650',
       status: 'active',
@@ -444,7 +444,7 @@ async function main() {
       capacitySeated: 500,
       capacityStanding: 800,
       venueType: 'conference',
-      amenities: JSON.stringify(['Profesionální zvuk', 'Osvětlení', 'Projekce', 'VIP prostory', 'Parkování']),
+      amenities: ['Profesionální zvuk', 'Osvětlení', 'Projekce', 'VIP prostory', 'Parkování'],
       contactEmail: 'events@forumkarlin.cz',
       contactPhone: '+420 225 315 555',
       status: 'active',
@@ -458,7 +458,7 @@ async function main() {
       capacitySeated: 70,
       capacityStanding: 110,
       venueType: 'loft',
-      amenities: JSON.stringify(['Vysoké stropy', 'Industriální design', 'WiFi', 'Bar', 'Flexibilní layout']),
+      amenities: ['Vysoké stropy', 'Industriální design', 'WiFi', 'Bar', 'Flexibilní layout'],
       contactEmail: 'info@loft39.cz',
       contactPhone: '+420 602 123 789',
       status: 'active',
@@ -472,7 +472,7 @@ async function main() {
       capacitySeated: 45,
       capacityStanding: 70,
       venueType: 'cafe',
-      amenities: JSON.stringify(['Historická atmosféra', 'Terasa', 'Výhled na divadlo', 'WiFi', 'Catering']),
+      amenities: ['Historická atmosféra', 'Terasa', 'Výhled na divadlo', 'WiFi', 'Catering'],
       contactEmail: 'events@cafeslavia.cz',
       contactPhone: '+420 224 218 493',
       status: 'active',
@@ -486,7 +486,7 @@ async function main() {
       capacitySeated: 300,
       capacityStanding: 500,
       venueType: 'warehouse',
-      amenities: JSON.stringify(['Velký prostor', 'Flexibilní layout', 'Loading dock', 'Parkování', 'Zvukový systém']),
+      amenities: ['Velký prostor', 'Flexibilní layout', 'Loading dock', 'Parkování', 'Zvukový systém'],
       contactEmail: 'booking@warehouse7.cz',
       contactPhone: '+420 777 456 123',
       status: 'active',
@@ -500,7 +500,7 @@ async function main() {
       capacitySeated: 80,
       capacityStanding: 120,
       venueType: 'rooftop',
-      amenities: JSON.stringify(['Střešní zahrada', 'Bar', 'Výhled na město', 'Vytápění', 'WiFi']),
+      amenities: ['Střešní zahrada', 'Bar', 'Výhled na město', 'Vytápění', 'WiFi'],
       contactEmail: 'events@lucerna.cz',
       contactPhone: '+420 224 216 972',
       status: 'active',
@@ -514,7 +514,7 @@ async function main() {
       capacitySeated: 200,
       capacityStanding: 350,
       venueType: 'hall',
-      amenities: JSON.stringify(['Vysoké stropy', 'Flexibilní prostory', 'Parkování', 'Loading bay', 'Multimediální vybavení']),
+      amenities: ['Vysoké stropy', 'Flexibilní prostory', 'Parkování', 'Loading bay', 'Multimediální vybavení'],
       contactEmail: 'info@industrialhall.cz',
       contactPhone: '+420 605 234 876',
       status: 'active',
@@ -528,7 +528,7 @@ async function main() {
       capacitySeated: 60,
       capacityStanding: 90,
       venueType: 'villa',
-      amenities: JSON.stringify(['Architektonická památka', 'Zahrada', 'WiFi', 'Parkování', 'Klimatizace']),
+      amenities: ['Architektonická památka', 'Zahrada', 'WiFi', 'Parkování', 'Klimatizace'],
       contactEmail: 'events@villawinternitz.cz',
       contactPhone: '+420 233 378 681',
       status: 'active',
@@ -542,7 +542,7 @@ async function main() {
       capacitySeated: 120,
       capacityStanding: 180,
       venueType: 'brewery',
-      amenities: JSON.stringify(['Historické prostory', 'Vlastní pivo', 'Tradiční kuchyně', 'WiFi', 'Živá hudba']),
+      amenities: ['Historické prostory', 'Vlastní pivo', 'Tradiční kuchyně', 'WiFi', 'Živá hudba'],
       contactEmail: 'akce@ufleku.cz',
       contactPhone: '+420 224 934 019',
       status: 'active',
@@ -556,7 +556,7 @@ async function main() {
       capacitySeated: 50,
       capacityStanding: 80,
       venueType: 'coworking',
-      amenities: JSON.stringify(['Moderní vybavení', 'WiFi', 'Videokonference', 'Kuchyňka', 'Parkování']),
+      amenities: ['Moderní vybavení', 'WiFi', 'Videokonference', 'Kuchyňka', 'Parkování'],
       contactEmail: 'events@node5.cz',
       contactPhone: '+420 775 987 456',
       status: 'active',
@@ -570,7 +570,7 @@ async function main() {
       capacitySeated: 90,
       capacityStanding: 140,
       venueType: 'garden',
-      amenities: JSON.stringify(['Zahrada', 'Výhled na most', 'Terasa', 'Fine dining', 'WiFi', 'Valet parking']),
+      amenities: ['Zahrada', 'Výhled na most', 'Terasa', 'Fine dining', 'WiFi', 'Valet parking'],
       contactEmail: 'events@hergetova.cz',
       contactPhone: '+420 257 535 534',
       status: 'active',
@@ -584,7 +584,7 @@ async function main() {
       capacitySeated: 100,
       capacityStanding: 150,
       venueType: 'gallery',
-      amenities: JSON.stringify(['Výstavní prostory', 'Profesionální osvětlení', 'WiFi', 'Catering možnosti', 'Výhled na řeku']),
+      amenities: ['Výstavní prostory', 'Profesionální osvětlení', 'WiFi', 'Catering možnosti', 'Výhled na řeku'],
       contactEmail: 'pronajmy@manes.cz',
       contactPhone: '+420 224 932 832',
       status: 'active',
@@ -598,7 +598,7 @@ async function main() {
       capacitySeated: 40,
       capacityStanding: 65,
       venueType: 'penthouse',
-      amenities: JSON.stringify(['Panoramatický výhled', 'Luxusní interiér', 'Terasa', 'Bar', 'WiFi', 'Klimatizace']),
+      amenities: ['Panoramatický výhled', 'Luxusní interiér', 'Terasa', 'Bar', 'WiFi', 'Klimatizace'],
       contactEmail: 'events@penthousewenceslas.cz',
       contactPhone: '+420 608 123 789',
       status: 'active',
@@ -613,7 +613,7 @@ async function main() {
       update: {},
       create: {
         ...venueData,
-        images: JSON.stringify([
+        images: [
           'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
           'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
         ]),

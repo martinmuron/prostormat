@@ -89,11 +89,11 @@ export async function POST(request: Request) {
           capacitySeated: validatedData.capacitySeated || null,
           capacityStanding: validatedData.capacityStanding || null,
           venueType: validatedData.venueType || null,
-          amenities: JSON.stringify(validatedData.amenities),
+          amenities: validatedData.amenities,
           contactEmail: validatedData.contactEmail || null,
           contactPhone: validatedData.contactPhone || null,
           websiteUrl: validatedData.websiteUrl || null,
-          images: JSON.stringify(validatedData.images),
+          images: validatedData.images,
           videoUrl: validatedData.videoUrl || null,
           managerId: user.id,
           status: "draft", // Start as draft

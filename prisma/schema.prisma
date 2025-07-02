@@ -6,7 +6,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -73,11 +73,11 @@ model Venue {
   capacitySeated   Int?
   capacityStanding Int?
   venueType        String?
-  amenities        String // JSON array
+  amenities        String[]
   contactEmail     String?
   contactPhone     String?
   websiteUrl       String?
-  images           String // JSON array
+  images           String[]
   videoUrl         String?
   status           String   @default("draft") // draft, active, expired
   managerId        String

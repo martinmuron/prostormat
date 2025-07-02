@@ -29,12 +29,8 @@ async function getVenue(slug: string) {
     
     if (!venue) return null
     
-    // Transform JSON strings back to arrays for frontend compatibility
-    return {
-      ...venue,
-      images: JSON.parse(venue.images || '[]'),
-      amenities: JSON.parse(venue.amenities || '[]'),
-    }
+    // PostgreSQL returns arrays directly, no need to parse
+    return venue
   } catch (error) {
     console.error("Error fetching venue:", error)
     return null

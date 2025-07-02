@@ -86,7 +86,7 @@ async function EventRequestsList() {
           Momentálně nejsou k dispozici žádné požadavky na akce.
         </p>
         <Link href="/pozadavky/novy">
-          <Button>Přidat první požadavek</Button>
+          <Button className="bg-black text-white hover:bg-gray-800">Přidat první požadavek</Button>
         </Link>
       </div>
     )
@@ -218,7 +218,7 @@ export default function EventRequestsPage() {
             prostřednictvím uvedených kontaktních údajů.
           </p>
           <Link href="/pozadavky/novy">
-            <Button size="lg">
+            <Button size="lg" className="bg-black text-white hover:bg-gray-800">
               Přidat požadavek
             </Button>
           </Link>

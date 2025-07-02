@@ -130,7 +130,9 @@ async function main() {
         'https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
       ],
       status: 'active',
-      managerId: manager1.id,
+      manager: {
+        connect: { id: manager1.id }
+      },
       expiresAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000), // 1 year from now
     },
   })
@@ -152,9 +154,11 @@ async function main() {
       images: [
         'https://images.unsplash.com/photo-1571115764595-644a1f56a55c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
         'https://images.unsplash.com/photo-1571115764595-644a1f56a55c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
-      ]),
+      ],
       status: 'active',
-      managerId: manager2.id,
+      manager: {
+        connect: { id: manager2.id }
+      },
       expiresAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
     },
   })
@@ -177,9 +181,11 @@ async function main() {
         'https://images.unsplash.com/photo-1551218808-94e220e084d2?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
         'https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
         'https://images.unsplash.com/photo-1567281935884-3ba5af2c951d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
-      ]),
+      ],
       status: 'active',
-      managerId: manager3.id,
+      manager: {
+        connect: { id: manager3.id }
+      },
       expiresAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
     },
   })
@@ -204,9 +210,11 @@ async function main() {
         'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
         'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
         'https://images.unsplash.com/photo-1551218808-94e220e084d2?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
-      ]),
+      ],
       status: 'active',
-      managerId: ribsManager.id,
+      manager: {
+        connect: { id: ribsManager.id }
+      },
       expiresAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
     },
   })
@@ -229,9 +237,11 @@ async function main() {
       images: [
         'https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
         'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
-      ]),
+      ],
       status: 'draft', // Testing draft status
-      managerId: malvazeManager.id,
+      manager: {
+        connect: { id: malvazeManager.id }
+      },
       expiresAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
     },
   })
@@ -256,9 +266,11 @@ async function main() {
         'https://images.unsplash.com/photo-1571115764595-644a1f56a55c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
         'https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
         'https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
-      ]),
+      ],
       status: 'active',
-      managerId: medusaManager.id,
+      manager: {
+        connect: { id: medusaManager.id }
+      },
       expiresAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
     },
   })
@@ -280,9 +292,11 @@ async function main() {
       images: [
         'https://images.unsplash.com/photo-1567281935884-3ba5af2c951d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
         'https://images.unsplash.com/photo-1551218808-94e220e084d2?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
-      ]),
+      ],
       status: 'draft', // Testing another draft status
-      managerId: popupManager.id,
+      manager: {
+        connect: { id: popupManager.id }
+      },
       expiresAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
     },
   })
@@ -406,7 +420,9 @@ async function main() {
       contactEmail: 'events@villalanna.cz',
       contactPhone: '+420 224 312 456',
       status: 'active',
-      managerId: manager1.id,
+      manager: {
+        connect: { id: manager1.id }
+      },
     },
     {
       name: 'Karlín Studios',
@@ -420,7 +436,9 @@ async function main() {
       contactEmail: 'hello@karlinstudios.cz',
       contactPhone: '+420 775 123 987',
       status: 'active',
-      managerId: manager2.id,
+      manager: {
+        connect: { id: manager2.id }
+      },
     },
     {
       name: 'Boat Albatros',
@@ -434,7 +452,9 @@ async function main() {
       contactEmail: 'rezervace@albatros.cz',
       contactPhone: '+420 261 007 650',
       status: 'active',
-      managerId: manager3.id,
+      manager: {
+        connect: { id: manager3.id }
+      },
     },
     {
       name: 'Forum Karlín',
@@ -448,7 +468,9 @@ async function main() {
       contactEmail: 'events@forumkarlin.cz',
       contactPhone: '+420 225 315 555',
       status: 'active',
-      managerId: ribsManager.id,
+      manager: {
+        connect: { id: ribsManager.id }
+      },
     },
     {
       name: 'Loft 39',
@@ -462,7 +484,9 @@ async function main() {
       contactEmail: 'info@loft39.cz',
       contactPhone: '+420 602 123 789',
       status: 'active',
-      managerId: malvazeManager.id,
+      manager: {
+        connect: { id: malvazeManager.id }
+      },
     },
     {
       name: 'Café Slavia Terrace',
@@ -476,7 +500,9 @@ async function main() {
       contactEmail: 'events@cafeslavia.cz',
       contactPhone: '+420 224 218 493',
       status: 'active',
-      managerId: medusaManager.id,
+      manager: {
+        connect: { id: medusaManager.id }
+      },
     },
     {
       name: 'Warehouse 7',
@@ -490,7 +516,9 @@ async function main() {
       contactEmail: 'booking@warehouse7.cz',
       contactPhone: '+420 777 456 123',
       status: 'active',
-      managerId: popupManager.id,
+      manager: {
+        connect: { id: popupManager.id }
+      },
     },
     {
       name: 'Rooftop Lucerna',
@@ -504,7 +532,9 @@ async function main() {
       contactEmail: 'events@lucerna.cz',
       contactPhone: '+420 224 216 972',
       status: 'active',
-      managerId: manager1.id,
+      manager: {
+        connect: { id: manager1.id }
+      },
     },
     {
       name: 'Industrial Hall Smíchov',
@@ -518,7 +548,9 @@ async function main() {
       contactEmail: 'info@industrialhall.cz',
       contactPhone: '+420 605 234 876',
       status: 'active',
-      managerId: manager2.id,
+      manager: {
+        connect: { id: manager2.id }
+      },
     },
     {
       name: 'Villa Winternitz',
@@ -532,7 +564,9 @@ async function main() {
       contactEmail: 'events@villawinternitz.cz',
       contactPhone: '+420 233 378 681',
       status: 'active',
-      managerId: manager3.id,
+      manager: {
+        connect: { id: manager3.id }
+      },
     },
     {
       name: 'Brewery Lounge U Fleku',
@@ -546,7 +580,9 @@ async function main() {
       contactEmail: 'akce@ufleku.cz',
       contactPhone: '+420 224 934 019',
       status: 'active',
-      managerId: ribsManager.id,
+      manager: {
+        connect: { id: ribsManager.id }
+      },
     },
     {
       name: 'Coworking Space Node5',
@@ -560,7 +596,9 @@ async function main() {
       contactEmail: 'events@node5.cz',
       contactPhone: '+420 775 987 456',
       status: 'active',
-      managerId: malvazeManager.id,
+      manager: {
+        connect: { id: malvazeManager.id }
+      },
     },
     {
       name: 'Garden Restaurant Hergetova Cihelna',
@@ -574,7 +612,9 @@ async function main() {
       contactEmail: 'events@hergetova.cz',
       contactPhone: '+420 257 535 534',
       status: 'active',
-      managerId: medusaManager.id,
+      manager: {
+        connect: { id: medusaManager.id }
+      },
     },
     {
       name: 'Art Gallery Mánes',
@@ -588,7 +628,9 @@ async function main() {
       contactEmail: 'pronajmy@manes.cz',
       contactPhone: '+420 224 932 832',
       status: 'active',
-      managerId: popupManager.id,
+      manager: {
+        connect: { id: popupManager.id }
+      },
     },
     {
       name: 'Penthouse Wenceslas',
@@ -602,7 +644,9 @@ async function main() {
       contactEmail: 'events@penthousewenceslas.cz',
       contactPhone: '+420 608 123 789',
       status: 'active',
-      managerId: manager1.id,
+      manager: {
+        connect: { id: manager1.id }
+      },
     },
   ]
 
@@ -616,7 +660,7 @@ async function main() {
         images: [
           'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
           'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-        ]),
+        ],
         expiresAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
       },
     })

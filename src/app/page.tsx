@@ -221,9 +221,8 @@ export default function HomePage() {
                 </Link>
                 <Link href="/prostory">
                   <Button 
-                    variant="secondary" 
                     size="lg" 
-                    className="hover-lift magnetic-button w-full sm:w-auto px-10 py-4 text-lg font-semibold rounded-2xl border-2 border-white text-white hover:bg-white hover:text-black transition-all duration-300"
+                    className="hover-lift magnetic-button w-full sm:w-auto px-10 py-4 text-lg font-semibold rounded-2xl border-2 border-white text-white bg-transparent hover:bg-white hover:text-black transition-all duration-300"
                   >
                     Prohlédnout prostory
                   </Button>

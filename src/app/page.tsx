@@ -3,8 +3,12 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { VenueCard } from "@/components/venue/venue-card"
+import { AnimatedBackground, FloatingShapes } from "@/components/ui/animated-background"
+import { ScrollReveal } from "@/components/ui/scroll-reveal"
+import { HeroSearch } from "@/components/ui/hero-search"
 import { db } from "@/lib/db"
-import { Search, Upload, MessageSquare, Euro } from "lucide-react"
+import { VENUE_TYPES, PRAGUE_DISTRICTS, CAPACITY_RANGES } from "@/types"
+import { Search, Upload, MessageSquare, Euro, Sparkles, Zap, Star, Users, MapPin, Calendar } from "lucide-react"
 
 async function getFeaturedVenues() {
   try {
@@ -68,71 +72,50 @@ async function FeaturedVenues() {
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white relative overflow-hidden">
+      {/* Animated Background */}
+      <AnimatedBackground />
+      
       {/* Hero Section */}
-      <section className="py-20 px-6">
-        <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-display text-black mb-6">
-            Najděte perfektní prostor<br />
-            pro vaši akci
-          </h1>
-          <p className="text-title-3 text-gray-600 mb-12 max-w-2xl mx-auto">
-            Největší katalog event prostorů v Praze. Bez provizí, přímý kontakt s provozovateli.
-          </p>
+      <section className="relative py-32 px-6 bg-gradient-to-br from-gray-900 via-blue-900 to-indigo-900">
+        <FloatingShapes />
+        <div className="max-w-4xl mx-auto text-center relative z-20">
+          <div className="animate-slide-up">
+            <h1 className="text-display text-white mb-6 font-black tracking-tight drop-shadow-lg">
+              Najděte perfektní prostor<br />
+              pro vaši akci
+              <Sparkles className="inline-block ml-4 h-12 w-12 text-blue-400 animate-pulse" />
+            </h1>
+          </div>
           
-          {/* Search Bar */}
-          <div className="bg-gray-50 rounded-2xl p-6 max-w-2xl mx-auto">
-            <form className="flex gap-4" action="/prostory" method="GET">
-              <div className="relative flex-1">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-                <Input
-                  name="q"
-                  className="pl-12"
-                  placeholder="Hledat prostory..."
-                />
-              </div>
-              <Button type="submit">
-                Hledat
-              </Button>
-            </form>
+          <div className="animate-slide-up" style={{ animationDelay: '0.2s' }}>
+            <p className="text-title-3 text-gray-200 mb-12 max-w-2xl mx-auto font-medium">
+              Největší katalog event prostorů v Praze. Bez provizí, přímý kontakt s provozovateli.
+            </p>
+          </div>
+          
+          {/* Enhanced Search Interface */}
+          <div className="animate-slide-up" style={{ animationDelay: '0.4s' }}>
+            <HeroSearch />
           </div>
 
-          <div className="flex flex-wrap justify-center gap-4 mt-8">
-            <Link href="/prostory?type=restaurant">
-              <Button variant="secondary" size="sm">
-                Restaurace
-              </Button>
-            </Link>
-            <Link href="/prostory?type=rooftop">
-              <Button variant="secondary" size="sm">
-                Střešní terasy
-              </Button>
-            </Link>
-            <Link href="/prostory?type=gallery">
-              <Button variant="secondary" size="sm">
-                Galerie
-              </Button>
-            </Link>
-            <Link href="/prostory?type=conference">
-              <Button variant="secondary" size="sm">
-                Konferenční centra
-              </Button>
-            </Link>
-          </div>
         </div>
       </section>
       
       {/* Featured Venues */}
-      <section className="py-20 px-6 bg-gray-50">
+      <section className="py-20 px-6 bg-gradient-to-br from-gray-100 to-gray-200 relative">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-title-1 text-black mb-4">
-              Doporučené prostory
-            </h2>
-            <p className="text-body text-gray-600 max-w-2xl mx-auto">
-              Objevte nejlepší event prostory v Praze vybrané naším týmem
-            </p>
-          </div>
+          <ScrollReveal>
+            <div className="text-center mb-16">
+              <h2 className="text-title-1 text-gray-900 mb-6 font-bold">
+                Doporučené prostory
+                <Sparkles className="inline-block ml-2 h-8 w-8 text-blue-600" />
+              </h2>
+              <p className="text-body text-gray-700 max-w-2xl mx-auto text-lg font-medium">
+                Objevte nejlepší event prostory v Praze vybrané naším týmem
+              </p>
+            </div>
+          </ScrollReveal>
           
           <Suspense
             fallback={
@@ -143,78 +126,111 @@ export default function HomePage() {
               </div>
             }
           >
-            <FeaturedVenues />
+            <ScrollReveal delay={200}>
+              <FeaturedVenues />
+            </ScrollReveal>
           </Suspense>
 
-          <div className="text-center mt-12">
-            <Link href="/prostory">
-              <Button variant="secondary" size="lg">
-                Zobrazit všechny prostory
-              </Button>
-            </Link>
-          </div>
+          <ScrollReveal delay={400}>
+            <div className="text-center mt-16">
+              <Link href="/prostory">
+                <Button 
+                  variant="secondary" 
+                  size="lg" 
+                  className="magnetic-button hover-lift glass-card rounded-2xl px-10 py-4 text-lg font-semibold"
+                >
+                  <Star className="mr-2 h-5 w-5" />
+                  Zobrazit všechny prostory
+                </Button>
+              </Link>
+            </div>
+          </ScrollReveal>
         </div>
       </section>
 
       {/* CTA for Venue Owners */}
-      <section className="bg-gray-50 py-12 sm:py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="text-center mb-8 sm:mb-12">
-            <h2 className="text-2xl sm:text-title-1 text-black mb-3 sm:mb-4 leading-tight">
-              Vlastníte event prostor?
-            </h2>
-            <p className="text-lg sm:text-title-3 text-gray-600 max-w-3xl mx-auto leading-relaxed">
-              Připojte se k tisícům spokojených provozovatelů a začněte vydělávat 
-              na svém prostoru už dnes
-            </p>
+      <section className="relative py-20 px-6 bg-gradient-to-br from-gray-900 via-blue-900 to-indigo-900 overflow-hidden">
+        {/* Background decorative elements */}
+        <div className="absolute top-10 left-10 w-32 h-32 bg-gradient-to-br from-blue-400/20 to-indigo-500/20 rounded-full blur-2xl animate-float-slow" />
+        <div className="absolute bottom-10 right-10 w-40 h-40 bg-gradient-to-br from-indigo-400/20 to-blue-500/20 rounded-full blur-2xl animate-float-medium" />
+        
+        <div className="max-w-7xl mx-auto relative z-10">
+          <ScrollReveal>
+            <div className="text-center mb-16">
+              <h2 className="text-3xl sm:text-title-1 text-white mb-6 leading-tight font-bold">
+                Vlastníte event prostor?
+                <Zap className="inline-block ml-2 h-8 w-8 text-blue-400" />
+              </h2>
+              <p className="text-lg sm:text-title-3 text-gray-200 max-w-3xl mx-auto leading-relaxed font-medium">
+                Připojte se k tisícům spokojených provozovatelů a začněte vydělávat 
+                na svém prostoru už dnes
+              </p>
+            </div>
+          </ScrollReveal>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 mb-16">
+            <ScrollReveal delay={100}>
+              <div className="text-center group">
+                <div className="w-20 h-20 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-6 hover-lift animate-pulse-glow group-hover:scale-110 transition-all duration-300">
+                  <Upload className="w-10 h-10 text-white" />
+                </div>
+                <h3 className="text-xl font-bold text-white mb-3">Přidejte prostor</h3>
+                <p className="text-gray-300 leading-relaxed">
+                  Vytvořte profil vašeho prostoru s fotografiami a všemi detaily
+                </p>
+              </div>
+            </ScrollReveal>
+            
+            <ScrollReveal delay={200}>
+              <div className="text-center group">
+                <div className="w-20 h-20 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-6 hover-lift animate-pulse-glow group-hover:scale-110 transition-all duration-300">
+                  <MessageSquare className="w-10 h-10 text-white" />
+                </div>
+                <h3 className="text-xl font-bold text-white mb-3">Přijímejte dotazy</h3>
+                <p className="text-gray-300 leading-relaxed">
+                  Komunikujte přímo s organizátory a domlouvejte si akce
+                </p>
+              </div>
+            </ScrollReveal>
+            
+            <ScrollReveal delay={300}>
+              <div className="text-center group">
+                <div className="w-20 h-20 bg-gradient-to-br from-blue-600 to-cyan-600 rounded-2xl flex items-center justify-center mx-auto mb-6 hover-lift animate-pulse-glow group-hover:scale-110 transition-all duration-300">
+                  <Euro className="w-10 h-10 text-white" />
+                </div>
+                <h3 className="text-xl font-bold text-white mb-3">Vydělávejte</h3>
+                <p className="text-gray-300 leading-relaxed">
+                  Maximalizujte využití vašeho prostoru a generujte pravidelný příjem
+                </p>
+              </div>
+            </ScrollReveal>
           </div>
           
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8 mb-8 sm:mb-12">
+          <ScrollReveal delay={400}>
             <div className="text-center">
-              <div className="w-12 h-12 sm:w-16 sm:h-16 bg-black rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
-                <Upload className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
+              <div className="flex flex-col sm:flex-row gap-6 justify-center max-w-lg mx-auto">
+                <Link href="/pridat-prostor">
+                  <Button 
+                    size="lg" 
+                    className="magnetic-button hover-lift w-full sm:w-auto px-10 py-4 text-lg font-semibold rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-xl"
+                  >
+                    <Sparkles className="mr-2 h-5 w-5" />
+                    Přidat prostor zdarma
+                  </Button>
+                </Link>
+                <Link href="/prostory">
+                  <Button 
+                    variant="secondary" 
+                    size="lg" 
+                    className="glass-card hover-lift magnetic-button w-full sm:w-auto px-10 py-4 text-lg font-semibold rounded-2xl"
+                  >
+                    <Star className="mr-2 h-5 w-5" />
+                    Prohlédnout prostory
+                  </Button>
+                </Link>
               </div>
-              <h3 className="text-lg sm:text-title-3 text-black mb-2">Přidejte prostor</h3>
-              <p className="text-sm sm:text-body text-gray-600 leading-relaxed">
-                Vytvořte profil vašeho prostoru s fotografiami a všemi detaily
-              </p>
             </div>
-            
-            <div className="text-center">
-              <div className="w-12 h-12 sm:w-16 sm:h-16 bg-black rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
-                <MessageSquare className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
-              </div>
-              <h3 className="text-lg sm:text-title-3 text-black mb-2">Přijímejte dotazy</h3>
-              <p className="text-sm sm:text-body text-gray-600 leading-relaxed">
-                Komunikujte přímo s organizátory a domlouvejte si akce
-              </p>
-            </div>
-            
-            <div className="text-center">
-              <div className="w-12 h-12 sm:w-16 sm:h-16 bg-black rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
-                <Euro className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
-              </div>
-              <h3 className="text-lg sm:text-title-3 text-black mb-2">Vydělávejte</h3>
-              <p className="text-sm sm:text-body text-gray-600 leading-relaxed">
-                Maximalizujte využití vašeho prostoru a generujte pravidelný příjem
-              </p>
-            </div>
-          </div>
-          
-          <div className="text-center">
-            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center max-w-md sm:max-w-none mx-auto">
-              <Link href="/pridat-prostor">
-                <Button size="lg" className="w-full sm:w-auto min-h-[44px] sm:min-h-[48px]">
-                  Přidat prostor zdarma
-                </Button>
-              </Link>
-              <Link href="/prostory">
-                <Button variant="secondary" size="lg" className="w-full sm:w-auto min-h-[44px] sm:min-h-[48px]">
-                  Prohlédnout prostory
-                </Button>
-              </Link>
-            </div>
-          </div>
+          </ScrollReveal>
         </div>
       </section>
     </div>

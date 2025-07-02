@@ -27,6 +27,9 @@ export function Header() {
             <Link href="/pozadavky" className="text-body text-gray-700 hover:text-black transition-colors">
               Požadavky na akce
             </Link>
+            <Link href="/blog" className="text-body text-gray-700 hover:text-black transition-colors">
+              Blog
+            </Link>
             <Link href="/pridat-prostor" className="text-body text-gray-700 hover:text-black transition-colors">
               Přidat prostor
             </Link>
@@ -90,6 +93,13 @@ export function Header() {
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 Požadavky na akce
+              </Link>
+              <Link 
+                href="/blog" 
+                className="block text-body text-gray-700 hover:text-black transition-colors"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Blog
               </Link>
               <Link 
                 href="/pridat-prostor" 

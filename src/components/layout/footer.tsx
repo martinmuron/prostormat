@@ -32,6 +32,11 @@ export function Footer() {
                 </Link>
               </li>
               <li>
+                <Link href="/blog" className="text-body text-gray-600 hover:text-black transition-colors">
+                  Blog
+                </Link>
+              </li>
+              <li>
                 <Link href="/pridat-prostor" className="text-body text-gray-600 hover:text-black transition-colors">
                   Přidat prostor
                 </Link>

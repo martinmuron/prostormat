@@ -33,7 +33,6 @@ async function getEventRequests() {
       }
     })
     
-    console.log("Event requests query result:", requests.length, "found at", new Date().toISOString())
     
     return requests
   } catch (error) {

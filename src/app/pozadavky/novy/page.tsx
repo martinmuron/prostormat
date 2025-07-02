@@ -12,20 +12,24 @@ export default async function NewEventRequestPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-2xl mx-auto px-6 py-12">
-        <div className="text-center mb-8">
-          <h1 className="text-title-1 text-black mb-4">Nový požadavek na akci</h1>
-          <p className="text-body text-gray-600">
-            Popište svou akci a my ji zveřejníme pro provozovatele prostorů v Praze.
+    <div className="min-h-screen bg-white">
+      <div className="max-w-3xl mx-auto px-6 py-12">
+        <div className="text-center mb-12">
+          <h1 className="text-display text-black mb-6 font-bold">Nový požadavek na akci</h1>
+          <p className="text-title-3 text-gray-600 max-w-2xl mx-auto leading-relaxed">
+            Popište svou akci a my ji zveřejníme pro provozovatele prostorů v Praze. 
+            Získejte nabídky přímo od vlastníků prostorů.
           </p>
         </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Detaily akce</CardTitle>
+        <Card className="shadow-xl border-0 rounded-3xl overflow-hidden">
+          <CardHeader className="bg-gradient-to-r from-gray-50 to-white p-8">
+            <CardTitle className="text-title-2 text-black font-bold">Detaily akce</CardTitle>
+            <p className="text-body text-gray-600 mt-2">
+              Vyplňte informace o vaší akci pro nejlepší nabídky
+            </p>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-8">
             <EventRequestForm />
           </CardContent>
         </Card>

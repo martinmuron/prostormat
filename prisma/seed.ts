@@ -56,6 +56,59 @@ async function main() {
     },
   })
 
+  // Create managers for the new test venues
+  const ribsManager = await prisma.user.upsert({
+    where: { email: 'manager@ribsofprague.cz' },
+    update: {},
+    create: {
+      email: 'manager@ribsofprague.cz',
+      name: 'Tomáš Novák',
+      password: managerPassword,
+      role: 'venue_manager',
+      phone: '+420 604 123 456',
+      company: 'Ribs of Prague s.r.o.'
+    },
+  })
+
+  const malvazeManager = await prisma.user.upsert({
+    where: { email: 'events@umalvaze.cz' },
+    update: {},
+    create: {
+      email: 'events@umalvaze.cz',
+      name: 'Marie Svobodová',
+      password: managerPassword,
+      role: 'venue_manager',
+      phone: '+420 777 234 567',
+      company: 'U Malvaze Restaurant'
+    },
+  })
+
+  const medusaManager = await prisma.user.upsert({
+    where: { email: 'booking@medusaprague.com' },
+    update: {},
+    create: {
+      email: 'booking@medusaprague.com',
+      name: 'Pavel Dvořák',
+      password: managerPassword,
+      role: 'venue_manager',
+      phone: '+420 606 345 678',
+      company: 'Medusa Group'
+    },
+  })
+
+  const popupManager = await prisma.user.upsert({
+    where: { email: 'info@popupbar.cz' },
+    update: {},
+    create: {
+      email: 'info@popupbar.cz',
+      name: 'Lucie Kratochvílová',
+      password: managerPassword,
+      role: 'venue_manager',
+      phone: '+420 608 456 789',
+      company: 'Pop Up Concepts'
+    },
+  })
+
   // Create sample venues
   const venue1 = await prisma.venue.upsert({
     where: { slug: 'restaurant-terasa' },
@@ -134,6 +187,113 @@ async function main() {
     },
   })
 
+  // Create the new test venues
+  const ribsOfPrague = await prisma.venue.upsert({
+    where: { slug: 'ribs-of-prague' },
+    update: {},
+    create: {
+      name: 'Ribs of Prague',
+      slug: 'ribs-of-prague',
+      description: 'Autentický americký steakhouse v srdci Prahy. Rustic atmosféra s kvalitním jídlem a bohatou nabídkou whiskey. Ideální pro firemní večírky a oslavy.',
+      address: 'Jindřišská 5, Praha 1',
+      capacitySeated: 120,
+      capacityStanding: 180,
+      priceRange: '1800-3500 Kč/osoba',
+      venueType: 'restaurant',
+      amenities: ['Bar', 'Projektor', 'Zvukový systém', 'WiFi', 'Klimatizace', 'Soukromé salónky'],
+      contactEmail: 'events@ribsofprague.cz',
+      contactPhone: '+420 604 123 456',
+      websiteUrl: 'https://www.ribsofprague.cz',
+      images: [
+        'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+        'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+        'https://images.unsplash.com/photo-1551218808-94e220e084d2?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+      ],
+      status: 'active',
+      managerId: ribsManager.id,
+      expiresAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
+    },
+  })
+
+  const uMalvaze = await prisma.venue.upsert({
+    where: { slug: 'u-malvaze' },
+    update: {},
+    create: {
+      name: 'U Malvaze',
+      slug: 'u-malvaze',
+      description: 'Historická restaurace v pražském Novém Městě s tradičními českými pokrmy a výborným pivem. Stylové prostředí pro menší firemní akce a teambuildingy.',
+      address: 'Národní 7, Praha 1',
+      capacitySeated: 65,
+      capacityStanding: 90,
+      priceRange: '1200-2400 Kč/osoba',
+      venueType: 'restaurant',
+      amenities: ['Historický interiér', 'Pivní kultura', 'WiFi', 'Soukromá místnost', 'Projektor'],
+      contactEmail: 'rezervace@umalvaze.cz',
+      contactPhone: '+420 777 234 567',
+      websiteUrl: 'https://www.umalvaze.cz',
+      images: [
+        'https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+        'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+      ],
+      status: 'draft', // Testing draft status
+      managerId: malvazeManager.id,
+      expiresAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
+    },
+  })
+
+  const medusaPrague = await prisma.venue.upsert({
+    where: { slug: 'medusa-prague' },
+    update: {},
+    create: {
+      name: 'Medusa Prague',
+      slug: 'medusa-prague',
+      description: 'Moderní event prostor v historické budově. Flexibilní layout s možností rozdělení na více sekcí. Perfektní pro konference, prezentace a networking events.',
+      address: 'Purkyňova 2121/7, Praha 2',
+      capacitySeated: 200,
+      capacityStanding: 350,
+      priceRange: '25000-45000 Kč/den',
+      venueType: 'conference',
+      amenities: ['Multimediální vybavení', 'Simultánní překlad', 'WiFi', 'Catering možnosti', 'Parkování', 'Klimatizace'],
+      contactEmail: 'booking@medusaprague.com',
+      contactPhone: '+420 606 345 678',
+      websiteUrl: 'https://www.medusaprague.com',
+      videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+      images: [
+        'https://images.unsplash.com/photo-1571115764595-644a1f56a55c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+        'https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+        'https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+      ],
+      status: 'active',
+      managerId: medusaManager.id,
+      expiresAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
+    },
+  })
+
+  const popUpBar = await prisma.venue.upsert({
+    where: { slug: 'pop-up-bar' },
+    update: {},
+    create: {
+      name: 'Pop Up Bar',
+      slug: 'pop-up-bar',
+      description: 'Jedinečný pop-up prostor s proměnlivým designem. Každý měsíc nová koncepce a atmosféra. Ideální pro kreativní akce, product launche a neformální networking.',
+      address: 'Vinohrady, Praha 2',
+      capacitySeated: 40,
+      capacityStanding: 80,
+      priceRange: '800-1800 Kč/osoba',
+      venueType: 'other',
+      amenities: ['Flexibilní design', 'Bar', 'DJ booth', 'Instagram-worthy spot', 'WiFi'],
+      contactEmail: 'hello@popupbar.cz',
+      contactPhone: '+420 608 456 789',
+      images: [
+        'https://images.unsplash.com/photo-1567281935884-3ba5af2c951d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+        'https://images.unsplash.com/photo-1551218808-94e220e084d2?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+      ],
+      status: 'draft', // Testing another draft status
+      managerId: popupManager.id,
+      expiresAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
+    },
+  })
+
   // Create a sample user
   const userPassword = await bcrypt.hash('user123', 12)
   const sampleUser = await prisma.user.upsert({
@@ -186,13 +346,76 @@ async function main() {
     },
   })
 
+  // Create sample venue inquiries for testing admin functionality
+  await prisma.venueInquiry.create({
+    data: {
+      venueId: ribsOfPrague.id,
+      userId: sampleUser.id,
+      name: 'Jana Krásná',
+      email: 'jana@company.cz',
+      phone: '+420 777 123 456',
+      eventDate: new Date('2024-12-10'),
+      guestCount: 50,
+      message: 'Zajímá nás váš prostor pro firemní vánoční večírek. Můžete poslat nabídku?'
+    }
+  })
+
+  await prisma.venueInquiry.create({
+    data: {
+      venueId: ribsOfPrague.id,
+      name: 'Petr Novotný',
+      email: 'petr.novotny@gmail.com',
+      phone: '+420 605 987 654',
+      eventDate: new Date('2024-11-25'),
+      guestCount: 80,
+      message: 'Hledáme prostor pro oslavu narozenin. Máte volno na konci listopadu?'
+    }
+  })
+
+  await prisma.venueInquiry.create({
+    data: {
+      venueId: medusaPrague.id,
+      userId: sampleUser.id,
+      name: 'Martin Svoboda',
+      email: 'martin@tech-startup.cz',
+      phone: '+420 608 555 444',
+      eventDate: new Date('2024-12-05'),
+      guestCount: 150,
+      message: 'Potřebujeme prostor pro product launch. Máte k dispozici projektory a zvuk?'
+    }
+  })
+
+  await prisma.venueInquiry.create({
+    data: {
+      venueId: uMalvaze.id,
+      name: 'Eva Horáková',
+      email: 'eva.horakova@firma.cz',
+      phone: '+420 777 333 222',
+      eventDate: new Date('2024-11-30'),
+      guestCount: 30,
+      message: 'Zajímá nás váš prostor pro malý teambuilding. Jaké máte možnosti cateringu?'
+    }
+  })
+
   console.log('Database seeded successfully!')
   console.log('Sample users created:')
   console.log('- Admin: admin@prostormat.cz / admin123')
   console.log('- Manager 1: terasa@example.com / manager123')
   console.log('- Manager 2: galerie@example.com / manager123')
   console.log('- Manager 3: skybar@example.com / manager123')
+  console.log('- Ribs Manager: manager@ribsofprague.cz / manager123')
+  console.log('- Malvaze Manager: events@umalvaze.cz / manager123')
+  console.log('- Medusa Manager: booking@medusaprague.com / manager123')
+  console.log('- Pop Up Manager: info@popupbar.cz / manager123')
   console.log('- User: user@example.com / user123')
+  console.log('')
+  console.log('Test venues created:')
+  console.log('- Ribs of Prague (active)')
+  console.log('- U Malvaze (draft)')
+  console.log('- Medusa Prague (active)')
+  console.log('- Pop Up Bar (draft)')
+  console.log('')
+  console.log('Sample inquiries created for testing admin functionality')
 }
 
 main()

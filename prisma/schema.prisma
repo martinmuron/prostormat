@@ -1,0 +1,141 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?   // for credential-based auth
+  phone         String?
+  role          String    @default("user") // user, venue_manager, admin
+  company       String?   // for event organizers
+  accounts      Account[]
+  sessions      Session[]
+  venues        Venue[]
+  eventRequests EventRequest[]
+  venueInquiries VenueInquiry[]
+  createdAt     DateTime  @default(now())
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Venue {
+  id               String   @id @default(cuid())
+  name             String
+  slug             String   @unique
+  description      String?
+  address          String
+  capacitySeated   Int?
+  capacityStanding Int?
+  priceRange       String?
+  venueType        String?
+  amenities        String[]
+  contactEmail     String?
+  contactPhone     String?
+  websiteUrl       String?
+  images           String[]
+  videoUrl         String?
+  status           String   @default("draft") // draft, active, expired
+  managerId        String
+  subscriptionId   String?  // Stripe subscription ID
+  expiresAt        DateTime?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  manager      User           @relation(fields: [managerId], references: [id])
+  inquiries    VenueInquiry[]
+  subscription Subscription?
+}
+
+model EventRequest {
+  id                  String   @id @default(cuid())
+  userId              String
+  title               String
+  description         String?
+  eventType           String   // firemni-akce, teambuilding, svatba, soukroma-akce
+  eventDate           DateTime?
+  guestCount          Int?
+  budgetRange         String?
+  locationPreference  String?  // Praha 1, Praha 2, etc.
+  requirements        String?
+  contactEmail        String   // PUBLIC - for direct contact
+  contactPhone        String?
+  contactName         String   // PUBLIC
+  status              String   @default("active") // active, closed, expired
+  expiresAt           DateTime @default(dbgenerated("NOW() + INTERVAL '30 days'"))
+  createdAt           DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model VenueInquiry {
+  id         String    @id @default(cuid())
+  venueId    String
+  userId     String?   // can be null for anonymous inquiries
+  name       String
+  email      String
+  phone      String?
+  eventDate  DateTime?
+  guestCount Int?
+  message    String?
+  createdAt  DateTime  @default(now())
+
+  venue Venue @relation(fields: [venueId], references: [id])
+  user  User? @relation(fields: [userId], references: [id])
+}
+
+model Subscription {
+  id                   String   @id @default(cuid())
+  venueId              String   @unique
+  stripeSubscriptionId String   @unique
+  stripeCustomerId     String
+  status               String   // active, canceled, past_due
+  currentPeriodEnd     DateTime
+  createdAt            DateTime @default(now())
+
+  venue Venue @relation(fields: [venueId], references: [id])
+}

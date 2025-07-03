@@ -3,8 +3,6 @@ builder = "nixpacks"
 
 [deploy]
 numReplicas = 1
-restartPolicyType = "on-failure"
-restartPolicyMaxRetries = 3
 
 [environment]
 RAILWAY_BUILDPACK_CACHE = "true"

@@ -1,25 +1,25 @@
 import Image from 'next/image'
-import { CheckCircleIcon, UserGroupIcon, BuildingOfficeIcon, SparklesIcon } from '@heroicons/react/24/outline'
+import { CheckCircle, Users, Building, Sparkles } from 'lucide-react'
 
 export default function AboutUsPage() {
   const values = [
     {
-      icon: CheckCircleIcon,
+      icon: CheckCircle,
       title: "Kvalita",
       description: "Pečlivě prověřujeme všechny prostory a zajišťujeme vysokou kvalitu služeb."
     },
     {
-      icon: UserGroupIcon,
+      icon: Users,
       title: "Komunita",
       description: "Budujeme komunitu lidí, kteří sdílejí lásku k pěkným prostorům a akcím."
     },
     {
-      icon: BuildingOfficeIcon,
+      icon: Building,
       title: "Různorodost",
       description: "Nabízíme široký výběr prostor pro každý typ akce a rozpočet."
     },
     {
-      icon: SparklesIcon,
+      icon: Sparkles,
       title: "Inovace",
       description: "Neustále vylepšujeme naše služby a technologie pro lepší uživatelský zážitek."
     }

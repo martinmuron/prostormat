@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline'
+import { ChevronDown, ChevronUp } from 'lucide-react'
 
 interface FAQItem {
   question: string
@@ -93,9 +93,9 @@ export default function FAQPage() {
                     {item.question}
                   </h3>
                   {openItems.includes(index) ? (
-                    <ChevronUpIcon className="h-5 w-5 text-gray-500 flex-shrink-0" />
+                    <ChevronUp className="h-5 w-5 text-gray-500 flex-shrink-0" />
                   ) : (
-                    <ChevronDownIcon className="h-5 w-5 text-gray-500 flex-shrink-0" />
+                    <ChevronDown className="h-5 w-5 text-gray-500 flex-shrink-0" />
                   )}
                 </button>
                 {openItems.includes(index) && (

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { EnvelopeIcon, PhoneIcon, MapPinIcon, ClockIcon } from '@heroicons/react/24/outline'
+import { Mail, Phone, MapPin, Clock } from 'lucide-react'
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -58,7 +58,7 @@ export default function ContactPage() {
                 {/* Email */}
                 <div className="flex items-start space-x-4">
                   <div className="bg-blue-100 p-3 rounded-full">
-                    <EnvelopeIcon className="h-6 w-6 text-blue-600" />
+                    <Mail className="h-6 w-6 text-blue-600" />
                   </div>
                   <div>
                     <h3 className="text-lg font-semibold text-gray-900">Email</h3>
@@ -75,7 +75,7 @@ export default function ContactPage() {
                 {/* Phone */}
                 <div className="flex items-start space-x-4">
                   <div className="bg-blue-100 p-3 rounded-full">
-                    <PhoneIcon className="h-6 w-6 text-blue-600" />
+                    <Phone className="h-6 w-6 text-blue-600" />
                   </div>
                   <div>
                     <h3 className="text-lg font-semibold text-gray-900">Telefon</h3>
@@ -92,7 +92,7 @@ export default function ContactPage() {
                 {/* Address */}
                 <div className="flex items-start space-x-4">
                   <div className="bg-blue-100 p-3 rounded-full">
-                    <MapPinIcon className="h-6 w-6 text-blue-600" />
+                    <MapPin className="h-6 w-6 text-blue-600" />
                   </div>
                   <div>
                     <h3 className="text-lg font-semibold text-gray-900">Adresa</h3>
@@ -108,7 +108,7 @@ export default function ContactPage() {
                 {/* Hours */}
                 <div className="flex items-start space-x-4">
                   <div className="bg-blue-100 p-3 rounded-full">
-                    <ClockIcon className="h-6 w-6 text-blue-600" />
+                    <Clock className="h-6 w-6 text-blue-600" />
                   </div>
                   <div>
                     <h3 className="text-lg font-semibold text-gray-900">Otevírací doba</h3>

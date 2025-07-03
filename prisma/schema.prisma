@@ -180,6 +180,7 @@ model VenueBroadcast {
   updatedAt        DateTime @updatedAt
 
   user User @relation(fields: [userId], references: [id])
+  logs VenueBroadcastLog[]
 }
 
 model VenueBroadcastLog {
@@ -189,5 +190,6 @@ model VenueBroadcastLog {
   sentAt        DateTime @default(now())
   emailStatus   String   @default("sent") // sent, delivered, failed
 
+  broadcast VenueBroadcast @relation(fields: [broadcastId], references: [id])
   venue Venue @relation(fields: [venueId], references: [id])
 }

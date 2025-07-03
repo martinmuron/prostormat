@@ -316,6 +316,21 @@ async function main() {
     },
   })
 
+  // Create test user
+  const testPassword = await bcrypt.hash('12345', 12)
+  const testUser = await prisma.user.upsert({
+    where: { email: 'test@test.com' },
+    update: {},
+    create: {
+      email: 'test@test.com',
+      name: 'Test User',
+      password: testPassword,
+      role: 'user',
+      company: 'Test Company',
+      phone: '+420 775 654 639',
+    },
+  })
+
   // Create sample event requests
   await prisma.eventRequest.create({
     data: {
@@ -678,6 +693,7 @@ async function main() {
   console.log('- Medusa Manager: booking@medusaprague.com / manager123')
   console.log('- Pop Up Manager: info@popupbar.cz / manager123')
   console.log('- User: user@example.com / user123')
+  console.log('- Test User: test@test.com / 12345')
   console.log('')
   console.log('Test venues created:')
   console.log('- Ribs of Prague (active)')

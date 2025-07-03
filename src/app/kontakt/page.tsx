@@ -1,323 +1,228 @@
-import { ScrollReveal } from "@/components/ui/scroll-reveal"
-import { AnimatedBackground, FloatingShapes } from "@/components/ui/animated-background"
-import { Mail, Phone, MapPin, Clock, MessageSquare, Users } from "lucide-react"
-import { Button } from "@/components/ui/button"
+'use client'
+
+import { useState } from 'react'
+import { EnvelopeIcon, PhoneIcon, MapPinIcon, ClockIcon } from '@heroicons/react/24/outline'
 
 export default function ContactPage() {
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    subject: '',
+    message: ''
+  })
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    // Handle form submission - will be implemented later
+    console.log('Form submitted:', formData)
+  }
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    })
+  }
+
   return (
-    <div className="min-h-screen bg-white relative overflow-hidden">
-      {/* Animated Background */}
-      <AnimatedBackground />
-      
-      {/* Hero Section */}
-      <section className="relative py-24 px-6 bg-gradient-to-br from-black via-gray-900 to-gray-800">
-        <FloatingShapes />
-        <div className="max-w-4xl mx-auto text-center relative z-20">
-          <div className="animate-slide-up">
-            <div className="w-20 h-20 bg-white rounded-2xl flex items-center justify-center mx-auto mb-8 hover-lift">
-              <MessageSquare className="w-10 h-10 text-black" />
-            </div>
-            <h1 className="text-display text-white mb-6 font-black tracking-tight drop-shadow-lg">
-              Kontaktujte nás
-            </h1>
-          </div>
-          
-          <div className="animate-slide-up" style={{ animationDelay: '0.2s' }}>
-            <p className="text-title-3 text-gray-200 mb-12 max-w-3xl mx-auto font-medium leading-relaxed">
-              Jsme tu pro vás. Máte otázky, návrhy nebo potřebujete pomoc? Neváhejte nás kontaktovat.
-            </p>
-          </div>
+    <div className="min-h-screen bg-white">
+      {/* Header */}
+      <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-16">
+        <div className="container mx-auto px-4">
+          <h1 className="text-4xl md:text-5xl font-bold text-center mb-4">
+            Kontakt
+          </h1>
+          <p className="text-xl text-center text-blue-100 max-w-2xl mx-auto">
+            Máte dotaz nebo potřebujete pomoc? Rádi vám pomůžeme!
+          </p>
         </div>
-      </section>
+      </div>
 
       {/* Contact Content */}
-      <section className="py-20 px-6 bg-white relative">
+      <div className="container mx-auto px-4 py-16">
         <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
-            
-            {/* Contact Information */}
-            <div>
-              <ScrollReveal>
-                <h2 className="text-title-2 text-black font-bold mb-8">
-                  Kontaktní informace
+          <div className="grid md:grid-cols-2 gap-12">
+            {/* Contact Info */}
+            <div className="space-y-8">
+              <div>
+                <h2 className="text-3xl font-bold text-gray-900 mb-6">
+                  Spojte se s námi
                 </h2>
-              </ScrollReveal>
-
-              <div className="space-y-8">
-                <ScrollReveal delay={100}>
-                  <div className="flex items-start gap-6 p-6 bg-gray-50 rounded-2xl hover-lift transition-all duration-300">
-                    <div className="w-12 h-12 bg-black rounded-xl flex items-center justify-center flex-shrink-0">
-                      <Mail className="w-6 h-6 text-white" />
-                    </div>
-                    <div>
-                      <h3 className="text-headline font-semibold text-black mb-2">Email</h3>
-                      <a 
-                        href="mailto:info@prostormat.cz" 
-                        className="text-body text-gray-600 hover:text-black transition-colors"
-                      >
-                        info@prostormat.cz
-                      </a>
-                      <p className="text-callout text-gray-500 mt-1">
-                        Odpovídáme do 24 hodin
-                      </p>
-                    </div>
-                  </div>
-                </ScrollReveal>
-
-                <ScrollReveal delay={200}>
-                  <div className="flex items-start gap-6 p-6 bg-gray-50 rounded-2xl hover-lift transition-all duration-300">
-                    <div className="w-12 h-12 bg-black rounded-xl flex items-center justify-center flex-shrink-0">
-                      <Phone className="w-6 h-6 text-white" />
-                    </div>
-                    <div>
-                      <h3 className="text-headline font-semibold text-black mb-2">Telefon</h3>
-                      <a 
-                        href="tel:+420775654639" 
-                        className="text-body text-gray-600 hover:text-black transition-colors"
-                      >
-                        +420 775 654 639
-                      </a>
-                      <p className="text-callout text-gray-500 mt-1">
-                        Po - Pá, 9:00 - 17:00
-                      </p>
-                    </div>
-                  </div>
-                </ScrollReveal>
-
-                <ScrollReveal delay={300}>
-                  <div className="flex items-start gap-6 p-6 bg-gray-50 rounded-2xl hover-lift transition-all duration-300">
-                    <div className="w-12 h-12 bg-black rounded-xl flex items-center justify-center flex-shrink-0">
-                      <MapPin className="w-6 h-6 text-white" />
-                    </div>
-                    <div>
-                      <h3 className="text-headline font-semibold text-black mb-2">Sídlo</h3>
-                      <p className="text-body text-gray-600">
-                        Praha, Česká republika
-                      </p>
-                      <p className="text-callout text-gray-500 mt-1">
-                        Kompletní adresa na vyžádání
-                      </p>
-                    </div>
-                  </div>
-                </ScrollReveal>
-
-                <ScrollReveal delay={400}>
-                  <div className="flex items-start gap-6 p-6 bg-gray-50 rounded-2xl hover-lift transition-all duration-300">
-                    <div className="w-12 h-12 bg-black rounded-xl flex items-center justify-center flex-shrink-0">
-                      <Clock className="w-6 h-6 text-white" />
-                    </div>
-                    <div>
-                      <h3 className="text-headline font-semibold text-black mb-2">Otevírací doba</h3>
-                      <div className="space-y-1 text-body text-gray-600">
-                        <p>Pondělí - Pátek: 9:00 - 17:00</p>
-                        <p>Sobota - Neděle: Zavřeno</p>
-                      </div>
-                      <p className="text-callout text-gray-500 mt-1">
-                        Email podporu poskytujeme 24/7
-                      </p>
-                    </div>
-                  </div>
-                </ScrollReveal>
+                <p className="text-lg text-gray-600 mb-8">
+                  Jsme zde pro vás každý pracovní den. Neváhejte nás kontaktovat 
+                  s jakýmkoli dotazem ohledně našich služeb.
+                </p>
               </div>
 
-              {/* Quick Contact Buttons */}
-              <ScrollReveal delay={500}>
-                <div className="mt-12">
-                  <h3 className="text-headline font-semibold text-black mb-6">
-                    Rychlý kontakt
-                  </h3>
-                  <div className="flex flex-col sm:flex-row gap-4">
-                    <a href="mailto:info@prostormat.cz">
-                      <Button 
-                        size="lg" 
-                        className="w-full sm:w-auto px-8 py-4 bg-black text-white hover:bg-gray-800 rounded-2xl text-headline font-semibold hover-lift transition-all duration-300"
-                      >
-                        <Mail className="w-5 h-5 mr-2" />
-                        Napsat email
-                      </Button>
-                    </a>
-                    <a href="tel:+420775654639">
-                      <Button 
-                        variant="secondary"
-                        size="lg" 
-                        className="w-full sm:w-auto px-8 py-4 border-2 border-black text-black hover:bg-black hover:text-white rounded-2xl text-headline font-semibold hover-lift transition-all duration-300"
-                      >
-                        <Phone className="w-5 h-5 mr-2" />
-                        Zavolat
-                      </Button>
+              <div className="space-y-6">
+                {/* Email */}
+                <div className="flex items-start space-x-4">
+                  <div className="bg-blue-100 p-3 rounded-full">
+                    <EnvelopeIcon className="h-6 w-6 text-blue-600" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900">Email</h3>
+                    <p className="text-gray-600">Napište nám na</p>
+                    <a 
+                      href="mailto:info@prostormat.cz"
+                      className="text-blue-600 hover:text-blue-700 font-medium"
+                    >
+                      info@prostormat.cz
                     </a>
                   </div>
                 </div>
-              </ScrollReveal>
+
+                {/* Phone */}
+                <div className="flex items-start space-x-4">
+                  <div className="bg-blue-100 p-3 rounded-full">
+                    <PhoneIcon className="h-6 w-6 text-blue-600" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900">Telefon</h3>
+                    <p className="text-gray-600">Zavolejte nám na</p>
+                    <a 
+                      href="tel:+420775654639"
+                      className="text-blue-600 hover:text-blue-700 font-medium"
+                    >
+                      +420 775 654 639
+                    </a>
+                  </div>
+                </div>
+
+                {/* Address */}
+                <div className="flex items-start space-x-4">
+                  <div className="bg-blue-100 p-3 rounded-full">
+                    <MapPinIcon className="h-6 w-6 text-blue-600" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900">Adresa</h3>
+                    <p className="text-gray-600">Navštivte nás na adrese</p>
+                    <p className="text-gray-900">
+                      Placeholder Address 123<br />
+                      110 00 Praha 1<br />
+                      Česká republika
+                    </p>
+                  </div>
+                </div>
+
+                {/* Hours */}
+                <div className="flex items-start space-x-4">
+                  <div className="bg-blue-100 p-3 rounded-full">
+                    <ClockIcon className="h-6 w-6 text-blue-600" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900">Otevírací doba</h3>
+                    <p className="text-gray-600">Jsme dostupní</p>
+                    <p className="text-gray-900">
+                      Pondělí - Pátek: 9:00 - 18:00<br />
+                      Víkendy: Pouze e-mailem
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
 
             {/* Contact Form */}
-            <div>
-              <ScrollReveal>
-                <h2 className="text-title-2 text-black font-bold mb-8">
-                  Napište nám zprávu
-                </h2>
-              </ScrollReveal>
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">
+                Napište nám zprávu
+              </h2>
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div>
+                  <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+                    Jméno a příjmení
+                  </label>
+                  <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    required
+                    className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                    placeholder="Vaše jméno"
+                  />
+                </div>
 
-              <ScrollReveal delay={100}>
-                <form className="space-y-6 bg-gray-50 p-8 rounded-2xl">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                    <div>
-                      <label htmlFor="firstName" className="block text-callout font-semibold text-black mb-2">
-                        Jméno *
-                      </label>
-                      <input
-                        type="text"
-                        id="firstName"
-                        name="firstName"
-                        required
-                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-black focus:border-transparent transition-colors text-body"
-                        placeholder="Vaše jméno"
-                      />
-                    </div>
-                    <div>
-                      <label htmlFor="lastName" className="block text-callout font-semibold text-black mb-2">
-                        Příjmení *
-                      </label>
-                      <input
-                        type="text"
-                        id="lastName"
-                        name="lastName"
-                        required
-                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-black focus:border-transparent transition-colors text-body"
-                        placeholder="Vaše příjmení"
-                      />
-                    </div>
-                  </div>
+                <div>
+                  <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                    E-mailová adresa
+                  </label>
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    required
+                    className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                    placeholder="vas@email.cz"
+                  />
+                </div>
 
-                  <div>
-                    <label htmlFor="email" className="block text-callout font-semibold text-black mb-2">
-                      Email *
-                    </label>
-                    <input
-                      type="email"
-                      id="email"
-                      name="email"
-                      required
-                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-black focus:border-transparent transition-colors text-body"
-                      placeholder="vas@email.cz"
-                    />
-                  </div>
+                <div>
+                  <label htmlFor="subject" className="block text-sm font-medium text-gray-700 mb-2">
+                    Předmět
+                  </label>
+                  <input
+                    type="text"
+                    id="subject"
+                    name="subject"
+                    value={formData.subject}
+                    onChange={handleChange}
+                    required
+                    className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                    placeholder="Předmět zprávy"
+                  />
+                </div>
 
-                  <div>
-                    <label htmlFor="phone" className="block text-callout font-semibold text-black mb-2">
-                      Telefon
-                    </label>
-                    <input
-                      type="tel"
-                      id="phone"
-                      name="phone"
-                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-black focus:border-transparent transition-colors text-body"
-                      placeholder="+420 xxx xxx xxx"
-                    />
-                  </div>
+                <div>
+                  <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-2">
+                    Zpráva
+                  </label>
+                  <textarea
+                    id="message"
+                    name="message"
+                    value={formData.message}
+                    onChange={handleChange}
+                    required
+                    rows={6}
+                    className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none"
+                    placeholder="Napište nám vaši zprávu..."
+                  />
+                </div>
 
-                  <div>
-                    <label htmlFor="subject" className="block text-callout font-semibold text-black mb-2">
-                      Předmět *
-                    </label>
-                    <select
-                      id="subject"
-                      name="subject"
-                      required
-                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-black focus:border-transparent transition-colors text-body"
-                    >
-                      <option value="">Vyberte předmět dotazu</option>
-                      <option value="general">Obecný dotaz</option>
-                      <option value="venue">Dotaz k prostoru</option>
-                      <option value="technical">Technická podpora</option>
-                      <option value="partnership">Obchodní spolupráce</option>
-                      <option value="billing">Fakturace a platby</option>
-                      <option value="other">Jiné</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label htmlFor="message" className="block text-callout font-semibold text-black mb-2">
-                      Zpráva *
-                    </label>
-                    <textarea
-                      id="message"
-                      name="message"
-                      rows={6}
-                      required
-                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-black focus:border-transparent transition-colors text-body resize-none"
-                      placeholder="Popište váš dotaz nebo požadavek..."
-                    />
-                  </div>
-
-                  <div className="pt-4">
-                    <Button 
-                      type="submit"
-                      size="lg" 
-                      className="w-full px-8 py-4 bg-black text-white hover:bg-gray-800 rounded-2xl text-headline font-semibold hover-lift transition-all duration-300"
-                    >
-                      <MessageSquare className="w-5 h-5 mr-2" />
-                      Odeslat zprávu
-                    </Button>
-                    <p className="text-caption text-gray-500 mt-3 text-center">
-                      Odpovídáme obvykle do 24 hodin
-                    </p>
-                  </div>
-                </form>
-              </ScrollReveal>
+                <button
+                  type="submit"
+                  className="w-full bg-blue-600 text-white py-3 px-6 rounded-xl font-semibold hover:bg-blue-700 transition-colors duration-200 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                >
+                  Odeslat zprávu
+                </button>
+              </form>
             </div>
           </div>
-
-          {/* FAQ Section */}
-          <ScrollReveal delay={600}>
-            <div className="mt-20 text-center">
-              <h2 className="text-title-2 text-black font-bold mb-6">
-                Často kladené otázky
-              </h2>
-              <p className="text-body text-gray-600 mb-8 max-w-2xl mx-auto">
-                Možná najdete odpověď na svou otázku v našich často kladených otázkách
-              </p>
-              <a href="/casto-kladene-otazky">
-                <Button 
-                  variant="secondary"
-                  size="lg" 
-                  className="px-8 py-4 border-2 border-black text-black hover:bg-black hover:text-white rounded-2xl text-headline font-semibold hover-lift transition-all duration-300"
-                >
-                  Zobrazit FAQ
-                </Button>
-              </a>
-            </div>
-          </ScrollReveal>
-
-          {/* Team Section */}
-          <ScrollReveal delay={700}>
-            <div className="mt-20 p-8 bg-gray-50 rounded-3xl text-center">
-              <div className="w-16 h-16 bg-black rounded-2xl flex items-center justify-center mx-auto mb-6">
-                <Users className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="text-title-3 text-black font-bold mb-4">
-                Náš tým je tu pro vás
-              </h3>
-              <p className="text-body text-gray-600 mb-6 max-w-2xl mx-auto">
-                Jsme tým profesionálů se zkušenostmi v event managementu a technologiích. 
-                Naším cílem je usnadnit vám hledání a rezervaci perfektního prostoru pro vaši akci.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <a href="/o-nas">
-                  <Button 
-                    variant="secondary"
-                    size="lg" 
-                    className="px-8 py-3 border-2 border-black text-black hover:bg-black hover:text-white rounded-2xl text-headline font-semibold hover-lift transition-all duration-300"
-                  >
-                    Více o nás
-                  </Button>
-                </a>
-              </div>
-            </div>
-          </ScrollReveal>
         </div>
-      </section>
+      </div>
+
+      {/* FAQ Section */}
+      <div className="bg-gray-50 py-16">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto text-center">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+              Často kladené otázky
+            </h2>
+            <p className="text-lg text-gray-600 mb-8">
+              Možná najdete odpověď na vaši otázku v našich FAQ
+            </p>
+            <a
+              href="/faq"
+              className="bg-blue-600 text-white px-8 py-3 rounded-full font-semibold hover:bg-blue-700 transition-colors duration-200 inline-block"
+            >
+              Zobrazit FAQ
+            </a>
+          </div>
+        </div>
+      </div>
     </div>
   )
-} 
+}

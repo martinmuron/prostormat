@@ -12,16 +12,18 @@ interface UserDashboardProps {
     user: any
     eventRequests: any[]
     inquiries: any[]
+    broadcasts: any[]
     stats: {
       activeRequests: number
       totalRequests: number
       totalInquiries: number
+      totalBroadcasts: number
     }
   }
 }
 
 export function UserDashboard({ data }: UserDashboardProps) {
-  const { user, eventRequests, inquiries, stats } = data
+  const { user, eventRequests, inquiries, broadcasts, stats } = data
 
   return (
     <div>
@@ -35,7 +37,7 @@ export function UserDashboard({ data }: UserDashboardProps) {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
         <Card>
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
@@ -71,9 +73,21 @@ export function UserDashboard({ data }: UserDashboardProps) {
             </div>
           </CardContent>
         </Card>
+
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-caption text-gray-500 mb-1">Poptávky prostorům</p>
+                <p className="text-title-2 text-black">{stats.totalBroadcasts}</p>
+              </div>
+              <Send className="h-8 w-8 text-gray-400" />
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Recent Event Requests */}
         <Card>
           <CardHeader>
@@ -173,6 +187,80 @@ export function UserDashboard({ data }: UserDashboardProps) {
             )}
           </CardContent>
         </Card>
+
+        {/* Recent Broadcasts */}
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <CardTitle>Nedávné poptávky</CardTitle>
+              <Link href="/poptavka-prostoru">
+                <Button size="sm">
+                  <Send className="h-4 w-4 mr-2" />
+                  Nová poptávka
+                </Button>
+              </Link>
+            </div>
+          </CardHeader>
+          <CardContent>
+            {broadcasts.length === 0 ? (
+              <div className="text-center py-8">
+                <Send className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                <p className="text-body text-gray-600 mb-4">
+                  Zatím jste neodeslali žádnou poptávku
+                </p>
+                <Link href="/poptavka-prostoru">
+                  <Button size="sm">Vytvořit první poptávku</Button>
+                </Link>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {broadcasts.map((broadcast: any) => {
+                  const eventTypeLabel = EVENT_TYPES[broadcast.eventType as EventType] || broadcast.eventType
+                  return (
+                    <div key={broadcast.id} className="border border-gray-200 rounded-xl p-4">
+                      <div className="flex items-start justify-between mb-2">
+                        <h4 className="text-callout font-medium text-black">{broadcast.title}</h4>
+                        <Badge variant="default" className="text-xs">
+                          {broadcast.logs.length} prostorů
+                        </Badge>
+                      </div>
+                      <p className="text-caption text-gray-600 mb-2">{eventTypeLabel}</p>
+                      <p className="text-caption text-gray-500">
+                        Odesláno {formatDate(new Date(broadcast.createdAt))}
+                      </p>
+                      {broadcast.logs.length > 0 && (
+                        <div className="mt-3 pt-3 border-t border-gray-100">
+                          <p className="text-xs text-gray-500 mb-2">Odeslané prostory:</p>
+                          <div className="flex flex-wrap gap-1">
+                            {broadcast.logs.slice(0, 3).map((log: any) => (
+                              <Link 
+                                key={log.venue.id}
+                                href={`/prostory/${log.venue.slug}`}
+                                className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded hover:bg-blue-200"
+                              >
+                                {log.venue.name}
+                              </Link>
+                            ))}
+                            {broadcast.logs.length > 3 && (
+                              <span className="text-xs text-gray-500">
+                                +{broadcast.logs.length - 3} dalších
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )
+                })}
+                <Link href="/dashboard?tab=broadcasts">
+                  <Button variant="secondary" size="sm" className="w-full">
+                    Zobrazit všechny poptávky
+                  </Button>
+                </Link>
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </div>
 
       {/* Quick Actions */}
@@ -181,17 +269,17 @@ export function UserDashboard({ data }: UserDashboardProps) {
           <CardTitle>Rychlé akce</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
             <Link href="/pozadavky/novy">
               <Button variant="secondary" className="w-full justify-start">
                 <Calendar className="h-4 w-4 mr-2" />
                 Nový požadavek na akci
               </Button>
             </Link>
-            <Link href="/rozeslat-pozadavek">
+            <Link href="/poptavka-prostoru">
               <Button variant="secondary" className="w-full justify-start">
                 <Send className="h-4 w-4 mr-2" />
-                Rozeslat prostorům
+                Poptávka prostorům
               </Button>
             </Link>
             <Link href="/prostory">

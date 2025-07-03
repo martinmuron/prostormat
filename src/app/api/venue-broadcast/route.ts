@@ -1,15 +1,14 @@
-import { NextRequest, NextResponse } from "next/server"
-import { getServerSession } from "next-auth"
-import { authOptions } from "@/lib/auth"
-import { db } from "@/lib/db"
+import { NextRequest, NextResponse } from 'next/server'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/auth'
+import { db } from '@/lib/db'
 
-// POST - Create and send venue broadcast
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
     
     if (!session?.user?.id) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const body = await request.json()
@@ -22,66 +21,46 @@ export async function POST(request: NextRequest) {
       budgetRange,
       locationPreference,
       requirements,
-      contactName,
       contactEmail,
-      contactPhone
+      contactPhone,
+      contactName
     } = body
 
     // Validate required fields
-    if (!title || !description || !eventType || !contactName || !contactEmail) {
-      return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
+    if (!title || !description || !eventType || !contactEmail || !contactName) {
+      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
 
-    // Build venue query criteria
-    const whereClause: any = {
-      status: "active", // Only active venues
-    }
-
-    // Filter by capacity if provided
-    if (guestCount) {
-      const capacity = parseInt(guestCount)
-      whereClause.OR = [
-        { capacitySeated: { gte: capacity } },
-        { capacityStanding: { gte: capacity } }
-      ]
-    }
-
-    // Filter by venue type based on event type
-    if (eventType && eventType !== "jine") {
-      const venueTypeMapping: { [key: string]: string[] } = {
-        "firemni-akce": ["konferenční sál", "multifunkční prostor", "hotel"],
-        "teambuilding": ["multifunkční prostor", "venkovní prostor", "sportovní zařízení"],
-        "svatba": ["svatební sál", "hotel", "venkovní prostor", "historický prostor"],
-        "narozeniny": ["restaurace", "bar", "multifunkční prostor"],
-        "konference": ["konferenční sál", "multifunkční prostor", "hotel"],
-        "workshop": ["školicí místnost", "multifunkční prostor", "coworking"]
-      }
-
-      const relevantTypes = venueTypeMapping[eventType]
-      if (relevantTypes) {
-        whereClause.venueType = { in: relevantTypes }
-      }
-    }
-
-    // Filter by location if provided
-    if (locationPreference) {
-      whereClause.address = { contains: locationPreference.replace("praha-", "Praha ") }
-    }
-
-    // Find matching venues
+    // Find matching venues based on criteria
     const matchingVenues = await db.venue.findMany({
-      where: whereClause,
-      include: {
-        manager: {
-          select: {
-            email: true,
-            name: true
+      where: {
+        status: 'active',
+        // Add more matching criteria here based on location, capacity, etc.
+        ...(locationPreference && {
+          address: {
+            contains: locationPreference,
+            mode: 'insensitive'
           }
-        }
+        }),
+        ...(guestCount && {
+          OR: [
+            { capacitySeated: { gte: guestCount } },
+            { capacityStanding: { gte: guestCount } }
+          ]
+        })
+      },
+      select: {
+        id: true,
+        name: true,
+        contactEmail: true,
+        managerId: true
       }
     })
 
-    // Create the broadcast record
+    // Get venue IDs for the broadcast
+    const venueIds = matchingVenues.map(venue => venue.id)
+
+    // Create the broadcast
     const broadcast = await db.venueBroadcast.create({
       data: {
         userId: session.user.id,
@@ -89,14 +68,14 @@ export async function POST(request: NextRequest) {
         description,
         eventType,
         eventDate: eventDate ? new Date(eventDate) : null,
-        guestCount: guestCount ? parseInt(guestCount) : null,
+        guestCount: guestCount || null,
         budgetRange,
         locationPreference,
         requirements,
-        contactName,
         contactEmail,
         contactPhone,
-        sentVenues: matchingVenues.map(v => v.id)
+        contactName,
+        sentVenues: venueIds
       }
     })
 
@@ -107,45 +86,37 @@ export async function POST(request: NextRequest) {
           data: {
             broadcastId: broadcast.id,
             venueId: venue.id,
-            emailStatus: "sent"
+            emailStatus: 'sent'
           }
         })
       )
     )
 
-    // TODO: Here you would integrate with an email service to actually send emails
-    // For now, we'll just log the emails that would be sent
-    console.log(`Would send ${matchingVenues.length} emails for broadcast ${broadcast.id}`)
-    
-    // In a real implementation, you would:
-    // 1. Format the email template with the broadcast data
-    // 2. Send emails to each venue manager
-    // 3. Update the emailStatus in VenueBroadcastLog based on delivery status
-    
+    // TODO: Send emails to venues (implement email service later)
+    // For now, we'll just log the matching venues
+    console.log(`Broadcast created for ${matchingVenues.length} venues:`, matchingVenues.map(v => v.name))
+
     return NextResponse.json({
       success: true,
-      broadcastId: broadcast.id,
-      venuesSent: matchingVenues.length,
-      venues: matchingVenues.map(v => ({
-        id: v.id,
-        name: v.name,
-        managerEmail: v.manager.email
-      }))
+      broadcast: {
+        id: broadcast.id,
+        title: broadcast.title,
+        sentToVenues: matchingVenues.length
+      }
     })
 
   } catch (error) {
-    console.error("Error creating venue broadcast:", error)
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+    console.error('Error creating venue broadcast:', error)
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
 
-// GET - Get user's venue broadcasts
 export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
     
     if (!session?.user?.id) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const { searchParams } = new URL(request.url)
@@ -156,16 +127,23 @@ export async function GET(request: NextRequest) {
     const [broadcasts, total] = await Promise.all([
       db.venueBroadcast.findMany({
         where: { userId: session.user.id },
-        include: {
-          _count: {
-            select: {
-              sentVenues: true
-            }
-          }
-        },
         orderBy: { createdAt: "desc" },
         skip,
-        take: limit
+        take: limit,
+        include: {
+          logs: {
+            include: {
+              venue: {
+                select: {
+                  id: true,
+                  name: true,
+                  slug: true,
+                  contactEmail: true
+                }
+              }
+            }
+          }
+        }
       }),
       db.venueBroadcast.count({
         where: { userId: session.user.id }
@@ -173,10 +151,7 @@ export async function GET(request: NextRequest) {
     ])
 
     return NextResponse.json({
-      broadcasts: broadcasts.map(b => ({
-        ...b,
-        venuesCount: b.sentVenues.length
-      })),
+      broadcasts,
       pagination: {
         page,
         limit,
@@ -186,7 +161,7 @@ export async function GET(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error("Error fetching venue broadcasts:", error)
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+    console.error('Error fetching venue broadcasts:', error)
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
-} 
+}

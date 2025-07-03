@@ -1,339 +1,213 @@
-import { ScrollReveal } from "@/components/ui/scroll-reveal"
-import { AnimatedBackground, FloatingShapes } from "@/components/ui/animated-background"
-import { Users, Target, Heart, Award, Mail, Linkedin, MapPin } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import Image from "next/image"
+import Image from 'next/image'
+import { CheckCircleIcon, UserGroupIcon, BuildingOfficeIcon, SparklesIcon } from '@heroicons/react/24/outline'
 
 export default function AboutUsPage() {
+  const values = [
+    {
+      icon: CheckCircleIcon,
+      title: "Kvalita",
+      description: "Pečlivě prověřujeme všechny prostory a zajišťujeme vysokou kvalitu služeb."
+    },
+    {
+      icon: UserGroupIcon,
+      title: "Komunita",
+      description: "Budujeme komunitu lidí, kteří sdílejí lásku k pěkným prostorům a akcím."
+    },
+    {
+      icon: BuildingOfficeIcon,
+      title: "Různorodost",
+      description: "Nabízíme široký výběr prostor pro každý typ akce a rozpočet."
+    },
+    {
+      icon: SparklesIcon,
+      title: "Inovace",
+      description: "Neustále vylepšujeme naše služby a technologie pro lepší uživatelský zážitek."
+    }
+  ]
+
+  const stats = [
+    { number: "500+", label: "Prostor v databázi" },
+    { number: "1000+", label: "Spokojených klientů" },
+    { number: "50+", label: "Měst po celé ČR" },
+    { number: "24/7", label: "Podpora" }
+  ]
+
   return (
-    <div className="min-h-screen bg-white relative overflow-hidden">
-      {/* Animated Background */}
-      <AnimatedBackground />
-      
-      {/* Hero Section */}
-      <section className="relative py-24 px-6 bg-gradient-to-br from-black via-gray-900 to-gray-800">
-        <FloatingShapes />
-        <div className="max-w-4xl mx-auto text-center relative z-20">
-          <div className="animate-slide-up">
-            <div className="w-20 h-20 bg-white rounded-2xl flex items-center justify-center mx-auto mb-8 hover-lift">
-              <Users className="w-10 h-10 text-black" />
-            </div>
-            <h1 className="text-display text-white mb-6 font-black tracking-tight drop-shadow-lg">
-              O nás
-            </h1>
-          </div>
-          
-          <div className="animate-slide-up" style={{ animationDelay: '0.2s' }}>
-            <p className="text-title-3 text-gray-200 mb-12 max-w-3xl mx-auto font-medium leading-relaxed">
-              Jsme tým profesionálů, kteří věří, že každá akce si zaslouží perfektní prostor. 
-              Naším posláním je spojovat organizátory s nejlepšími prostory v Praze.
-            </p>
-          </div>
+    <div className="min-h-screen bg-white">
+      {/* Header */}
+      <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-16">
+        <div className="container mx-auto px-4">
+          <h1 className="text-4xl md:text-5xl font-bold text-center mb-4">
+            O nás
+          </h1>
+          <p className="text-xl text-center text-blue-100 max-w-2xl mx-auto">
+            Spojujeme organizátory akcí s majiteli prostor už od roku 2023
+          </p>
         </div>
-      </section>
+      </div>
 
       {/* Mission Section */}
-      <section className="py-20 px-6 bg-white relative">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-            <ScrollReveal>
-              <div className="text-center p-8 bg-gray-50 rounded-3xl hover-lift transition-all duration-300">
-                <div className="w-16 h-16 bg-black rounded-2xl flex items-center justify-center mx-auto mb-6">
-                  <Target className="w-8 h-8 text-white" />
-                </div>
-                <h3 className="text-title-3 font-bold text-black mb-4">Naše mise</h3>
-                <p className="text-body text-gray-600 leading-relaxed">
-                  Usnadnit organizátorům akcí hledání perfektního prostoru a majitelům prostorů 
-                  pomoci najít správné klienty. Bez provizí, transparentně a efektivně.
-                </p>
-              </div>
-            </ScrollReveal>
-
-            <ScrollReveal delay={100}>
-              <div className="text-center p-8 bg-gray-50 rounded-3xl hover-lift transition-all duration-300">
-                <div className="w-16 h-16 bg-black rounded-2xl flex items-center justify-center mx-auto mb-6">
-                  <Heart className="w-8 h-8 text-white" />
-                </div>
-                <h3 className="text-title-3 font-bold text-black mb-4">Naše hodnoty</h3>
-                <p className="text-body text-gray-600 leading-relaxed">
-                  Věříme v transparentnost, kvalitu a osobní přístup. Každý klient je pro nás 
-                  důležitý a snažíme se mu poskytnout nejlepší možný servis.
-                </p>
-              </div>
-            </ScrollReveal>
-
-            <ScrollReveal delay={200}>
-              <div className="text-center p-8 bg-gray-50 rounded-3xl hover-lift transition-all duration-300">
-                <div className="w-16 h-16 bg-black rounded-2xl flex items-center justify-center mx-auto mb-6">
-                  <Award className="w-8 h-8 text-white" />
-                </div>
-                <h3 className="text-title-3 font-bold text-black mb-4">Naše vize</h3>
-                <p className="text-body text-gray-600 leading-relaxed">
-                  Stát se největší a nejdůvěryhodnější platformou pro event prostory v České republice 
-                  a expandovat do dalších evropských měst.
-                </p>
-              </div>
-            </ScrollReveal>
-          </div>
-        </div>
-      </section>
-
-      {/* Story Section */}
-      <section className="py-20 px-6 bg-gray-50 relative">
+      <div className="container mx-auto px-4 py-16">
         <div className="max-w-4xl mx-auto">
-          <ScrollReveal>
-            <div className="text-center mb-16">
-              <h2 className="text-title-1 text-black mb-6 font-bold">
-                Náš příběh
-              </h2>
-              <p className="text-body text-gray-600 max-w-3xl mx-auto text-lg font-medium leading-relaxed">
-                Prostormat vznikl z osobní potřeby našich zakladatelů najít perfektní prostor 
-                pro firemní akci, což se ukázalo být neočekávaně složité.
-              </p>
-            </div>
-          </ScrollReveal>
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+              Naše mise
+            </h2>
+            <p className="text-xl text-gray-600">
+              Zjednodušujeme hledání a rezervaci prostor pro vaše akce
+            </p>
+          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-            <ScrollReveal delay={100}>
-              <div>
-                <h3 className="text-title-2 font-bold text-black mb-6">
-                  Jak to všechno začalo
-                </h3>
-                <div className="space-y-4 text-body text-gray-700 leading-relaxed">
-                  <p>
-                    V roce 2023 jsme hledali prostor pro významnou firemní akci v Praze. 
-                    Po týdnech neúspěšného hledání přes různé kanály jsme si uvědomili, 
-                    že chybí centrální místo, kde by se organizátoři mohli jednoduše 
-                    spojit s majiteli prostorů.
-                  </p>
-                  <p>
-                    Rozhodli jsme se tento problém vyřešit nejen pro sebe, ale pro všechny 
-                    organizátory akcí v Praze. Vznikla tak myšlenka Prostormatu - platformy, 
-                    která by spojovala dva světy bez zbytečných komplikací.
-                  </p>
-                  <p>
-                    Dnes jsme pyšní na to, že pomáháme stovkám organizátorů najít své 
-                    ideální prostory a desítkám majitelů prostorů získávat nové klienty.
-                  </p>
-                </div>
-              </div>
-            </ScrollReveal>
-
-            <ScrollReveal delay={200}>
-              <div className="bg-white p-8 rounded-3xl shadow-lg">
-                <div className="text-center">
-                  <div className="text-4xl font-bold text-black mb-2">2023</div>
-                  <div className="text-callout text-gray-600 mb-6">Rok založení</div>
-                </div>
-                <div className="grid grid-cols-2 gap-6 text-center">
-                  <div>
-                    <div className="text-2xl font-bold text-black">50+</div>
-                    <div className="text-callout text-gray-600">Prostorů</div>
-                  </div>
-                  <div>
-                    <div className="text-2xl font-bold text-black">200+</div>
-                    <div className="text-callout text-gray-600">Akcí</div>
-                  </div>
-                  <div>
-                    <div className="text-2xl font-bold text-black">500+</div>
-                    <div className="text-callout text-gray-600">Uživatelů</div>
-                  </div>
-                  <div>
-                    <div className="text-2xl font-bold text-black">0%</div>
-                    <div className="text-callout text-gray-600">Provize</div>
-                  </div>
-                </div>
-              </div>
-            </ScrollReveal>
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 mb-16">
+            <p className="text-lg text-gray-700 leading-relaxed mb-6">
+              ProstorMat vznikl z potřeby zjednodušit proces hledání a rezervace prostor pro různé typy akcí. 
+              Uvědomili jsme si, jak náročné může být najít ten správný prostor pro firemní akci, svatbu, 
+              teambuilding nebo soukromou oslavu.
+            </p>
+            <p className="text-lg text-gray-700 leading-relaxed mb-6">
+              Naší vizí je vytvořit největší a nejkvalitnější databázi prostor v České republice, 
+              kde se organizátoři akcí setkají s majiteli prostor v přátelském a profesionálním prostředí.
+            </p>
+            <p className="text-lg text-gray-700 leading-relaxed">
+              Věříme, že každá akce si zaslouží perfektní prostor, a my jsme zde, 
+              abychom vám pomohli ho najít.
+            </p>
           </div>
         </div>
-      </section>
+      </div>
 
-      {/* Team Section */}
-      <section className="py-20 px-6 bg-white relative">
-        <div className="max-w-6xl mx-auto">
-          <ScrollReveal>
-            <div className="text-center mb-16">
-              <h2 className="text-title-1 text-black mb-6 font-bold">
-                Náš tým
-              </h2>
-              <p className="text-body text-gray-600 max-w-3xl mx-auto text-lg font-medium leading-relaxed">
-                Jsme skupina profesionálů s bohatými zkušenostmi v technologiích, 
-                event managementu a podnikání.
-              </p>
+      {/* Stats Section */}
+      <div className="bg-gray-50 py-16">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto">
+            <h2 className="text-3xl font-bold text-gray-900 text-center mb-12">
+              ProstorMat v číslech
+            </h2>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+              {stats.map((stat, index) => (
+                <div key={index} className="text-center">
+                  <div className="text-4xl font-bold text-blue-600 mb-2">
+                    {stat.number}
+                  </div>
+                  <div className="text-gray-600">
+                    {stat.label}
+                  </div>
+                </div>
+              ))}
             </div>
-          </ScrollReveal>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
-            <ScrollReveal delay={100}>
-              <div className="text-center group">
-                <div className="relative mb-6 mx-auto w-48 h-48 overflow-hidden rounded-3xl hover-lift transition-all duration-300 group-hover:scale-105">
-                  <div className="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center">
-                    <Users className="w-16 h-16 text-gray-500" />
-                  </div>
-                  <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
-                </div>
-                <h3 className="text-title-3 font-bold text-black mb-2">Martin Novák</h3>
-                <p className="text-callout text-gray-600 mb-4">Zakladatel & CEO</p>
-                <p className="text-body text-gray-600 mb-6 leading-relaxed">
-                  10+ let zkušeností v event managementu a technologickém sektoru. 
-                  Vede strategii a rozvoj platformy.
-                </p>
-                <div className="flex justify-center gap-3">
-                  <a href="mailto:martin@prostormat.cz" className="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center hover:bg-black hover:text-white transition-colors">
-                    <Mail className="w-5 h-5" />
-                  </a>
-                  <a href="#" className="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center hover:bg-black hover:text-white transition-colors">
-                    <Linkedin className="w-5 h-5" />
-                  </a>
-                </div>
-              </div>
-            </ScrollReveal>
-
-            <ScrollReveal delay={200}>
-              <div className="text-center group">
-                <div className="relative mb-6 mx-auto w-48 h-48 overflow-hidden rounded-3xl hover-lift transition-all duration-300 group-hover:scale-105">
-                  <div className="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center">
-                    <Users className="w-16 h-16 text-gray-500" />
-                  </div>
-                  <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
-                </div>
-                <h3 className="text-title-3 font-bold text-black mb-2">Jana Svobodová</h3>
-                <p className="text-callout text-gray-600 mb-4">CTO & Spoluzakladatelka</p>
-                <p className="text-body text-gray-600 mb-6 leading-relaxed">
-                  Expertka na vývoj software a UX design. Zodpovídá za technickou stránku 
-                  platformy a uživatelský zážitek.
-                </p>
-                <div className="flex justify-center gap-3">
-                  <a href="mailto:jana@prostormat.cz" className="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center hover:bg-black hover:text-white transition-colors">
-                    <Mail className="w-5 h-5" />
-                  </a>
-                  <a href="#" className="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center hover:bg-black hover:text-white transition-colors">
-                    <Linkedin className="w-5 h-5" />
-                  </a>
-                </div>
-              </div>
-            </ScrollReveal>
-
-            <ScrollReveal delay={300}>
-              <div className="text-center group">
-                <div className="relative mb-6 mx-auto w-48 h-48 overflow-hidden rounded-3xl hover-lift transition-all duration-300 group-hover:scale-105">
-                  <div className="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center">
-                    <Users className="w-16 h-16 text-gray-500" />
-                  </div>
-                  <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
-                </div>
-                <h3 className="text-title-3 font-bold text-black mb-2">Tomáš Dvořák</h3>
-                <p className="text-callout text-gray-600 mb-4">Head of Sales</p>
-                <p className="text-body text-gray-600 mb-6 leading-relaxed">
-                  Specialista na business development a partnerství. Stará se o vztahy 
-                  s majiteli prostorů a rozvoj obchodních aktivit.
-                </p>
-                <div className="flex justify-center gap-3">
-                  <a href="mailto:tomas@prostormat.cz" className="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center hover:bg-black hover:text-white transition-colors">
-                    <Mail className="w-5 h-5" />
-                  </a>
-                  <a href="#" className="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center hover:bg-black hover:text-white transition-colors">
-                    <Linkedin className="w-5 h-5" />
-                  </a>
-                </div>
-              </div>
-            </ScrollReveal>
           </div>
         </div>
-      </section>
+      </div>
 
       {/* Values Section */}
-      <section className="py-20 px-6 bg-gray-50 relative">
-        <div className="max-w-4xl mx-auto">
-          <ScrollReveal>
-            <div className="text-center mb-16">
-              <h2 className="text-title-1 text-black mb-6 font-bold">
-                Proč nás vybrat
-              </h2>
-              <p className="text-body text-gray-600 max-w-3xl mx-auto text-lg font-medium leading-relaxed">
-                Naše hodnoty a přístup nás odlišují od konkurence
-              </p>
-            </div>
-          </ScrollReveal>
+      <div className="container mx-auto px-4 py-16">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+              Naše hodnoty
+            </h2>
+            <p className="text-xl text-gray-600">
+              Principy, kterými se řídíme při budování ProstorMat
+            </p>
+          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <ScrollReveal delay={100}>
-              <div className="bg-white p-8 rounded-3xl shadow-lg">
-                <h3 className="text-title-3 font-bold text-black mb-4">Žádné provize</h3>
-                <p className="text-body text-gray-600 leading-relaxed">
-                  Na rozdíl od ostatních platforem neúčtujeme provize z rezervací. 
-                  Majitelé prostorů platí pouze roční předplatné, organizátoři nic.
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {values.map((value, index) => (
+              <div key={index} className="text-center">
+                <div className="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <value.icon className="h-8 w-8 text-blue-600" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-3">
+                  {value.title}
+                </h3>
+                <p className="text-gray-600 leading-relaxed">
+                  {value.description}
                 </p>
               </div>
-            </ScrollReveal>
-
-            <ScrollReveal delay={200}>
-              <div className="bg-white p-8 rounded-3xl shadow-lg">
-                <h3 className="text-title-3 font-bold text-black mb-4">Osobní přístup</h3>
-                <p className="text-body text-gray-600 leading-relaxed">
-                  Každému klientovi věnujeme osobní pozornost. Nejsme jen další tech platforma, 
-                  ale partner, který vám pomůže najít to pravé.
-                </p>
-              </div>
-            </ScrollReveal>
-
-            <ScrollReveal delay={300}>
-              <div className="bg-white p-8 rounded-3xl shadow-lg">
-                <h3 className="text-title-3 font-bold text-black mb-4">Lokální znalosti</h3>
-                <p className="text-body text-gray-600 leading-relaxed">
-                  Známe pražskou event scénu jako nikdo jiný. Každý prostor osobně navštěvujeme 
-                  a ověřujeme kvalitu před zařazením do katalogu.
-                </p>
-              </div>
-            </ScrollReveal>
-
-            <ScrollReveal delay={400}>
-              <div className="bg-white p-8 rounded-3xl shadow-lg">
-                <h3 className="text-title-3 font-bold text-black mb-4">Rychlá komunikace</h3>
-                <p className="text-body text-gray-600 leading-relaxed">
-                  Odpovídáme na dotazy do 24 hodin a aktivně pomáháme s řešením problémů. 
-                  Náš tým je vždycky připraven pomoci.
-                </p>
-              </div>
-            </ScrollReveal>
+            ))}
           </div>
         </div>
-      </section>
+      </div>
 
-      {/* CTA Section */}
-      <section className="py-20 px-6 bg-white relative">
-        <div className="max-w-4xl mx-auto text-center">
-          <ScrollReveal>
-            <h2 className="text-title-1 text-black mb-6 font-bold">
-              Chcete se k nám připojit?
-            </h2>
-            <p className="text-body text-gray-600 mb-12 max-w-2xl mx-auto text-lg font-medium leading-relaxed">
-              Hledáme talentované lidi, kteří chtějí změnit způsob, jakým se organizují akce v Praze.
-            </p>
-            
-            <div className="flex flex-col sm:flex-row gap-6 justify-center">
-              <a href="/kontakt">
-                <Button 
-                  size="lg" 
-                  className="px-12 py-4 bg-black text-white hover:bg-gray-800 rounded-2xl text-headline font-semibold hover-lift transition-all duration-300"
-                >
-                  Kontaktujte nás
-                </Button>
-              </a>
-              <a href="/prostory">
-                <Button 
-                  variant="secondary"
-                  size="lg" 
-                  className="px-12 py-4 border-2 border-black text-black hover:bg-black hover:text-white rounded-2xl text-headline font-semibold hover-lift transition-all duration-300"
-                >
-                  Prohlédnout prostory
-                </Button>
-              </a>
+      {/* Team Section */}
+      <div className="bg-gray-50 py-16">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold text-gray-900 mb-4">
+                Náš tým
+              </h2>
+              <p className="text-xl text-gray-600">
+                Lidé, kteří stojí za ProstorMat
+              </p>
             </div>
-          </ScrollReveal>
+
+            <div className="grid md:grid-cols-2 gap-8">
+              {/* Founder */}
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 text-center">
+                <div className="w-32 h-32 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 mx-auto mb-6 flex items-center justify-center">
+                  <span className="text-white text-4xl font-bold">JN</span>
+                </div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                  Jan Novák
+                </h3>
+                <p className="text-blue-600 font-semibold mb-4">
+                  Zakladatel & CEO
+                </p>
+                <p className="text-gray-600 leading-relaxed">
+                  Jan má více než 10 let zkušeností v oblasti event managementu 
+                  a technologických startupů. Rozhodl se vytvořit ProstorMat poté, 
+                  co sám zažil frustraci z hledání vhodných prostor pro firemní akce.
+                </p>
+              </div>
+
+              {/* Co-founder */}
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 text-center">
+                <div className="w-32 h-32 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 mx-auto mb-6 flex items-center justify-center">
+                  <span className="text-white text-4xl font-bold">MK</span>
+                </div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                  Marie Krásná
+                </h3>
+                <p className="text-blue-600 font-semibold mb-4">
+                  Spoluzakladatelka & CTO
+                </p>
+                <p className="text-gray-600 leading-relaxed">
+                  Marie je zkušená vývojářka s láskou k čistému kódu a uživatelskému 
+                  zážitku. Zodpovídá za technickou stránku ProstorMat a neustále 
+                  vylepšuje platformu pro naše uživatele.
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
-      </section>
+      </div>
+
+      {/* Contact CTA */}
+      <div className="container mx-auto px-4 py-16">
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-3xl font-bold text-gray-900 mb-4">
+            Chcete se dozvědět více?
+          </h2>
+          <p className="text-xl text-gray-600 mb-8">
+            Neváhejte nás kontaktovat s jakýmkoli dotazem nebo návrhem
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <a
+              href="/kontakt"
+              className="bg-blue-600 text-white px-8 py-3 rounded-full font-semibold hover:bg-blue-700 transition-colors duration-200"
+            >
+              Kontaktovat nás
+            </a>
+            <a
+              href="mailto:info@prostormat.cz"
+              className="bg-white text-blue-600 px-8 py-3 rounded-full font-semibold border-2 border-blue-600 hover:bg-blue-50 transition-colors duration-200"
+            >
+              Napsat e-mail
+            </a>
+          </div>
+        </div>
+      </div>
     </div>
   )
-} 
+}

@@ -70,7 +70,7 @@ async function getDashboardData(userId: string, userRole: string) {
     }
 
     // Regular user
-    const [eventRequests, inquiries] = await Promise.all([
+    const [eventRequests, inquiries, broadcasts] = await Promise.all([
       db.eventRequest.findMany({
         where: { userId },
         orderBy: { createdAt: "desc" },
@@ -88,6 +88,25 @@ async function getDashboardData(userId: string, userRole: string) {
         },
         orderBy: { createdAt: "desc" },
         take: 5,
+      }),
+      db.venueBroadcast.findMany({
+        where: { userId },
+        include: {
+          logs: {
+            include: {
+              venue: {
+                select: {
+                  id: true,
+                  name: true,
+                  slug: true,
+                  contactEmail: true
+                }
+              }
+            }
+          }
+        },
+        orderBy: { createdAt: "desc" },
+        take: 5,
       })
     ])
 
@@ -95,10 +114,12 @@ async function getDashboardData(userId: string, userRole: string) {
       ...baseData,
       eventRequests,
       inquiries,
+      broadcasts,
       stats: {
         activeRequests: eventRequests.filter(r => r.status === "active").length,
         totalRequests: eventRequests.length,
         totalInquiries: inquiries.length,
+        totalBroadcasts: broadcasts.length,
       }
     }
   } catch (error) {

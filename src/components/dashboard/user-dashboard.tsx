@@ -135,7 +135,7 @@ export function UserDashboard({ data }: UserDashboardProps) {
                   )
                 })}
                 <Link href="/dashboard/requests">
-                  <Button variant="outline" size="sm" className="w-full text-gray-700 border-gray-300 hover:bg-gray-50">
+                  <Button variant="secondary" size="sm" className="w-full text-gray-700 border-gray-300 hover:bg-gray-50">
                     Zobrazit všechny požadavky
                   </Button>
                 </Link>
@@ -209,7 +209,7 @@ export function UserDashboard({ data }: UserDashboardProps) {
                   )
                 })}
                 <Link href="/dashboard?tab=broadcasts">
-                  <Button variant="outline" size="sm" className="w-full text-gray-700 border-gray-300 hover:bg-gray-50">
+                  <Button variant="secondary" size="sm" className="w-full text-gray-700 border-gray-300 hover:bg-gray-50">
                     Zobrazit všechny poptávky
                   </Button>
                 </Link>

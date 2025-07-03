@@ -181,7 +181,7 @@ export function VenueManagerDashboard({ data }: VenueManagerDashboardProps) {
                     </div>
                     <div className="flex gap-2">
                       <Link href={`/prostory/${venue.slug}`}>
-                        <Button variant="outline" size="sm" className="text-gray-700 border-gray-300 hover:bg-gray-50">
+                        <Button variant="secondary" size="sm" className="text-gray-700 border-gray-300 hover:bg-gray-50">
                           <Eye className="h-3 w-3 mr-1" />
                           Zobrazit
                         </Button>
@@ -197,7 +197,7 @@ export function VenueManagerDashboard({ data }: VenueManagerDashboardProps) {
                 ))}
                 {venues.length > 3 && (
                   <Link href="/dashboard/venues">
-                    <Button variant="outline" size="sm" className="w-full text-gray-700 border-gray-300 hover:bg-gray-50">
+                    <Button variant="secondary" size="sm" className="w-full text-gray-700 border-gray-300 hover:bg-gray-50">
                       Zobrazit všechny prostory ({venues.length})
                     </Button>
                   </Link>
@@ -259,7 +259,7 @@ export function VenueManagerDashboard({ data }: VenueManagerDashboardProps) {
                     </div>
                   ))}
                 <Link href="/dashboard/inquiries">
-                  <Button variant="outline" size="sm" className="w-full text-gray-700 border-gray-300 hover:bg-gray-50">
+                  <Button variant="secondary" size="sm" className="w-full text-gray-700 border-gray-300 hover:bg-gray-50">
                     Zobrazit všechny dotazy
                   </Button>
                 </Link>
@@ -305,7 +305,7 @@ export function VenueManagerDashboard({ data }: VenueManagerDashboardProps) {
                 </Button>
               </Link>
               <Link href="/dashboard/settings">
-                <Button variant="outline" className="w-full text-gray-700 border-gray-300 hover:bg-gray-50">
+                <Button variant="secondary" className="w-full text-gray-700 border-gray-300 hover:bg-gray-50">
                   <Users className="h-4 w-4 mr-2" />
                   Nastavení účtu
                 </Button>
@@ -323,25 +323,25 @@ export function VenueManagerDashboard({ data }: VenueManagerDashboardProps) {
         <CardContent>
           <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
             <Link href="/pridat-prostor">
-              <Button variant="outline" className="w-full justify-start text-gray-700 border-gray-300 hover:bg-gray-50 h-12">
+              <Button variant="secondary" className="w-full justify-start text-gray-700 border-gray-300 hover:bg-gray-50 h-12">
                 <Plus className="h-4 w-4 mr-2" />
                 Přidat nový prostor
               </Button>
             </Link>
             <Link href="/pozadavky">
-              <Button variant="outline" className="w-full justify-start text-gray-700 border-gray-300 hover:bg-gray-50 h-12">
+              <Button variant="secondary" className="w-full justify-start text-gray-700 border-gray-300 hover:bg-gray-50 h-12">
                 <Calendar className="h-4 w-4 mr-2" />
                 Požadavky na akce
               </Button>
             </Link>
             <Link href="/dashboard/analytics">
-              <Button variant="outline" className="w-full justify-start text-gray-700 border-gray-300 hover:bg-gray-50 h-12">
+              <Button variant="secondary" className="w-full justify-start text-gray-700 border-gray-300 hover:bg-gray-50 h-12">
                 <TrendingUp className="h-4 w-4 mr-2" />
                 Statistiky
               </Button>
             </Link>
             <Link href="/dashboard/subscription">
-              <Button variant="outline" className="w-full justify-start text-gray-700 border-gray-300 hover:bg-gray-50 h-12">
+              <Button variant="secondary" className="w-full justify-start text-gray-700 border-gray-300 hover:bg-gray-50 h-12">
                 <CreditCard className="h-4 w-4 mr-2" />
                 Fakturace
               </Button>

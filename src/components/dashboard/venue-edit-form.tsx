@@ -323,7 +323,7 @@ export function VenueEditForm({ venue }: VenueEditFormProps) {
                   </Button>
                   <Button 
                     type="button" 
-                    variant="outline"
+                    variant="secondary"
                     onClick={() => router.push("/dashboard")}
                     className="text-gray-700 border-gray-300 hover:bg-gray-50"
                   >
@@ -393,7 +393,7 @@ export function VenueEditForm({ venue }: VenueEditFormProps) {
             <CardContent>
               <div className="space-y-3">
                 <Button 
-                  variant="outline" 
+                  variant="secondary" 
                   className="w-full justify-start text-gray-700 border-gray-300 hover:bg-gray-50"
                   onClick={() => window.open(`/prostory/${venue.slug}`, '_blank')}
                 >
@@ -401,7 +401,7 @@ export function VenueEditForm({ venue }: VenueEditFormProps) {
                   Zobrazit prostor
                 </Button>
                 <Button 
-                  variant="outline" 
+                  variant="secondary" 
                   className="w-full justify-start text-gray-700 border-gray-300 hover:bg-gray-50"
                   onClick={() => router.push("/dashboard/inquiries")}
                 >
@@ -409,7 +409,7 @@ export function VenueEditForm({ venue }: VenueEditFormProps) {
                   Všechny dotazy
                 </Button>
                 <Button 
-                  variant="outline" 
+                  variant="secondary" 
                   className="w-full justify-start text-gray-700 border-gray-300 hover:bg-gray-50"
                   onClick={() => router.push("/dashboard")}
                 >

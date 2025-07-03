@@ -369,6 +369,21 @@ export function UserDashboard({ data }: UserDashboardProps) {
     </Card>
   )
 
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case 'overview':
+        return renderOverview()
+      case 'requests':
+        return renderRequests()
+      case 'broadcasts':
+        return renderBroadcasts()
+      case 'favorites':
+        return renderFavorites()
+      default:
+        return renderOverview()
+    }
+  }
+
   const renderFavorites = () => (
     <Card className="bg-white">
       <CardHeader>

@@ -5,9 +5,14 @@ const prisma = new PrismaClient()
 
 async function main() {
   try {
-    // Only run in production environment
-    if (process.env.NODE_ENV !== 'production') {
-      console.log('Skipping safe seed - not in production environment')
+    console.log('Starting safe seed process...')
+    console.log('NODE_ENV:', process.env.NODE_ENV)
+    console.log('RAILWAY_ENVIRONMENT:', process.env.RAILWAY_ENVIRONMENT)
+    console.log('DATABASE_URL exists:', !!process.env.DATABASE_URL)
+    
+    // Run in production environment or Railway deployment
+    if (process.env.NODE_ENV !== 'production' && !process.env.RAILWAY_ENVIRONMENT) {
+      console.log('Skipping safe seed - not in production or Railway environment')
       return
     }
 

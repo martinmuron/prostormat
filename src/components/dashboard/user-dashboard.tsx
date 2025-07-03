@@ -87,14 +87,14 @@ export function UserDashboard({ data }: UserDashboardProps) {
         </Card>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Recent Event Requests */}
-        <Card>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* Moje poptávky */}
+        <Card className="bg-white">
           <CardHeader>
             <div className="flex items-center justify-between">
-              <CardTitle>Nedávné požadavky</CardTitle>
+              <CardTitle className="text-gray-900">Moje poptávky</CardTitle>
               <Link href="/pozadavky/novy">
-                <Button size="sm">
+                <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white">
                   <Plus className="h-4 w-4 mr-2" />
                   Nový požadavek
                 </Button>
@@ -109,7 +109,7 @@ export function UserDashboard({ data }: UserDashboardProps) {
                   Zatím jste nevytvořili žádné požadavky
                 </p>
                 <Link href="/pozadavky/novy">
-                  <Button size="sm">Vytvořit první požadavek</Button>
+                  <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white">Vytvořit první požadavek</Button>
                 </Link>
               </div>
             ) : (
@@ -135,7 +135,7 @@ export function UserDashboard({ data }: UserDashboardProps) {
                   )
                 })}
                 <Link href="/dashboard/requests">
-                  <Button variant="secondary" size="sm" className="w-full">
+                  <Button variant="outline" size="sm" className="w-full text-gray-700 border-gray-300 hover:bg-gray-50">
                     Zobrazit všechny požadavky
                   </Button>
                 </Link>
@@ -144,57 +144,13 @@ export function UserDashboard({ data }: UserDashboardProps) {
           </CardContent>
         </Card>
 
-        {/* Recent Inquiries */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Nedávné dotazy</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {inquiries.length === 0 ? (
-              <div className="text-center py-8">
-                <MessageSquare className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <p className="text-body text-gray-600 mb-4">
-                  Zatím jste neodeslali žádné dotazy
-                </p>
-                <Link href="/prostory">
-                  <Button size="sm">Prohlédnout prostory</Button>
-                </Link>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {inquiries.map((inquiry: any) => (
-                  <div key={inquiry.id} className="border border-gray-200 rounded-xl p-4">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Building className="h-4 w-4 text-gray-500" />
-                      <Link 
-                        href={`/prostory/${inquiry.venue.slug}`}
-                        className="text-callout font-medium text-black hover:text-gray-700"
-                      >
-                        {inquiry.venue.name}
-                      </Link>
-                    </div>
-                    <p className="text-caption text-gray-500">
-                      Odesláno {formatDate(new Date(inquiry.createdAt))}
-                    </p>
-                  </div>
-                ))}
-                <Link href="/dashboard/inquiries">
-                  <Button variant="secondary" size="sm" className="w-full">
-                    Zobrazit všechny dotazy
-                  </Button>
-                </Link>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Recent Broadcasts */}
-        <Card>
+        {/* Moje odeslané poptávky */}
+        <Card className="bg-white">
           <CardHeader>
             <div className="flex items-center justify-between">
-              <CardTitle>Nedávné poptávky</CardTitle>
+              <CardTitle className="text-gray-900">Moje odeslané poptávky</CardTitle>
               <Link href="/poptavka-prostoru">
-                <Button size="sm">
+                <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white">
                   <Send className="h-4 w-4 mr-2" />
                   Nová poptávka
                 </Button>
@@ -209,7 +165,7 @@ export function UserDashboard({ data }: UserDashboardProps) {
                   Zatím jste neodeslali žádnou poptávku
                 </p>
                 <Link href="/poptavka-prostoru">
-                  <Button size="sm">Vytvořit první poptávku</Button>
+                  <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white">Vytvořit první poptávku</Button>
                 </Link>
               </div>
             ) : (
@@ -220,7 +176,7 @@ export function UserDashboard({ data }: UserDashboardProps) {
                     <div key={broadcast.id} className="border border-gray-200 rounded-xl p-4">
                       <div className="flex items-start justify-between mb-2">
                         <h4 className="text-callout font-medium text-black">{broadcast.title}</h4>
-                        <Badge variant="default" className="text-xs">
+                        <Badge variant="default" className="text-xs bg-green-100 text-green-800">
                           {broadcast.logs.length} prostorů
                         </Badge>
                       </div>
@@ -253,7 +209,7 @@ export function UserDashboard({ data }: UserDashboardProps) {
                   )
                 })}
                 <Link href="/dashboard?tab=broadcasts">
-                  <Button variant="secondary" size="sm" className="w-full">
+                  <Button variant="outline" size="sm" className="w-full text-gray-700 border-gray-300 hover:bg-gray-50">
                     Zobrazit všechny poptávky
                   </Button>
                 </Link>
@@ -261,37 +217,24 @@ export function UserDashboard({ data }: UserDashboardProps) {
             )}
           </CardContent>
         </Card>
+
       </div>
 
-      {/* Quick Actions */}
-      <Card className="mt-8">
+      {/* Uložené prostory */}
+      <Card className="mt-8 bg-white">
         <CardHeader>
-          <CardTitle>Rychlé akce</CardTitle>
+          <CardTitle className="text-gray-900">Uložené prostory</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-            <Link href="/pozadavky/novy">
-              <Button variant="secondary" className="w-full justify-start">
-                <Calendar className="h-4 w-4 mr-2" />
-                Nový požadavek na akci
-              </Button>
-            </Link>
-            <Link href="/poptavka-prostoru">
-              <Button variant="secondary" className="w-full justify-start">
-                <Send className="h-4 w-4 mr-2" />
-                Poptávka prostorům
-              </Button>
-            </Link>
+          <div className="text-center py-8">
+            <Building className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+            <p className="text-body text-gray-600 mb-4">
+              Zatím nemáte žádné uložené prostory
+            </p>
             <Link href="/prostory">
-              <Button variant="secondary" className="w-full justify-start">
+              <Button size="sm" className="bg-purple-600 hover:bg-purple-700 text-white">
                 <Building className="h-4 w-4 mr-2" />
                 Prohlédnout prostory
-              </Button>
-            </Link>
-            <Link href="/pozadavky">
-              <Button variant="secondary" className="w-full justify-start">
-                <MessageSquare className="h-4 w-4 mr-2" />
-                Požadavky ostatních
               </Button>
             </Link>
           </div>

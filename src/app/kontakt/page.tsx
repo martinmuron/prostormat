@@ -27,7 +27,7 @@ export default function ContactPage() {
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
-      <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-16">
+      <div className="bg-blue-600 text-white py-16">
         <div className="container mx-auto px-4">
           <h1 className="text-4xl md:text-5xl font-bold text-center mb-4">
             Kontakt
@@ -57,7 +57,7 @@ export default function ContactPage() {
               <div className="space-y-6">
                 {/* Email */}
                 <div className="flex items-start space-x-4">
-                  <div className="bg-blue-100 p-3 rounded-full">
+                  <div className="bg-gray-100 p-3 rounded-full">
                     <Mail className="h-6 w-6 text-blue-600" />
                   </div>
                   <div>
@@ -74,7 +74,7 @@ export default function ContactPage() {
 
                 {/* Phone */}
                 <div className="flex items-start space-x-4">
-                  <div className="bg-blue-100 p-3 rounded-full">
+                  <div className="bg-gray-100 p-3 rounded-full">
                     <Phone className="h-6 w-6 text-blue-600" />
                   </div>
                   <div>
@@ -91,7 +91,7 @@ export default function ContactPage() {
 
                 {/* Address */}
                 <div className="flex items-start space-x-4">
-                  <div className="bg-blue-100 p-3 rounded-full">
+                  <div className="bg-gray-100 p-3 rounded-full">
                     <MapPin className="h-6 w-6 text-blue-600" />
                   </div>
                   <div>
@@ -107,7 +107,7 @@ export default function ContactPage() {
 
                 {/* Hours */}
                 <div className="flex items-start space-x-4">
-                  <div className="bg-blue-100 p-3 rounded-full">
+                  <div className="bg-gray-100 p-3 rounded-full">
                     <Clock className="h-6 w-6 text-blue-600" />
                   </div>
                   <div>
@@ -123,7 +123,7 @@ export default function ContactPage() {
             </div>
 
             {/* Contact Form */}
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
               <h2 className="text-2xl font-bold text-gray-900 mb-6">
                 Napište nám zprávu
               </h2>

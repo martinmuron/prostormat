@@ -83,7 +83,7 @@ export default function HomePage() {
       <AnimatedBackground />
       
       {/* Hero Section */}
-      <section className="relative py-32 px-6 bg-gradient-to-br from-black via-gray-900 to-gray-800">
+      <section className="relative py-32 px-6 bg-gradient-to-br from-blue-900 via-blue-800 to-black">
         <FloatingShapes />
         <div className="max-w-4xl mx-auto text-center relative z-20">
           <div className="animate-slide-up">
@@ -141,7 +141,7 @@ export default function HomePage() {
                 <Button 
                   variant="secondary" 
                   size="lg" 
-                  className="magnetic-button hover-lift rounded-2xl px-10 py-4 text-lg font-semibold border-2 border-black hover:bg-black hover:text-white transition-all duration-300"
+                  className="magnetic-button hover-lift rounded-2xl px-10 py-4 text-lg font-semibold border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white transition-all duration-300"
                 >
                   Zobrazit všechny prostory
                 </Button>
@@ -152,10 +152,10 @@ export default function HomePage() {
       </section>
 
       {/* CTA for Venue Owners */}
-      <section className="relative py-20 px-6 bg-gradient-to-br from-black via-gray-900 to-gray-800 overflow-hidden">
+      <section className="relative py-20 px-6 bg-gradient-to-br from-blue-900 via-blue-800 to-black overflow-hidden">
         {/* Background decorative elements */}
-        <div className="absolute top-10 left-10 w-32 h-32 bg-white/10 rounded-full blur-2xl animate-float-slow" />
-        <div className="absolute bottom-10 right-10 w-40 h-40 bg-white/5 rounded-full blur-2xl animate-float-medium" />
+        <div className="absolute top-10 left-10 w-32 h-32 bg-blue-400/20 rounded-full blur-2xl animate-float-slow" />
+        <div className="absolute bottom-10 right-10 w-40 h-40 bg-blue-500/15 rounded-full blur-2xl animate-float-medium" />
         
         <div className="max-w-7xl mx-auto relative z-10">
           <ScrollReveal>

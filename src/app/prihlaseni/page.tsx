@@ -59,7 +59,7 @@ function SignInForm() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center py-8 sm:py-12 px-4 sm:px-6">
+    <div className="min-h-screen bg-white flex items-center justify-center py-8 sm:py-12 px-4 sm:px-6">
       <div className="max-w-md w-full">
         <div className="text-center mb-6 sm:mb-8">
           <div className="mb-4 sm:mb-6">

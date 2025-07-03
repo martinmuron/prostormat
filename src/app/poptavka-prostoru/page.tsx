@@ -83,9 +83,9 @@ export default function VenueBroadcastPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-white">
       {/* Header */}
-      <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-16">
+      <div className="bg-blue-600 text-white py-16">
         <div className="container mx-auto px-4">
           <h1 className="text-4xl md:text-5xl font-bold text-center mb-4">
             Poptávka prostor
@@ -99,7 +99,7 @@ export default function VenueBroadcastPage() {
       {/* Form */}
       <div className="container mx-auto px-4 py-16">
         <div className="max-w-4xl mx-auto">
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Title */}
               <div>

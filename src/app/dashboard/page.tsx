@@ -70,9 +70,9 @@ async function getDashboardData(userId: string, userRole: string) {
     }
 
     // Regular user - handle each query separately with error handling
-    let eventRequests = []
-    let inquiries = []
-    let broadcasts = []
+    let eventRequests: any[] = []
+    let inquiries: any[] = []
+    let broadcasts: any[] = []
     
     try {
       eventRequests = await db.eventRequest.findMany({

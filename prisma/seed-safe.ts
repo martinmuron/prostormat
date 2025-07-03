@@ -26,7 +26,7 @@ async function main() {
     console.log('First-time production deployment detected, seeding essential data...')
 
     // Create test user
-    const testPassword = await bcrypt.hash('12345', 12)
+    const testPassword = await bcrypt.hash('123456', 12)
     await prisma.user.create({
       data: {
         email: 'test@test.com',
@@ -50,7 +50,7 @@ async function main() {
     })
 
     console.log('✅ Production database seeded with essential users')
-    console.log('   - Test user: test@test.com / 12345')
+    console.log('   - Test user: test@test.com / 123456')
     console.log('   - Admin user: admin@prostormat.cz / admin123')
 
   } catch (error) {

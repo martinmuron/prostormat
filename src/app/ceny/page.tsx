@@ -75,8 +75,9 @@ export default function PricingPage() {
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <Link href="/pridat-prostor">
                     <Button 
+                      variant="default"
                       size="lg" 
-                      className="magnetic-button hover-lift w-full sm:w-auto px-12 py-4 text-lg font-semibold rounded-2xl shadow-lg"
+                      className="magnetic-button hover-lift w-full sm:w-auto px-12 py-4 text-lg font-semibold rounded-2xl shadow-lg bg-black text-white hover:bg-gray-800"
                     >
                       Přidat prostor
                     </Button>
@@ -207,6 +208,7 @@ export default function PricingPage() {
             <div className="flex flex-col sm:flex-row gap-6 justify-center max-w-lg mx-auto">
               <Link href="/pridat-prostor">
                 <Button 
+                  variant="secondary"
                   size="lg" 
                   className="magnetic-button hover-lift w-full sm:w-auto px-12 py-4 text-lg font-semibold rounded-2xl bg-white text-black hover:bg-gray-100 transition-all duration-300 shadow-xl"
                 >

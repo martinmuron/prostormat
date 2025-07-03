@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation"
 import { VenueGallery } from "@/components/venue/venue-gallery"
 import { VenueContactForm } from "@/components/forms/venue-contact-form"
+import { HeartButton } from "@/components/venue/heart-button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -75,9 +76,7 @@ export default async function VenueDetailPage({
                     </Badge>
                   )}
                 </div>
-                <Button variant="secondary" size="icon">
-                  <Heart className="h-5 w-5" />
-                </Button>
+                <HeartButton venueId={venue.id} />
               </div>
 
               {venue.description && (

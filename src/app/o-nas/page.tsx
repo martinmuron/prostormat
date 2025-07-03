@@ -35,12 +35,12 @@ export default function AboutUsPage() {
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
-      <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-16">
+      <div className="bg-gradient-to-r from-gray-900 via-black to-gray-800 text-white py-16">
         <div className="container mx-auto px-4">
           <h1 className="text-4xl md:text-5xl font-bold text-center mb-4">
             O nás
           </h1>
-          <p className="text-xl text-center text-blue-100 max-w-2xl mx-auto">
+          <p className="text-xl text-center text-gray-300 max-w-2xl mx-auto">
             Spojujeme organizátory akcí s majiteli prostor už od roku 2023
           </p>
         </div>

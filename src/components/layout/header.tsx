@@ -59,7 +59,7 @@ export function Header() {
                   <Button variant="ghost" size="sm">Přihlásit se</Button>
                 </Link>
                 <Link href="/registrace">
-                  <Button size="sm" className="bg-black text-white hover:bg-gray-800">Registrace</Button>
+                  <Button size="sm" className="bg-blue-600 text-white hover:bg-blue-700">Registrace</Button>
                 </Link>
               </div>
             )}
@@ -150,7 +150,7 @@ export function Header() {
                       </Button>
                     </Link>
                     <Link href="/registrace" onClick={() => setIsMobileMenuOpen(false)}>
-                      <Button size="sm" className="w-full justify-start bg-black text-white hover:bg-gray-800">
+                      <Button size="sm" className="w-full justify-start bg-blue-600 text-white hover:bg-blue-700">
                         Registrace
                       </Button>
                     </Link>

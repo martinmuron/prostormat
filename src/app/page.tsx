@@ -83,18 +83,34 @@ export default function HomePage() {
       <AnimatedBackground />
       
       {/* Hero Section */}
-      <section className="relative py-32 px-6 bg-gradient-to-br from-blue-900 via-blue-800 to-black">
-        <FloatingShapes />
+      <section className="relative py-32 px-6 bg-gradient-to-br from-gray-900 via-black to-gray-800 overflow-hidden">
+        {/* Animated geometric shapes */}
+        <div className="absolute inset-0">
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-white opacity-5 rounded-full blur-3xl animate-float-slow"></div>
+          <div className="absolute top-1/3 right-1/3 w-72 h-72 bg-white opacity-3 rounded-full blur-2xl animate-float-medium"></div>
+          <div className="absolute bottom-1/4 left-1/3 w-80 h-80 bg-white opacity-4 rounded-full blur-3xl animate-float-fast"></div>
+        </div>
+        
+        {/* Grid pattern overlay */}
+        <div className="absolute inset-0 bg-gradient-to-br from-transparent via-white/5 to-transparent"></div>
+        <div className="absolute inset-0" style={{
+          backgroundImage: `
+            linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px)
+          `,
+          backgroundSize: '50px 50px'
+        }}></div>
+        
         <div className="max-w-4xl mx-auto text-center relative z-20">
           <div className="animate-slide-up">
-            <h1 className="text-display text-white mb-6 font-black tracking-tight drop-shadow-lg">
+            <h1 className="text-display text-white mb-6 font-black tracking-tight drop-shadow-2xl">
               Najděte perfektní prostor<br />
               pro vaši akci
             </h1>
           </div>
           
           <div className="animate-slide-up" style={{ animationDelay: '0.2s' }}>
-            <p className="text-title-3 text-gray-200 mb-12 max-w-2xl mx-auto font-medium">
+            <p className="text-title-3 text-gray-300 mb-12 max-w-2xl mx-auto font-medium">
               Největší katalog event prostorů v Praze. Bez provizí, přímý kontakt s provozovateli.
             </p>
           </div>
@@ -152,10 +168,10 @@ export default function HomePage() {
       </section>
 
       {/* CTA for Venue Owners */}
-      <section className="relative py-20 px-6 bg-gradient-to-br from-blue-900 via-blue-800 to-black overflow-hidden">
+      <section className="relative py-20 px-6 bg-gradient-to-br from-gray-900 via-black to-gray-800 overflow-hidden">
         {/* Background decorative elements */}
-        <div className="absolute top-10 left-10 w-32 h-32 bg-blue-400/20 rounded-full blur-2xl animate-float-slow" />
-        <div className="absolute bottom-10 right-10 w-40 h-40 bg-blue-500/15 rounded-full blur-2xl animate-float-medium" />
+        <div className="absolute top-10 left-10 w-32 h-32 bg-white/10 rounded-full blur-2xl animate-float-slow" />
+        <div className="absolute bottom-10 right-10 w-40 h-40 bg-white/5 rounded-full blur-2xl animate-float-medium" />
         
         <div className="max-w-7xl mx-auto relative z-10">
           <ScrollReveal>

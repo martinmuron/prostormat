@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { ChevronDown, ChevronUp } from 'lucide-react'
+import { ScrollReveal } from "@/components/ui/scroll-reveal"
 
 interface FAQItem {
   question: string
@@ -63,79 +64,123 @@ export default function FAQPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-16">
-        <div className="container mx-auto px-4">
-          <h1 className="text-4xl md:text-5xl font-bold text-center mb-4">
-            Často kladené otázky
-          </h1>
-          <p className="text-xl text-center text-blue-100 max-w-2xl mx-auto">
-            Najděte odpovědi na nejčastější otázky o ProstorMat
-          </p>
+    <div className="min-h-screen bg-white relative overflow-hidden">
+      {/* Hero Section */}
+      <section className="relative py-32 px-6 bg-gradient-to-br from-gray-900 via-black to-gray-800 overflow-hidden">
+        {/* Animated geometric shapes */}
+        <div className="absolute inset-0">
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-white opacity-5 rounded-full blur-3xl animate-float-slow"></div>
+          <div className="absolute top-1/3 right-1/3 w-72 h-72 bg-white opacity-3 rounded-full blur-2xl animate-float-medium"></div>
+          <div className="absolute bottom-1/4 left-1/3 w-80 h-80 bg-white opacity-4 rounded-full blur-3xl animate-float-fast"></div>
         </div>
-      </div>
+        
+        {/* Grid pattern overlay */}
+        <div className="absolute inset-0 bg-gradient-to-br from-transparent via-white/5 to-transparent"></div>
+        <div className="absolute inset-0" style={{
+          backgroundImage: `
+            linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px)
+          `,
+          backgroundSize: '50px 50px'
+        }}></div>
+        
+        <div className="max-w-4xl mx-auto text-center relative z-20">
+          <div className="animate-slide-up">
+            <h1 className="text-display text-white mb-6 font-black tracking-tight drop-shadow-2xl">
+              Často kladené otázky
+            </h1>
+          </div>
+          
+          <div className="animate-slide-up" style={{ animationDelay: '0.2s' }}>
+            <p className="text-title-3 text-gray-300 mb-12 max-w-2xl mx-auto font-medium">
+              Najděte odpovědi na nejčastější otázky o ProstorMat
+            </p>
+          </div>
+        </div>
+      </section>
 
       {/* FAQ Content */}
-      <div className="container mx-auto px-4 py-16">
-        <div className="max-w-3xl mx-auto">
-          <div className="space-y-4">
-            {faqData.map((item, index) => (
-              <div 
-                key={index}
-                className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow duration-200"
-              >
-                <button
-                  onClick={() => toggleItem(index)}
-                  className="w-full px-6 py-5 text-left flex items-center justify-between hover:bg-gray-50 transition-colors duration-200"
-                >
-                  <h3 className="text-lg font-semibold text-gray-900 pr-4">
-                    {item.question}
-                  </h3>
-                  {openItems.includes(index) ? (
-                    <ChevronUp className="h-5 w-5 text-gray-500 flex-shrink-0" />
-                  ) : (
-                    <ChevronDown className="h-5 w-5 text-gray-500 flex-shrink-0" />
-                  )}
-                </button>
-                {openItems.includes(index) && (
-                  <div className="px-6 pb-5">
-                    <p className="text-gray-700 leading-relaxed">
-                      {item.answer}
-                    </p>
+      <section className="py-20 px-6 bg-white relative">
+        <div className="max-w-7xl mx-auto">
+          <ScrollReveal>
+            <div className="text-center mb-16">
+              <h2 className="text-title-1 text-black mb-6 font-bold">
+                Nejčastější dotazy
+              </h2>
+              <p className="text-body text-gray-600 max-w-2xl mx-auto text-lg font-medium">
+                Vše co potřebujete vědět o využívání ProstorMat
+              </p>
+            </div>
+          </ScrollReveal>
+          
+          <div className="max-w-4xl mx-auto">
+            <div className="space-y-4">
+              {faqData.map((item, index) => (
+                <ScrollReveal key={index} delay={index * 50}>
+                  <div 
+                    className="bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden hover-lift transition-all duration-300"
+                  >
+                    <button
+                      onClick={() => toggleItem(index)}
+                      className="w-full px-6 py-5 text-left flex items-center justify-between hover:bg-gray-50 transition-colors duration-200"
+                    >
+                      <h3 className="text-lg font-semibold text-gray-900 pr-4">
+                        {item.question}
+                      </h3>
+                      {openItems.includes(index) ? (
+                        <ChevronUp className="h-5 w-5 text-gray-500 flex-shrink-0" />
+                      ) : (
+                        <ChevronDown className="h-5 w-5 text-gray-500 flex-shrink-0" />
+                      )}
+                    </button>
+                    {openItems.includes(index) && (
+                      <div className="px-6 pb-5">
+                        <p className="text-gray-700 leading-relaxed text-lg">
+                          {item.answer}
+                        </p>
+                      </div>
+                    )}
                   </div>
-                )}
-              </div>
-            ))}
+                </ScrollReveal>
+              ))}
+            </div>
           </div>
         </div>
-      </div>
+      </section>
 
       {/* Contact CTA */}
-      <div className="bg-gray-50 py-16">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">
-            Nenašli jste odpověď na svou otázku?
-          </h2>
-          <p className="text-xl text-gray-600 mb-8">
-            Neváhejte nás kontaktovat, rádi vám pomůžeme
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a
-              href="mailto:info@prostormat.cz"
-              className="bg-blue-600 text-white px-8 py-3 rounded-full font-semibold hover:bg-blue-700 transition-colors duration-200"
-            >
-              Napsat email
-            </a>
-            <a
-              href="tel:+420775654639"
-              className="bg-white text-blue-600 px-8 py-3 rounded-full font-semibold border-2 border-blue-600 hover:bg-blue-50 transition-colors duration-200"
-            >
-              Zavolat
-            </a>
-          </div>
+      <section className="relative py-20 px-6 bg-gradient-to-br from-gray-900 via-black to-gray-800 overflow-hidden">
+        {/* Background decorative elements */}
+        <div className="absolute top-10 left-10 w-32 h-32 bg-white/10 rounded-full blur-2xl animate-float-slow" />
+        <div className="absolute bottom-10 right-10 w-40 h-40 bg-white/5 rounded-full blur-2xl animate-float-medium" />
+        
+        <div className="max-w-7xl mx-auto relative z-10">
+          <ScrollReveal>
+            <div className="text-center">
+              <h2 className="text-3xl sm:text-title-1 text-white mb-6 leading-tight font-bold">
+                Nenašli jste odpověď na svou otázku?
+              </h2>
+              <p className="text-lg sm:text-title-3 text-gray-200 max-w-3xl mx-auto leading-relaxed font-medium mb-12">
+                Neváhejte nás kontaktovat, rádi vám pomůžeme
+              </p>
+              <div className="flex flex-col sm:flex-row gap-6 justify-center max-w-lg mx-auto">
+                <a
+                  href="mailto:info@prostormat.cz"
+                  className="magnetic-button hover-lift px-10 py-4 text-lg font-semibold rounded-2xl bg-white text-black hover:bg-gray-100 transition-all duration-300 shadow-xl"
+                >
+                  Napsat email
+                </a>
+                <a
+                  href="tel:+420775654639"
+                  className="magnetic-button hover-lift px-10 py-4 text-lg font-semibold rounded-2xl border-2 border-white text-white bg-transparent hover:bg-white hover:text-black transition-all duration-300"
+                >
+                  Zavolat
+                </a>
+              </div>
+            </div>
+          </ScrollReveal>
         </div>
-      </div>
+      </section>
     </div>
   )
 }

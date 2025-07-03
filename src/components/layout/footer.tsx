@@ -38,6 +38,11 @@ export function Footer() {
                 </Link>
               </li>
               <li>
+                <Link href="/ceny" className="text-body text-gray-600 hover:text-black transition-colors">
+                  Ceny
+                </Link>
+              </li>
+              <li>
                 <Link href="/pridat-prostor" className="text-body text-gray-600 hover:text-black transition-colors">
                   Přidat prostor
                 </Link>

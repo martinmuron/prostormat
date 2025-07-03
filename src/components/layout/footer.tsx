@@ -62,17 +62,22 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/faq" className="text-body text-gray-600 hover:text-black transition-colors">
+                <Link href="/casto-kladene-otazky" className="text-body text-gray-600 hover:text-black transition-colors">
                   Časté otázky
                 </Link>
               </li>
               <li>
-                <Link href="/podminky" className="text-body text-gray-600 hover:text-black transition-colors">
+                <Link href="/o-nas" className="text-body text-gray-600 hover:text-black transition-colors">
+                  O nás
+                </Link>
+              </li>
+              <li>
+                <Link href="/podminky-pouziti" className="text-body text-gray-600 hover:text-black transition-colors">
                   Podmínky použití
                 </Link>
               </li>
               <li>
-                <Link href="/soukromi" className="text-body text-gray-600 hover:text-black transition-colors">
+                <Link href="/ochrana-soukromi" className="text-body text-gray-600 hover:text-black transition-colors">
                   Ochrana soukromí
                 </Link>
               </li>
@@ -87,10 +92,10 @@ export function Footer() {
               © 2024 Prostormat. Všechna práva vyhrazena.
             </p>
             <div className="flex space-x-6 mt-4 md:mt-0">
-              <Link href="/podminky" className="text-caption text-gray-500 hover:text-black transition-colors">
+              <Link href="/podminky-pouziti" className="text-caption text-gray-500 hover:text-black transition-colors">
                 Podmínky
               </Link>
-              <Link href="/soukromi" className="text-caption text-gray-500 hover:text-black transition-colors">
+              <Link href="/ochrana-soukromi" className="text-caption text-gray-500 hover:text-black transition-colors">
                 Soukromí
               </Link>
               <Link href="/kontakt" className="text-caption text-gray-500 hover:text-black transition-colors">

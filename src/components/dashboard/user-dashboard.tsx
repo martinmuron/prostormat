@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge"
 import { EVENT_TYPES } from "@/types"
 import type { EventType } from "@/types"
 import { formatDate } from "@/lib/utils"
-import { Calendar, MessageSquare, Building, Plus } from "lucide-react"
+import { Calendar, MessageSquare, Building, Plus, Send } from "lucide-react"
 
 interface UserDashboardProps {
   data: {
@@ -181,11 +181,17 @@ export function UserDashboard({ data }: UserDashboardProps) {
           <CardTitle>Rychlé akce</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <Link href="/pozadavky/novy">
               <Button variant="secondary" className="w-full justify-start">
                 <Calendar className="h-4 w-4 mr-2" />
                 Nový požadavek na akci
+              </Button>
+            </Link>
+            <Link href="/rozeslat-pozadavek">
+              <Button variant="secondary" className="w-full justify-start">
+                <Send className="h-4 w-4 mr-2" />
+                Rozeslat prostorům
               </Button>
             </Link>
             <Link href="/prostory">

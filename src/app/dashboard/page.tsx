@@ -69,14 +69,23 @@ async function getDashboardData(userId: string, userRole: string) {
       }
     }
 
-    // Regular user
-    const [eventRequests, inquiries, broadcasts] = await Promise.all([
-      db.eventRequest.findMany({
+    // Regular user - handle each query separately with error handling
+    let eventRequests = []
+    let inquiries = []
+    let broadcasts = []
+    
+    try {
+      eventRequests = await db.eventRequest.findMany({
         where: { userId },
         orderBy: { createdAt: "desc" },
         take: 5,
-      }),
-      db.venueInquiry.findMany({
+      })
+    } catch (error) {
+      console.error("Error fetching event requests:", error)
+    }
+    
+    try {
+      inquiries = await db.venueInquiry.findMany({
         where: { userId },
         include: {
           venue: {
@@ -88,8 +97,13 @@ async function getDashboardData(userId: string, userRole: string) {
         },
         orderBy: { createdAt: "desc" },
         take: 5,
-      }),
-      db.venueBroadcast.findMany({
+      })
+    } catch (error) {
+      console.error("Error fetching inquiries:", error)
+    }
+    
+    try {
+      broadcasts = await db.venueBroadcast.findMany({
         where: { userId },
         include: {
           logs: {
@@ -108,7 +122,9 @@ async function getDashboardData(userId: string, userRole: string) {
         orderBy: { createdAt: "desc" },
         take: 5,
       })
-    ])
+    } catch (error) {
+      console.error("Error fetching broadcasts:", error)
+    }
 
     return {
       ...baseData,

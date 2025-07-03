@@ -190,6 +190,9 @@ export default function RegisterPage() {
                   placeholder="••••••••"
                   required
                 />
+                <p className="text-caption text-gray-500 mt-1">
+                  Heslo musí mít alespoň 6 znaků
+                </p>
               </div>
 
               <div>

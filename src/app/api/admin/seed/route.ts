@@ -203,6 +203,21 @@ export async function POST(request: Request) {
       },
     })
 
+    // Create test user
+    const testPassword = await bcrypt.hash('12345', 12)
+    const testUser = await prisma.user.upsert({
+      where: { email: 'test@test.com' },
+      update: {},
+      create: {
+        email: 'test@test.com',
+        name: 'Test User',
+        password: testPassword,
+        role: 'user',
+        company: 'Test Company',
+        phone: '+420 775 654 639',
+      },
+    })
+
     // Create sample event requests
     await prisma.eventRequest.create({
       data: {

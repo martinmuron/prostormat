@@ -5,9 +5,9 @@ import { db } from "@/lib/db"
 import { VenueEditForm } from "@/components/dashboard/venue-edit-form"
 
 interface VenueEditPageProps {
-  params: {
+  params: Promise<{
     id: string
-  }
+  }>
 }
 
 async function getVenueData(venueId: string, userId: string) {
@@ -44,7 +44,8 @@ export default async function VenueEditPage({ params }: VenueEditPageProps) {
     redirect("/prihlaseni?callbackUrl=/dashboard")
   }
 
-  const venue = await getVenueData(params.id, session.user.id)
+  const resolvedParams = await params
+  const venue = await getVenueData(resolvedParams.id, session.user.id)
 
   if (!venue) {
     redirect("/dashboard")

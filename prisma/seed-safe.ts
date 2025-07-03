@@ -69,39 +69,33 @@ async function main() {
       })
     }
 
-    // Check if test venue already exists
-    const existingVenue = await prisma.venue.findUnique({
-      where: { slug: 'test-event-space' }
+    // Assign existing SkyBar Prague venue to location manager
+    await prisma.venue.updateMany({
+      where: { slug: 'skybar-prague' },
+      data: {
+        managerId: locationManager.id,
+        contactEmail: 'location@location.com',
+        contactPhone: '+420 775 654 640',
+        status: 'active'
+      }
     })
 
-    if (!existingVenue) {
-      // Create test venue for location manager
-      await prisma.venue.create({
-        data: {
-          name: 'Test Event Space',
-          slug: 'test-event-space',
-          description: 'Beautiful test venue for all your event needs. Modern facilities with stunning views and professional amenities.',
-          address: 'Václavské náměstí 1, 110 00 Praha 1, Česká republika',
-          capacitySeated: 120,
-          capacityStanding: 200,
-          venueType: 'conference-hall',
-          amenities: ['wifi', 'parking', 'catering', 'av-equipment', 'air-conditioning'],
-          contactEmail: 'location@location.com',
-          contactPhone: '+420 775 654 640',
-          websiteUrl: 'https://test-venue.com',
-          images: [],
-          status: 'active',
-          managerId: locationManager.id,
-          expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
-        }
-      })
-    }
+    // Also assign Penthouse Wenceslas to give them multiple venues
+    await prisma.venue.updateMany({
+      where: { slug: 'penthouse-wenceslas' },
+      data: {
+        managerId: locationManager.id,
+        contactEmail: 'location@location.com',
+        contactPhone: '+420 775 654 640',
+        status: 'active'
+      }
+    })
 
     console.log('✅ Production database seeded with essential users and venues')
     console.log('   - Test user: test@test.com / 123456')
     console.log('   - Admin user: admin@prostormat.cz / admin123')
     console.log('   - Location manager: location@location.com / 123456')
-    console.log('   - Test venue: Test Event Space')
+    console.log('   - Assigned venues: SkyBar Prague, Penthouse Wenceslas')
 
   } catch (error) {
     console.error('Error during safe seeding:', error)

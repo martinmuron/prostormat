@@ -1,11 +1,9 @@
 import type { Metadata } from "next"
-import { Inter } from "next/font/google"
+import { GeistSans } from "geist/font/sans"
 import "./globals.css"
 import { SessionProvider } from "@/components/providers/session-provider"
 import { Header } from "@/components/layout/header"
 import { Footer } from "@/components/layout/footer"
-
-const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
   title: "Prostormat - Event prostory v Praze",
@@ -19,7 +17,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="cs">
-      <body className={inter.className}>
+      <body className={GeistSans.className}>
         <SessionProvider>
           <div className="min-h-screen flex flex-col">
             <Header />

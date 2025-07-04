@@ -30,6 +30,9 @@ export function HeartButton({ venueId, className = "", size = "icon" }: HeartBut
       if (response.ok) {
         const data = await response.json()
         setIsFavorited(data.isFavorited)
+      } else {
+        const errorData = await response.json()
+        console.error('Error checking favorite status:', errorData)
       }
     } catch (error) {
       console.error('Error checking favorite status:', error)
@@ -65,7 +68,8 @@ export function HeartButton({ venueId, className = "", size = "icon" }: HeartBut
           console.log('Venue removed from favorites!')
         }
       } else {
-        console.error('Error toggling favorite')
+        const errorData = await response.json()
+        console.error('Error toggling favorite:', errorData)
       }
     } catch (error) {
       console.error('Error toggling favorite:', error)

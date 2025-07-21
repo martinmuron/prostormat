@@ -9,7 +9,7 @@ import { useSession } from "next-auth/react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { Select } from "@/components/ui/select"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { EVENT_TYPES, PRAGUE_DISTRICTS, BUDGET_RANGES } from "@/types"
 
 const eventRequestSchema = z.object({
@@ -36,6 +36,7 @@ export function EventRequestForm() {
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<EventRequestFormData>({
     resolver: zodResolver(eventRequestSchema),
@@ -105,13 +106,17 @@ export function EventRequestForm() {
           <label className="block text-headline font-semibold text-black mb-3">
             Typ akce *
           </label>
-          <Select {...register("eventType")} className="text-body">
-            <option value="">Vyberte typ akce</option>
-            {Object.entries(EVENT_TYPES).map(([key, label]) => (
-              <option key={key} value={key}>
-                {label}
-              </option>
-            ))}
+          <Select onValueChange={(value) => setValue("eventType", value)} defaultValue="">
+            <SelectTrigger className="text-body">
+              <SelectValue placeholder="Vyberte typ akce" />
+            </SelectTrigger>
+            <SelectContent>
+              {Object.entries(EVENT_TYPES).map(([key, label]) => (
+                <SelectItem key={key} value={key}>
+                  {label}
+                </SelectItem>
+              ))}
+            </SelectContent>
           </Select>
           {errors.eventType && (
             <p className="text-callout text-red-600 mt-2 font-medium">{errors.eventType.message}</p>
@@ -151,13 +156,17 @@ export function EventRequestForm() {
           <label className="block text-headline font-semibold text-black mb-3">
             Rozpočet
           </label>
-          <Select {...register("budgetRange")} className="text-body">
-            <option value="">Vyberte rozpočet</option>
-            {BUDGET_RANGES.map((range) => (
-              <option key={range} value={range}>
-                {range}
-              </option>
-            ))}
+          <Select onValueChange={(value) => setValue("budgetRange", value)} defaultValue="">
+            <SelectTrigger className="text-body">
+              <SelectValue placeholder="Vyberte rozpočet" />
+            </SelectTrigger>
+            <SelectContent>
+              {BUDGET_RANGES.map((range) => (
+                <SelectItem key={range} value={range}>
+                  {range}
+                </SelectItem>
+              ))}
+            </SelectContent>
           </Select>
         </div>
       </div>
@@ -166,13 +175,17 @@ export function EventRequestForm() {
         <label className="block text-headline font-semibold text-black mb-3">
           Preferovaná lokalita
         </label>
-        <Select {...register("locationPreference")} className="text-body">
-          <option value="">Všechny lokality</option>
-          {PRAGUE_DISTRICTS.map((district) => (
-            <option key={district} value={district}>
-              {district}
-            </option>
-          ))}
+        <Select onValueChange={(value) => setValue("locationPreference", value)} defaultValue="">
+          <SelectTrigger className="text-body">
+            <SelectValue placeholder="Všechny lokality" />
+          </SelectTrigger>
+          <SelectContent>
+            {PRAGUE_DISTRICTS.map((district) => (
+              <SelectItem key={district} value={district}>
+                {district}
+              </SelectItem>
+            ))}
+          </SelectContent>
         </Select>
       </div>
 

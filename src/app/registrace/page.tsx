@@ -6,7 +6,7 @@ import { signIn } from "next-auth/react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Select } from "@/components/ui/select"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardContent } from "@/components/ui/card"
 import { Logo } from "@/components/ui/logo"
 
@@ -146,10 +146,15 @@ export default function RegisterPage() {
                 </label>
                 <Select
                   value={formData.role}
-                  onChange={(e) => setFormData(prev => ({ ...prev, role: e.target.value }))}
+                  onValueChange={(value) => setFormData(prev => ({ ...prev, role: value }))}
                 >
-                  <option value="user">Organizátor akcí</option>
-                  <option value="venue_manager">Provozovatel prostoru</option>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Vyberte typ účtu" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="user">Organizátor akcí</SelectItem>
+                    <SelectItem value="venue_manager">Provozovatel prostoru</SelectItem>
+                  </SelectContent>
                 </Select>
               </div>
 

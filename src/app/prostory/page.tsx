@@ -1,6 +1,6 @@
 import { Suspense } from "react"
 import { VenueCard } from "@/components/venue/venue-card"
-import { Select } from "@/components/ui/select"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { db } from "@/lib/db"
@@ -168,14 +168,17 @@ export default async function VenuesPage({
                 <Select 
                   name="type" 
                   defaultValue={resolvedSearchParams.type}
-                  className="h-14 text-base"
                 >
-                  <option value="">Všechny typy</option>
-                  {Object.entries(VENUE_TYPES).map(([key, label]) => (
-                    <option key={key} value={key}>
-                      {label}
-                    </option>
-                  ))}
+                  <SelectTrigger className="h-14 text-base">
+                    <SelectValue placeholder="Všechny typy" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {Object.entries(VENUE_TYPES).map(([key, label]) => (
+                      <SelectItem key={key} value={key}>
+                        {label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
                 </Select>
               </div>
 
@@ -184,14 +187,17 @@ export default async function VenuesPage({
                 <Select 
                   name="district" 
                   defaultValue={resolvedSearchParams.district}
-                  className="h-14 text-base"
                 >
-                  <option value="">Všechny lokality</option>
-                  {PRAGUE_DISTRICTS.map((district) => (
-                    <option key={district} value={district}>
-                      {district}
-                    </option>
-                  ))}
+                  <SelectTrigger className="h-14 text-base">
+                    <SelectValue placeholder="Všechny lokality" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {PRAGUE_DISTRICTS.map((district) => (
+                      <SelectItem key={district} value={district}>
+                        {district}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
                 </Select>
               </div>
 
@@ -200,14 +206,17 @@ export default async function VenuesPage({
                 <Select 
                   name="capacity" 
                   defaultValue={resolvedSearchParams.capacity}
-                  className="h-14 text-base"
                 >
-                  <option value="">Všechny kapacity</option>
-                  {CAPACITY_RANGES.map((range) => (
-                    <option key={range} value={range}>
-                      {range}
-                    </option>
-                  ))}
+                  <SelectTrigger className="h-14 text-base">
+                    <SelectValue placeholder="Všechny kapacity" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {CAPACITY_RANGES.map((range) => (
+                      <SelectItem key={range} value={range}>
+                        {range}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
                 </Select>
               </div>
 

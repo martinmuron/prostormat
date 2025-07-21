@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { Select } from "@/components/ui/select"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { formatDate } from "@/lib/utils"
@@ -206,14 +206,18 @@ export function VenueEditForm({ venue }: VenueEditFormProps) {
                     </label>
                     <Select
                       value={formData.venueType}
-                      onChange={(e) => handleChange("venueType", e.target.value)}
+                      onValueChange={(value) => handleChange("venueType", value)}
                     >
-                      <option value="">Vyberte typ prostoru</option>
-                      {venueTypes.map((type) => (
-                        <option key={type.value} value={type.value}>
-                          {type.label}
-                        </option>
-                      ))}
+                      <SelectTrigger>
+                        <SelectValue placeholder="Vyberte typ prostoru" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {venueTypes.map((type) => (
+                          <SelectItem key={type.value} value={type.value}>
+                            {type.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
                     </Select>
                   </div>
                 </div>
@@ -302,11 +306,16 @@ export function VenueEditForm({ venue }: VenueEditFormProps) {
                     </label>
                     <Select
                       value={formData.status}
-                      onChange={(e) => handleChange("status", e.target.value)}
+                      onValueChange={(value) => handleChange("status", value)}
                     >
-                      <option value="draft">Koncept</option>
-                      <option value="active">Aktivní</option>
-                      <option value="expired">Neaktivní</option>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Vyberte stav" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="draft">Koncept</SelectItem>
+                        <SelectItem value="active">Aktivní</SelectItem>
+                        <SelectItem value="expired">Neaktivní</SelectItem>
+                      </SelectContent>
                     </Select>
                   </div>
                 </div>

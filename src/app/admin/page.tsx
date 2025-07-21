@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Select } from "@/components/ui/select"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { 
   Users, 
   Building, 
@@ -296,12 +296,16 @@ export default function AdminPage() {
                   <div className="flex gap-2">
                     <Select 
                       value={filter} 
-                      onChange={(e) => setFilter(e.target.value)}
-                      className="w-auto"
+                      onValueChange={(value) => setFilter(value)}
                     >
-                      <option value="all">Všechny prostory</option>
-                      <option value="active">Aktivní</option>
-                      <option value="draft">Návrhy</option>
+                      <SelectTrigger className="w-auto">
+                        <SelectValue placeholder="Filtr prostorů" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">Všechny prostory</SelectItem>
+                        <SelectItem value="active">Aktivní</SelectItem>
+                        <SelectItem value="draft">Návrhy</SelectItem>
+                      </SelectContent>
                     </Select>
                     <Button onClick={loadData} variant="secondary" size="sm">
                       Obnovit

@@ -8,7 +8,7 @@ import { z } from "zod"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { Select } from "@/components/ui/select"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { VENUE_TYPES } from "@/types"
 import { 
@@ -388,13 +388,17 @@ export default function AddVenuePage() {
                 <label className="block text-sm sm:text-callout font-medium text-black mb-2">
                   Typ prostoru
                 </label>
-                <Select {...register("venueType")} className="h-11 sm:h-12">
-                  <option value="">Vyberte typ prostoru</option>
-                  {Object.entries(VENUE_TYPES).map(([key, label]) => (
-                    <option key={key} value={key}>
-                      {label}
-                    </option>
-                  ))}
+                <Select onValueChange={(value) => setValue("venueType", value)} defaultValue="">
+                  <SelectTrigger className="h-11 sm:h-12">
+                    <SelectValue placeholder="Vyberte typ prostoru" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {Object.entries(VENUE_TYPES).map(([key, label]) => (
+                      <SelectItem key={key} value={key}>
+                        {label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
                 </Select>
               </div>
             </CardContent>

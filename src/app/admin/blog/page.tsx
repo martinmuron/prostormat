@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { Select } from "@/components/ui/select"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
 import { Plus, Edit, Trash2, Eye, EyeOff, Calendar, User } from "lucide-react"
 
@@ -275,10 +275,15 @@ export default function AdminBlogPage() {
                       <label className="block text-sm font-medium mb-2">Status</label>
                       <Select
                         value={formData.status}
-                        onChange={(e) => setFormData({...formData, status: e.target.value})}
+                        onValueChange={(value) => setFormData({...formData, status: value})}
                       >
-                        <option value="draft">Koncept</option>
-                        <option value="published">Publikováno</option>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Vyberte status" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="draft">Koncept</SelectItem>
+                          <SelectItem value="published">Publikováno</SelectItem>
+                        </SelectContent>
                       </Select>
                     </div>
 
@@ -352,10 +357,15 @@ export default function AdminBlogPage() {
 
         {/* Filters */}
         <div className="flex gap-4 mb-6">
-          <Select value={filter} onChange={(e) => setFilter(e.target.value as any)}>
-            <option value="all">Všechny články</option>
-            <option value="published">Publikované</option>
-            <option value="draft">Koncepty</option>
+          <Select value={filter} onValueChange={(value) => setFilter(value as any)}>
+            <SelectTrigger className="w-48">
+              <SelectValue placeholder="Filtr článků" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Všechny články</SelectItem>
+              <SelectItem value="published">Publikované</SelectItem>
+              <SelectItem value="draft">Koncepty</SelectItem>
+            </SelectContent>
           </Select>
         </div>
 

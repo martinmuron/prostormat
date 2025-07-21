@@ -7,16 +7,16 @@ import { VENUE_TYPES, PRAGUE_DISTRICTS, CAPACITY_RANGES } from "@/types"
 import { Search, Calendar, Users, MapPin } from "lucide-react"
 
 export function HeroSearch() {
-  const [selectedType, setSelectedType] = useState<string>("")
-  const [selectedCapacity, setSelectedCapacity] = useState<string>("")
-  const [selectedDistrict, setSelectedDistrict] = useState<string>("")
+  const [selectedType, setSelectedType] = useState<string>("all")
+  const [selectedCapacity, setSelectedCapacity] = useState<string>("all")
+  const [selectedDistrict, setSelectedDistrict] = useState<string>("all")
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     const params = new URLSearchParams()
-    if (selectedType) params.set("type", selectedType)
-    if (selectedCapacity) params.set("capacity", selectedCapacity)
-    if (selectedDistrict) params.set("district", selectedDistrict)
+    if (selectedType && selectedType !== "all") params.set("type", selectedType)
+    if (selectedCapacity && selectedCapacity !== "all") params.set("capacity", selectedCapacity)
+    if (selectedDistrict && selectedDistrict !== "all") params.set("district", selectedDistrict)
     
     window.location.href = `/prostory?${params.toString()}`
   }
@@ -37,7 +37,7 @@ export function HeroSearch() {
                 <SelectValue placeholder="Všechny typy" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Všechny typy</SelectItem>
+                <SelectItem value="all">Všechny typy</SelectItem>
                 {Object.entries(VENUE_TYPES).map(([key, label]) => (
                   <SelectItem key={key} value={key}>{label}</SelectItem>
                 ))}
@@ -56,7 +56,7 @@ export function HeroSearch() {
                 <SelectValue placeholder="Libovolná kapacita" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Libovolná kapacita</SelectItem>
+                <SelectItem value="all">Libovolná kapacita</SelectItem>
                 {CAPACITY_RANGES.map((range) => (
                   <SelectItem key={range} value={range}>{range}</SelectItem>
                 ))}
@@ -75,7 +75,7 @@ export function HeroSearch() {
                 <SelectValue placeholder="Celá Praha" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Celá Praha</SelectItem>
+                <SelectItem value="all">Celá Praha</SelectItem>
                 {PRAGUE_DISTRICTS.map((district) => (
                   <SelectItem key={district} value={district}>{district}</SelectItem>
                 ))}

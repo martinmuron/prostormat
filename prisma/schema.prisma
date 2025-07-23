@@ -54,7 +54,6 @@ model User {
   venueInquiries VenueInquiry[]
   blogPosts     BlogPost[]
   venueBroadcasts VenueBroadcast[]
-  favorites     VenueFavorite[]
   createdAt     DateTime  @default(now())
 }
 
@@ -72,71 +71,26 @@ model Venue {
   slug             String   @unique
   description      String?
   address          String
-  district         String?  // Prague district (e.g., "Praha 1", "Praha 2")
   capacitySeated   Int?
   capacityStanding Int?
-  venueType        String?  // restaurant, gallery, etc.
+  venueType        String?
   amenities        String[]
   contactEmail     String?
   contactPhone     String?
-  contactPerson    String?  // Name of the contact person
   websiteUrl       String?
   images           String[]
   videoUrl         String?
-  pricing          Json?    // Flexible pricing structure
-  
-  // Billing Information
-  billingEmail     String?  // Separate email for billing
-  billingName      String?  // Company/legal name for billing
-  billingAddress   String?  // Billing address
-  taxId            String?  // IČO/DIČ
-  vatId            String?  // VAT number if applicable
-  
-  // Status and Management
-  status           String   @default("draft") // draft, active, expired, suspended
+  status           String   @default("draft") // draft, active, expired
   managerId        String
   subscriptionId   String?  // Stripe subscription ID
-  subscriptionStatus String?  // active, past_due, canceled, etc.
   expiresAt        DateTime?
-  featured         Boolean  @default(false) // Featured venue
-  
-  // Timestamps
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
-  lastBilledAt     DateTime? // When was the last invoice generated
-  
-  // Relations
-  manager          User              @relation(fields: [managerId], references: [id])
-  inquiries        VenueInquiry[]
-  subscription     Subscription?
-  broadcastLogs    VenueBroadcastLog[]
-  favorites        VenueFavorite[]
-  invoices         Invoice[]         // Billing history
 
-model Invoice {
-  id              String    @id @default(cuid())
-  invoiceNumber   String    @unique
-  venueId         String
-  amount          Float
-  currency        String    @default("CZK")
-  status          String    @default("draft") // draft, sent, paid, overdue, canceled
-  dueDate         DateTime
-  paidAt          DateTime?
-  paymentMethod   String?   // bank_transfer, card, etc.
-  notes           String?
-  pdfUrl          String?   // Link to generated PDF
-  
-  // Timestamps
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-  
-  // Relations
-  venue           Venue     @relation(fields: [venueId], references: [id])
-  
-  @@index([venueId])
-  @@index([status])
-  @@index([dueDate])
-}
+  manager      User           @relation(fields: [managerId], references: [id])
+  inquiries    VenueInquiry[]
+  subscription Subscription?
+  broadcastLogs VenueBroadcastLog[]
 }
 
 model EventRequest {
@@ -238,16 +192,4 @@ model VenueBroadcastLog {
 
   broadcast VenueBroadcast @relation(fields: [broadcastId], references: [id])
   venue Venue @relation(fields: [venueId], references: [id])
-}
-
-model VenueFavorite {
-  id        String   @id @default(cuid())
-  userId    String
-  venueId   String
-  createdAt DateTime @default(now())
-
-  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
-  venue Venue @relation(fields: [venueId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, venueId])
 }

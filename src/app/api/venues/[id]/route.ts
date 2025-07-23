@@ -18,8 +18,9 @@ const updateVenueSchema = z.object({
 
 export async function PATCH(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params
   try {
     // Verify authentication
     const session = await getServerSession(authOptions)
@@ -33,7 +34,7 @@ export async function PATCH(
 
     // Update the venue
     const updatedVenue = await db.venue.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         ...body,
         // Ensure we don't set undefined values
@@ -55,8 +56,9 @@ export async function PATCH(
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params
   try {
     // Verify authentication
     const session = await getServerSession(authOptions)
@@ -66,7 +68,7 @@ export async function GET(
 
     // Get the venue
     const venue = await db.venue.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         manager: {
           select: {

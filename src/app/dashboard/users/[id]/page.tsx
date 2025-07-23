@@ -57,15 +57,16 @@ async function getUser(id: string) {
 export default async function UserProfilePage({
   params,
 }: {
-  params: { id: string }
+  params: Promise<{ id: string }>
 }) {
+  const { id } = await params
   const session = await getServerSession(authOptions)
   
   if (!session?.user || session.user.role !== "admin") {
     redirect("/dashboard")
   }
 
-  const user = await getUser(params.id)
+  const user = await getUser(id)
   
   if (!user) {
     notFound()
@@ -209,12 +210,12 @@ export default async function UserProfilePage({
                       <div className="flex items-center justify-between mb-2">
                         <h3 className="font-medium">{request.eventType}</h3>
                         <Badge variant="outline">
-                          {new Date(request.eventDate).toLocaleDateString('cs-CZ')}
+                          {request.eventDate ? new Date(request.eventDate).toLocaleDateString('cs-CZ') : 'Neuvedeno'}
                         </Badge>
                       </div>
                       <p className="text-sm text-muted-foreground mb-2">{request.description}</p>
                       <div className="flex items-center justify-between text-xs text-muted-foreground">
-                        <span>Kapacita: {request.expectedGuests} hostů</span>
+                        <span>Kapacita: {(request as any).expectedGuests || (request as any).guestCount || 'Neuvedeno'} hostů</span>
                         <span>Vytvořeno: {new Date(request.createdAt).toLocaleDateString('cs-CZ')}</span>
                       </div>
                     </div>
@@ -242,12 +243,12 @@ export default async function UserProfilePage({
                       <div className="flex items-center justify-between mb-2">
                         <h3 className="font-medium">{inquiry.venue.name}</h3>
                         <Badge variant="outline">
-                          {new Date(inquiry.eventDate).toLocaleDateString('cs-CZ')}
+                          {inquiry.eventDate ? new Date(inquiry.eventDate).toLocaleDateString('cs-CZ') : 'Neuvedeno'}
                         </Badge>
                       </div>
                       <p className="text-sm text-muted-foreground mb-2">{inquiry.message}</p>
                       <div className="flex items-center justify-between text-xs text-muted-foreground">
-                        <span>Kapacita: {inquiry.expectedGuests} hostů</span>
+                        <span>Kapacita: {(inquiry as any).expectedGuests || (inquiry as any).guestCount || 'Neuvedeno'} hostů</span>
                         <span>Odesláno: {new Date(inquiry.createdAt).toLocaleDateString('cs-CZ')}</span>
                       </div>
                     </div>
@@ -298,7 +299,7 @@ export default async function UserProfilePage({
                             <div>
                               <h4 className="font-medium">{venue.name}</h4>
                               <p className="text-sm text-muted-foreground">
-                                Stav předplatného: {venue.subscriptionStatus || 'Neuvedeno'}
+                                Stav předplatného: {(venue as any).subscriptionStatus || 'Neuvedeno'}
                               </p>
                             </div>
                             <Button variant="outline" size="sm" asChild>

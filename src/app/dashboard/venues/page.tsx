@@ -67,21 +67,33 @@ export default async function VenuesPage() {
         <TabsContent value="all">
           <Card>
             <CardContent className="pt-6">
-              <DataTable columns={columns} data={venues} />
+              <DataTable columns={columns} data={venues as any} />
             </CardContent>
           </Card>
         </TabsContent>
 
         <TabsContent value="active">
-          <DataTable columns={columns} data={activeVenues} />
+          <Card>
+            <CardContent className="pt-6">
+              <DataTable columns={columns} data={activeVenues as any} />
+            </CardContent>
+          </Card>
         </TabsContent>
 
         <TabsContent value="draft">
-          <DataTable columns={columns} data={draftVenues} />
+          <Card>
+            <CardContent className="pt-6">
+              <DataTable columns={columns} data={draftVenues as any} />
+            </CardContent>
+          </Card>
         </TabsContent>
 
         <TabsContent value="expired">
-          <DataTable columns={columns} data={expiredVenues} />
+          <Card>
+            <CardContent className="pt-6">
+              <DataTable columns={columns} data={expiredVenues as any} />
+            </CardContent>
+          </Card>
         </TabsContent>
       </Tabs>
     </div>

@@ -47,15 +47,16 @@ async function getVenue(id: string) {
 export default async function EditVenuePage({
   params,
 }: {
-  params: { id: string }
+  params: Promise<{ id: string }>
 }) {
+  const { id } = await params
   const session = await getServerSession(authOptions)
   
   if (!session?.user || session.user.role !== "admin") {
     redirect("/dashboard")
   }
 
-  const venue = await getVenue(params.id)
+  const venue = await getVenue(id)
   
   if (!venue) {
     notFound()
@@ -98,7 +99,7 @@ export default async function EditVenuePage({
               <CardTitle>Základní informace</CardTitle>
             </CardHeader>
             <CardContent>
-              <VenueForm venue={venue} />
+              <VenueForm venue={venue as any} />
             </CardContent>
           </Card>
         </TabsContent>

@@ -1,4 +1,4 @@
-// This is your Prisma schema file for SQLite (local development)
+// This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
@@ -6,7 +6,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -54,6 +54,7 @@ model User {
   venueInquiries VenueInquiry[]
   blogPosts     BlogPost[]
   venueBroadcasts VenueBroadcast[]
+  favorites     VenueFavorite[]
   createdAt     DateTime  @default(now())
 }
 
@@ -74,11 +75,11 @@ model Venue {
   capacitySeated   Int?
   capacityStanding Int?
   venueType        String?
-  amenities        String   // JSON string for SQLite
+  amenities        String[]
   contactEmail     String?
   contactPhone     String?
   websiteUrl       String?
-  images           String   // JSON string for SQLite
+  images           String[]
   videoUrl         String?
   status           String   @default("draft") // draft, active, expired
   managerId        String
@@ -91,6 +92,7 @@ model Venue {
   inquiries    VenueInquiry[]
   subscription Subscription?
   broadcastLogs VenueBroadcastLog[]
+  favorites    VenueFavorite[]
 }
 
 model EventRequest {
@@ -151,7 +153,7 @@ model BlogPost {
   coverImage      String?
   status          String   @default("draft") // draft, published
   authorId        String
-  tags            String // JSON string
+  tags            String // JSON array
   metaTitle       String?
   metaDescription String?
   publishedAt     DateTime?
@@ -175,7 +177,7 @@ model VenueBroadcast {
   contactEmail     String
   contactPhone     String?
   contactName      String
-  sentVenues       String   // JSON string for SQLite
+  sentVenues       String[] // Array of venue IDs that received the email
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 
@@ -192,4 +194,16 @@ model VenueBroadcastLog {
 
   broadcast VenueBroadcast @relation(fields: [broadcastId], references: [id])
   venue Venue @relation(fields: [venueId], references: [id])
+}
+
+model VenueFavorite {
+  id        String   @id @default(cuid())
+  userId    String
+  venueId   String
+  createdAt DateTime @default(now())
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  venue Venue @relation(fields: [venueId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, venueId])
 }

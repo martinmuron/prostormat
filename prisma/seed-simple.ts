@@ -41,13 +41,13 @@ async function main() {
       capacitySeated: 80,
       capacityStanding: 120,
       venueType: 'restaurant',
-      amenities: JSON.stringify(['Klimatizace', 'Projektor', 'Zvukový systém', 'WiFi', 'Terasa', 'Parking']),
+      amenities: ['Klimatizace', 'Projektor', 'Zvukový systém', 'WiFi', 'Terasa', 'Parking'],
       contactEmail: 'info@restaurant-terasa.cz',
       contactPhone: '+420 222 333 444',
-      images: JSON.stringify([
+      images: [
         'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
         'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
-      ]),
+      ],
       status: 'active',
       managerId: manager1.id,
       expiresAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
@@ -60,13 +60,13 @@ async function main() {
       capacitySeated: 150,
       capacityStanding: 250,
       venueType: 'gallery',
-      amenities: JSON.stringify(['Multimediální vybavení', 'Catering možnosti', 'Výstavní systém', 'Klimatizace']),
+      amenities: ['Multimediální vybavení', 'Catering možnosti', 'Výstavní systém', 'Klimatizace'],
       contactEmail: 'rezervace@galerie-moderna.cz',
       contactPhone: '+420 111 222 333',
-      images: JSON.stringify([
+      images: [
         'https://images.unsplash.com/photo-1571115764595-644a1f56a55c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
         'https://images.unsplash.com/photo-1460317442991-0ec209397118?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
-      ]),
+      ],
       status: 'active',
       managerId: manager1.id,
       expiresAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
@@ -79,13 +79,13 @@ async function main() {
       capacitySeated: 60,
       capacityStanding: 100,
       venueType: 'rooftop',
-      amenities: JSON.stringify(['Bar', 'DJ booth', 'Vytápění', 'Zastřešená část', 'VIP sekce', 'Výhled na město']),
+      amenities: ['Bar', 'DJ booth', 'Vytápění', 'Zastřešená část', 'VIP sekce', 'Výhled na město'],
       contactEmail: 'events@skybar-prague.com',
       contactPhone: '+420 777 888 999',
-      images: JSON.stringify([
+      images: [
         'https://images.unsplash.com/photo-1551218808-94e220e084d2?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
         'https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
-      ]),
+      ],
       status: 'active',
       managerId: manager1.id,
       expiresAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
@@ -98,13 +98,13 @@ async function main() {
       capacitySeated: 200,
       capacityStanding: 300,
       venueType: 'conference',
-      amenities: JSON.stringify(['Projektor', 'Zvukový systém', 'WiFi', 'Klimatizace', 'Catering', 'Parking']),
+      amenities: ['Projektor', 'Zvukový systém', 'WiFi', 'Klimatizace', 'Catering', 'Parking'],
       contactEmail: 'info@conference-prague.cz',
       contactPhone: '+420 555 666 777',
-      images: JSON.stringify([
+      images: [
         'https://images.unsplash.com/photo-1505373877841-8d25f7d46678?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
         'https://images.unsplash.com/photo-1587825140708-dfaf72ae4b04?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
-      ]),
+      ],
       status: 'active',
       managerId: manager1.id,
       expiresAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
@@ -117,13 +117,13 @@ async function main() {
       capacitySeated: 50,
       capacityStanding: 80,
       venueType: 'garden',
-      amenities: JSON.stringify(['Zahrada', 'Terasa', 'Gril', 'Parkování', 'Dětské hřiště']),
+      amenities: ['Zahrada', 'Terasa', 'Gril', 'Parkování', 'Dětské hřiště'],
       contactEmail: 'rezervace@villa-petrin.cz',
       contactPhone: '+420 333 444 555',
-      images: JSON.stringify([
+      images: [
         'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
         'https://images.unsplash.com/photo-1464207687429-7505649dae38?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
-      ]),
+      ],
       status: 'active',
       managerId: manager1.id,
       expiresAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
@@ -136,13 +136,13 @@ async function main() {
       capacitySeated: 120,
       capacityStanding: 180,
       venueType: 'loft',
-      amenities: JSON.stringify(['Vysoké stropy', 'Industriální design', 'Projektor', 'Zvukový systém', 'WiFi']),
+      amenities: ['Vysoké stropy', 'Industriální design', 'Projektor', 'Zvukový systém', 'WiFi'],
       contactEmail: 'booking@loft-karlin.cz',
       contactPhone: '+420 666 777 888',
-      images: JSON.stringify([
+      images: [
         'https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
         'https://images.unsplash.com/photo-1497366811353-6870744d04b2?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
-      ]),
+      ],
       status: 'active',
       managerId: manager1.id,
       expiresAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),

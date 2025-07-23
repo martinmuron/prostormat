@@ -21,7 +21,20 @@ interface VenueCardProps {
 }
 
 export function VenueCard({ venue }: VenueCardProps) {
-  const mainImage = venue.images[0] || "/images/placeholder-venue.jpg"
+  // Parse images from JSON string (SQLite format) or use as array (PostgreSQL format)
+  let images: string[] = []
+  try {
+    if (typeof venue.images === 'string') {
+      images = JSON.parse(venue.images)
+    } else if (Array.isArray(venue.images)) {
+      images = venue.images
+    }
+  } catch (error) {
+    console.warn('Failed to parse venue images:', error)
+    images = []
+  }
+  
+  const mainImage = (Array.isArray(images) && images.length > 0 ? images[0] : null) || "/images/placeholder-venue.jpg"
   const venueTypeLabel = venue.venueType ? VENUE_TYPES[venue.venueType as VenueType] || venue.venueType : null
 
   return (

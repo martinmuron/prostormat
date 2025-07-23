@@ -121,14 +121,14 @@ async function main() {
       capacitySeated: 80,
       capacityStanding: 120,
       venueType: 'restaurant',
-      amenities: ['Klimatizace', 'Projektor', 'Zvukový systém', 'WiFi', 'Terasa', 'Parking'],
+      amenities: JSON.stringify(['Klimatizace', 'Projektor', 'Zvukový systém', 'WiFi', 'Terasa', 'Parking']),
       contactEmail: 'info@restaurant-terasa.cz',
       contactPhone: '+420 222 333 444',
-      images: [
+      images: JSON.stringify([
         'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
         'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
         'https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
-      ],
+      ]),
       status: 'active',
       manager: {
         connect: { id: manager1.id }
@@ -148,13 +148,13 @@ async function main() {
       capacitySeated: 150,
       capacityStanding: 250,
       venueType: 'gallery',
-      amenities: ['Multimediální vybavení', 'Catering možnosti', 'Výstavní systém', 'Bezpečnostní systém', 'Klimatizace'],
+      amenities: JSON.stringify(['Multimediální vybavení', 'Catering možnosti', 'Výstavní systém', 'Bezpečnostní systém', 'Klimatizace']),
       contactEmail: 'rezervace@galerie-moderna.cz',
       contactPhone: '+420 111 222 333',
-      images: [
+      images: JSON.stringify([
         'https://images.unsplash.com/photo-1571115764595-644a1f56a55c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
         'https://images.unsplash.com/photo-1571115764595-644a1f56a55c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
-      ],
+      ]),
       status: 'active',
       manager: {
         connect: { id: manager2.id }
@@ -174,14 +174,14 @@ async function main() {
       capacitySeated: 60,
       capacityStanding: 100,
       venueType: 'rooftop',
-      amenities: ['Bar', 'DJ booth', 'Vytápění', 'Zastřešená část', 'VIP sekce', 'Výhled na město'],
+      amenities: JSON.stringify(['Bar', 'DJ booth', 'Vytápění', 'Zastřešená část', 'VIP sekce', 'Výhled na město']),
       contactEmail: 'events@skybar-prague.com',
       contactPhone: '+420 777 888 999',
-      images: [
+      images: JSON.stringify([
         'https://images.unsplash.com/photo-1551218808-94e220e084d2?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
         'https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
         'https://images.unsplash.com/photo-1567281935884-3ba5af2c951d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
-      ],
+      ]),
       status: 'active',
       manager: {
         connect: { id: manager3.id }

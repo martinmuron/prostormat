@@ -16,7 +16,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="cs">
+    <html lang="cs" suppressHydrationWarning>
       <body className={GeistSans.className}>
         <SessionProvider>
           <div className="min-h-screen flex flex-col">

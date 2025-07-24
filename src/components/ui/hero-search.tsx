@@ -91,9 +91,9 @@ export function HeroSearch() {
           <Button 
             type="submit" 
             size="lg"
-            className="group relative overflow-hidden bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold px-8 md:px-12 py-3 md:py-4 rounded-xl text-base md:text-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+            className="group relative overflow-hidden bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 md:px-12 py-3 md:py-4 rounded-xl text-base md:text-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
           >
-            <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             <Search className="mr-2 md:mr-3 h-4 w-4 md:h-5 md:w-5 transition-transform duration-300 group-hover:scale-110" />
             Najít prostory
           </Button>

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import { db } from "@/lib/db"
 
-export async function GET(request: Request) {
+export async function POST(request: Request) {
   try {
     // Simple password check via header
     const adminPassword = request.headers.get("x-admin-password")
@@ -13,8 +13,12 @@ export async function GET(request: Request) {
       )
     }
 
-    // Get all venues with manager info and inquiry count
-    const venues = await db.venue.findMany({
+    const { venueId, managerId } = await request.json()
+
+    // Update venue's manager
+    const updatedVenue = await db.venue.update({
+      where: { id: venueId },
+      data: { managerId },
       include: {
         manager: {
           select: {
@@ -22,24 +26,16 @@ export async function GET(request: Request) {
             name: true,
             email: true
           }
-        },
-        _count: {
-          select: {
-            inquiries: true
-          }
         }
-      },
-      orderBy: {
-        createdAt: "desc"
       }
     })
 
-    return NextResponse.json(venues)
+    return NextResponse.json(updatedVenue)
   } catch (error) {
-    console.error("Error fetching venues for admin:", error)
+    console.error("Error assigning venue manager:", error)
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }
     )
   }
-} 
+}

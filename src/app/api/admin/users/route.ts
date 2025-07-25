@@ -13,19 +13,21 @@ export async function GET(request: Request) {
       )
     }
 
-    // Get all venues with manager info and inquiry count
-    const venues = await db.venue.findMany({
-      include: {
-        manager: {
-          select: {
-            id: true,
-            name: true,
-            email: true
-          }
-        },
+    // Get all users with their venues count
+    const users = await db.user.findMany({
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        phone: true,
+        company: true,
+        createdAt: true,
         _count: {
           select: {
-            inquiries: true
+            venues: true,
+            eventRequests: true,
+            venueInquiries: true
           }
         }
       },
@@ -34,12 +36,12 @@ export async function GET(request: Request) {
       }
     })
 
-    return NextResponse.json(venues)
+    return NextResponse.json(users)
   } catch (error) {
-    console.error("Error fetching venues for admin:", error)
+    console.error("Error fetching users for admin:", error)
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }
     )
   }
-} 
+}

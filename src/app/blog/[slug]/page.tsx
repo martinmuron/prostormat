@@ -1,71 +1,39 @@
 import { notFound } from "next/navigation"
-import Link from "next/link"
+import { db } from "@/lib/db"
 import { Badge } from "@/components/ui/badge"
-import { ArrowLeft, Calendar, User } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import Link from "next/link"
+import { Calendar, User, ArrowLeft, Share2 } from "lucide-react"
 
-interface BlogPost {
-  id: string
-  title: string
-  slug: string
-  excerpt: string
-  content: string
-  coverImage?: string
-  tags: string[]
-  publishedAt: string
-  metaTitle?: string
-  metaDescription?: string
-  author: { name: string }
-}
-
-async function getBlogPost(slug: string): Promise<BlogPost | null> {
+async function getBlogPost(slug: string) {
   try {
-    const res = await fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/blog/${slug}`, {
-      cache: 'no-store'
+    const post = await db.blogPost.findUnique({
+      where: {
+        slug,
+        status: "published"
+      },
+      include: {
+        author: {
+          select: {
+            name: true,
+            email: true,
+          }
+        }
+      }
     })
     
-    if (!res.ok) {
-      return null
-    }
-    
-    return res.json()
+    return post
   } catch (error) {
-    console.error('Error fetching blog post:', error)
+    console.error("Error fetching blog post:", error)
     return null
   }
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
-  const { slug } = await params
-  const post = await getBlogPost(slug)
-  
-  if (!post) {
-    return {
-      title: "Článek nenalezen - Prostormat",
-      description: "Požadovaný článek nebyl nalezen."
-    }
-  }
-
-  return {
-    title: post.metaTitle || `${post.title} - Prostormat Blog`,
-    description: post.metaDescription || post.excerpt || "Přečtěte si náš nejnovější článek o event prostorech a organizaci akcí.",
-    openGraph: {
-      title: post.metaTitle || post.title,
-      description: post.metaDescription || post.excerpt,
-      type: "article",
-      publishedTime: post.publishedAt,
-      authors: [post.author.name],
-      images: post.coverImage ? [post.coverImage] : undefined,
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: post.metaTitle || post.title,
-      description: post.metaDescription || post.excerpt,
-      images: post.coverImage ? [post.coverImage] : undefined,
-    }
-  }
-}
-
-export default async function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function BlogPostPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>
+}) {
   const { slug } = await params
   const post = await getBlogPost(slug)
 
@@ -73,125 +41,97 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
     notFound()
   }
 
-  // Format content with simple line breaks to paragraphs
-  const formattedContent = post.content.split('\n').map((paragraph, index) => {
-    if (paragraph.trim() === '') return null
-    return (
-      <p key={index} className="mb-4 text-gray-700 leading-relaxed">
-        {paragraph}
-      </p>
-    )
-  }).filter(Boolean)
+  const tags = post.tags ? JSON.parse(post.tags) : []
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Cover Image */}
-      {post.coverImage && (
-        <div className="w-full h-64 sm:h-80 lg:h-96 bg-gray-200 overflow-hidden">
-          <img 
-            src={post.coverImage} 
-            alt={post.title}
-            className="w-full h-full object-cover"
-          />
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-12">
+        {/* Back to blog */}
+        <div className="mb-8">
+          <Link href="/blog">
+            <Button variant="ghost" className="text-gray-600 hover:text-gray-900">
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Zpět na blog
+            </Button>
+          </Link>
         </div>
-      )}
 
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
-        {/* Back to Blog */}
-        <Link 
-          href="/blog"
-          className="inline-flex items-center text-sm text-gray-600 hover:text-black transition-colors mb-6"
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Zpět na blog
-        </Link>
-
-        {/* Article Header */}
-        <header className="mb-8">
-          {/* Tags */}
-          {post.tags.length > 0 && (
-            <div className="flex flex-wrap gap-2 mb-4">
-              {post.tags.map((tag) => (
-                <Link key={tag} href={`/blog?tag=${encodeURIComponent(tag)}`}>
-                  <Badge variant="secondary" className="text-xs hover:bg-gray-300 transition-colors">
+        {/* Article header */}
+        <article className="prose prose-lg max-w-none">
+          <header className="mb-8">
+            {tags.length > 0 && (
+              <div className="flex flex-wrap gap-2 mb-4">
+                {tags.map((tag: string) => (
+                  <Badge key={tag} variant="secondary">
                     {tag}
                   </Badge>
-                </Link>
-              ))}
+                ))}
+              </div>
+            )}
+            
+            <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-6 leading-tight">
+              {post.title}
+            </h1>
+            
+            {post.excerpt && (
+              <p className="text-xl text-gray-600 mb-6 leading-relaxed">
+                {post.excerpt}
+              </p>
+            )}
+            
+            <div className="flex items-center gap-6 text-sm text-gray-500 mb-6">
+              <div className="flex items-center gap-2">
+                <User className="w-4 h-4" />
+                <span>{post.author.name || post.author.email}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Calendar className="w-4 h-4" />
+                <span>{new Date(post.publishedAt!).toLocaleDateString('cs-CZ', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric'
+                })}</span>
+              </div>
+            </div>
+            
+            <Button variant="outline" size="sm">
+              <Share2 className="w-4 h-4 mr-2" />
+              Sdílet
+            </Button>
+          </header>
+
+          {/* Cover image */}
+          {post.coverImage && (
+            <div className="mb-8">
+              <img
+                src={post.coverImage}
+                alt={post.title}
+                className="w-full h-auto rounded-lg shadow-lg"
+              />
             </div>
           )}
 
-          {/* Title */}
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-black mb-4 leading-tight">
-            {post.title}
-          </h1>
-
-          {/* Excerpt */}
-          {post.excerpt && (
-            <p className="text-lg text-gray-600 mb-6 leading-relaxed">
-              {post.excerpt}
-            </p>
-          )}
-
-          {/* Meta */}
-          <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500 border-b border-gray-200 pb-6">
-            <div className="flex items-center">
-              <User className="w-4 h-4 mr-2" />
-              {post.author.name}
-            </div>
-            <div className="flex items-center">
-              <Calendar className="w-4 h-4 mr-2" />
-              {new Date(post.publishedAt).toLocaleDateString('cs-CZ', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-              })}
-            </div>
-          </div>
-        </header>
-
-        {/* Article Content */}
-        <article className="prose prose-lg max-w-none">
-          <div className="text-base sm:text-lg leading-relaxed">
-            {formattedContent}
-          </div>
+          {/* Article content */}
+          <div 
+            className="prose prose-lg max-w-none"
+            dangerouslySetInnerHTML={{ __html: post.content }}
+          />
         </article>
 
-        {/* Footer */}
+        {/* Article footer */}
         <footer className="mt-12 pt-8 border-t border-gray-200">
-          <div className="flex flex-wrap items-center justify-between gap-4">
-            <div>
-              <h3 className="font-semibold text-black mb-2">Líbí se vám náš blog?</h3>
-              <p className="text-sm text-gray-600">
-                Objevte další články o event prostorech a organizaci akcí.
-              </p>
+          <div className="flex items-center justify-between">
+            <div className="text-sm text-gray-500">
+              <span>Autor: {post.author.name || post.author.email}</span>
             </div>
-            <Link 
-              href="/blog"
-              className="inline-block px-6 py-2 bg-black text-white rounded-full text-sm hover:bg-gray-800 transition-colors"
-            >
-              Další články
+            <Link href="/blog">
+              <Button variant="outline">
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Zpět na blog
+              </Button>
             </Link>
           </div>
         </footer>
-
-        {/* Related Articles CTA */}
-        <div className="mt-12 p-6 bg-gray-50 rounded-2xl">
-          <div className="text-center">
-            <h3 className="text-lg font-semibold text-black mb-2">
-              Hledáte prostor pro svou akci?
-            </h3>
-            <p className="text-sm text-gray-600 mb-4">
-              Prohlédněte si naši databázi event prostorů v Praze a najděte ideální místo pro vaši akci.
-            </p>
-            <Link 
-              href="/prostory"
-              className="inline-block px-6 py-2 bg-black text-white rounded-full text-sm hover:bg-gray-800 transition-colors"
-            >
-              Prohlédnout prostory
-            </Link>
-          </div>
-        </div>
       </div>
     </div>
   )

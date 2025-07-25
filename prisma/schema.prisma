@@ -6,7 +6,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
@@ -75,12 +75,13 @@ model Venue {
   capacitySeated   Int?
   capacityStanding Int?
   venueType        String?
-  amenities        String[]
+  amenities        String // JSON array
   contactEmail     String?
   contactPhone     String?
   websiteUrl       String?
-  images           String[]
+  images           String // JSON array
   videoUrl         String?
+  youtubeUrl       String?
   status           String   @default("draft") // draft, active, expired
   managerId        String
   subscriptionId   String?  // Stripe subscription ID
@@ -177,7 +178,7 @@ model VenueBroadcast {
   contactEmail     String
   contactPhone     String?
   contactName      String
-  sentVenues       String[] // Array of venue IDs that received the email
+  sentVenues       String // JSON array of venue IDs that received the email
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 

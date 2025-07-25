@@ -61,6 +61,22 @@ export default async function VenueDetailPage({
             {/* Gallery */}
             <VenueGallery images={venue.images} venueName={venue.name} />
 
+            {/* YouTube Video */}
+            {venue.youtubeUrl && (
+              <div className="mt-8">
+                <h2 className="text-title-3 text-black mb-4">Video prezentace</h2>
+                <div className="aspect-video w-full rounded-lg overflow-hidden shadow-lg">
+                  <iframe
+                    src={venue.youtubeUrl.replace('watch?v=', 'embed/')}
+                    title={`${venue.name} - Video prezentace`}
+                    className="w-full h-full"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  />
+                </div>
+              </div>
+            )}
+
             {/* Venue Info */}
             <div className="mt-8">
               <div className="flex items-start justify-between mb-6">

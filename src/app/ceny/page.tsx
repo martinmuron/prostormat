@@ -44,7 +44,7 @@ export default function PricingPage() {
                     Roční předplatné
                   </h2>
                   <div className="mb-4">
-                    <span className="text-5xl sm:text-6xl font-black text-black">9 000</span>
+                    <span className="text-5xl sm:text-6xl font-black text-black">12 000</span>
                     <span className="text-title-3 text-gray-600 ml-2">Kč / rok</span>
                   </div>
                   <p className="text-body text-gray-600 font-medium">
@@ -114,56 +114,56 @@ export default function PricingPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             <ScrollReveal delay={100}>
-              <div className="bg-white rounded-3xl p-8 hover-lift transition-all duration-300 shadow-lg border border-gray-100 text-center group">
+              <div className="bg-white rounded-3xl p-8 hover-lift transition-all duration-300 shadow-lg border border-gray-100 text-center group h-full flex flex-col">
                 <div className="w-16 h-16 bg-gradient-to-br from-black to-gray-700 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
                   <Star className="w-8 h-8 text-white" />
                 </div>
                 <h3 className="text-title-3 font-bold text-black mb-3">
                   Zvýraznění profilu
                 </h3>
-                <p className="text-callout text-gray-600 leading-relaxed">
+                <p className="text-callout text-gray-600 leading-relaxed flex-grow">
                   Featured listing pro maximální viditelnost ve výsledcích vyhledávání
                 </p>
               </div>
             </ScrollReveal>
 
             <ScrollReveal delay={200}>
-              <div className="bg-white rounded-3xl p-8 hover-lift transition-all duration-300 shadow-lg border border-gray-100 text-center group">
+              <div className="bg-white rounded-3xl p-8 hover-lift transition-all duration-300 shadow-lg border border-gray-100 text-center group h-full flex flex-col">
                 <div className="w-16 h-16 bg-gradient-to-br from-black to-gray-700 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
                   <TrendingUp className="w-8 h-8 text-white" />
                 </div>
                 <h3 className="text-title-3 font-bold text-black mb-3">
                   Prémiové umístění
                 </h3>
-                <p className="text-callout text-gray-600 leading-relaxed">
+                <p className="text-callout text-gray-600 leading-relaxed flex-grow">
                   Prioritní zobrazení ve výsledcích vyhledávání a kategoriích
                 </p>
               </div>
             </ScrollReveal>
 
             <ScrollReveal delay={300}>
-              <div className="bg-white rounded-3xl p-8 hover-lift transition-all duration-300 shadow-lg border border-gray-100 text-center group">
+              <div className="bg-white rounded-3xl p-8 hover-lift transition-all duration-300 shadow-lg border border-gray-100 text-center group h-full flex flex-col">
                 <div className="w-16 h-16 bg-gradient-to-br from-black to-gray-700 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
                   <Zap className="w-8 h-8 text-white" />
                 </div>
                 <h3 className="text-title-3 font-bold text-black mb-3">
                   Propagační možnosti
                 </h3>
-                <p className="text-callout text-gray-600 leading-relaxed">
+                <p className="text-callout text-gray-600 leading-relaxed flex-grow">
                   Dodatečné marketingové nástroje a promotional features
                 </p>
               </div>
             </ScrollReveal>
 
             <ScrollReveal delay={400}>
-              <div className="bg-white rounded-3xl p-8 hover-lift transition-all duration-300 shadow-lg border border-gray-100 text-center group">
+              <div className="bg-white rounded-3xl p-8 hover-lift transition-all duration-300 shadow-lg border border-gray-100 text-center group h-full flex flex-col">
                 <div className="w-16 h-16 bg-gradient-to-br from-black to-gray-700 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
                   <Mail className="w-8 h-8 text-white" />
                 </div>
                 <h3 className="text-title-3 font-bold text-black mb-3">
                   Marketingová podpora
                 </h3>
-                <p className="text-callout text-gray-600 leading-relaxed">
+                <p className="text-callout text-gray-600 leading-relaxed flex-grow">
                   Individuální konzultace a podpora pro rozvoj vašeho prostoru
                 </p>
               </div>

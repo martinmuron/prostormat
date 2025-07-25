@@ -12,10 +12,13 @@ import { MapPin, Users, Phone, Mail, Globe, Heart } from "lucide-react"
 
 async function getVenue(slug: string) {
   try {
+    console.log('🔍 getVenue called with slug:', slug)
+    
     const venue = await db.venue.findUnique({
       where: {
         slug,
-        status: { in: ["active", "draft"] },
+        // Remove status filter temporarily to debug
+        // status: { in: ["active", "draft"] },
       },
       include: {
         manager: {
@@ -27,6 +30,8 @@ async function getVenue(slug: string) {
         }
       }
     })
+    
+    console.log('🔍 Found venue:', venue ? { id: venue.id, name: venue.name, status: venue.status } : 'No venue found')
     
     if (!venue) return null
     

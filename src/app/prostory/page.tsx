@@ -16,8 +16,11 @@ interface SearchParams {
 
 async function getVenues(searchParams: SearchParams) {
   try {
+    console.log('🔍 getVenues called with searchParams:', searchParams)
+    
     const where: any = {
-      status: { in: ["active", "draft"] },
+      // Remove status filter temporarily to debug
+      // status: { in: ["active", "draft"] },
     }
 
     // Search query
@@ -69,12 +72,21 @@ async function getVenues(searchParams: SearchParams) {
       }
     }
 
+    console.log('🔍 Query where conditions:', JSON.stringify(where, null, 2))
+
     const venues = await db.venue.findMany({
       where,
       orderBy: {
         createdAt: "desc",
       },
     })
+
+    console.log('🔍 Found venues count:', venues.length)
+    console.log('🔍 First venue sample:', venues[0] ? { 
+      id: venues[0].id, 
+      name: venues[0].name, 
+      status: venues[0].status 
+    } : 'No venues found')
 
     // PostgreSQL returns arrays directly, no need to parse
     return venues

@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "dev:local": "npm run db:setup:local && next dev",
+    "dev:postgres": "./scripts/dev-local.sh",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -16,6 +17,7 @@
     "db:push": "prisma db push",
     "db:migrate": "prisma migrate deploy",
     "db:seed": "tsx prisma/seed.ts",
+    "db:reset": "./scripts/db-reset.sh",
     "db:setup:local": "cp prisma/schema.sqlite.prisma prisma/schema.prisma && prisma db push --force-reset && npm run db:seed"
   },
   "dependencies": {

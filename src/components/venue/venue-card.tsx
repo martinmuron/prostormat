@@ -25,7 +25,7 @@ export function VenueCard({ venue }: VenueCardProps) {
   const venueTypeLabel = venue.venueType ? VENUE_TYPES[venue.venueType as VenueType] || venue.venueType : null
 
   return (
-    <Card className="overflow-hidden hover-lift transition-all duration-500 group border-2 border-gray-100 bg-white hover:border-black hover:shadow-2xl rounded-2xl">
+    <Card className="overflow-hidden hover-lift transition-all duration-500 group border-2 border-gray-100 bg-white hover:border-black hover:shadow-2xl rounded-2xl h-full flex flex-col">
       <Link href={`/prostory/${venue.slug}`}>
         <div className="aspect-[4/3] relative overflow-hidden">
           <Image
@@ -49,47 +49,49 @@ export function VenueCard({ venue }: VenueCardProps) {
           </div>
         </div>
         
-        <CardContent className="p-4 sm:p-6 bg-white">
-          <h3 className="text-lg sm:text-title-3 text-black mb-3 group-hover:text-gray-500 transition-all duration-300 leading-tight font-bold tracking-tight">
-            {venue.name}
-          </h3>
-          
-          <p className="text-sm sm:text-callout text-gray-600 mb-3 font-medium">
-            {venue.address}
-          </p>
-          
-          {venue.description && (
-            <p className="text-sm sm:text-body text-gray-700 mb-4 line-clamp-2 leading-relaxed">
-              {venue.description}
-            </p>
-          )}
-          
-          <div className="text-sm sm:text-callout">
-            <div className="text-gray-600 leading-tight font-medium mb-4">
-              {venue.capacitySeated && venue.capacityStanding ? (
-                <span className="px-3 py-1.5 bg-gray-50 rounded-xl border border-gray-200 text-black font-semibold">
-                  {venue.capacitySeated} sed. / {venue.capacityStanding} stoj.
-                </span>
-              ) : venue.capacitySeated ? (
-                <span className="px-3 py-1.5 bg-gray-50 rounded-xl border border-gray-200 text-black font-semibold">
-                  {venue.capacitySeated} sedících
-                </span>
-              ) : venue.capacityStanding ? (
-                <span className="px-3 py-1.5 bg-gray-50 rounded-xl border border-gray-200 text-black font-semibold">
-                  {venue.capacityStanding} stojících
-                </span>
-              ) : null}
-            </div>
+        <CardContent className="p-4 sm:p-6 bg-white flex flex-col h-full">
+          <div className="flex-1">
+            <h3 className="text-lg sm:text-title-3 text-black mb-3 group-hover:text-gray-500 transition-all duration-300 leading-tight font-bold tracking-tight">
+              {venue.name}
+            </h3>
             
-            <Button 
-              variant="outline" 
-              size="sm"
-              className="w-full bg-white border-gray-200 text-gray-700 hover:bg-gray-50 hover:text-black hover:border-gray-300 transition-all duration-300"
-            >
-              <span>Zobrazit detail</span>
-              <span className="ml-2 transform group-hover:translate-x-1 transition-transform duration-300">→</span>
-            </Button>
+            <p className="text-sm sm:text-callout text-gray-600 mb-3 font-medium">
+              {venue.address}
+            </p>
+            
+            {venue.description && (
+              <p className="text-sm sm:text-body text-gray-700 mb-4 line-clamp-2 leading-relaxed">
+                {venue.description}
+              </p>
+            )}
+            
+            <div className="text-sm sm:text-callout mb-4">
+              <div className="text-gray-600 leading-tight font-medium">
+                {venue.capacitySeated && venue.capacityStanding ? (
+                  <span className="px-3 py-1.5 bg-gray-50 rounded-xl border border-gray-200 text-black font-semibold">
+                    {venue.capacitySeated} sed. / {venue.capacityStanding} stoj.
+                  </span>
+                ) : venue.capacitySeated ? (
+                  <span className="px-3 py-1.5 bg-gray-50 rounded-xl border border-gray-200 text-black font-semibold">
+                    {venue.capacitySeated} sedících
+                  </span>
+                ) : venue.capacityStanding ? (
+                  <span className="px-3 py-1.5 bg-gray-50 rounded-xl border border-gray-200 text-black font-semibold">
+                    {venue.capacityStanding} stojících
+                  </span>
+                ) : null}
+              </div>
+            </div>
           </div>
+          
+          <Button 
+            variant="outline" 
+            size="sm"
+            className="w-full bg-white border-gray-200 text-gray-700 hover:bg-gray-50 hover:text-black hover:border-gray-300 transition-all duration-300 mt-auto"
+          >
+            <span>Zobrazit detail</span>
+            <span className="ml-2 transform group-hover:translate-x-1 transition-transform duration-300">→</span>
+          </Button>
         </CardContent>
       </Link>
     </Card>

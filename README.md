@@ -183,4 +183,4 @@ This project is proprietary software for Prostormat.
 
 ---
 
-Built with ❤️ for the Prague event community
+Built with ❤️ for the Prague event community# Database fixed - venues now showing on production

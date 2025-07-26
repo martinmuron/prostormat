@@ -25,15 +25,15 @@ export function HeroSearch() {
     <div className="max-w-4xl mx-auto">
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Filter Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
           {/* Venue Type Filter */}
-          <div className="glass-search-dark rounded-2xl p-6 hover-glow transition-all duration-300 hover:scale-105">
-            <div className="flex items-center mb-4">
-              <Calendar className="h-5 w-5 text-white mr-3" />
-              <label className="text-lg font-semibold text-gray-200">Typ prostoru</label>
+          <div className="bg-white/95 backdrop-blur-sm rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 border border-gray-100">
+            <div className="flex items-center justify-center mb-4">
+              <Calendar className="h-5 w-5 text-gray-700 mr-3" />
+              <label className="text-base font-medium text-gray-800">Typ prostoru</label>
             </div>
             <Select value={selectedType} onValueChange={setSelectedType}>
-              <SelectTrigger className="bg-white/10 border-white/20 text-white placeholder:text-gray-300">
+              <SelectTrigger className="bg-white border-gray-200 text-gray-800 text-center">
                 <SelectValue placeholder="Všechny typy" />
               </SelectTrigger>
               <SelectContent>
@@ -46,13 +46,13 @@ export function HeroSearch() {
           </div>
 
           {/* Capacity Filter */}
-          <div className="glass-search-dark rounded-2xl p-6 hover-glow transition-all duration-300 hover:scale-105">
-            <div className="flex items-center mb-4">
-              <Users className="h-5 w-5 text-white mr-3" />
-              <label className="text-lg font-semibold text-gray-200">Kapacita</label>
+          <div className="bg-white/95 backdrop-blur-sm rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 border border-gray-100">
+            <div className="flex items-center justify-center mb-4">
+              <Users className="h-5 w-5 text-gray-700 mr-3" />
+              <label className="text-base font-medium text-gray-800">Kapacita</label>
             </div>
             <Select value={selectedCapacity} onValueChange={setSelectedCapacity}>
-              <SelectTrigger className="bg-white/10 border-white/20 text-white placeholder:text-gray-300">
+              <SelectTrigger className="bg-white border-gray-200 text-gray-800 text-center">
                 <SelectValue placeholder="Libovolná kapacita" />
               </SelectTrigger>
               <SelectContent>
@@ -65,13 +65,13 @@ export function HeroSearch() {
           </div>
 
           {/* Location Filter */}
-          <div className="glass-search-dark rounded-2xl p-6 hover-glow transition-all duration-300 hover:scale-105">
-            <div className="flex items-center mb-4">
-              <MapPin className="h-5 w-5 text-white mr-3" />
-              <label className="text-lg font-semibold text-gray-200">Lokalita</label>
+          <div className="bg-white/95 backdrop-blur-sm rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 border border-gray-100">
+            <div className="flex items-center justify-center mb-4">
+              <MapPin className="h-5 w-5 text-gray-700 mr-3" />
+              <label className="text-base font-medium text-gray-800">Lokalita</label>
             </div>
             <Select value={selectedDistrict} onValueChange={setSelectedDistrict}>
-              <SelectTrigger className="bg-white/10 border-white/20 text-white placeholder:text-gray-300">
+              <SelectTrigger className="bg-white border-gray-200 text-gray-800 text-center">
                 <SelectValue placeholder="Celá Praha" />
               </SelectTrigger>
               <SelectContent>
@@ -89,9 +89,9 @@ export function HeroSearch() {
           <Button 
             type="submit" 
             size="lg"
-            className="magnetic-button hover-lift px-16 py-5 text-xl font-bold rounded-2xl bg-white text-black hover:bg-gray-100 transition-all duration-300 shadow-2xl"
+            className="px-12 py-4 text-lg font-semibold rounded-2xl bg-black text-white hover:bg-gray-800 transition-all duration-300 shadow-lg hover:shadow-xl"
           >
-            <Search className="mr-3 h-6 w-6" />
+            <Search className="mr-3 h-5 w-5" />
             Najít prostory
           </Button>
         </div>

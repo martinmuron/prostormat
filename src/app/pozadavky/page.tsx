@@ -93,117 +93,125 @@ async function EventRequestsList() {
   }
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
       {requests.map((request: any) => {
         const eventTypeLabel = EVENT_TYPES[request.eventType as EventType] || request.eventType
         
         return (
-          <Card key={request.id} className="group hover:shadow-xl hover:shadow-black/5 hover:-translate-y-1 transition-all duration-300 ease-out border-0 shadow-md">
-            <CardContent className="p-6">
-              <div className="flex flex-col gap-4 mb-6">
-                <div className="flex items-start justify-between gap-3">
-                  <Badge variant="outline" className="bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 border-blue-200 font-medium px-3 py-1">
+          <Card key={request.id} className="group hover:shadow-xl hover:shadow-black/5 hover:-translate-y-1 transition-all duration-300 ease-out border border-gray-200 shadow-sm">
+            <CardContent className="p-8">
+              <div className="flex flex-col gap-6 mb-8">
+                <div className="flex items-start justify-between gap-4">
+                  <Badge variant="outline" className="bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 border-blue-200 font-medium px-4 py-2 text-sm">
                     {eventTypeLabel}
                   </Badge>
-                  <div className="text-xs text-gray-500 text-right">
+                  <div className="text-sm text-gray-500 text-right">
                     {formatDate(new Date(request.createdAt))}
                   </div>
                 </div>
                 <div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-3 leading-tight group-hover:text-black transition-colors">{request.title}</h3>
+                  <h2 className="text-xl font-semibold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors duration-200 leading-tight">
+                    {request.title}
+                  </h2>
                   {request.description && (
-                    <p className="text-sm text-gray-600 line-clamp-3 leading-relaxed">{request.description}</p>
+                    <p className="text-base text-gray-600 leading-relaxed line-clamp-3">
+                      {request.description}
+                    </p>
                   )}
                 </div>
               </div>
               
               <div className="space-y-4 mb-6">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="bg-gray-50 rounded-lg p-3">
-                    <div className="flex items-center gap-2 mb-1">
-                      <Calendar className="h-4 w-4 text-blue-600" />
-                      <span className="text-xs font-medium text-gray-600 uppercase tracking-wide">Datum</span>
+                <div className="grid grid-cols-1 gap-6 mb-8">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                      <Calendar className="h-6 w-6 text-blue-600" />
                     </div>
-                    <p className="text-sm font-semibold text-gray-900">{formatDate(new Date(request.eventDate))}</p>
+                    <div>
+                      <p className="text-sm text-gray-500 font-medium">Datum akce</p>
+                      <p className="text-lg font-semibold text-gray-900">{formatDate(new Date(request.eventDate))}</p>
+                    </div>
                   </div>
                   
-                  <div className="bg-gray-50 rounded-lg p-3">
-                    <div className="flex items-center gap-2 mb-1">
-                      <Users className="h-4 w-4 text-green-600" />
-                      <span className="text-xs font-medium text-gray-600 uppercase tracking-wide">Hosté</span>
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                      <Users className="h-6 w-6 text-green-600" />
                     </div>
-                    <p className="text-sm font-semibold text-gray-900">{request.expectedGuests}</p>
+                    <div>
+                      <p className="text-sm text-gray-500 font-medium">Očekávaný počet hostů</p>
+                      <p className="text-lg font-semibold text-gray-900">{request.expectedGuests} osob</p>
+                    </div>
                   </div>
+                  
+                  {request.budget && (
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center">
+                        <Euro className="h-6 w-6 text-yellow-600" />
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-500 font-medium">Rozpočet</p>
+                        <p className="text-lg font-semibold text-gray-900">{request.budget.toLocaleString()} Kč</p>
+                      </div>
+                    </div>
+                  )}
+                  
+                  {request.locationPreference && (
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
+                        <MapPin className="h-6 w-6 text-purple-600" />
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-500 font-medium">Preferovaná lokalita</p>
+                        <p className="text-lg font-semibold text-purple-900">{request.locationPreference}</p>
+                      </div>
+                    </div>
+                  )}
                 </div>
-                
-                {(request.budget || request.locationPreference) && (
-                  <div className="grid grid-cols-1 gap-3">
-                    {request.budget && (
-                      <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg p-3 border border-green-100">
-                        <div className="flex items-center gap-2 mb-1">
-                          <Euro className="h-4 w-4 text-green-600" />
-                          <span className="text-xs font-medium text-green-700 uppercase tracking-wide">Rozpočet</span>
-                        </div>
-                        <p className="text-sm font-semibold text-green-900">{request.budget.toLocaleString()} Kč</p>
-                      </div>
-                    )}
-                    
-                    {request.locationPreference && (
-                      <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg p-3 border border-purple-100">
-                        <div className="flex items-center gap-2 mb-1">
-                          <MapPin className="h-4 w-4 text-purple-600" />
-                          <span className="text-xs font-medium text-purple-700 uppercase tracking-wide">Lokalita</span>
-                        </div>
-                        <p className="text-sm font-semibold text-purple-900 truncate">{request.locationPreference}</p>
-                      </div>
-                    )}
-                  </div>
-                )}
               </div>
 
               {request.requirements && (
-                <div className="mb-6">
-                  <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
-                    <h4 className="text-sm font-medium text-amber-800 mb-2">Speciální požadavky</h4>
-                    <p className="text-sm text-amber-700 leading-relaxed">{request.requirements}</p>
+                <div className="mb-8">
+                  <div className="bg-amber-50 border border-amber-200 rounded-xl p-6">
+                    <h4 className="text-base font-semibold text-amber-800 mb-3">Speciální požadavky</h4>
+                    <p className="text-base text-amber-700 leading-relaxed">{request.requirements}</p>
                   </div>
                 </div>
               )}
               
               {/* Contact Info */}
-              <div className="bg-gradient-to-br from-slate-50 to-gray-100 rounded-xl p-4 border border-slate-200">
-                <h4 className="text-sm font-semibold text-slate-800 mb-4 flex items-center gap-2">
-                  <User className="h-4 w-4 text-slate-600" />
-                  Kontakt
+              <div className="bg-gradient-to-br from-slate-50 to-gray-100 rounded-xl p-6 border border-slate-200">
+                <h4 className="text-base font-semibold text-slate-800 mb-6 flex items-center gap-2">
+                  <User className="h-5 w-5 text-slate-600" />
+                  Kontaktní informace
                 </h4>
-                <div className="space-y-3">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-slate-200 rounded-full flex items-center justify-center">
-                      <User className="h-4 w-4 text-slate-600" />
+                <div className="space-y-4">
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 bg-slate-200 rounded-xl flex items-center justify-center">
+                      <User className="h-5 w-5 text-slate-600" />
                     </div>
-                    <span className="text-sm font-medium text-slate-900">{request.contactName}</span>
+                    <span className="text-base font-medium text-slate-900">{request.contactName}</span>
                   </div>
                   
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                      <Mail className="h-4 w-4 text-blue-600" />
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
+                      <Mail className="h-5 w-5 text-blue-600" />
                     </div>
                     <a 
                       href={`mailto:${request.contactEmail}`}
-                      className="text-sm text-blue-600 hover:text-blue-800 hover:underline transition-colors truncate"
+                      className="text-base text-blue-600 hover:text-blue-800 hover:underline transition-colors"
                     >
                       {request.contactEmail}
                     </a>
                   </div>
                   
                   {request.contactPhone && (
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                        <Phone className="h-4 w-4 text-green-600" />
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center">
+                        <Phone className="h-5 w-5 text-green-600" />
                       </div>
                       <a 
                         href={`tel:${request.contactPhone}`}
-                        className="text-sm text-green-600 hover:text-green-800 hover:underline transition-colors"
+                        className="text-base text-green-600 hover:text-green-800 hover:underline transition-colors"
                       >
                         {request.contactPhone}
                       </a>

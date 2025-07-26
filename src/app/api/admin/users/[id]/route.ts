@@ -3,7 +3,7 @@ import { db } from "@/lib/db"
 
 export async function PATCH(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Simple password check via header
@@ -17,7 +17,7 @@ export async function PATCH(
     }
 
     const { role } = await request.json()
-    const userId = params.id
+    const { id: userId } = await params
 
     // Update user role
     const updatedUser = await db.user.update({
@@ -46,7 +46,7 @@ export async function PATCH(
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Simple password check via header
@@ -59,7 +59,7 @@ export async function DELETE(
       )
     }
 
-    const userId = params.id
+    const { id: userId } = await params
 
     // Delete user (this will cascade to their venues and other related data)
     await db.user.delete({

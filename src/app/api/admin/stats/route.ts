@@ -20,14 +20,16 @@ export async function GET(request: Request) {
       activeVenues,
       draftVenues,
       totalInquiries,
-      venueManagers
+      venueManagers,
+      totalBlogPosts
     ] = await Promise.all([
       db.user.count(),
       db.venue.count(),
       db.venue.count({ where: { status: "active" } }),
       db.venue.count({ where: { status: "draft" } }),
       db.venueInquiry.count(),
-      db.user.count({ where: { role: "venue_manager" } })
+      db.user.count({ where: { role: "venue_manager" } }),
+      db.blogPost.count()
     ])
 
     return NextResponse.json({
@@ -36,7 +38,8 @@ export async function GET(request: Request) {
       activeVenues,
       draftVenues,
       totalInquiries,
-      venueManagers
+      venueManagers,
+      totalBlogPosts
     })
   } catch (error) {
     console.error("Error fetching admin stats:", error)

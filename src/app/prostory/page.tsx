@@ -1,11 +1,9 @@
 import { Suspense } from "react"
 import { VenueCard } from "@/components/venue/venue-card"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Input } from "@/components/ui/input"
+import { VenueFilters } from "@/components/venue/venue-filters"
 import { Button } from "@/components/ui/button"
 import { db } from "@/lib/db"
 import { VENUE_TYPES, PRAGUE_DISTRICTS, CAPACITY_RANGES } from "@/types"
-import { Search } from "lucide-react"
 
 interface SearchParams {
   q?: string
@@ -148,79 +146,8 @@ export default async function VenuesPage({
             Event prostory v Praze
           </h1>
           
-          {/* Search and Filters - Single Row */}
-          <form method="GET">
-            <div className="flex flex-col lg:flex-row gap-3 lg:gap-4">
-              {/* Search Bar */}
-              <div className="relative flex-1 lg:flex-[2]">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-                <Input
-                  name="q"
-                  defaultValue={resolvedSearchParams.q}
-                  className="pl-12 h-12 text-base rounded-xl border-2 border-gray-200 focus:border-black transition-all duration-200 hover:border-gray-300 hover:shadow-lg font-medium shadow-sm"
-                  placeholder="Hledat prostory..."
-                />
-              </div>
-
-              {/* Filter Selects */}
-              <div className="flex flex-col sm:flex-row gap-3 lg:gap-4 lg:flex-1">
-                <Select 
-                  name="type" 
-                  defaultValue={resolvedSearchParams.type}
-                >
-                  <SelectTrigger className="h-12 text-sm rounded-xl border-2 border-gray-200 focus:border-black">
-                    <SelectValue placeholder="Typ prostoru" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {Object.entries(VENUE_TYPES).map(([key, label]) => (
-                      <SelectItem key={key} value={key}>
-                        {label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-
-                <Select 
-                  name="district" 
-                  defaultValue={resolvedSearchParams.district}
-                >
-                  <SelectTrigger className="h-12 text-sm rounded-xl border-2 border-gray-200 focus:border-black">
-                    <SelectValue placeholder="Lokalita" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {PRAGUE_DISTRICTS.map((district) => (
-                      <SelectItem key={district} value={district}>
-                        {district}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-
-                <Select 
-                  name="capacity" 
-                  defaultValue={resolvedSearchParams.capacity}
-                >
-                  <SelectTrigger className="h-12 text-sm rounded-xl border-2 border-gray-200 focus:border-black">
-                    <SelectValue placeholder="Kapacita" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {CAPACITY_RANGES.map((range) => (
-                      <SelectItem key={range} value={range}>
-                        {range}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-
-                <Button 
-                  type="submit" 
-                  className="h-12 px-6 text-sm rounded-xl font-semibold magnetic-button hover-lift transition-all duration-200 whitespace-nowrap"
-                >
-                  Filtrovat
-                </Button>
-              </div>
-            </div>
-          </form>
+          {/* Search and Filters */}
+          <VenueFilters initialValues={resolvedSearchParams} />
         </div>
       </div>
       

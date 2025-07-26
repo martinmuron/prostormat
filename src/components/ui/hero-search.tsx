@@ -29,11 +29,13 @@ export function HeroSearch() {
           {/* Venue Type Filter */}
           <div className="bg-white/95 backdrop-blur-sm rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 border border-gray-100">
             <div className="flex items-center justify-center mb-4">
-              <Calendar className="h-5 w-5 text-gray-700 mr-3" />
+              <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+                <Calendar className="h-4 w-4 text-blue-600" />
+              </div>
               <label className="text-base font-medium text-gray-800">Typ prostoru</label>
             </div>
             <Select value={selectedType} onValueChange={setSelectedType}>
-              <SelectTrigger className="bg-white border-gray-200 text-gray-800 text-center">
+              <SelectTrigger className="bg-blue-50/50 border-2 border-blue-200 text-gray-800 text-center focus:border-blue-500 hover:bg-blue-50 transition-all duration-200">
                 <SelectValue placeholder="Všechny typy" />
               </SelectTrigger>
               <SelectContent>
@@ -48,11 +50,13 @@ export function HeroSearch() {
           {/* Capacity Filter */}
           <div className="bg-white/95 backdrop-blur-sm rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 border border-gray-100">
             <div className="flex items-center justify-center mb-4">
-              <Users className="h-5 w-5 text-gray-700 mr-3" />
+              <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center mr-3">
+                <Users className="h-4 w-4 text-green-600" />
+              </div>
               <label className="text-base font-medium text-gray-800">Kapacita</label>
             </div>
             <Select value={selectedCapacity} onValueChange={setSelectedCapacity}>
-              <SelectTrigger className="bg-white border-gray-200 text-gray-800 text-center">
+              <SelectTrigger className="bg-green-50/50 border-2 border-green-200 text-gray-800 text-center focus:border-green-500 hover:bg-green-50 transition-all duration-200">
                 <SelectValue placeholder="Libovolná kapacita" />
               </SelectTrigger>
               <SelectContent>
@@ -67,11 +71,13 @@ export function HeroSearch() {
           {/* Location Filter */}
           <div className="bg-white/95 backdrop-blur-sm rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 border border-gray-100">
             <div className="flex items-center justify-center mb-4">
-              <MapPin className="h-5 w-5 text-gray-700 mr-3" />
+              <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center mr-3">
+                <MapPin className="h-4 w-4 text-purple-600" />
+              </div>
               <label className="text-base font-medium text-gray-800">Lokalita</label>
             </div>
             <Select value={selectedDistrict} onValueChange={setSelectedDistrict}>
-              <SelectTrigger className="bg-white border-gray-200 text-gray-800 text-center">
+              <SelectTrigger className="bg-purple-50/50 border-2 border-purple-200 text-gray-800 text-center focus:border-purple-500 hover:bg-purple-50 transition-all duration-200">
                 <SelectValue placeholder="Celá Praha" />
               </SelectTrigger>
               <SelectContent>

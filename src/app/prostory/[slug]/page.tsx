@@ -2,6 +2,7 @@ import { notFound } from "next/navigation"
 import { VenueGallery } from "@/components/venue/venue-gallery"
 import { VenueContactForm } from "@/components/forms/venue-contact-form"
 import { HeartButton } from "@/components/venue/heart-button"
+import { VenueMap } from "@/components/maps/venue-map"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -186,6 +187,15 @@ export default async function VenueDetailPage({
                     </div>
                   )}
                 </div>
+              </div>
+
+              {/* Location Map */}
+              <div className="mb-8">
+                <h2 className="text-title-3 text-black mb-4">Poloha</h2>
+                <VenueMap 
+                  address={venue.address}
+                  venueName={venue.name}
+                />
               </div>
             </div>
           </div>

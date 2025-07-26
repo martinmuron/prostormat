@@ -4,6 +4,12 @@ export type VenueType =
   | 'gallery' 
   | 'conference' 
   | 'historical'
+  | 'villa'
+  | 'palace'
+  | 'hotel'
+  | 'garden'
+  | 'studio'
+  | 'loft'
   | 'other'
 
 export type EventType = 
@@ -26,6 +32,12 @@ export const VENUE_TYPES: Record<VenueType, string> = {
   gallery: 'Galerie',
   conference: 'Konferenční centrum',
   historical: 'Historický prostor',
+  villa: 'Vila',
+  palace: 'Palác',
+  hotel: 'Hotel',
+  garden: 'Zahrada',
+  studio: 'Studio',
+  loft: 'Loft',
   other: 'Jiné'
 }
 

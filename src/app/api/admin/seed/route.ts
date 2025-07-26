@@ -175,6 +175,108 @@ export async function POST(request: Request) {
         ],
         status: 'active',
         managerId: manager3.id,
+      },
+      {
+        name: 'Palác Vinohrady',
+        slug: 'palac-vinohrady',
+        description: 'Elegantní palác s historickou atmosférou, ideální pro svatby a gala večery.',
+        address: 'Náměstí Míru 15, Praha 2',
+        capacitySeated: 200,
+        capacityStanding: 300,
+        venueType: 'palace',
+        amenities: ['Historické sály', 'Klavír', 'Catering servis', 'Parkování', 'Klimatizace'],
+        contactEmail: 'rezervace@palacvinohrady.cz',
+        contactPhone: '+420 296 826 111',
+        images: [
+          'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+        ],
+        status: 'active',
+        managerId: manager1.id,
+      },
+      {
+        name: 'Boutique Hotel Constans',
+        slug: 'boutique-hotel-constans',
+        description: 'Luxusní boutique hotel s elegantními salonky pro business meetingy.',
+        address: 'Pařížská 30, Praha 1',
+        capacitySeated: 40,
+        capacityStanding: 65,
+        venueType: 'hotel',
+        amenities: ['WiFi', 'Projektor', 'Catering', 'Concierge služby', 'VIP lounge'],
+        contactEmail: 'events@hotelconstans.cz',
+        contactPhone: '+420 234 091 818',
+        images: [
+          'https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+        ],
+        status: 'active',
+        managerId: manager2.id,
+      },
+      {
+        name: 'Letná Beer Garden',
+        slug: 'letna-beer-garden',
+        description: 'Prostorná pivní zahrada s výhledem na Prahu, perfektní pro letní akce.',
+        address: 'Letná Park 5, Praha 7',
+        capacitySeated: 120,
+        capacityStanding: 200,
+        venueType: 'garden',
+        amenities: ['Venkovní terasa', 'Gril', 'Bar', 'Výhled na město', 'Parkování'],
+        contactEmail: 'info@letnagarden.cz',
+        contactPhone: '+420 606 789 123',
+        images: [
+          'https://images.unsplash.com/photo-1514933651103-005eec06c04b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+        ],
+        status: 'active',
+        managerId: manager3.id,
+      },
+      {
+        name: 'Centrum Karlovo náměstí',
+        slug: 'centrum-karlovo-namesti',
+        description: 'Moderní konferenční centrum s nejnovějšími technologiemi.',
+        address: 'Karlovo náměstí 40, Praha 2',
+        capacitySeated: 300,
+        capacityStanding: 450,
+        venueType: 'conference',
+        amenities: ['4K projekce', 'Simultánní překlad', 'Live streaming', 'Catering', 'Metro stanice'],
+        contactEmail: 'rezervace@centrokn.cz',
+        contactPhone: '+420 224 915 865',
+        images: [
+          'https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+        ],
+        status: 'active',
+        managerId: manager1.id,
+      },
+      {
+        name: 'Studio Vinohrady',
+        slug: 'studio-vinohrady',
+        description: 'Kreativní studio pro workshopy, přednášky a networking akce.',
+        address: 'Vinohrady Square 25, Praha 3',
+        capacitySeated: 50,
+        capacityStanding: 80,
+        venueType: 'studio',
+        amenities: ['Flexibilní uspořádání', 'Whiteboard', 'WiFi', 'Kuchyňka', 'Zvukový systém'],
+        contactEmail: 'hello@studiovinohrady.cz',
+        contactPhone: '+420 775 432 198',
+        images: [
+          'https://images.unsplash.com/photo-1497366754035-f200968a6e72?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+        ],
+        status: 'active',
+        managerId: manager2.id,
+      },
+      {
+        name: 'Malostranský palác',
+        slug: 'malostranske-palace',
+        description: 'Barokní palác v srdci Malé Strany s autentickou atmosférou.',
+        address: 'Malá Strana 18, Praha 1',
+        capacitySeated: 150,
+        capacityStanding: 220,
+        venueType: 'palace',
+        amenities: ['Historické prostory', 'Zahrada', 'Parkování', 'Catering partner', 'Klavír'],
+        contactEmail: 'events@malostranske-palace.cz',
+        contactPhone: '+420 257 075 711',
+        images: [
+          'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+        ],
+        status: 'active',
+        managerId: manager3.id,
       }
     ]
 

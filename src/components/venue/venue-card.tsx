@@ -48,8 +48,10 @@ export function VenueCard({ venue }: VenueCardProps) {
             </div>
           </div>
         </div>
-        
-        <CardContent className="p-4 sm:p-6 bg-white flex flex-col h-full">
+      </Link>
+      
+      <CardContent className="p-4 sm:p-6 bg-white flex flex-col h-full">
+        <Link href={`/prostory/${venue.slug}`}>
           <div className="flex-1">
             <h3 className="text-lg sm:text-title-3 text-black mb-3 group-hover:text-gray-500 transition-all duration-300 leading-tight font-bold tracking-tight">
               {venue.name}
@@ -83,7 +85,9 @@ export function VenueCard({ venue }: VenueCardProps) {
               </div>
             </div>
           </div>
-          
+        </Link>
+        
+        <Link href={`/prostory/${venue.slug}`}>
           <Button 
             variant="outline" 
             size="sm"
@@ -92,8 +96,8 @@ export function VenueCard({ venue }: VenueCardProps) {
             <span>Zobrazit detaily</span>
             <span className="ml-2 transform group-hover:translate-x-1 transition-transform duration-300">→</span>
           </Button>
-        </CardContent>
-      </Link>
+        </Link>
+      </CardContent>
     </Card>
   )
 }

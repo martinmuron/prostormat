@@ -18,6 +18,34 @@ const eventRequestSchema = z.object({
   contactPhone: z.string().optional(),
 })
 
+export async function GET() {
+  try {
+    const requests = await db.eventRequest.findMany({
+      where: {
+        status: "active",
+        expiresAt: {
+          gte: new Date(),
+        },
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+      include: {
+        user: {
+          select: {
+            name: true,
+          }
+        }
+      }
+    })
+    
+    return NextResponse.json({ requests })
+  } catch (error) {
+    console.error("Error fetching event requests:", error)
+    return NextResponse.json({ error: "Failed to fetch event requests" }, { status: 500 })
+  }
+}
+
 export async function POST(request: Request) {
   try {
     const session = await getServerSession(authOptions)

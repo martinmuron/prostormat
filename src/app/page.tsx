@@ -109,7 +109,7 @@ export default function HomePage() {
             <Link href="/prostory" className="flex-1">
               <Button 
                 size="lg" 
-                className="w-full px-8 py-3 text-base font-medium rounded-full bg-black text-white hover:bg-gray-800 transition-all duration-200"
+                className="w-full px-8 py-3 text-base font-medium rounded-xl bg-black text-white hover:bg-gray-800 transition-all duration-200 shadow-lg hover:shadow-xl"
               >
                 <Search className="w-5 h-5 mr-2" />
                 Prohlédnout prostory
@@ -119,7 +119,7 @@ export default function HomePage() {
               <Button 
                 size="lg" 
                 variant="outline"
-                className="w-full px-8 py-3 text-base font-medium rounded-full border-gray-300 text-gray-700 hover:bg-gray-50 transition-all duration-200"
+                className="w-full px-8 py-3 text-base font-medium rounded-xl border-2 border-gray-300 text-gray-700 hover:bg-gray-50 transition-all duration-200 shadow-lg hover:shadow-xl"
               >
                 <Upload className="w-5 h-5 mr-2" />
                 Přidat prostor
@@ -159,7 +159,7 @@ export default function HomePage() {
               <Button 
                 variant="outline" 
                 size="lg" 
-                className="rounded-full px-8 py-3 text-base font-medium border-gray-300 text-gray-700 hover:bg-gray-50 transition-all duration-200"
+                className="rounded-xl px-8 py-3 text-base font-medium border-2 border-gray-300 text-gray-700 hover:bg-gray-50 transition-all duration-200 shadow-lg hover:shadow-xl"
               >
                 Zobrazit všechny prostory
                 <ArrowRight className="w-4 h-4 ml-2" />
@@ -216,7 +216,7 @@ export default function HomePage() {
             <Link href="/pridat-prostor" className="flex-1">
               <Button 
                 size="lg" 
-                className="w-full px-8 py-3 text-base font-medium rounded-full bg-white text-black hover:bg-gray-100 transition-all duration-200"
+                className="w-full px-8 py-3 text-base font-medium rounded-xl bg-white text-black hover:bg-gray-100 transition-all duration-200 shadow-lg hover:shadow-xl"
               >
                 Přidat prostor zdarma
               </Button>
@@ -225,7 +225,7 @@ export default function HomePage() {
               <Button 
                 size="lg" 
                 variant="outline"
-                className="w-full px-8 py-3 text-base font-medium rounded-full border-white text-white hover:bg-white hover:text-black transition-all duration-200"
+                className="w-full px-8 py-3 text-base font-medium rounded-xl border-2 border-white text-white hover:bg-white hover:text-black transition-all duration-200 shadow-lg hover:shadow-xl"
               >
                 Prohlédnout prostory
               </Button>

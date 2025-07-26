@@ -82,7 +82,7 @@ function BlogPostCard({ post }: { post: any }) {
             )}
             
             <Link href={`/blog/${post.slug}`}>
-              <Button variant="outline" className="group">
+              <Button variant="outline" className="group rounded-xl border-2 border-gray-300 hover:bg-gray-50 transition-all duration-200 shadow-lg hover:shadow-xl">
                 Číst více
                 <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
               </Button>

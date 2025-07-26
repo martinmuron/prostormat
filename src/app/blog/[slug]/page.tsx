@@ -49,7 +49,7 @@ export default async function BlogPostPage({
         {/* Back to blog */}
         <div className="mb-8">
           <Link href="/blog">
-            <Button variant="ghost" className="text-gray-600 hover:text-gray-900">
+            <Button variant="ghost" className="text-gray-600 hover:text-gray-900 rounded-xl hover:bg-gray-50 transition-all duration-200">
               <ArrowLeft className="w-4 h-4 mr-2" />
               Zpět na blog
             </Button>
@@ -94,7 +94,7 @@ export default async function BlogPostPage({
               </div>
             </div>
             
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" className="rounded-xl border-2 border-gray-300 hover:bg-gray-50 transition-all duration-200 shadow-lg hover:shadow-xl">
               <Share2 className="w-4 h-4 mr-2" />
               Sdílet
             </Button>
@@ -125,7 +125,7 @@ export default async function BlogPostPage({
               <span>Autor: {post.author.name || post.author.email}</span>
             </div>
             <Link href="/blog">
-              <Button variant="outline">
+              <Button variant="outline" className="rounded-xl border-2 border-gray-300 hover:bg-gray-50 transition-all duration-200 shadow-lg hover:shadow-xl">
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Zpět na blog
               </Button>

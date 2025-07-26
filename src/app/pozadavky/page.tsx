@@ -234,7 +234,7 @@ export default function EventRequestsPage() {
             prostřednictvím uvedených kontaktních údajů.
           </p>
           <Link href="/pozadavky/novy">
-            <Button size="lg" className="bg-black text-white hover:bg-gray-800 w-full sm:w-auto">
+            <Button size="lg" className="bg-black text-white hover:bg-gray-800 w-full sm:w-auto rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl">
               Přidat požadavek
             </Button>
           </Link>
@@ -356,7 +356,7 @@ export default function EventRequestsPage() {
             </p>
             {requests.length === 0 ? (
               <Link href="/pozadavky/novy">
-                <Button className="bg-black text-white hover:bg-gray-800">Přidat první požadavek</Button>
+                <Button className="bg-black text-white hover:bg-gray-800 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl">Přidat první požadavek</Button>
               </Link>
             ) : (
               <Button onClick={clearFilters} variant="outline">

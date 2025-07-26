@@ -115,7 +115,7 @@ async function VenueGrid({ searchParams }: { searchParams: SearchParams }) {
         <p className="text-sm sm:text-body text-gray-600 mb-4 sm:mb-6">
           Zkuste upravit filtry nebo vyhledat jiné prostory.
         </p>
-        <Button asChild size="sm" className="sm:size-default">
+        <Button asChild size="sm" className="sm:size-default rounded-xl bg-black text-white hover:bg-gray-800 transition-all duration-200 shadow-lg hover:shadow-xl">
           <a href="/prostory">Zobrazit všechny prostory</a>
         </Button>
       </div>

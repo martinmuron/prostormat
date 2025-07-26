@@ -261,51 +261,71 @@ export default function EventRequestsPage() {
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               {/* Search */}
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <Input
-                  placeholder="Hledat..."
-                  value={filters.search}
-                  onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
-                  className="pl-10"
-                />
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Hledat v požadavcích
+                </label>
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <Input
+                    placeholder="Název, popis, kontakt..."
+                    value={filters.search}
+                    onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
+                    className="pl-10"
+                  />
+                </div>
               </div>
 
               {/* Location Filter */}
-              <Select value={filters.location} onValueChange={(value) => setFilters(prev => ({ ...prev, location: value }))}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Lokalita" />
-                </SelectTrigger>
-                <SelectContent>
-                  {LOCATIONS.map(location => (
-                    <SelectItem key={location} value={location}>{location}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Lokalita
+                </label>
+                <Select value={filters.location} onValueChange={(value) => setFilters(prev => ({ ...prev, location: value }))}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Vyberte lokalitu" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {LOCATIONS.map(location => (
+                      <SelectItem key={location} value={location}>{location}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
 
               {/* Guest Count Filter */}
-              <Select value={filters.guestCount} onValueChange={(value) => setFilters(prev => ({ ...prev, guestCount: value }))}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Počet hostů" />
-                </SelectTrigger>
-                <SelectContent>
-                  {GUEST_COUNT_RANGES.map(range => (
-                    <SelectItem key={range.value} value={range.value}>{range.label}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Počet hostů
+                </label>
+                <Select value={filters.guestCount} onValueChange={(value) => setFilters(prev => ({ ...prev, guestCount: value }))}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Vyberte počet" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {GUEST_COUNT_RANGES.map(range => (
+                      <SelectItem key={range.value} value={range.value}>{range.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
 
               {/* Date Range Filter */}
-              <Select value={filters.dateRange} onValueChange={(value) => setFilters(prev => ({ ...prev, dateRange: value }))}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Datum přidání" />
-                </SelectTrigger>
-                <SelectContent>
-                  {DATE_RANGES.map(range => (
-                    <SelectItem key={range.value} value={range.value}>{range.label}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Datum přidání
+                </label>
+                <Select value={filters.dateRange} onValueChange={(value) => setFilters(prev => ({ ...prev, dateRange: value }))}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Vyberte období" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {DATE_RANGES.map(range => (
+                      <SelectItem key={range.value} value={range.value}>{range.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
           </CardContent>
         </Card>

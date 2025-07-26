@@ -19,10 +19,13 @@ export async function POST(request: Request) {
 
     // Check if database already has data
     const existingVenues = await prisma.venue.count()
-    if (existingVenues > 0) {
+    const existingPosts = await prisma.blogPost.count()
+    
+    if (existingVenues > 0 && existingPosts > 0) {
       return NextResponse.json({
         message: "Database already seeded",
-        existingVenues
+        existingVenues,
+        existingPosts
       })
     }
 
@@ -175,17 +178,25 @@ export async function POST(request: Request) {
       }
     ]
 
-    // Create venues
+    // Create venues (only if they don't exist)
     const createdVenues = []
-    for (const venueData of venues) {
-      const venue = await prisma.venue.create({
-        data: {
-          ...venueData,
-          expiresAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
-        }
+    if (existingVenues === 0) {
+      for (const venueData of venues) {
+        const venue = await prisma.venue.create({
+          data: {
+            ...venueData,
+            expiresAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
+          }
+        })
+        createdVenues.push(venue)
+        console.log('Created venue:', venue.name)
+      }
+    } else {
+      // Get existing venues for response
+      const existingVenuesList = await prisma.venue.findMany({
+        select: { id: true, name: true, slug: true }
       })
-      createdVenues.push(venue)
-      console.log('Created venue:', venue.name)
+      createdVenues.push(...existingVenuesList)
     }
 
     // Create a sample user
@@ -257,13 +268,203 @@ export async function POST(request: Request) {
       },
     })
 
+    // Create admin user
+    const adminPassword = await bcrypt.hash('admin123', 12)
+    const adminUser = await prisma.user.upsert({
+      where: { email: 'admin@prostormat.cz' },
+      update: {},
+      create: {
+        email: 'admin@prostormat.cz',
+        name: 'Admin User',
+        password: adminPassword,
+        role: 'admin',
+      },
+    })
+
+    // Create blog posts
+    const blogPosts = [
+      {
+        title: 'Jak vybrat perfektní event prostor v Praze',
+        slug: 'jak-vybrat-perfektni-event-prostor-v-praze',
+        excerpt: 'Praktický průvodce výběrem ideálního prostoru pro vaši firemní akci, oslavu nebo konferenci.',
+        content: `# Jak vybrat perfektní event prostor v Praze
+
+Výběr správného prostoru je klíčem k úspěchu každé akce. Ať už plánujete firemní večírek, konferenci nebo rodinnou oslavu, existuje několik důležitých faktorů, které byste měli zvážit.
+
+## 1. Určete si kapacitu
+
+Prvním krokem je stanovení počtu hostů. Nezapomeňte počítat s:
+- Organizátory a obsluhou
+- Možným navýšením počtu účastníků
+- Potřebou prostoru pro catering a vybavení
+
+## 2. Lokalita je klíčová
+
+Praha nabízí nespočet možností:
+- **Praha 1**: Prestižní lokace v centru města
+- **Praha 2**: Vinohrady s moderními prostory
+- **Praha 5**: Smíchov s výhledem na město
+
+## 3. Rozpočet a služby
+
+Stanovte si jasný rozpočet a zjistěte:
+- Co je v ceně zahrnuto
+- Jaké služby si můžete dokoupit
+- Možnosti platebních podmínek
+
+Správný výběr prostoru může vaši akci povznést na novou úroveň!`,
+        coverImage: 'https://images.unsplash.com/photo-1511578314322-379afb476865?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+        status: 'published',
+        tags: JSON.stringify(['event planning', 'Praha', 'prostory']),
+        metaTitle: 'Jak vybrat perfektní event prostor v Praze - Prostormat',
+        metaDescription: 'Praktický průvodce výběrem ideálního prostoru pro vaši firemní akci, oslavu nebo konferenci v Praze.',
+        authorId: adminUser.id,
+        publishedAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), // 7 days ago
+      },
+      {
+        title: 'Trendy v event managementu pro rok 2025',
+        slug: 'trendy-v-event-managementu-pro-rok-2025',
+        excerpt: 'Objevte nejnovější trendy v pořádání akcí a získejte inspiraci pro vaše budoucí eventy.',
+        content: `# Trendy v event managementu pro rok 2025
+
+Event industry se neustále vyvíjí a rok 2025 přináší řadu zajímavých trendů, které stojí za pozornost.
+
+## Udržitelnost na prvním místě
+
+Organizátoři stále více kladou důraz na:
+- Eco-friendly prostory
+- Lokální dodavatele
+- Zero waste akce
+- Digitální materiály místo tištěných
+
+## Hybridní akce jako standard
+
+Kombinace fyzické a online účasti se stává normou:
+- Širší dosah publika
+- Flexibilita pro účastníky
+- Nižší náklady na cestování
+
+## Personalizace zážitků
+
+Moderní technologie umožňují:
+- AI-driven doporučení
+- Interaktivní prvky
+- Customizované programy
+- Real-time feedback
+
+## Wellness a well-being
+
+Akce se zaměřují na pohodu účastníků:
+- Mindfulness aktivity
+- Zdravé občerstvení
+- Relaxační zóny
+- Work-life balance
+
+Sledujte tyto trendy a vaše akce budou vždy o krok napřed!`,
+        coverImage: 'https://images.unsplash.com/photo-1515187029135-18ee286d815b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+        status: 'published',
+        tags: JSON.stringify(['trendy', 'event management', '2025']),
+        metaTitle: 'Trendy v event managementu pro rok 2025 - Prostormat',
+        metaDescription: 'Objevte nejnovější trendy v pořádání akcí a získejte inspiraci pro vaše budoucí eventy v roce 2025.',
+        authorId: adminUser.id,
+        publishedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), // 3 days ago
+      },
+      {
+        title: 'Nejlepší venue typy pro firemní akce',
+        slug: 'nejlepsi-venue-typy-pro-firemni-akce',
+        excerpt: 'Přehled různých typů prostorů a jejich vhodnosti pro různé druhy firemních akcí.',
+        content: `# Nejlepší venue typy pro firemní akce
+
+Každý typ firemní akce vyžaduje jiný přístup k výběru prostoru. Zde je přehled nejoblíbenějších venue typů a jejich využití.
+
+## Konferenční centra
+
+Ideální pro:
+- Velké konference a semináře
+- Product launch events
+- Školení a workshopy
+
+**Výhody:** Kompletní technické vybavení, profesionální servis
+**Nevýhody:** Vyšší cena, méně osobní atmosféra
+
+## Galerie a muzea
+
+Perfektní pro:
+- Networking eventy
+- Cocktail party
+- Prezentace produktů
+
+**Výhody:** Jedinečná atmosféra, kulturní prestiž
+**Nevýhody:** Omezení ohledně cateringu a dekorace
+
+## Střešní terasy
+
+Skvělé pro:
+- Letní firemní večírky
+- Team building aktivity
+- Neformální setkání
+
+**Výhody:** Výhled na město, outdoor atmosféra
+**Nevýhody:** Závislost na počasí
+
+## Industriální prostory
+
+Trendy volba pro:
+- Start-up eventy
+- Kreativní workshopy
+- Nekonvenční konference
+
+**Výhody:** Flexibilita, moderní vzhled
+**Nevýhody:** Nutnost dodatečné výzdoby
+
+## Hotely
+
+Univerzální řešení pro:
+- Vícedenní konference
+- Incentive pobyty
+- Formální bankety
+
+**Výhody:** Komplexní služby, ubytování
+**Nevýhody:** Standardní prostředí
+
+Výběr správného venue typu může výrazně ovlivnit úspěch vaší akce!`,
+        coverImage: 'https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+        status: 'published',
+        tags: JSON.stringify(['venue typy', 'firemní akce', 'prostory']),
+        metaTitle: 'Nejlepší venue typy pro firemní akce - Prostormat',
+        metaDescription: 'Přehled různých typů prostorů a jejich vhodnosti pro různé druhy firemních akcí.',
+        authorId: adminUser.id,
+        publishedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000), // 1 day ago
+      }
+    ]
+
+    // Create blog posts (only if they don't exist)
+    const createdPosts = []
+    if (existingPosts === 0) {
+      for (const postData of blogPosts) {
+        const post = await prisma.blogPost.create({
+          data: postData
+        })
+        createdPosts.push(post)
+        console.log('Created blog post:', post.title)
+      }
+    } else {
+      // Get existing posts for response
+      const existingPostsList = await prisma.blogPost.findMany({
+        select: { id: true, title: true, slug: true }
+      })
+      createdPosts.push(...existingPostsList)
+    }
+
     console.log('Database seeded successfully!')
 
     return NextResponse.json({
       success: true,
       message: 'Database seeded successfully!',
       venuesCreated: createdVenues.length,
-      venues: createdVenues.map(v => ({ id: v.id, name: v.name, slug: v.slug }))
+      venues: createdVenues.map(v => ({ id: v.id, name: v.name, slug: v.slug })),
+      blogPostsCreated: createdPosts.length,
+      blogPosts: createdPosts.map(p => ({ id: p.id, title: p.title, slug: p.slug }))
     })
 
   } catch (error) {

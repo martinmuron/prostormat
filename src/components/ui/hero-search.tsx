@@ -34,17 +34,19 @@ export function HeroSearch() {
               </div>
               <label className="text-base font-medium text-gray-800">Typ prostoru</label>
             </div>
-            <Select value={selectedType} onValueChange={setSelectedType}>
-              <SelectTrigger className="bg-blue-50/50 border-2 border-blue-200 text-gray-800 text-center focus:border-blue-500 hover:bg-blue-50 transition-all duration-200">
-                <SelectValue placeholder="Všechny typy" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Všechny typy</SelectItem>
-                {Object.entries(VENUE_TYPES).map(([key, label]) => (
-                  <SelectItem key={key} value={key}>{label}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <div className="flex justify-center">
+              <Select value={selectedType} onValueChange={setSelectedType}>
+                <SelectTrigger className="bg-blue-50/50 border-2 border-blue-200 text-gray-800 focus:border-blue-500 hover:bg-blue-50 transition-all duration-200 w-full max-w-xs">
+                  <SelectValue placeholder="Všechny typy" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Všechny typy</SelectItem>
+                  {Object.entries(VENUE_TYPES).map(([key, label]) => (
+                    <SelectItem key={key} value={key}>{label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
           {/* Capacity Filter */}
@@ -55,17 +57,19 @@ export function HeroSearch() {
               </div>
               <label className="text-base font-medium text-gray-800">Kapacita</label>
             </div>
-            <Select value={selectedCapacity} onValueChange={setSelectedCapacity}>
-              <SelectTrigger className="bg-green-50/50 border-2 border-green-200 text-gray-800 text-center focus:border-green-500 hover:bg-green-50 transition-all duration-200">
-                <SelectValue placeholder="Libovolná kapacita" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Libovolná kapacita</SelectItem>
-                {CAPACITY_RANGES.map((range) => (
-                  <SelectItem key={range} value={range}>{range}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <div className="flex justify-center">
+              <Select value={selectedCapacity} onValueChange={setSelectedCapacity}>
+                <SelectTrigger className="bg-green-50/50 border-2 border-green-200 text-gray-800 focus:border-green-500 hover:bg-green-50 transition-all duration-200 w-full max-w-xs">
+                  <SelectValue placeholder="Libovolná kapacita" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Libovolná kapacita</SelectItem>
+                  {CAPACITY_RANGES.map((range) => (
+                    <SelectItem key={range} value={range}>{range}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
           {/* Location Filter */}
@@ -76,17 +80,19 @@ export function HeroSearch() {
               </div>
               <label className="text-base font-medium text-gray-800">Lokalita</label>
             </div>
-            <Select value={selectedDistrict} onValueChange={setSelectedDistrict}>
-              <SelectTrigger className="bg-purple-50/50 border-2 border-purple-200 text-gray-800 text-center focus:border-purple-500 hover:bg-purple-50 transition-all duration-200">
-                <SelectValue placeholder="Celá Praha" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Celá Praha</SelectItem>
-                {PRAGUE_DISTRICTS.map((district) => (
-                  <SelectItem key={district} value={district}>{district}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <div className="flex justify-center">
+              <Select value={selectedDistrict} onValueChange={setSelectedDistrict}>
+                <SelectTrigger className="bg-purple-50/50 border-2 border-purple-200 text-gray-800 focus:border-purple-500 hover:bg-purple-50 transition-all duration-200 w-full max-w-xs">
+                  <SelectValue placeholder="Celá Praha" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Celá Praha</SelectItem>
+                  {PRAGUE_DISTRICTS.map((district) => (
+                    <SelectItem key={district} value={district}>{district}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
         </div>
 

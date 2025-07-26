@@ -83,6 +83,7 @@ model Venue {
   videoUrl         String?
   youtubeUrl       String?
   status           String   @default("draft") // draft, active, expired
+  isRecommended    Boolean  @default(false) // whether this venue is recommended
   managerId        String
   subscriptionId   String?  // Stripe subscription ID
   expiresAt        DateTime?

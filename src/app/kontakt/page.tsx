@@ -81,8 +81,8 @@ export default function ContactPage() {
                 <div className="space-y-6">
                   {/* Email */}
                   <div className="flex items-start space-x-4 group">
-                    <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-all duration-300">
-                      <Mail className="h-8 w-8 text-black" />
+                    <div className="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-all duration-300">
+                      <Mail className="h-8 w-8 text-blue-600" />
                     </div>
                     <div>
                       <h3 className="text-xl font-bold text-gray-900">Email</h3>
@@ -98,8 +98,8 @@ export default function ContactPage() {
 
                   {/* Phone */}
                   <div className="flex items-start space-x-4 group">
-                    <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-all duration-300">
-                      <Phone className="h-8 w-8 text-black" />
+                    <div className="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-all duration-300">
+                      <Phone className="h-8 w-8 text-green-600" />
                     </div>
                     <div>
                       <h3 className="text-xl font-bold text-gray-900">Telefon</h3>
@@ -115,8 +115,8 @@ export default function ContactPage() {
 
                   {/* Address */}
                   <div className="flex items-start space-x-4 group">
-                    <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-all duration-300">
-                      <MapPin className="h-8 w-8 text-black" />
+                    <div className="w-16 h-16 bg-purple-100 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-all duration-300">
+                      <MapPin className="h-8 w-8 text-purple-600" />
                     </div>
                     <div>
                       <h3 className="text-xl font-bold text-gray-900">Adresa</h3>
@@ -131,8 +131,8 @@ export default function ContactPage() {
 
                   {/* Hours */}
                   <div className="flex items-start space-x-4 group">
-                    <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-all duration-300">
-                      <Clock className="h-8 w-8 text-black" />
+                    <div className="w-16 h-16 bg-amber-100 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-all duration-300">
+                      <Clock className="h-8 w-8 text-amber-600" />
                     </div>
                     <div>
                       <h3 className="text-xl font-bold text-gray-900">Otevírací doba</h3>

@@ -63,50 +63,58 @@ export function UserDashboard({ data }: UserDashboardProps) {
     <>
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <Card className="bg-white">
+        <Card className="bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-caption text-gray-500 mb-1">Aktivní požadavky</p>
                 <p className="text-title-2 text-black">{stats.activeRequests}</p>
               </div>
-              <Calendar className="h-8 w-8 text-gray-400" />
+              <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                <Calendar className="h-6 w-6 text-green-600" />
+              </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-white">
+        <Card className="bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-caption text-gray-500 mb-1">Celkem požadavků</p>
                 <p className="text-title-2 text-black">{stats.totalRequests}</p>
               </div>
-              <Calendar className="h-8 w-8 text-gray-400" />
+              <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                <Calendar className="h-6 w-6 text-blue-600" />
+              </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-white">
+        <Card className="bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-caption text-gray-500 mb-1">Odeslané dotazy</p>
                 <p className="text-title-2 text-black">{stats.totalInquiries}</p>
               </div>
-              <MessageSquare className="h-8 w-8 text-gray-400" />
+              <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
+                <MessageSquare className="h-6 w-6 text-purple-600" />
+              </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-white">
+        <Card className="bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-caption text-gray-500 mb-1">Poptávky prostorům</p>
                 <p className="text-title-2 text-black">{stats.totalBroadcasts}</p>
               </div>
-              <Send className="h-8 w-8 text-gray-400" />
+              <div className="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center">
+                <Send className="h-6 w-6 text-amber-600" />
+              </div>
             </div>
           </CardContent>
         </Card>

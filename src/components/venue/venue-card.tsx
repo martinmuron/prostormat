@@ -37,7 +37,7 @@ export function VenueCard({ venue }: VenueCardProps) {
           <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           {venueTypeLabel && (
             <div className="absolute top-3 left-3 sm:top-4 sm:left-4">
-              <Badge variant="secondary" className="bg-white/95 text-black text-xs sm:text-sm font-semibold border-0 shadow-lg backdrop-blur-sm">
+              <Badge variant="secondary" className="bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 border-blue-200 text-xs sm:text-sm font-semibold border shadow-lg backdrop-blur-sm">
                 {venueTypeLabel}
               </Badge>
             </div>
@@ -50,35 +50,37 @@ export function VenueCard({ venue }: VenueCardProps) {
         </div>
       </Link>
       
-      <CardContent className="p-4 sm:p-6 bg-white flex flex-col h-full">
+      <CardContent className="p-4 sm:p-6 bg-white flex flex-col justify-between h-full">
         <Link href={`/prostory/${venue.slug}`}>
           <div className="flex-1">
-            <h3 className="text-lg sm:text-title-3 text-black mb-3 group-hover:text-gray-500 transition-all duration-300 leading-tight font-bold tracking-tight">
+            <h3 className="text-lg sm:text-title-3 text-black mb-3 group-hover:text-gray-500 transition-all duration-300 leading-tight font-bold tracking-tight min-h-[3.5rem] flex items-start">
               {venue.name}
             </h3>
             
-            <p className="text-sm sm:text-callout text-gray-600 mb-3 font-medium">
+            <p className="text-sm sm:text-callout text-gray-600 mb-3 font-medium min-h-[1.25rem]">
               {venue.address}
             </p>
             
-            {venue.description && (
-              <p className="text-sm sm:text-body text-gray-700 mb-4 line-clamp-2 leading-relaxed">
-                {venue.description}
-              </p>
-            )}
+            <div className="min-h-[3rem] mb-4">
+              {venue.description && (
+                <p className="text-sm sm:text-body text-gray-700 line-clamp-2 leading-relaxed">
+                  {venue.description}
+                </p>
+              )}
+            </div>
             
-            <div className="text-sm sm:text-callout mb-4">
+            <div className="text-sm sm:text-callout mb-6 min-h-[2.5rem] flex items-start">
               <div className="text-gray-600 leading-tight font-medium">
                 {venue.capacitySeated && venue.capacityStanding ? (
-                  <span className="px-3 py-1.5 bg-gray-50 rounded-xl border border-gray-200 text-black font-semibold">
+                  <span className="px-3 py-1.5 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-200 text-blue-700 font-semibold">
                     {venue.capacitySeated} sed. / {venue.capacityStanding} stoj.
                   </span>
                 ) : venue.capacitySeated ? (
-                  <span className="px-3 py-1.5 bg-gray-50 rounded-xl border border-gray-200 text-black font-semibold">
+                  <span className="px-3 py-1.5 bg-green-50 rounded-xl border border-green-200 text-green-700 font-semibold">
                     {venue.capacitySeated} sedících
                   </span>
                 ) : venue.capacityStanding ? (
-                  <span className="px-3 py-1.5 bg-gray-50 rounded-xl border border-gray-200 text-black font-semibold">
+                  <span className="px-3 py-1.5 bg-purple-50 rounded-xl border border-purple-200 text-purple-700 font-semibold">
                     {venue.capacityStanding} stojících
                   </span>
                 ) : null}
@@ -87,11 +89,11 @@ export function VenueCard({ venue }: VenueCardProps) {
           </div>
         </Link>
         
-        <Link href={`/prostory/${venue.slug}`}>
+        <Link href={`/prostory/${venue.slug}`} className="mt-auto">
           <Button 
             variant="outline" 
             size="sm"
-            className="w-full bg-black text-white border-black hover:bg-gray-800 hover:border-gray-800 transition-all duration-300 mt-auto font-medium"
+            className="w-full bg-black text-white border-black hover:bg-gray-800 hover:border-gray-800 transition-all duration-300 font-medium"
           >
             <span>Zobrazit detaily</span>
             <span className="ml-2 transform group-hover:translate-x-1 transition-transform duration-300">→</span>

@@ -33,7 +33,7 @@ export function VenueFilters({ initialValues }: VenueFiltersProps) {
     
     const params = new URLSearchParams()
     Object.entries(filters).forEach(([key, value]) => {
-      if (value) params.set(key, value)
+      if (value && value !== 'all') params.set(key, value)
     })
     
     router.push(`/prostory?${params.toString()}`)
@@ -73,7 +73,7 @@ export function VenueFilters({ initialValues }: VenueFiltersProps) {
                   <SelectValue placeholder="Všechny typy" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Všechny typy</SelectItem>
+                  <SelectItem value="all">Všechny typy</SelectItem>
                   {Object.entries(VENUE_TYPES).map(([key, label]) => (
                     <SelectItem key={key} value={key}>
                       {label}
@@ -98,7 +98,7 @@ export function VenueFilters({ initialValues }: VenueFiltersProps) {
                   <SelectValue placeholder="Celá Praha" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Celá Praha</SelectItem>
+                  <SelectItem value="all">Celá Praha</SelectItem>
                   {PRAGUE_DISTRICTS.map((district) => (
                     <SelectItem key={district} value={district}>
                       {district}
@@ -123,7 +123,7 @@ export function VenueFilters({ initialValues }: VenueFiltersProps) {
                   <SelectValue placeholder="Libovolná kapacita" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Libovolná kapacita</SelectItem>
+                  <SelectItem value="all">Libovolná kapacita</SelectItem>
                   {CAPACITY_RANGES.map((range) => (
                     <SelectItem key={range} value={range}>
                       {range}

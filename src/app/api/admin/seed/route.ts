@@ -102,7 +102,7 @@ export async function POST(request: Request) {
         contactEmail: 'rezervace@galerie-moderna.cz',
         contactPhone: '+420 111 222 333',
         images: [
-          'https://images.unsplash.com/photo-1571115764595-644a1f56a55c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+          'https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
         ],
         status: 'active',
         managerId: manager2.id,

@@ -54,7 +54,6 @@ model User {
   venueInquiries VenueInquiry[]
   blogPosts     BlogPost[]
   venueBroadcasts VenueBroadcast[]
-  favorites     VenueFavorite[]
   createdAt     DateTime  @default(now())
 }
 
@@ -81,9 +80,7 @@ model Venue {
   websiteUrl       String?
   images           String[]
   videoUrl         String?
-  youtubeUrl       String?
   status           String   @default("draft") // draft, active, expired
-  isRecommended    Boolean  @default(false) // whether this venue is recommended
   managerId        String
   subscriptionId   String?  // Stripe subscription ID
   expiresAt        DateTime?
@@ -94,7 +91,6 @@ model Venue {
   inquiries    VenueInquiry[]
   subscription Subscription?
   broadcastLogs VenueBroadcastLog[]
-  favorites    VenueFavorite[]
 }
 
 model EventRequest {
@@ -196,16 +192,4 @@ model VenueBroadcastLog {
 
   broadcast VenueBroadcast @relation(fields: [broadcastId], references: [id])
   venue Venue @relation(fields: [venueId], references: [id])
-}
-
-model VenueFavorite {
-  id        String   @id @default(cuid())
-  userId    String
-  venueId   String
-  createdAt DateTime @default(now())
-
-  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
-  venue Venue @relation(fields: [venueId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, venueId])
 }

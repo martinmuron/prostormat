@@ -105,11 +105,21 @@ export default function HomePage() {
             <HeroSearch />
           </div>
           
-          <div className="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center max-w-3xl mx-auto">
             <Link href="/prostory" className="flex-1">
               <Button 
                 size="lg" 
-                className="w-full px-8 py-3 text-base font-medium rounded-xl bg-black text-white hover:bg-gray-800 transition-all duration-200 shadow-lg hover:shadow-xl"
+                className="w-full px-6 py-3 text-base font-medium rounded-xl bg-black text-white hover:bg-gray-800 hover:text-white transition-all duration-200 shadow-lg hover:shadow-xl"
+              >
+                <Search className="w-5 h-5 mr-2" />
+                Najít prostory
+              </Button>
+            </Link>
+            <Link href="/prostory" className="flex-1">
+              <Button 
+                size="lg" 
+                variant="outline"
+                className="w-full px-6 py-3 text-base font-medium rounded-xl border-2 border-black text-black hover:bg-black hover:text-white transition-all duration-200 shadow-lg hover:shadow-xl"
               >
                 <Search className="w-5 h-5 mr-2" />
                 Prohlédnout prostory
@@ -119,7 +129,7 @@ export default function HomePage() {
               <Button 
                 size="lg" 
                 variant="outline"
-                className="w-full px-8 py-3 text-base font-medium rounded-xl border-2 border-gray-300 text-gray-700 hover:bg-gray-50 transition-all duration-200 shadow-lg hover:shadow-xl"
+                className="w-full px-6 py-3 text-base font-medium rounded-xl border-2 border-gray-300 text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-all duration-200 shadow-lg hover:shadow-xl"
               >
                 <Upload className="w-5 h-5 mr-2" />
                 Přidat prostor

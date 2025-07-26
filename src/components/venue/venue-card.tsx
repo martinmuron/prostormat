@@ -93,7 +93,7 @@ export function VenueCard({ venue }: VenueCardProps) {
           <Button 
             variant="outline" 
             size="sm"
-            className="w-full bg-black text-white border-black hover:bg-gray-800 hover:border-gray-800 transition-all duration-200 font-medium rounded-xl shadow-lg hover:shadow-xl"
+            className="w-full bg-black text-white border-black hover:bg-gray-800 hover:border-gray-800 hover:text-white transition-all duration-200 font-medium rounded-xl shadow-lg hover:shadow-xl"
           >
             <span>Zobrazit detaily</span>
             <span className="ml-2 transform group-hover:translate-x-1 transition-transform duration-300">→</span>

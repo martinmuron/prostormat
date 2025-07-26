@@ -96,17 +96,6 @@ export function HeroSearch() {
           </div>
         </div>
 
-        {/* Search Button */}
-        <div className="text-center mt-8">
-          <Button 
-            type="submit" 
-            size="lg"
-            className="px-12 py-4 text-lg font-semibold rounded-xl bg-black text-white hover:bg-gray-800 transition-all duration-200 shadow-lg hover:shadow-xl"
-          >
-            <Search className="mr-3 h-5 w-5" />
-            Najít prostory
-          </Button>
-        </div>
       </form>
     </div>
   )

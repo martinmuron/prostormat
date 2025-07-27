@@ -36,7 +36,7 @@ function BlogPostCard({ post }: { post: any }) {
   const tags = post.tags ? JSON.parse(post.tags) : []
   
   return (
-    <Card className="overflow-hidden hover:shadow-lg transition-shadow h-full bg-white border-2 border-black">
+    <Card className="overflow-hidden hover:shadow-lg transition-shadow h-full bg-white border-2 border-gray-200 hover:border-gray-300">
       <CardContent className="p-6 h-full flex flex-col">
         <div className="flex-1 space-y-4">
           {post.coverImage && (
@@ -87,7 +87,7 @@ function BlogPostCard({ post }: { post: any }) {
           <Button 
             variant="outline" 
             size="sm"
-            className="w-full bg-amber-700 text-white border-amber-700 hover:bg-black hover:border-black hover:text-white transition-all duration-200 font-medium rounded-xl group"
+            className="w-full bg-amber-100 text-amber-700 border-2 border-amber-200 hover:bg-amber-200 hover:border-amber-300 transition-all duration-200 font-medium rounded-xl group"
           >
             <span>Číst více</span>
             <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform duration-300" />

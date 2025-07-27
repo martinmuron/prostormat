@@ -229,14 +229,14 @@ export default function HomePage() {
                 size="lg" 
                 className="w-full px-8 py-3 text-base font-medium rounded-xl bg-white text-black hover:bg-gray-100 transition-all duration-200 shadow-lg hover:shadow-xl"
               >
-                Přidat prostor zdarma
+                Přidat prostor
               </Button>
             </Link>
             <Link href="/prostory" className="flex-1">
               <Button 
                 size="lg" 
                 variant="outline"
-                className="w-full px-8 py-3 text-base font-medium rounded-xl border-2 border-white text-white hover:bg-white hover:text-black transition-all duration-200 shadow-lg hover:shadow-xl"
+                className="w-full px-8 py-3 text-base font-medium rounded-xl border-2 border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100 hover:border-blue-300 transition-all duration-200 shadow-lg hover:shadow-xl"
               >
                 Prohlédnout prostory
               </Button>

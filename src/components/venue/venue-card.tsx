@@ -72,15 +72,15 @@ export function VenueCard({ venue }: VenueCardProps) {
             <div className="text-sm sm:text-callout mb-6 min-h-[2.5rem] flex items-start">
               <div className="text-gray-600 leading-tight font-medium">
                 {venue.capacitySeated && venue.capacityStanding ? (
-                  <span className="px-3 py-1.5 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-200 text-blue-700 font-semibold">
+                  <span className="px-3 py-1.5 bg-white rounded-xl border-2 border-black text-black font-semibold">
                     {venue.capacitySeated} sed. / {venue.capacityStanding} stoj.
                   </span>
                 ) : venue.capacitySeated ? (
-                  <span className="px-3 py-1.5 bg-green-50 rounded-xl border border-green-200 text-green-700 font-semibold">
+                  <span className="px-3 py-1.5 bg-white rounded-xl border-2 border-black text-black font-semibold">
                     {venue.capacitySeated} sedících
                   </span>
                 ) : venue.capacityStanding ? (
-                  <span className="px-3 py-1.5 bg-purple-50 rounded-xl border border-purple-200 text-purple-700 font-semibold">
+                  <span className="px-3 py-1.5 bg-white rounded-xl border-2 border-black text-black font-semibold">
                     {venue.capacityStanding} stojících
                   </span>
                 ) : null}

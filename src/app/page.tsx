@@ -170,7 +170,7 @@ export default function HomePage() {
               <Button 
                 variant="outline" 
                 size="lg" 
-                className="rounded-xl px-8 py-3 text-base font-medium border-2 border-gray-300 text-gray-700 hover:bg-gray-50 transition-all duration-200 shadow-lg hover:shadow-xl"
+                className="rounded-xl px-8 py-3 text-base font-medium border-2 border-black text-black hover:bg-black hover:text-white transition-all duration-200"
               >
                 Zobrazit všechny prostory
                 <ArrowRight className="w-4 h-4 ml-2" />

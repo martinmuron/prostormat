@@ -235,7 +235,6 @@ export default function HomePage() {
             <Link href="/prostory" className="flex-1">
               <Button 
                 size="lg" 
-                variant="outline"
                 className="w-full px-8 py-3 text-base font-medium rounded-xl border-2 border-white text-white hover:bg-white hover:text-black transition-all duration-200"
               >
                 Prohlédnout prostory

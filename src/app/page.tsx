@@ -89,16 +89,16 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
-      <section className="relative py-20 sm:py-28 lg:py-36 px-4 sm:px-6 bg-gradient-to-br from-gray-50 to-white">
+      <section className="relative py-20 sm:py-28 lg:py-36 px-4 sm:px-6 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
         <div className="max-w-5xl mx-auto text-center">
           <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-semibold text-gray-900 mb-8 tracking-tight leading-tight">
-            Najděte perfektní prostor<br className="hidden sm:block" />
-            <span className="sm:hidden"> </span>pro vaši akci
+            Největší databáze event prostorů<br className="hidden sm:block" />
+            <span className="sm:hidden"> </span>v Praze
           </h1>
           
           <p className="text-xl sm:text-2xl text-gray-600 mb-12 max-w-3xl mx-auto leading-relaxed font-light">
-            Objevte tisíce jedinečných prostorů v Praze pro vaše akce, oslavy a události. 
-            Od intimních setkání po velké konference.
+            Přes 1000+ prověřených prostorů pro firemní akce, svatby, teambuildingy a oslavy. 
+            Najděte ten správný za pár kliknutí a ušetřete hodiny hledání.
           </p>
           
           <div className="mb-12">
@@ -145,10 +145,11 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
-              Doporučené prostory
+              TOP prostory tohoto měsíce
             </h2>
             <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto">
-              Objevte nejlepší event prostory v Praze vybrané naším týmem
+              Nejoblíbenější a nejlépe hodnocené prostory od našich klientů. 
+              Garantovaná kvalita a spolehlivost.
             </p>
           </div>
           
@@ -180,44 +181,44 @@ export default function HomePage() {
       </section>
 
       {/* CTA for Venue Owners */}
-      <section className="py-16 sm:py-20 px-4 sm:px-6 bg-gray-900">
+      <section className="py-16 sm:py-20 px-4 sm:px-6 bg-gradient-to-br from-slate-800 via-gray-900 to-slate-900">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-4">
-            Vlastníte event prostor?
+            Vlastníte prostor?
           </h2>
           <p className="text-base sm:text-lg text-gray-300 max-w-2xl mx-auto mb-12">
-            Připojte se k tisícům spokojených provozovatelů a začněte vydělávat 
-            na svém prostoru už dnes
+            Prostormat je perfektní místo, aby vás našli potenciální zákazníci na firemní akce, teambuildingy, svatby a více. 
+            Neztrácejte příležitosti – připojte se k nám a získejte přístup k tisícům klientů!
           </p>
           
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 mb-12">
             <div className="text-center">
-              <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <Upload className="w-8 h-8 text-black" />
+              <div className="w-16 h-16 bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                <Upload className="w-8 h-8 text-blue-700" />
               </div>
               <h3 className="text-lg font-semibold text-white mb-2">Přidejte prostor</h3>
-              <p className="text-sm text-gray-400">
-                Vytvořte profil vašeho prostoru s fotografiami a všemi detaily
+              <p className="text-sm text-gray-300">
+                Vytvořte profil vašeho prostoru s fotografiemi a všemi detaily
               </p>
             </div>
             
             <div className="text-center">
-              <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <MessageSquare className="w-8 h-8 text-black" />
+              <div className="w-16 h-16 bg-gradient-to-br from-green-100 to-green-200 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                <MessageSquare className="w-8 h-8 text-green-700" />
               </div>
-              <h3 className="text-lg font-semibold text-white mb-2">Přijímejte dotazy</h3>
-              <p className="text-sm text-gray-400">
-                Komunikujte přímo s organizátory a domlouvejte si akce
+              <h3 className="text-lg font-semibold text-white mb-2">Získejte klienty</h3>
+              <p className="text-sm text-gray-300">
+                Tisíce organizátorů hledá prostory každý měsíc - buďte vidět!
               </p>
             </div>
             
             <div className="text-center">
-              <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <Euro className="w-8 h-8 text-black" />
+              <div className="w-16 h-16 bg-gradient-to-br from-amber-100 to-amber-200 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                <Euro className="w-8 h-8 text-amber-700" />
               </div>
-              <h3 className="text-lg font-semibold text-white mb-2">Vydělávejte</h3>
-              <p className="text-sm text-gray-400">
-                Maximalizujte využití vašeho prostoru a generujte pravidelný příjem
+              <h3 className="text-lg font-semibold text-white mb-2">Vydělávejte více</h3>
+              <p className="text-sm text-gray-300">
+                Zvyšte obsazenost a příjmy díky našim kvalifikovaným klientům
               </p>
             </div>
           </div>

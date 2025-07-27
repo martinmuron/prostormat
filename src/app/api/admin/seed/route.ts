@@ -277,6 +277,142 @@ export async function POST(request: Request) {
         ],
         status: 'active',
         managerId: manager3.id,
+      },
+      {
+        name: 'Rooftop Bar Skyline',
+        slug: 'rooftop-bar-skyline',
+        description: 'Moderní střešní bar s panoramatickým výhledem na celou Prahu.',
+        address: 'Na Příkopě 32, Praha 1',
+        capacitySeated: 90,
+        capacityStanding: 140,
+        venueType: 'rooftop',
+        amenities: ['Bar', 'DJ prostor', 'Výhled na město', 'Klimatizace', 'Elevator'],
+        contactEmail: 'events@rooftopskyline.cz',
+        contactPhone: '+420 224 567 890',
+        images: [
+          'https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+        ],
+        status: 'active',
+        managerId: manager1.id,
+      },
+      {
+        name: 'Industrial Loft Karlín',
+        slug: 'industrial-loft-karlin',
+        description: 'Prostorný industriální loft v trendy čtvrti Karlín pro kreativní akce.',
+        address: 'Sokolovská 100, Praha 8',
+        capacitySeated: 120,
+        capacityStanding: 180,
+        venueType: 'loft',
+        amenities: ['Vysoké stropy', 'Industriální design', 'Projekce', 'Catering kuchyň'],
+        contactEmail: 'info@industrialloft.cz',
+        contactPhone: '+420 775 123 456',
+        images: [
+          'https://images.unsplash.com/photo-1497366754035-f200968a6e72?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+        ],
+        status: 'active',
+        managerId: manager2.id,
+      },
+      {
+        name: 'Garden Villa Petřín',
+        slug: 'garden-villa-petrin',
+        description: 'Romantická vila s krásnou zahradou pod Petřínem pro svatby a oslavy.',
+        address: 'Petřínské sady 15, Praha 5',
+        capacitySeated: 80,
+        capacityStanding: 120,
+        venueType: 'villa',
+        amenities: ['Zahrada', 'Terasa', 'Parkování', 'Piano', 'Květinové záhony'],
+        contactEmail: 'rezervace@gardenvilla.cz',
+        contactPhone: '+420 602 345 678',
+        images: [
+          'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+        ],
+        status: 'active',
+        managerId: manager3.id,
+      },
+      {
+        name: 'Tech Hub Smíchov',
+        slug: 'tech-hub-smichov',
+        description: 'Moderní technologické centrum pro konference a product launch eventy.',
+        address: 'Anděl City, Praha 5',
+        capacitySeated: 200,
+        capacityStanding: 300,
+        venueType: 'conference',
+        amenities: ['4K projekce', 'Live streaming', 'High-speed WiFi', 'Tech podpora'],
+        contactEmail: 'events@techhub.cz',
+        contactPhone: '+420 234 567 891',
+        images: [
+          'https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+        ],
+        status: 'active',
+        managerId: manager1.id,
+      },
+      {
+        name: 'Art Studio Vinohrady',
+        slug: 'art-studio-vinohrady',
+        description: 'Umělecký ateliér s jedinečnou atmosférou pro workshopy a výstavy.',
+        address: 'Korunní 45, Praha 2',
+        capacitySeated: 40,
+        capacityStanding: 60,
+        venueType: 'studio',
+        amenities: ['Umělecké vybavení', 'Přirozené světlo', 'Flexibilní prostory'],
+        contactEmail: 'hello@artstudio.cz',
+        contactPhone: '+420 777 234 567',
+        images: [
+          'https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+        ],
+        status: 'active',
+        managerId: manager2.id,
+      },
+      {
+        name: 'Luxury Hotel Ballroom',
+        slug: 'luxury-hotel-ballroom',
+        description: 'Luxusní ballroom v pětihvězdičkovém hotelu pro prestižní akce.',
+        address: 'Národní třída 38, Praha 1',
+        capacitySeated: 300,
+        capacityStanding: 450,
+        venueType: 'hotel',
+        amenities: ['Kristalové lustry', 'Live hudba', 'Gourmet catering', 'Concierge'],
+        contactEmail: 'events@luxuryhotel.cz',
+        contactPhone: '+420 296 123 456',
+        images: [
+          'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+        ],
+        status: 'active',
+        managerId: manager3.id,
+      },
+      {
+        name: 'Riverside Terrace',
+        slug: 'riverside-terrace',
+        description: 'Romantická terasa u Vltavy s výhledem na Karlův most.',
+        address: 'Kampa Island 8, Praha 1',
+        capacitySeated: 60,
+        capacityStanding: 90,
+        venueType: 'restaurant',
+        amenities: ['Výhled na řeku', 'Venkovní topení', 'Boat parking', 'Terasa'],
+        contactEmail: 'info@riversideterrace.cz',
+        contactPhone: '+420 224 789 123',
+        images: [
+          'https://images.unsplash.com/photo-1514933651103-005eec06c04b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+        ],
+        status: 'active',
+        managerId: manager1.id,
+      },
+      {
+        name: 'Modern Gallery Space',
+        slug: 'modern-gallery-space',
+        description: 'Současná galerie s čistými liniemi pro výstavy a vernisáže.',
+        address: 'Wenceslas Square 25, Praha 1',
+        capacitySeated: 100,
+        capacityStanding: 150,
+        venueType: 'gallery',
+        amenities: ['Výstavní systém', 'Profesionální osvětlení', 'Sound system'],
+        contactEmail: 'gallery@modernspace.cz',
+        contactPhone: '+420 775 456 789',
+        images: [
+          'https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+        ],
+        status: 'active',
+        managerId: manager2.id,
       }
     ]
 

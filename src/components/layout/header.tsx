@@ -19,7 +19,12 @@ export function Header() {
         <div className="flex items-center justify-between h-14 sm:h-16">
           {/* Logo */}
           <div className="flex-shrink-0">
-            <Logo variant="black" size="md" />
+            <div className="flex flex-col">
+              <Logo variant="black" size="md" />
+              <p className="text-xs text-gray-500 mt-1 hidden sm:block">
+                Najděte perfektní prostory pro firemní akce, svatby, teambuilding a skupinové události
+              </p>
+            </div>
           </div>
 
           {/* Desktop Navigation */}

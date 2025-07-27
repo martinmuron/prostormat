@@ -20,14 +20,6 @@ export async function POST(request: Request) {
     // Check if database already has data
     const existingVenues = await prisma.venue.count()
     const existingPosts = await prisma.blogPost.count()
-    
-    if (existingVenues > 0 && existingPosts > 0) {
-      return NextResponse.json({
-        message: "Database already seeded",
-        existingVenues,
-        existingPosts
-      })
-    }
 
     console.log('Starting database seeding...')
 
@@ -416,10 +408,18 @@ export async function POST(request: Request) {
       }
     ]
 
-    // Create venues (only if they don't exist)
+    // Create venues (create missing ones)
     const createdVenues = []
-    if (existingVenues === 0) {
-      for (const venueData of venues) {
+    
+    // Get existing venue slugs
+    const existingVenueSlugs = await prisma.venue.findMany({
+      select: { slug: true }
+    })
+    const existingSlugs = new Set(existingVenueSlugs.map(v => v.slug))
+    
+    // Create venues that don't exist
+    for (const venueData of venues) {
+      if (!existingSlugs.has(venueData.slug)) {
         const venue = await prisma.venue.create({
           data: {
             ...venueData,
@@ -429,12 +429,14 @@ export async function POST(request: Request) {
         createdVenues.push(venue)
         console.log('Created venue:', venue.name)
       }
-    } else {
-      // Get existing venues for response
-      const existingVenuesList = await prisma.venue.findMany({
-        select: { id: true, name: true, slug: true }
-      })
-      createdVenues.push(...existingVenuesList)
+    }
+    
+    // Get all venues for response
+    const allVenues = await prisma.venue.findMany({
+      select: { id: true, name: true, slug: true }
+    })
+    if (createdVenues.length === 0) {
+      createdVenues.push(...allVenues)
     }
 
     // Create a sample user

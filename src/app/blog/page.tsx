@@ -36,7 +36,7 @@ function BlogPostCard({ post }: { post: any }) {
   const tags = post.tags ? JSON.parse(post.tags) : []
   
   return (
-    <Card className="overflow-hidden hover:shadow-lg transition-shadow h-full bg-white border-2 border-gray-100 hover:border-indigo-200">
+    <Card className="overflow-hidden hover:shadow-lg transition-shadow h-full bg-white border-2 border-black">
       <CardContent className="p-6 h-full flex flex-col">
         <div className="flex-1 space-y-4">
           {post.coverImage && (
@@ -145,11 +145,11 @@ async function BlogGrid() {
 
 export default function BlogPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+    <div className="min-h-screen bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12">
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">Blog</h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <h1 className="text-4xl font-bold text-black mb-4">Blog</h1>
+          <p className="text-xl text-black max-w-3xl mx-auto">
             Odborné rady a trendy pro úspěšné eventy. Získejte inspiraci od expertů.
           </p>
         </div>

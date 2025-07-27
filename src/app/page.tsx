@@ -89,14 +89,14 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
-      <section className="relative py-20 sm:py-28 lg:py-36 px-4 sm:px-6 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+      <section className="relative py-20 sm:py-28 lg:py-36 px-4 sm:px-6 bg-white">
         <div className="max-w-5xl mx-auto text-center">
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-semibold text-gray-900 mb-8 tracking-tight leading-tight">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-semibold text-black mb-8 tracking-tight leading-tight">
             Najděte perfektní prostor<br className="hidden sm:block" />
             <span className="sm:hidden"> </span>pro vaši akci
           </h1>
           
-          <p className="text-xl sm:text-2xl text-gray-600 mb-12 max-w-3xl mx-auto leading-relaxed font-light">
+          <p className="text-xl sm:text-2xl text-black mb-12 max-w-3xl mx-auto leading-relaxed font-light">
             Objevte tisíce jedinečných prostorů v Praze pro vaše akce, oslavy a události. 
             Od intimních setkání po velké konference.
           </p>
@@ -109,7 +109,7 @@ export default function HomePage() {
             <Link href="/prostory" className="flex-1">
               <Button 
                 size="lg" 
-                className="w-full px-6 py-3 text-base font-medium rounded-xl bg-black text-white hover:bg-gray-800 hover:text-white transition-all duration-200 shadow-lg hover:shadow-xl"
+                className="w-full px-6 py-3 text-base font-medium rounded-xl bg-blue-700 text-white hover:bg-black transition-all duration-200"
               >
                 <Search className="w-5 h-5 mr-2" />
                 Najít prostory
@@ -119,7 +119,7 @@ export default function HomePage() {
               <Button 
                 size="lg" 
                 variant="outline"
-                className="w-full px-6 py-3 text-base font-medium rounded-xl border-2 border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100 hover:border-blue-300 transition-all duration-200 shadow-lg hover:shadow-xl"
+                className="w-full px-6 py-3 text-base font-medium rounded-xl border-2 border-green-700 text-green-700 hover:bg-green-700 hover:text-white transition-all duration-200"
               >
                 <Search className="w-5 h-5 mr-2" />
                 Prohlédnout prostory
@@ -129,7 +129,7 @@ export default function HomePage() {
               <Button 
                 size="lg" 
                 variant="outline"
-                className="w-full px-6 py-3 text-base font-medium rounded-xl border-2 border-gray-300 text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-all duration-200 shadow-lg hover:shadow-xl"
+                className="w-full px-6 py-3 text-base font-medium rounded-xl border-2 border-amber-700 text-amber-700 hover:bg-amber-700 hover:text-white transition-all duration-200"
               >
                 <Upload className="w-5 h-5 mr-2" />
                 Přidat prostor
@@ -144,10 +144,10 @@ export default function HomePage() {
       <section className="py-16 sm:py-20 px-4 sm:px-6 bg-white">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-black mb-4">
               TOP prostory tohoto měsíce
             </h2>
-            <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto">
+            <p className="text-base sm:text-lg text-black max-w-2xl mx-auto">
               Nejoblíbenější a nejlépe hodnocené prostory od našich klientů. 
               Garantovaná kvalita a spolehlivost.
             </p>
@@ -181,43 +181,43 @@ export default function HomePage() {
       </section>
 
       {/* CTA for Venue Owners */}
-      <section className="py-16 sm:py-20 px-4 sm:px-6 bg-gradient-to-br from-slate-800 via-gray-900 to-slate-900">
+      <section className="py-16 sm:py-20 px-4 sm:px-6 bg-black">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-4">
             Vlastníte prostor?
           </h2>
-          <p className="text-base sm:text-lg text-gray-300 max-w-2xl mx-auto mb-12">
+          <p className="text-base sm:text-lg text-white max-w-2xl mx-auto mb-12">
             Prostormat je perfektní místo, aby vás našli potenciální zákazníci na firemní akce, teambuildingy, svatby a více. 
             Neztrácejte příležitosti – připojte se k nám a získejte přístup k tisícům klientů!
           </p>
           
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 mb-12">
             <div className="text-center">
-              <div className="w-16 h-16 bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-                <Upload className="w-8 h-8 text-blue-700" />
+              <div className="w-16 h-16 bg-blue-700 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <Upload className="w-8 h-8 text-white" />
               </div>
               <h3 className="text-lg font-semibold text-white mb-2">Přidejte prostor</h3>
-              <p className="text-sm text-gray-300">
+              <p className="text-sm text-white">
                 Vytvořte profil vašeho prostoru s fotografiemi a všemi detaily
               </p>
             </div>
             
             <div className="text-center">
-              <div className="w-16 h-16 bg-gradient-to-br from-green-100 to-green-200 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-                <MessageSquare className="w-8 h-8 text-green-700" />
+              <div className="w-16 h-16 bg-green-700 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <MessageSquare className="w-8 h-8 text-white" />
               </div>
               <h3 className="text-lg font-semibold text-white mb-2">Získejte klienty</h3>
-              <p className="text-sm text-gray-300">
+              <p className="text-sm text-white">
                 Tisíce organizátorů hledá prostory každý měsíc - buďte vidět!
               </p>
             </div>
             
             <div className="text-center">
-              <div className="w-16 h-16 bg-gradient-to-br from-amber-100 to-amber-200 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-                <Euro className="w-8 h-8 text-amber-700" />
+              <div className="w-16 h-16 bg-amber-700 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <Euro className="w-8 h-8 text-white" />
               </div>
               <h3 className="text-lg font-semibold text-white mb-2">Vydělávejte více</h3>
-              <p className="text-sm text-gray-300">
+              <p className="text-sm text-white">
                 Zvyšte obsazenost a příjmy díky našim kvalifikovaným klientům
               </p>
             </div>
@@ -227,7 +227,7 @@ export default function HomePage() {
             <Link href="/pridat-prostor" className="flex-1">
               <Button 
                 size="lg" 
-                className="w-full px-8 py-3 text-base font-medium rounded-xl bg-white text-black hover:bg-gray-100 transition-all duration-200 shadow-lg hover:shadow-xl"
+                className="w-full px-8 py-3 text-base font-medium rounded-xl bg-white text-black hover:bg-blue-700 hover:text-white transition-all duration-200"
               >
                 Přidat prostor
               </Button>
@@ -236,7 +236,7 @@ export default function HomePage() {
               <Button 
                 size="lg" 
                 variant="outline"
-                className="w-full px-8 py-3 text-base font-medium rounded-xl border-2 border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100 hover:border-blue-300 transition-all duration-200 shadow-lg hover:shadow-xl"
+                className="w-full px-8 py-3 text-base font-medium rounded-xl border-2 border-white text-white hover:bg-white hover:text-black transition-all duration-200"
               >
                 Prohlédnout prostory
               </Button>

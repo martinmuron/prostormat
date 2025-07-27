@@ -89,7 +89,7 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
-      <section className="relative py-20 sm:py-28 lg:py-36 px-4 sm:px-6 bg-gradient-to-br from-blue-50 via-white to-green-50">
+      <section className="relative py-20 sm:py-28 lg:py-36 px-4 sm:px-6 bg-white">
         <div className="max-w-5xl mx-auto text-center">
           <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-semibold text-black mb-8 tracking-tight leading-tight">
             Najděte perfektní prostor<br className="hidden sm:block" />
@@ -109,7 +109,7 @@ export default function HomePage() {
             <Link href="/prostory" className="flex-1">
               <Button 
                 size="lg" 
-                className="w-full px-6 py-3 text-base font-medium rounded-xl bg-blue-100 text-blue-700 border-2 border-blue-200 hover:bg-blue-200 transition-all duration-200"
+                className="w-full px-6 py-3 text-base font-medium rounded-xl bg-black text-white hover:bg-gray-800 transition-all duration-200"
               >
                 <Search className="w-5 h-5 mr-2" />
                 Najít prostory
@@ -119,7 +119,7 @@ export default function HomePage() {
               <Button 
                 size="lg" 
                 variant="outline"
-                className="w-full px-6 py-3 text-base font-medium rounded-xl bg-green-50 border-2 border-green-200 text-green-700 hover:bg-green-100 transition-all duration-200"
+                className="w-full px-6 py-3 text-base font-medium rounded-xl border-2 border-black text-black hover:bg-black hover:text-white transition-all duration-200"
               >
                 <Search className="w-5 h-5 mr-2" />
                 Prohlédnout prostory
@@ -129,7 +129,7 @@ export default function HomePage() {
               <Button 
                 size="lg" 
                 variant="outline"
-                className="w-full px-6 py-3 text-base font-medium rounded-xl bg-amber-50 border-2 border-amber-200 text-amber-700 hover:bg-amber-100 transition-all duration-200"
+                className="w-full px-6 py-3 text-base font-medium rounded-xl border-2 border-black text-black hover:bg-black hover:text-white transition-all duration-200"
               >
                 <Upload className="w-5 h-5 mr-2" />
                 Přidat prostor
@@ -181,7 +181,7 @@ export default function HomePage() {
       </section>
 
       {/* CTA for Venue Owners */}
-      <section className="py-16 sm:py-20 px-4 sm:px-6 bg-gray-900">
+      <section className="py-16 sm:py-20 px-4 sm:px-6 bg-black">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-4">
             Vlastníte prostor?
@@ -193,8 +193,8 @@ export default function HomePage() {
           
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 mb-12">
             <div className="text-center">
-              <div className="w-16 h-16 bg-blue-100 border-2 border-blue-200 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <Upload className="w-8 h-8 text-blue-700" />
+              <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <Upload className="w-8 h-8 text-black" />
               </div>
               <h3 className="text-lg font-semibold text-white mb-2">Přidejte prostor</h3>
               <p className="text-sm text-white">
@@ -203,8 +203,8 @@ export default function HomePage() {
             </div>
             
             <div className="text-center">
-              <div className="w-16 h-16 bg-green-100 border-2 border-green-200 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <MessageSquare className="w-8 h-8 text-green-700" />
+              <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <MessageSquare className="w-8 h-8 text-black" />
               </div>
               <h3 className="text-lg font-semibold text-white mb-2">Získejte klienty</h3>
               <p className="text-sm text-white">
@@ -213,8 +213,8 @@ export default function HomePage() {
             </div>
             
             <div className="text-center">
-              <div className="w-16 h-16 bg-amber-100 border-2 border-amber-200 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <Euro className="w-8 h-8 text-amber-700" />
+              <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <Euro className="w-8 h-8 text-black" />
               </div>
               <h3 className="text-lg font-semibold text-white mb-2">Vydělávejte více</h3>
               <p className="text-sm text-white">
@@ -227,7 +227,7 @@ export default function HomePage() {
             <Link href="/pridat-prostor" className="flex-1">
               <Button 
                 size="lg" 
-                className="w-full px-8 py-3 text-base font-medium rounded-xl bg-white text-black hover:bg-blue-700 hover:text-white transition-all duration-200"
+                className="w-full px-8 py-3 text-base font-medium rounded-xl bg-white text-black hover:bg-gray-200 transition-all duration-200"
               >
                 Přidat prostor
               </Button>

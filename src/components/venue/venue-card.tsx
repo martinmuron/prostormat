@@ -25,7 +25,7 @@ export function VenueCard({ venue }: VenueCardProps) {
   const venueTypeLabel = venue.venueType ? VENUE_TYPES[venue.venueType as VenueType] || venue.venueType : null
 
   return (
-    <Card className="overflow-hidden hover-lift transition-all duration-500 group border-2 border-gray-100 bg-white hover:border-black hover:shadow-2xl rounded-2xl h-full flex flex-col">
+    <Card className="overflow-hidden hover-lift transition-all duration-500 group border-2 border-black bg-white rounded-2xl h-full flex flex-col">
       <Link href={`/prostory/${venue.slug}`}>
         <div className="aspect-[4/3] relative overflow-hidden">
           <Image
@@ -37,7 +37,7 @@ export function VenueCard({ venue }: VenueCardProps) {
           <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           {venueTypeLabel && (
             <div className="absolute top-3 left-3 sm:top-4 sm:left-4">
-              <Badge variant="secondary" className="bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 border-blue-200 text-xs sm:text-sm font-semibold border shadow-lg backdrop-blur-sm">
+              <Badge variant="secondary" className="bg-blue-700 text-white border-blue-700 text-xs sm:text-sm font-semibold border">
                 {venueTypeLabel}
               </Badge>
             </div>
@@ -93,7 +93,7 @@ export function VenueCard({ venue }: VenueCardProps) {
           <Button 
             variant="outline" 
             size="sm"
-            className="w-full bg-black text-white border-black hover:bg-gray-800 hover:border-gray-800 hover:text-white transition-all duration-200 font-medium rounded-xl shadow-lg hover:shadow-xl"
+            className="w-full bg-green-700 text-white border-green-700 hover:bg-black hover:border-black hover:text-white transition-all duration-200 font-medium rounded-xl"
           >
             <span>Zobrazit detaily</span>
             <span className="ml-2 transform group-hover:translate-x-1 transition-transform duration-300">→</span>

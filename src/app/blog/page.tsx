@@ -87,7 +87,7 @@ function BlogPostCard({ post }: { post: any }) {
           <Button 
             variant="outline" 
             size="sm"
-            className="w-full bg-black text-white border-black hover:bg-gray-800 hover:border-gray-800 hover:text-white transition-all duration-200 font-medium rounded-xl shadow-lg hover:shadow-xl group"
+            className="w-full bg-amber-700 text-white border-amber-700 hover:bg-black hover:border-black hover:text-white transition-all duration-200 font-medium rounded-xl group"
           >
             <span>Číst více</span>
             <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform duration-300" />

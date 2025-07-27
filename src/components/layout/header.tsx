@@ -14,17 +14,12 @@ export function Header() {
   const { data: session, status } = useSession()
 
   return (
-    <header className="bg-white/95 backdrop-blur-md border-b border-gray-100 sticky top-0 z-50">
+    <header className="bg-white border-b border-black sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="flex items-center justify-between h-14 sm:h-16">
           {/* Logo */}
           <div className="flex-shrink-0">
-            <div className="flex flex-col">
-              <Logo variant="black" size="md" />
-              <p className="text-xs text-gray-500 mt-1 hidden sm:block">
-                Najděte perfektní prostory pro firemní akce, svatby, teambuilding a skupinové události
-              </p>
-            </div>
+            <Logo variant="black" size="md" />
           </div>
 
           {/* Desktop Navigation */}
@@ -53,8 +48,8 @@ export function Header() {
               </NavigationMenuItem>
               <NavigationMenuItem>
                 <NavigationMenuLink asChild>
-                  <Link href="/ceny" className="text-sm font-medium text-gray-600 hover:text-black transition-colors px-3 py-2 rounded-md">
-                    Ceny
+                  <Link href="/kontakt" className="text-sm font-medium text-gray-600 hover:text-black transition-colors px-3 py-2 rounded-md">
+                    Kontakt
                   </Link>
                 </NavigationMenuLink>
               </NavigationMenuItem>

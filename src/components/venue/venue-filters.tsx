@@ -62,14 +62,14 @@ export function VenueFilters({ initialValues }: VenueFiltersProps) {
           {/* Venue Type Filter - Blue */}
           <div className="flex-1">
             <div className="relative">
-              <div className="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-                <Building className="h-4 w-4 text-blue-600" />
+              <div className="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 bg-blue-700 rounded-lg flex items-center justify-center">
+                <Building className="h-4 w-4 text-white" />
               </div>
               <Select 
                 value={filters.type}
                 onValueChange={(value) => handleFilterChange('type', value)}
               >
-                <SelectTrigger className="h-12 pl-14 text-sm rounded-xl border-2 border-blue-200 bg-blue-50/50 focus:border-blue-500 hover:bg-blue-50 transition-all duration-200">
+                <SelectTrigger className="h-12 pl-14 text-sm rounded-xl border-2 border-blue-700 bg-white focus:border-black transition-all duration-200">
                   <SelectValue placeholder="Všechny typy" />
                 </SelectTrigger>
                 <SelectContent>
@@ -87,14 +87,14 @@ export function VenueFilters({ initialValues }: VenueFiltersProps) {
           {/* District Filter - Purple */}
           <div className="flex-1">
             <div className="relative">
-              <div className="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
-                <MapPin className="h-4 w-4 text-purple-600" />
+              <div className="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 bg-amber-700 rounded-lg flex items-center justify-center">
+                <MapPin className="h-4 w-4 text-white" />
               </div>
               <Select 
                 value={filters.district}
                 onValueChange={(value) => handleFilterChange('district', value)}
               >
-                <SelectTrigger className="h-12 pl-14 text-sm rounded-xl border-2 border-purple-200 bg-purple-50/50 focus:border-purple-500 hover:bg-purple-50 transition-all duration-200">
+                <SelectTrigger className="h-12 pl-14 text-sm rounded-xl border-2 border-amber-700 bg-white focus:border-black transition-all duration-200">
                   <SelectValue placeholder="Celá Praha" />
                 </SelectTrigger>
                 <SelectContent>
@@ -112,14 +112,14 @@ export function VenueFilters({ initialValues }: VenueFiltersProps) {
           {/* Capacity Filter - Green */}
           <div className="flex-1">
             <div className="relative">
-              <div className="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
-                <Users className="h-4 w-4 text-green-600" />
+              <div className="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 bg-green-700 rounded-lg flex items-center justify-center">
+                <Users className="h-4 w-4 text-white" />
               </div>
               <Select 
                 value={filters.capacity}
                 onValueChange={(value) => handleFilterChange('capacity', value)}
               >
-                <SelectTrigger className="h-12 pl-14 text-sm rounded-xl border-2 border-green-200 bg-green-50/50 focus:border-green-500 hover:bg-green-50 transition-all duration-200">
+                <SelectTrigger className="h-12 pl-14 text-sm rounded-xl border-2 border-green-700 bg-white focus:border-black transition-all duration-200">
                   <SelectValue placeholder="Libovolná kapacita" />
                 </SelectTrigger>
                 <SelectContent>
@@ -136,7 +136,7 @@ export function VenueFilters({ initialValues }: VenueFiltersProps) {
 
           <Button 
             type="submit" 
-            className="h-12 px-6 text-sm rounded-xl font-semibold bg-black text-white hover:bg-gray-800 transition-all duration-200 whitespace-nowrap shadow-lg hover:shadow-xl"
+            className="h-12 px-6 text-sm rounded-xl font-semibold bg-black text-white hover:bg-blue-700 transition-all duration-200 whitespace-nowrap"
           >
             Filtrovat
           </Button>

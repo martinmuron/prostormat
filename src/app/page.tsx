@@ -92,13 +92,13 @@ export default function HomePage() {
       <section className="relative py-20 sm:py-28 lg:py-36 px-4 sm:px-6 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
         <div className="max-w-5xl mx-auto text-center">
           <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-semibold text-gray-900 mb-8 tracking-tight leading-tight">
-            Největší databáze event prostorů<br className="hidden sm:block" />
-            <span className="sm:hidden"> </span>v Praze
+            Najděte perfektní prostor<br className="hidden sm:block" />
+            <span className="sm:hidden"> </span>pro vaši akci
           </h1>
           
           <p className="text-xl sm:text-2xl text-gray-600 mb-12 max-w-3xl mx-auto leading-relaxed font-light">
-            Přes 1000+ prověřených prostorů pro firemní akce, svatby, teambuildingy a oslavy. 
-            Najděte ten správný za pár kliknutí a ušetřete hodiny hledání.
+            Objevte tisíce jedinečných prostorů v Praze pro vaše akce, oslavy a události. 
+            Od intimních setkání po velké konference.
           </p>
           
           <div className="mb-12">

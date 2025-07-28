@@ -194,10 +194,10 @@ export default function EventRequestsPage() {
       )
     }
 
-    // Filter by favorites (only if user is logged in)
+    // Filter by favorites (only if user is logged in and favorites data is available)
     if (filters.favorites === "favorites" && session?.user?.id) {
       filtered = filtered.filter(request => 
-        request.favorites?.some(fav => fav.userId === session.user.id)
+        request.favorites?.some(fav => fav.userId === session.user.id) || false
       )
     }
 

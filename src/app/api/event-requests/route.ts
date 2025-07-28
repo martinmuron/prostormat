@@ -35,12 +35,13 @@ export async function GET() {
           select: {
             name: true,
           }
-        },
-        favorites: {
-          select: {
-            userId: true,
-          }
         }
+        // TODO: Re-enable after database migration
+        // favorites: {
+        //   select: {
+        //     userId: true,
+        //   }
+        // }
       }
     })
     

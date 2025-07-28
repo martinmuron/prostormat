@@ -518,12 +518,12 @@ export default function EventRequestsPage() {
                       {/* Login overlay for non-authenticated users */}
                       {!session && (
                         <div className="absolute inset-0 bg-white/80 backdrop-blur-[1px] rounded-xl flex items-center justify-center">
-                          <div className="text-center p-4">
-                            <LogIn className="h-8 w-8 text-gray-600 mx-auto mb-3" />
-                            <p className="text-sm font-medium text-gray-900 mb-3">
+                          <div className="flex items-center gap-3 p-4">
+                            <LogIn className="h-6 w-6 text-gray-600 flex-shrink-0" />
+                            <p className="text-sm font-medium text-gray-900 whitespace-nowrap">
                               Přihlaste se pro zobrazení kontaktních údajů
                             </p>
-                            <div className="flex gap-2">
+                            <div className="flex gap-2 flex-shrink-0">
                               <Link href="/prihlaseni">
                                 <Button size="sm" className="bg-black text-white hover:bg-gray-800 rounded-lg">
                                   Přihlásit se

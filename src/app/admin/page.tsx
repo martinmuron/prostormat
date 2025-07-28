@@ -469,7 +469,7 @@ export default function AdminPage() {
                   </Card>
                 </div>
 
-
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <Card>
                     <CardHeader>
                       <CardTitle>Přehled uživatelů podle rolí</CardTitle>

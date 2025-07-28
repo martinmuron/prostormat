@@ -55,6 +55,7 @@ model User {
   blogPosts     BlogPost[]
   venueBroadcasts VenueBroadcast[]
   favorites     VenueFavorite[]
+  eventRequestFavorites EventRequestFavorite[]
   createdAt     DateTime  @default(now())
 }
 
@@ -116,6 +117,7 @@ model EventRequest {
   createdAt           DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id])
+  favorites EventRequestFavorite[]
 }
 
 model VenueInquiry {
@@ -208,4 +210,16 @@ model VenueFavorite {
   venue Venue @relation(fields: [venueId], references: [id], onDelete: Cascade)
 
   @@unique([userId, venueId])
+}
+
+model EventRequestFavorite {
+  id             String   @id @default(cuid())
+  userId         String
+  eventRequestId String
+  createdAt      DateTime @default(now())
+
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  eventRequest EventRequest @relation(fields: [eventRequestId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, eventRequestId])
 }

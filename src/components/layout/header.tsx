@@ -41,6 +41,13 @@ export function Header() {
               </NavigationMenuItem>
               <NavigationMenuItem>
                 <NavigationMenuLink asChild>
+                  <Link href="/rychla-poptavka" className="text-sm font-medium text-gray-600 hover:text-black transition-colors px-3 py-2 rounded-md">
+                    Rychlá poptávka
+                  </Link>
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+              <NavigationMenuItem>
+                <NavigationMenuLink asChild>
                   <Link href="/blog" className="text-sm font-medium text-gray-600 hover:text-black transition-colors px-3 py-2 rounded-md">
                     Blog
                   </Link>
@@ -130,6 +137,12 @@ export function Header() {
                     className="text-base font-medium text-gray-700 hover:text-black hover:bg-gray-50 transition-colors px-4 py-3 rounded-xl"
                   >
                     Požadavky na akce
+                  </Link>
+                  <Link 
+                    href="/rychla-poptavka" 
+                    className="text-base font-medium text-gray-700 hover:text-black hover:bg-gray-50 transition-colors px-4 py-3 rounded-xl"
+                  >
+                    Rychlá poptávka
                   </Link>
                   <Link 
                     href="/blog" 

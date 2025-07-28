@@ -3,6 +3,7 @@ import { VenueGallery } from "@/components/venue/venue-gallery"
 import { VenueContactForm } from "@/components/forms/venue-contact-form"
 import { HeartButton } from "@/components/venue/heart-button"
 import { GoogleVenueMap } from "@/components/maps/google-venue-map"
+import { RelatedVenues } from "@/components/venue/related-venues"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -116,16 +117,16 @@ export default async function VenueDetailPage({
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
-                      {venue.capacitySeated && (
-                        <div className="mb-2">
-                          <span className="text-body text-gray-600">Sedící: </span>
-                          <span className="text-body font-medium">{venue.capacitySeated} osob</span>
-                        </div>
-                      )}
-                      {venue.capacityStanding && (
-                        <div>
-                          <span className="text-body text-gray-600">Stojící: </span>
-                          <span className="text-body font-medium">{venue.capacityStanding} osob</span>
+                      <div className="flex items-center gap-2">
+                        <Users className="h-5 w-5 text-gray-600" />
+                        <span className="text-lg font-semibold">
+                          {Math.max(venue.capacitySeated || 0, venue.capacityStanding || 0)} osob
+                        </span>
+                      </div>
+                      {venue.capacitySeated && venue.capacityStanding && (
+                        <div className="mt-3 text-sm text-gray-600">
+                          <div>Sedící: {venue.capacitySeated} osob</div>
+                          <div>Stojící: {venue.capacityStanding} osob</div>
                         </div>
                       )}
                     </CardContent>
@@ -214,6 +215,14 @@ export default async function VenueDetailPage({
             </div>
           </div>
         </div>
+        
+        {/* Related Venues */}
+        <RelatedVenues 
+          currentVenueId={venue.id}
+          venueType={venue.venueType}
+          address={venue.address}
+          amenities={venue.amenities}
+        />
       </div>
     </div>
   )

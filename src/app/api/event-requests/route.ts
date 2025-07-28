@@ -35,6 +35,11 @@ export async function GET() {
           select: {
             name: true,
           }
+        },
+        favorites: {
+          select: {
+            userId: true,
+          }
         }
       }
     })

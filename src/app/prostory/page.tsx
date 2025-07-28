@@ -28,12 +28,12 @@ async function getVenues(searchParams: SearchParams) {
     }
 
     // Venue type filter
-    if (searchParams.type) {
+    if (searchParams.type && searchParams.type !== 'all') {
       where.venueType = searchParams.type
     }
 
     // District filter
-    if (searchParams.district) {
+    if (searchParams.district && searchParams.district !== 'all') {
       where.address = {
         contains: searchParams.district,
         mode: 'insensitive'
@@ -41,7 +41,7 @@ async function getVenues(searchParams: SearchParams) {
     }
 
     // Capacity filter
-    if (searchParams.capacity) {
+    if (searchParams.capacity && searchParams.capacity !== 'all') {
       const capacityRanges: { [key: string]: any } = {
         'Do 25 lidí': { OR: [{ capacitySeated: { lte: 25 } }, { capacityStanding: { lte: 25 } }] },
         '25 - 50 lidí': { OR: [
@@ -72,10 +72,25 @@ async function getVenues(searchParams: SearchParams) {
       orderBy: {
         createdAt: "desc",
       },
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        description: true,
+        address: true,
+        capacitySeated: true,
+        capacityStanding: true,
+        venueType: true,
+        images: true,
+        status: true,
+      }
     })
 
-    // PostgreSQL returns arrays directly, no need to parse
-    return venues
+    // Ensure images is always an array
+    return venues.map(venue => ({
+      ...venue,
+      images: Array.isArray(venue.images) ? venue.images : []
+    }))
   } catch (error) {
     console.error("Error fetching venues:", error)
     return []

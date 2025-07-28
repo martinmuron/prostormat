@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo } from "react"
 import Link from "next/link"
+import { useSession } from "next-auth/react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
@@ -10,7 +11,8 @@ import { Input } from "@/components/ui/input"
 import { EVENT_TYPES } from "@/types"
 import type { EventType } from "@/types"
 import { formatDate } from "@/lib/utils"
-import { Calendar, Users, MapPin, Euro, Mail, Phone, User, Filter, Search, Clock, X } from "lucide-react"
+import { EventRequestHeartButton } from "@/components/event-request/heart-button"
+import { Calendar, Users, MapPin, Euro, Mail, Phone, User, Filter, Search, Clock, X, LogIn } from "lucide-react"
 
 // Force dynamic rendering to avoid caching issues
 export const dynamic = 'force-dynamic'
@@ -32,6 +34,7 @@ interface EventRequest {
   user: {
     name: string
   }
+  favorites?: Array<{ userId: string }>
 }
 
 const GUEST_COUNT_RANGES = [
@@ -48,6 +51,11 @@ const DATE_RANGES = [
   { label: "Posledních 7 dní", value: "7days" },
   { label: "Posledních 30 dní", value: "30days" },
   { label: "Nejnovější", value: "recent" },
+]
+
+const FAVORITE_FILTERS = [
+  { label: "Všechny požadavky", value: "all" },
+  { label: "Pouze oblíbené", value: "favorites" },
 ]
 
 const LOCATIONS = [
@@ -104,6 +112,7 @@ function EventRequestSkeleton() {
 }
 
 export default function EventRequestsPage() {
+  const { data: session, status } = useSession()
   const [requests, setRequests] = useState<EventRequest[]>([])
   const [loading, setLoading] = useState(true)
   const [filters, setFilters] = useState({
@@ -111,6 +120,7 @@ export default function EventRequestsPage() {
     guestCount: "all",
     dateRange: "all",
     search: "",
+    favorites: "all",
   })
 
   useEffect(() => {
@@ -184,6 +194,13 @@ export default function EventRequestsPage() {
       )
     }
 
+    // Filter by favorites (only if user is logged in)
+    if (filters.favorites === "favorites" && session?.user?.id) {
+      filtered = filtered.filter(request => 
+        request.favorites?.some(fav => fav.userId === session.user.id)
+      )
+    }
+
     return filtered
   }, [requests, filters])
 
@@ -193,15 +210,17 @@ export default function EventRequestsPage() {
       guestCount: "all", 
       dateRange: "all",
       search: "",
+      favorites: "all",
     })
   }
 
   const hasActiveFilters = filters.location !== "Všechny" || 
                           filters.guestCount !== "all" || 
                           filters.dateRange !== "all" || 
-                          filters.search !== ""
+                          filters.search !== "" ||
+                          filters.favorites !== "all"
 
-  if (loading) {
+  if (status === "loading" || loading) {
     return (
       <div className="min-h-screen bg-white">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
@@ -259,7 +278,7 @@ export default function EventRequestsPage() {
               )}
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
               {/* Search */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -322,6 +341,23 @@ export default function EventRequestsPage() {
                   <SelectContent>
                     {DATE_RANGES.map(range => (
                       <SelectItem key={range.value} value={range.value}>{range.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Favorites Filter */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Oblíbené
+                </label>
+                <Select value={filters.favorites} onValueChange={(value) => setFilters(prev => ({ ...prev, favorites: value }))}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Filtrovat oblíbené" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {FAVORITE_FILTERS.map(filter => (
+                      <SelectItem key={filter.value} value={filter.value}>{filter.label}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -393,6 +429,16 @@ export default function EventRequestsPage() {
                           </p>
                         )}
                       </div>
+                      
+                      {/* Heart Button for logged-in users */}
+                      {session?.user?.id && (
+                        <div className="flex-shrink-0">
+                          <EventRequestHeartButton 
+                            eventRequestId={request.id}
+                            className="shadow-sm"
+                          />
+                        </div>
+                      )}
                     </div>
                     
                     {/* Stats Grid */}
@@ -437,8 +483,8 @@ export default function EventRequestsPage() {
                     )}
                     
                     {/* Contact Info */}
-                    <div className="bg-gradient-to-br from-slate-50 to-gray-100 rounded-xl p-4 border border-slate-200">
-                      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+                    <div className="relative bg-gradient-to-br from-slate-50 to-gray-100 rounded-xl p-4 border border-slate-200">
+                      <div className={`flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 ${!session ? 'blur-sm' : ''}`}>
                         <div className="flex items-center gap-3">
                           <div className="w-10 h-10 bg-slate-200 rounded-xl flex items-center justify-center">
                             <User className="h-5 w-5 text-slate-600" />
@@ -448,8 +494,9 @@ export default function EventRequestsPage() {
                         
                         <div className="flex flex-wrap gap-3">
                           <a 
-                            href={`mailto:${request.contactEmail}`}
+                            href={session ? `mailto:${request.contactEmail}` : '#'}
                             className="inline-flex items-center gap-2 px-3 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors text-sm font-medium"
+                            onClick={!session ? (e) => e.preventDefault() : undefined}
                           >
                             <Mail className="h-4 w-4" />
                             Email
@@ -457,8 +504,9 @@ export default function EventRequestsPage() {
                           
                           {request.contactPhone && (
                             <a 
-                              href={`tel:${request.contactPhone}`}
+                              href={session ? `tel:${request.contactPhone}` : '#'}
                               className="inline-flex items-center gap-2 px-3 py-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors text-sm font-medium"
+                              onClick={!session ? (e) => e.preventDefault() : undefined}
                             >
                               <Phone className="h-4 w-4" />
                               Telefon
@@ -466,6 +514,30 @@ export default function EventRequestsPage() {
                           )}
                         </div>
                       </div>
+                      
+                      {/* Login overlay for non-authenticated users */}
+                      {!session && (
+                        <div className="absolute inset-0 bg-white/80 backdrop-blur-[1px] rounded-xl flex items-center justify-center">
+                          <div className="text-center p-4">
+                            <LogIn className="h-8 w-8 text-gray-600 mx-auto mb-3" />
+                            <p className="text-sm font-medium text-gray-900 mb-3">
+                              Přihlaste se pro zobrazení kontaktních údajů
+                            </p>
+                            <div className="flex gap-2">
+                              <Link href="/prihlaseni">
+                                <Button size="sm" className="bg-black text-white hover:bg-gray-800 rounded-lg">
+                                  Přihlásit se
+                                </Button>
+                              </Link>
+                              <Link href="/registrace">
+                                <Button variant="outline" size="sm" className="rounded-lg border-gray-300">
+                                  Registrace
+                                </Button>
+                              </Link>
+                            </div>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </CardContent>
                 </Card>

@@ -469,33 +469,6 @@ export default function AdminPage() {
                   </Card>
                 </div>
 
-                {/* Quick Actions */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Rychlé akce</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-2">
-                        <Button onClick={() => setActiveTab("venues")} className="w-full justify-start" variant="secondary">
-                          <Building className="h-4 w-4 mr-2" />
-                          Spravovat prostory
-                        </Button>
-                        <Button onClick={() => setActiveTab("users")} className="w-full justify-start" variant="secondary">
-                          <Users className="h-4 w-4 mr-2" />
-                          Spravovat uživatele
-                        </Button>
-                        <Button onClick={() => setActiveTab("inquiries")} className="w-full justify-start" variant="secondary">
-                          <MessageSquare className="h-4 w-4 mr-2" />
-                          Zobrazit dotazy
-                        </Button>
-                        <Button onClick={loadData} className="w-full justify-start" variant="outline">
-                          <Settings className="h-4 w-4 mr-2" />
-                          Obnovit data
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
 
                   <Card>
                     <CardHeader>

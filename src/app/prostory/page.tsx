@@ -156,13 +156,19 @@ export default async function VenuesPage({
     <div className="min-h-screen bg-white">
       {/* Header - No longer sticky */}
       <div className="bg-white border-b border-black">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
-          <h1 className="text-xl sm:text-2xl lg:text-title-1 text-black mb-6 sm:mb-8 font-bold tracking-tight">
-            Event prostory v Praze
-          </h1>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
+          <div className="text-center mb-8">
+            <h1 className="text-xl sm:text-2xl lg:text-title-1 text-black mb-6 sm:mb-8 font-bold tracking-tight">
+              Event prostory v Praze
+            </h1>
+          </div>
           
           {/* Search and Filters */}
-          <VenueFilters initialValues={resolvedSearchParams} />
+          <div className="flex justify-center">
+            <div className="w-full max-w-5xl">
+              <VenueFilters initialValues={resolvedSearchParams} />
+            </div>
+          </div>
         </div>
       </div>
       

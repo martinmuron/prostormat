@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { VENUE_TYPES } from "@/types"
 import type { VenueType } from "@/types"
+import { Users } from "lucide-react"
 
 interface VenueCardProps {
   venue: {
@@ -23,6 +24,7 @@ interface VenueCardProps {
 export function VenueCard({ venue }: VenueCardProps) {
   const mainImage = venue.images[0] || "/images/placeholder-venue.jpg"
   const venueTypeLabel = venue.venueType ? VENUE_TYPES[venue.venueType as VenueType] || venue.venueType : null
+  const totalCapacity = Math.max(venue.capacitySeated || 0, venue.capacityStanding || 0)
 
   return (
     <Card className="overflow-hidden hover-lift transition-all duration-500 group border-2 border-black bg-white rounded-2xl h-full flex flex-col">
@@ -71,19 +73,12 @@ export function VenueCard({ venue }: VenueCardProps) {
             
             <div className="text-sm sm:text-callout mb-6 min-h-[2.5rem] flex items-start">
               <div className="text-gray-600 leading-tight font-medium">
-                {venue.capacitySeated && venue.capacityStanding ? (
-                  <span className="px-3 py-1.5 bg-white rounded-xl border-2 border-black text-black font-semibold">
-                    {venue.capacitySeated} sed. / {venue.capacityStanding} stoj.
+                {totalCapacity > 0 && (
+                  <span className="flex items-center gap-2 px-3 py-1.5 bg-white rounded-xl border-2 border-black text-black font-semibold">
+                    <Users className="h-4 w-4" />
+                    {totalCapacity} osob
                   </span>
-                ) : venue.capacitySeated ? (
-                  <span className="px-3 py-1.5 bg-white rounded-xl border-2 border-black text-black font-semibold">
-                    {venue.capacitySeated} sedících
-                  </span>
-                ) : venue.capacityStanding ? (
-                  <span className="px-3 py-1.5 bg-white rounded-xl border-2 border-black text-black font-semibold">
-                    {venue.capacityStanding} stojících
-                  </span>
-                ) : null}
+                )}
               </div>
             </div>
           </div>
@@ -93,7 +88,7 @@ export function VenueCard({ venue }: VenueCardProps) {
           <Button 
             variant="outline" 
             size="sm"
-            className="w-full bg-black text-white border-2 border-black hover:bg-gray-800 transition-all duration-200 font-medium rounded-xl"
+            className="w-full bg-black text-white border-2 border-black hover:bg-gray-800 hover:text-white transition-all duration-200 font-medium rounded-xl"
           >
             <span>Zobrazit detaily</span>
             <span className="ml-2 transform group-hover:translate-x-1 transition-transform duration-300">→</span>

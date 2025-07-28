@@ -36,11 +36,11 @@ async function getRelatedVenues(currentVenueId: string, venueType: string | null
               { venueType: venueType },
               // Same location/district
               { address: { contains: location, mode: 'insensitive' } },
-              // Similar amenities (at least 2 common amenities)
+              // Similar amenities (check for common amenities)
               ...(amenities.length >= 2 ? [
                 {
                   amenities: {
-                    hasAll: amenities.slice(0, 2) // Check for first 2 amenities
+                    hasSome: amenities.slice(0, 3) // Check for some common amenities
                   }
                 }
               ] : [])

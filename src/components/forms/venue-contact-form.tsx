@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { useSession } from "next-auth/react"
+import Link from "next/link"
 
 const contactFormSchema = z.object({
   name: z.string().min(2, "Jméno je povinné"),
@@ -97,94 +98,121 @@ export function VenueContactForm({ venueId, venueName }: VenueContactFormProps) 
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      <div>
-        <label className="block text-callout font-medium text-black mb-2">
-          Jméno *
-        </label>
-        <Input
-          {...register("name")}
-          placeholder="Vaše jméno"
-        />
-        {errors.name && (
-          <p className="text-caption text-red-600 mt-1">{errors.name.message}</p>
-        )}
-      </div>
-
-      <div>
-        <label className="block text-callout font-medium text-black mb-2">
-          E-mail *
-        </label>
-        <Input
-          type="email"
-          {...register("email")}
-          placeholder="vas@email.cz"
-        />
-        {errors.email && (
-          <p className="text-caption text-red-600 mt-1">{errors.email.message}</p>
-        )}
-      </div>
-
-      <div>
-        <label className="block text-callout font-medium text-black mb-2">
-          Telefon
-        </label>
-        <Input
-          type="tel"
-          {...register("phone")}
-          placeholder="+420 123 456 789"
-        />
-      </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div className="relative">
+      <form onSubmit={handleSubmit(onSubmit)} className={`space-y-4 ${!session ? 'blur-sm pointer-events-none' : ''}`}>
         <div>
           <label className="block text-callout font-medium text-black mb-2">
-            Datum akce
+            Jméno *
           </label>
           <Input
-            type="date"
-            {...register("eventDate")}
+            {...register("name")}
+            placeholder="Vaše jméno"
           />
+          {errors.name && (
+            <p className="text-caption text-red-600 mt-1">{errors.name.message}</p>
+          )}
         </div>
 
         <div>
           <label className="block text-callout font-medium text-black mb-2">
-            Počet hostů
+            E-mail *
           </label>
           <Input
-            type="number"
-            {...register("guestCount")}
-            placeholder="50"
-            min="1"
+            type="email"
+            {...register("email")}
+            placeholder="vas@email.cz"
+          />
+          {errors.email && (
+            <p className="text-caption text-red-600 mt-1">{errors.email.message}</p>
+          )}
+        </div>
+
+        <div>
+          <label className="block text-callout font-medium text-black mb-2">
+            Telefon
+          </label>
+          <Input
+            type="tel"
+            {...register("phone")}
+            placeholder="+420 123 456 789"
           />
         </div>
-      </div>
 
-      <div>
-        <label className="block text-callout font-medium text-black mb-2">
-          Zpráva *
-        </label>
-        <Textarea
-          {...register("message")}
-          placeholder="Popište svou akci a požadavky..."
-          rows={4}
-        />
-        {errors.message && (
-          <p className="text-caption text-red-600 mt-1">{errors.message.message}</p>
-        )}
-      </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-callout font-medium text-black mb-2">
+              Datum akce
+            </label>
+            <Input
+              type="date"
+              {...register("eventDate")}
+            />
+          </div>
 
-      <Button 
-        type="submit" 
-        className="w-full" 
-        disabled={isSubmitting}
-      >
-        {isSubmitting ? "Odesílám..." : "Odeslat dotaz"}
-      </Button>
+          <div>
+            <label className="block text-callout font-medium text-black mb-2">
+              Počet hostů
+            </label>
+            <Input
+              type="number"
+              {...register("guestCount")}
+              placeholder="50"
+              min="1"
+            />
+          </div>
+        </div>
 
-      <p className="text-caption text-gray-500">
-        Odesláním souhlasíte s předáním vašich kontaktních údajů provozovateli prostoru.
-      </p>
-    </form>
+        <div>
+          <label className="block text-callout font-medium text-black mb-2">
+            Zpráva *
+          </label>
+          <Textarea
+            {...register("message")}
+            placeholder="Popište svou akci a požadavky..."
+            rows={4}
+          />
+          {errors.message && (
+            <p className="text-caption text-red-600 mt-1">{errors.message.message}</p>
+          )}
+        </div>
+
+        <Button 
+          type="submit" 
+          className="w-full" 
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? "Odesílám..." : "Odeslat dotaz"}
+        </Button>
+
+        <p className="text-caption text-gray-500">
+          Odesláním souhlasíte s předáním vašich kontaktních údajů provozovateli prostoru.
+        </p>
+      </form>
+
+      {!session && (
+        <div className="absolute inset-0 flex items-center justify-center bg-white/80 backdrop-blur-sm rounded-lg">
+          <div className="text-center p-6 bg-white rounded-lg shadow-lg border-2 border-black max-w-sm">
+            <h3 className="text-lg font-bold text-black mb-4">
+              Přihlaste se pro odeslání dotazu
+            </h3>
+            <p className="text-sm text-gray-600 mb-6">
+              Pro kontaktování majitele prostoru se musíte nejprve přihlásit nebo zaregistrovat.
+            </p>
+            <div className="flex flex-col gap-3">
+              <Link href="/prihlaseni">
+                <Button className="w-full bg-black text-white hover:bg-gray-800 transition-all duration-200 font-medium rounded-xl">
+                  Přihlásit se
+                </Button>
+              </Link>
+              <Link href="/registrace">
+                <Button variant="outline" className="w-full border-2 border-black text-black hover:bg-black hover:text-white transition-all duration-200 font-medium rounded-xl">
+                  Zaregistrovat se
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
   )
 }

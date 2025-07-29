@@ -55,13 +55,22 @@ export function VenueCard({ venue }: VenueCardProps) {
       <CardContent className="p-4 sm:p-6 bg-white flex flex-col justify-between h-full">
         <Link href={`/prostory/${venue.slug}`}>
           <div className="flex-1">
-            <h3 className="text-lg sm:text-title-3 text-black mb-3 group-hover:text-gray-500 transition-all duration-300 leading-tight font-bold tracking-tight min-h-[3.5rem] flex items-start">
-              {venue.name}
-            </h3>
-            
-            <p className="text-sm sm:text-callout text-gray-600 mb-3 font-medium min-h-[1.25rem]">
-              {venue.address}
-            </p>
+            <div className="mb-4">
+              <h3 className="text-lg sm:text-title-3 text-black mb-2 group-hover:text-gray-500 transition-all duration-300 leading-tight font-bold tracking-tight">
+                {venue.name}
+              </h3>
+              <p className="text-sm sm:text-callout text-gray-600 font-medium">
+                {venue.address}
+              </p>
+              {totalCapacity > 0 && (
+                <div className="flex items-center gap-2 mt-2">
+                  <span className="flex items-center gap-2 px-3 py-1.5 bg-white rounded-xl border-2 border-black text-black font-semibold text-sm">
+                    <Users className="h-4 w-4" />
+                    {totalCapacity} osob
+                  </span>
+                </div>
+              )}
+            </div>
             
             <div className="min-h-[3rem] mb-4">
               {venue.description && (
@@ -69,17 +78,6 @@ export function VenueCard({ venue }: VenueCardProps) {
                   {venue.description}
                 </p>
               )}
-            </div>
-            
-            <div className="text-sm sm:text-callout mb-6 min-h-[2.5rem] flex items-start">
-              <div className="text-gray-600 leading-tight font-medium">
-                {totalCapacity > 0 && (
-                  <span className="flex items-center gap-2 px-3 py-1.5 bg-white rounded-xl border-2 border-black text-black font-semibold">
-                    <Users className="h-4 w-4" />
-                    {totalCapacity} osob
-                  </span>
-                )}
-              </div>
             </div>
           </div>
         </Link>

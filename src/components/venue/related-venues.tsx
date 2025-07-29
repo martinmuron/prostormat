@@ -166,11 +166,12 @@ export async function RelatedVenues({ currentVenueId, venueType, address, amenit
                   </div>
                 )}
 
-                <Link href={`/prostory/${venue.slug}`}>
-                  <div className="mt-3 text-center">
-                    <span className="text-sm text-blue-600 hover:text-blue-800 font-medium">
-                      Zobrazit detail →
-                    </span>
+                <Link href={`/prostory/${venue.slug}`} className="mt-auto">
+                  <div className="mt-3">
+                    <div className="w-full bg-black text-white border-2 border-black hover:bg-gray-800 hover:text-white transition-all duration-200 font-medium rounded-xl px-4 py-2 text-center text-sm group cursor-pointer">
+                      <span>Zobrazit detaily</span>
+                      <span className="ml-2 transform group-hover:translate-x-1 transition-transform duration-300">→</span>
+                    </div>
                   </div>
                 </Link>
               </CardContent>

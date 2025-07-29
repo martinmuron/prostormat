@@ -44,6 +44,16 @@ export function VenueCard({ venue }: VenueCardProps) {
               </Badge>
             </div>
           )}
+          {venue.images.length > 1 && (
+            <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4">
+              <div className="flex items-center gap-1 bg-black/80 text-white px-2 py-1 rounded-full text-xs font-medium shadow-lg">
+                <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" />
+                </svg>
+                {venue.images.length}
+              </div>
+            </div>
+          )}
           <div className="absolute top-3 right-3 sm:top-4 sm:right-4 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0">
             <div className="w-10 h-10 bg-white/95 rounded-full flex items-center justify-center shadow-lg backdrop-blur-sm">
               <span className="text-sm font-bold text-black">→</span>

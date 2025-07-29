@@ -56,20 +56,20 @@ export function VenueCard({ venue }: VenueCardProps) {
         <Link href={`/prostory/${venue.slug}`}>
           <div className="flex-1">
             <div className="mb-4">
-              <h3 className="text-lg sm:text-title-3 text-black mb-2 group-hover:text-gray-500 transition-all duration-300 leading-tight font-bold tracking-tight">
-                {venue.name}
-              </h3>
+              <div className="flex items-start justify-between gap-2 mb-2">
+                <h3 className="text-lg sm:text-title-3 text-black group-hover:text-gray-500 transition-all duration-300 leading-tight font-bold tracking-tight flex-1">
+                  {venue.name}
+                </h3>
+                {totalCapacity > 0 && (
+                  <span className="flex items-center gap-1 px-2 py-1 bg-white rounded-lg border border-black text-black font-semibold text-xs whitespace-nowrap">
+                    <Users className="h-3 w-3" />
+                    {totalCapacity}
+                  </span>
+                )}
+              </div>
               <p className="text-sm sm:text-callout text-gray-600 font-medium">
                 {venue.address}
               </p>
-              {totalCapacity > 0 && (
-                <div className="flex items-center gap-2 mt-2">
-                  <span className="flex items-center gap-2 px-3 py-1.5 bg-white rounded-xl border-2 border-black text-black font-semibold text-sm">
-                    <Users className="h-4 w-4" />
-                    {totalCapacity} osob
-                  </span>
-                </div>
-              )}
             </div>
             
             <div className="min-h-[3rem] mb-4">

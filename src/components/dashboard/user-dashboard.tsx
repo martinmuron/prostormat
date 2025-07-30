@@ -343,20 +343,61 @@ export function UserDashboard({ data }: UserDashboardProps) {
                     <div className="mb-4 p-3 bg-gray-50 rounded-lg">
                       <p className="text-sm text-gray-600 mb-2">Odeslané prostory:</p>
                       <div className="flex flex-wrap gap-2">
-                        {broadcast.logs.slice(0, 5).map((log: any) => (
-                          <Link 
-                            key={log.venue.id}
-                            href={`/prostory/${log.venue.slug}`}
-                            className="text-sm bg-blue-100 text-blue-800 px-3 py-1 rounded-full hover:bg-blue-200 transition-colors"
-                          >
-                            {log.venue.name}
-                          </Link>
-                        ))}
+                        {broadcast.logs.slice(0, 5).map((log: any) => {
+                          const statusColor = {
+                            'sent': 'bg-green-100 text-green-800 border-green-200',
+                            'failed': 'bg-red-100 text-red-800 border-red-200',
+                            'pending': 'bg-yellow-100 text-yellow-800 border-yellow-200',
+                            'skipped': 'bg-gray-100 text-gray-800 border-gray-200'
+                          }[log.emailStatus as string] || 'bg-blue-100 text-blue-800 border-blue-200'
+                          
+                          const statusIcon = {
+                            'sent': '✓',
+                            'failed': '✗',
+                            'pending': '⏳',
+                            'skipped': '⊘'
+                          }[log.emailStatus as string] || '📧'
+
+                          return (
+                            <Link 
+                              key={log.venue.id}
+                              href={`/prostory/${log.venue.slug}`}
+                              className={`text-sm px-3 py-1 rounded-full hover:opacity-80 transition-opacity border ${statusColor}`}
+                              title={`${log.venue.name} - Email: ${log.emailStatus}${log.emailError ? ` (${log.emailError})` : ''}`}
+                            >
+                              <span className="mr-1">{statusIcon}</span>
+                              {log.venue.name}
+                            </Link>
+                          )
+                        })}
                         {broadcast.logs.length > 5 && (
                           <span className="text-sm text-gray-500 px-3 py-1">
                             +{broadcast.logs.length - 5} dalších
                           </span>
                         )}
+                      </div>
+                      {/* Email status summary */}
+                      <div className="mt-3 pt-2 border-t border-gray-200">
+                        <div className="flex flex-wrap gap-3 text-xs text-gray-600">
+                          {['sent', 'failed', 'pending', 'skipped'].map(status => {
+                            const count = broadcast.logs.filter((log: any) => log.emailStatus === status).length
+                            if (count === 0) return null
+                            
+                            const statusLabels = {
+                              'sent': 'Odesláno',
+                              'failed': 'Chyba',
+                              'pending': 'Čeká',
+                              'skipped': 'Přeskočeno'
+                            }
+                            
+                            return (
+                              <span key={status} className="flex items-center gap-1">
+                                <span className="w-2 h-2 rounded-full bg-current opacity-60"></span>
+                                {statusLabels[status as keyof typeof statusLabels]}: {count}
+                              </span>
+                            )
+                          })}
+                        </div>
                       </div>
                     </div>
                   )}

@@ -188,7 +188,8 @@ model VenueBroadcastLog {
   broadcastId   String
   venueId       String
   sentAt        DateTime @default(now())
-  emailStatus   String   @default("sent") // sent, delivered, failed
+  emailStatus   String   @default("sent") // sent, delivered, failed, pending, skipped
+  emailError    String?  // Error message if email failed
 
   broadcast VenueBroadcast @relation(fields: [broadcastId], references: [id])
   venue Venue @relation(fields: [venueId], references: [id])

@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { db } from '@/lib/db'
+import { resend, FROM_EMAIL, REPLY_TO_EMAIL } from '@/lib/resend'
+import { generateVenueBroadcastEmail } from '@/lib/email-templates'
 
 export async function POST(request: NextRequest) {
   try {
@@ -79,29 +81,108 @@ export async function POST(request: NextRequest) {
       }
     })
 
-    // Create broadcast logs for each venue
-    const broadcastLogs = await Promise.all(
-      matchingVenues.map(venue =>
-        db.venueBroadcastLog.create({
-          data: {
-            broadcastId: broadcast.id,
-            venueId: venue.id,
-            emailStatus: 'sent'
+    // Send emails to venues and create broadcast logs
+    const emailResults = await Promise.allSettled(
+      matchingVenues.map(async (venue) => {
+        try {
+          // Skip venues without contact email
+          if (!venue.contactEmail) {
+            console.log(`⚠️ Skipping ${venue.name} - no contact email`)
+            return await db.venueBroadcastLog.create({
+              data: {
+                broadcastId: broadcast.id,
+                venueId: venue.id,
+                emailStatus: 'skipped',
+                emailError: 'No contact email available'
+              }
+            })
           }
-        })
-      )
+
+          // Generate email content
+          const emailTemplate = generateVenueBroadcastEmail({
+            venueName: venue.name,
+            venueContactEmail: venue.contactEmail,
+            broadcast: {
+              title,
+              description,
+              eventType,
+              eventDate: eventDate ? new Date(eventDate) : null,
+              guestCount,
+              budgetRange,
+              locationPreference,
+              requirements,
+              contactName,
+              contactEmail,
+              contactPhone
+            }
+          })
+
+          // Send email via Resend (only if API key is configured)
+          let emailStatus = 'pending'
+          let emailError = null
+          
+          if (process.env.RESEND_API_KEY) {
+            try {
+              await resend.emails.send({
+                from: FROM_EMAIL,
+                to: venue.contactEmail,
+                replyTo: REPLY_TO_EMAIL,
+                subject: emailTemplate.subject,
+                html: emailTemplate.html,
+                text: emailTemplate.text,
+              })
+              emailStatus = 'sent'
+              console.log(`✅ Email sent to ${venue.name} (${venue.contactEmail})`)
+            } catch (emailErr) {
+              emailStatus = 'failed'
+              emailError = emailErr instanceof Error ? emailErr.message : 'Unknown email error'
+              console.error(`❌ Failed to send email to ${venue.name}:`, emailErr)
+            }
+          } else {
+            emailStatus = 'skipped'
+            console.log(`⚠️ Email skipped for ${venue.name} - RESEND_API_KEY not configured`)
+          }
+
+          // Create broadcast log with email status
+          return await db.venueBroadcastLog.create({
+            data: {
+              broadcastId: broadcast.id,
+              venueId: venue.id,
+              emailStatus,
+              emailError
+            }
+          })
+        } catch (error) {
+          console.error(`Error processing venue ${venue.name}:`, error)
+          
+          // Create log entry even for errors
+          return await db.venueBroadcastLog.create({
+            data: {
+              broadcastId: broadcast.id,
+              venueId: venue.id,
+              emailStatus: 'failed',
+              emailError: error instanceof Error ? error.message : 'Unknown error'
+            }
+          })
+        }
+      })
     )
 
-    // TODO: Send emails to venues (implement email service later)
-    // For now, we'll just log the matching venues
-    console.log(`Broadcast created for ${matchingVenues.length} venues:`, matchingVenues.map(v => v.name))
+    const successfulEmails = emailResults.filter(result => 
+      result.status === 'fulfilled' && 
+      result.value?.emailStatus === 'sent'
+    ).length
+    
+    console.log(`📧 Broadcast completed: ${successfulEmails}/${matchingVenues.length} emails sent successfully`)
 
     return NextResponse.json({
       success: true,
       broadcast: {
         id: broadcast.id,
         title: broadcast.title,
-        sentToVenues: matchingVenues.length
+        sentToVenues: matchingVenues.length,
+        emailsSent: successfulEmails,
+        emailStatus: process.env.RESEND_API_KEY ? 'enabled' : 'disabled'
       }
     })
 

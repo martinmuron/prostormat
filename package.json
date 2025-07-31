@@ -9,7 +9,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "postinstall": "prisma generate && npm run db:setup:production",
+    "postinstall": "prisma generate && (npm run db:setup:production || echo 'Database setup skipped')",
     "db:setup:production": "cp prisma/schema.postgresql.prisma prisma/schema.prisma",
     "db:migrate:favorites": "tsx prisma/migrate-favorites.ts || echo 'Migration skipped'",
     "db:seed-safe": "tsx prisma/seed-safe.ts",

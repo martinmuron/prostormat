@@ -269,7 +269,7 @@ export function EventRequestForm() {
           disabled={isSubmitting}
           className="flex-1 py-4 text-body font-semibold rounded-2xl bg-black text-white hover:bg-gray-800 disabled:opacity-50"
         >
-          {isSubmitting ? "Vytvářím..." : "Vytvořit požadavek"}
+          {isSubmitting ? "Vytvářím..." : "Vytvořit poptávku"}
         </Button>
       </div>
 

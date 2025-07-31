@@ -15,7 +15,7 @@ export default async function NewEventRequestPage() {
     <div className="min-h-screen bg-white">
       <div className="max-w-3xl mx-auto px-6 py-12">
         <div className="text-center mb-12">
-          <h1 className="text-display text-black mb-6 font-bold">Nový požadavek na akci</h1>
+          <h1 className="text-display text-black mb-6 font-bold">Nová poptávka na akci</h1>
           <p className="text-title-3 text-gray-600 max-w-2xl mx-auto leading-relaxed">
             Popište svou akci a my ji zveřejníme pro provozovatele prostorů v Praze. 
             Získejte nabídky přímo od vlastníků prostorů.

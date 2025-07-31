@@ -81,7 +81,7 @@ export function DashboardSidebar({ userRole }: DashboardSidebarProps) {
     return [
       ...baseNav,
       {
-        name: "Moje požadavky",
+        name: "Moje poptávky",
         href: "/dashboard/requests",
         icon: Calendar,
       },

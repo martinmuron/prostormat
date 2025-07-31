@@ -67,7 +67,7 @@ export function UserDashboard({ data }: UserDashboardProps) {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-caption text-gray-500 mb-1">Aktivní požadavky</p>
+                <p className="text-caption text-gray-500 mb-1">Aktivní poptávky</p>
                 <p className="text-title-2 text-black">{stats.activeRequests}</p>
               </div>
               <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
@@ -141,10 +141,10 @@ export function UserDashboard({ data }: UserDashboardProps) {
               <div className="text-center py-8">
                 <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                 <p className="text-body text-gray-600 mb-4">
-                  Zatím jste nevytvořili žádné požadavky
+                  Zatím jste nevytvořili žádné poptávky
                 </p>
                 <Link href="/pozadavky/novy">
-                  <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white">Vytvořit první požadavek</Button>
+                  <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white">Vytvořit první poptávku</Button>
                 </Link>
               </div>
             ) : (
@@ -235,7 +235,7 @@ export function UserDashboard({ data }: UserDashboardProps) {
           <Link href="/pozadavky/novy">
             <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white">
               <Plus className="h-4 w-4 mr-2" />
-              Nový požadavek
+              Nová poptávka
             </Button>
           </Link>
         </div>
@@ -246,12 +246,12 @@ export function UserDashboard({ data }: UserDashboardProps) {
             <Calendar className="h-16 w-16 text-gray-400 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-gray-900 mb-2">Žádné poptávky</h3>
             <p className="text-body text-gray-600 mb-6">
-              Zatím jste nevytvořili žádné požadavky na akci
+              Zatím jste nevytvořili žádné poptávky na akci
             </p>
             <Link href="/pozadavky/novy">
               <Button className="bg-blue-600 hover:bg-blue-700 text-white">
                 <Plus className="h-4 w-4 mr-2" />
-                Vytvořit první požadavek
+                Vytvořit první poptávku
               </Button>
             </Link>
           </div>

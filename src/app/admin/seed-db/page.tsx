@@ -88,7 +88,7 @@ export default function SeedDatabasePage() {
                   <div className="mt-4 p-3 bg-green-100 rounded">
                     <p className="text-sm text-green-800">
                       🎉 Your production site should now show venues in "doporučené prostory" 
-                      and event requests in "požadavky na akce"!
+                      and event requests in "poptávky na akce"!
                     </p>
                   </div>
                 </div>

@@ -147,7 +147,7 @@ export default function HomePage() {
               <Zap className="w-8 h-8 text-white" />
             </div>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
-              Rychlá požadavka
+              Rychlá poptávka
             </h2>
             <p className="text-lg sm:text-xl text-gray-700 max-w-3xl mx-auto leading-relaxed">
               Nemáte čas hledat? Popište svou akci a nechte majitele prostorů, aby se ozvali vám!
@@ -245,7 +245,7 @@ export default function HomePage() {
                     className="w-full px-6 py-3 text-base font-medium rounded-xl bg-blue-600 text-white hover:bg-blue-700 transition-all duration-200"
                   >
                     <Zap className="w-5 h-5 mr-2" />
-                    Vytvořit požadavek
+                    Vytvořit poptávku
                   </Button>
                 </Link>
                 <Link href="/pozadavky" className="block">
@@ -254,7 +254,7 @@ export default function HomePage() {
                     size="lg" 
                     className="w-full px-6 py-3 text-base font-medium rounded-xl border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white transition-all duration-200"
                   >
-                    Prohlédnout požadavky
+                    Prohlédnout poptávky
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </Button>
                 </Link>
@@ -396,7 +396,7 @@ export default function HomePage() {
                     2
                   </div>
                   <p className="text-gray-700 font-medium">
-                    Získávejte požadavky od organizátorů
+                    Získávejte poptávky od organizátorů
                   </p>
                 </div>
                 

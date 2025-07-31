@@ -223,7 +223,7 @@ export default async function UserProfilePage({
                 </div>
               ) : (
                 <p className="text-muted-foreground text-center py-8">
-                  Žádné požadavky na akce.
+                  Žádné poptávky na akce.
                 </p>
               )}
             </CardContent>

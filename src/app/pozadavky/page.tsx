@@ -54,7 +54,7 @@ const DATE_RANGES = [
 ]
 
 const FAVORITE_FILTERS = [
-  { label: "Všechny požadavky", value: "all" },
+  { label: "Všechny poptávky", value: "all" },
   { label: "Pouze oblíbené", value: "favorites" },
 ]
 
@@ -227,7 +227,7 @@ export default function EventRequestsPage() {
           <div className="text-center mb-8 sm:mb-12">
             <h1 className="text-2xl sm:text-title-1 text-black mb-4">Veřejné zakázky</h1>
             <p className="text-sm sm:text-body text-gray-600 mb-6 sm:mb-8 max-w-2xl mx-auto px-2 sm:px-0">
-              Aktuální požadavky na event prostory. Kontaktujte organizátory přímo 
+              Aktuální poptávky na event prostory. Kontaktujte organizátory přímo 
               prostřednictvím uvedených kontaktních údajů.
             </p>
           </div>
@@ -249,12 +249,12 @@ export default function EventRequestsPage() {
         <div className="text-center mb-8 sm:mb-12">
           <h1 className="text-2xl sm:text-title-1 text-black mb-4">Veřejné zakázky</h1>
           <p className="text-sm sm:text-body text-gray-600 mb-6 sm:mb-8 max-w-2xl mx-auto px-2 sm:px-0">
-            Aktuální požadavky na event prostory. Kontaktujte organizátory přímo 
+            Aktuální poptávky na event prostory. Kontaktujte organizátory přímo 
             prostřednictvím uvedených kontaktních údajů.
           </p>
           <Link href="/pozadavky/novy">
             <Button size="lg" className="bg-black text-white hover:bg-gray-800 w-full sm:w-auto rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl">
-              Přidat požadavek
+              Přidat poptávku
             </Button>
           </Link>
         </div>
@@ -384,17 +384,17 @@ export default function EventRequestsPage() {
         {filteredRequests.length === 0 ? (
           <div className="text-center py-12">
             <h3 className="text-title-3 text-black mb-4">
-              {requests.length === 0 ? "Žádné aktivní požadavky" : "Žádné výsledky"}
+              {requests.length === 0 ? "Žádné aktivní poptávky" : "Žádné výsledky"}
             </h3>
             <p className="text-body text-gray-600 mb-6 px-4">
               {requests.length === 0 
-                ? "Momentálně nejsou k dispozici žádné požadavky na akce."
+                ? "Momentálně nejsou k dispozici žádné poptávky na akce."
                 : "Zkuste upravit filtry pro zobrazení více výsledků."
               }
             </p>
             {requests.length === 0 ? (
               <Link href="/pozadavky/novy">
-                <Button className="bg-black text-white hover:bg-gray-800 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl">Přidat první požadavek</Button>
+                <Button className="bg-black text-white hover:bg-gray-800 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl">Přidat první poptávku</Button>
               </Link>
             ) : (
               <Button onClick={clearFilters} variant="outline">

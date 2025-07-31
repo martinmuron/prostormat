@@ -373,11 +373,18 @@ export default function AdminPage() {
                   { id: "overview", label: "Přehled", icon: BarChart3 },
                   { id: "venues", label: "Prostory", icon: Building },
                   { id: "users", label: "Uživatelé", icon: Users },
-                  { id: "inquiries", label: "Dotazy", icon: MessageSquare }
+                  { id: "inquiries", label: "Dotazy", icon: MessageSquare },
+                  { id: "email-flow", label: "Email Flow", icon: Mail }
                 ].map((tab) => (
                   <button
                     key={tab.id}
-                    onClick={() => setActiveTab(tab.id)}
+                    onClick={() => {
+                      if (tab.id === "email-flow") {
+                        window.location.href = "/admin/email-flow"
+                      } else {
+                        setActiveTab(tab.id)
+                      }
+                    }}
                     className={`flex items-center gap-2 py-2 px-1 border-b-2 font-medium text-sm ${
                       activeTab === tab.id
                         ? "border-black text-black"

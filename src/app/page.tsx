@@ -93,18 +93,18 @@ export default function HomePage() {
       <AnimatedBackground />
       
       {/* Hero Section */}
-      <section className="relative py-20 sm:py-28 lg:py-36 px-4 sm:px-6 bg-gradient-to-br from-black via-gray-900 to-gray-800">
+      <section className="relative py-20 sm:py-28 lg:py-36 px-4 sm:px-6 bg-white">
         <FloatingShapes />
         <div className="max-w-5xl mx-auto text-center relative z-20">
           <div className="animate-slide-up">
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-semibold text-white mb-8 tracking-tight leading-tight drop-shadow-lg">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-semibold text-gray-900 mb-8 tracking-tight leading-tight">
               Najděte perfektní prostor<br className="hidden sm:block" />
               <span className="sm:hidden"> </span>pro vaši akci
             </h1>
           </div>
           
           <div className="animate-slide-up" style={{ animationDelay: '0.2s' }}>
-            <p className="text-xl sm:text-2xl text-gray-200 mb-12 max-w-3xl mx-auto leading-relaxed font-light">
+            <p className="text-xl sm:text-2xl text-gray-700 mb-12 max-w-3xl mx-auto leading-relaxed font-light">
               Objevte tisíce jedinečných prostorů v Praze pro vaše akce, oslavy a události. 
               Od intimních setkání po velké konference.
             </p>
@@ -118,7 +118,7 @@ export default function HomePage() {
             <Link href="/prostory" className="flex-1">
               <Button 
                 size="lg" 
-                className="magnetic-button hover-lift w-full px-6 py-3 text-base font-medium rounded-xl bg-white text-black hover:bg-gray-100 transition-all duration-200 shadow-lg"
+                className="magnetic-button hover-lift w-full px-6 py-3 text-base font-medium rounded-xl bg-blue-600 text-white hover:bg-blue-700 transition-all duration-200 shadow-lg"
               >
                 <Search className="w-5 h-5 mr-2" />
                 Najít prostory
@@ -128,7 +128,7 @@ export default function HomePage() {
               <Button 
                 variant="outline" 
                 size="lg" 
-                className="magnetic-button hover-lift w-full px-6 py-3 text-base font-medium rounded-xl border-2 border-white text-white hover:bg-white hover:text-black transition-all duration-200"
+                className="magnetic-button hover-lift w-full px-6 py-3 text-base font-medium rounded-xl border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white transition-all duration-200"
               >
                 <Upload className="w-5 h-5 mr-2" />
                 Přidat prostor

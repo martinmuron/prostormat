@@ -1,7 +1,7 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Users, Building, Calendar, MessageSquare, FileText } from "lucide-react"
+import { Users, Building, Calendar, MessageSquare, FileText, Mail } from "lucide-react"
 
 interface AdminDashboardProps {
   data: {
@@ -123,6 +123,20 @@ export function AdminDashboard({ data }: AdminDashboardProps) {
             </Link>
           </CardContent>
         </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Email Flow</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-body text-gray-600 mb-4">
+              Sledujte všechny automatické emaily odeslané přes Resend.
+            </p>
+            <Link href="/admin/email-flow">
+              <Button>Zobrazit Email Flow</Button>
+            </Link>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Quick Actions */}
@@ -160,6 +174,12 @@ export function AdminDashboard({ data }: AdminDashboardProps) {
               <Button variant="secondary" className="w-full justify-start">
                 <MessageSquare className="h-4 w-4 mr-2" />
                 Statistiky
+              </Button>
+            </Link>
+            <Link href="/admin/email-flow">
+              <Button variant="secondary" className="w-full justify-start">
+                <Mail className="h-4 w-4 mr-2" />
+                Email Flow
               </Button>
             </Link>
           </div>

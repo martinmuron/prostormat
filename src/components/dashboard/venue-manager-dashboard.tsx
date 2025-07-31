@@ -331,7 +331,7 @@ export function VenueManagerDashboard({ data }: VenueManagerDashboardProps) {
             <Link href="/pozadavky">
               <Button variant="secondary" className="w-full justify-start text-gray-700 border-gray-300 hover:bg-gray-50 h-12">
                 <Calendar className="h-4 w-4 mr-2" />
-                Verejne Poptavky
+                Veřejné zakázky
               </Button>
             </Link>
             <Link href="/dashboard/analytics">

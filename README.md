@@ -92,8 +92,8 @@ The application includes the following main entities:
 - `/` - Homepage with hero and featured venues
 - `/prostory` - Venue listings with search and filters
 - `/prostory/[slug]` - Individual venue detail pages
-- `/pozadavky` - Verejne Poptavky board
-- `/pozadavky/novy` - Create new Verejne Poptavky (auth required)
+- `/pozadavky` - Veřejné zakázky board
+- `/pozadavky/novy` - Create new Veřejné zakázky (auth required)
 
 ### Authentication
 - `/prihlaseni` - Sign in page

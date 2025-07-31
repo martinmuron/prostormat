@@ -44,7 +44,7 @@ export function DashboardSidebar({ userRole }: DashboardSidebarProps) {
           icon: MessageSquare,
         },
         {
-          name: "Požadavky na akce",
+          name: "Verejne Poptavky",
           href: "/pozadavky",
           icon: Calendar,
         },

@@ -39,7 +39,7 @@ export function Header() {
               <NavigationMenuItem>
                 <NavigationMenuLink asChild>
                   <Link href="/pozadavky" className="text-sm font-medium text-gray-600 hover:text-black transition-colors px-3 py-2 rounded-md">
-                    Požadavky
+                    Verejne Poptavky
                   </Link>
                 </NavigationMenuLink>
               </NavigationMenuItem>
@@ -142,7 +142,7 @@ export function Header() {
                     className="text-base font-medium text-gray-700 hover:text-black hover:bg-gray-50 transition-colors px-4 py-3 rounded-xl"
                     onClick={closeMobileMenu}
                   >
-                    Požadavky na akce
+                    Verejne Poptavky
                   </Link>
                   <Link 
                     href="/rychla-poptavka" 

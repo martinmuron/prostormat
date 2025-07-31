@@ -29,7 +29,7 @@ export function Footer() {
               </li>
               <li>
                 <Link href="/pozadavky" className="text-body text-gray-600 hover:text-black transition-colors">
-                  Požadavky na akce
+                  Verejne Poptavky
                 </Link>
               </li>
               <li>

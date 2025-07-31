@@ -225,7 +225,7 @@ export default function EventRequestsPage() {
       <div className="min-h-screen bg-white">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
           <div className="text-center mb-8 sm:mb-12">
-            <h1 className="text-2xl sm:text-title-1 text-black mb-4">Požadavky na akce</h1>
+            <h1 className="text-2xl sm:text-title-1 text-black mb-4">Verejne Poptavky</h1>
             <p className="text-sm sm:text-body text-gray-600 mb-6 sm:mb-8 max-w-2xl mx-auto px-2 sm:px-0">
               Aktuální požadavky na event prostory. Kontaktujte organizátory přímo 
               prostřednictvím uvedených kontaktních údajů.
@@ -247,7 +247,7 @@ export default function EventRequestsPage() {
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
         {/* Header */}
         <div className="text-center mb-8 sm:mb-12">
-          <h1 className="text-2xl sm:text-title-1 text-black mb-4">Požadavky na akce</h1>
+          <h1 className="text-2xl sm:text-title-1 text-black mb-4">Verejne Poptavky</h1>
           <p className="text-sm sm:text-body text-gray-600 mb-6 sm:mb-8 max-w-2xl mx-auto px-2 sm:px-0">
             Aktuální požadavky na event prostory. Kontaktujte organizátory přímo 
             prostřednictvím uvedených kontaktních údajů.

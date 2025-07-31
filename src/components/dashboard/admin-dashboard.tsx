@@ -59,7 +59,7 @@ export function AdminDashboard({ data }: AdminDashboardProps) {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-caption text-gray-500 mb-1">Požadavky na akce</p>
+                <p className="text-caption text-gray-500 mb-1">Verejne Poptavky</p>
                 <p className="text-title-2 text-black">{stats.totalEventRequests}</p>
               </div>
               <Calendar className="h-8 w-8 text-gray-400" />
@@ -153,7 +153,7 @@ export function AdminDashboard({ data }: AdminDashboardProps) {
             <Link href="/pozadavky">
               <Button variant="secondary" className="w-full justify-start">
                 <Calendar className="h-4 w-4 mr-2" />
-                Požadavky na akce
+                Verejne Poptavky
               </Button>
             </Link>
             <Link href="/dashboard/stats">

@@ -278,7 +278,7 @@ export default function EventRequestsPage() {
               )}
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+            <div className={`grid grid-cols-1 md:grid-cols-2 gap-4 ${session ? 'lg:grid-cols-5' : 'lg:grid-cols-4'}`}>
               {/* Search */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -346,22 +346,24 @@ export default function EventRequestsPage() {
                 </Select>
               </div>
 
-              {/* Favorites Filter */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Oblíbené
-                </label>
-                <Select value={filters.favorites} onValueChange={(value) => setFilters(prev => ({ ...prev, favorites: value }))}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Filtrovat oblíbené" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {FAVORITE_FILTERS.map(filter => (
-                      <SelectItem key={filter.value} value={filter.value}>{filter.label}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+              {/* Favorites Filter - Only show for authenticated users */}
+              {session && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Oblíbené
+                  </label>
+                  <Select value={filters.favorites} onValueChange={(value) => setFilters(prev => ({ ...prev, favorites: value }))}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Filtrovat oblíbené" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {FAVORITE_FILTERS.map(filter => (
+                        <SelectItem key={filter.value} value={filter.value}>{filter.label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -517,20 +519,20 @@ export default function EventRequestsPage() {
                       
                       {/* Login overlay for non-authenticated users */}
                       {!session && (
-                        <div className="absolute inset-0 bg-white/80 backdrop-blur-[1px] rounded-xl flex items-center justify-center">
-                          <div className="flex items-center gap-3 p-4">
+                        <div className="absolute inset-0 bg-white/80 backdrop-blur-[1px] rounded-xl flex items-center justify-center p-2">
+                          <div className="flex flex-col sm:flex-row items-center gap-3 p-4 text-center sm:text-left">
                             <LogIn className="h-6 w-6 text-gray-600 flex-shrink-0" />
-                            <p className="text-sm font-medium text-gray-900 whitespace-nowrap">
+                            <p className="text-sm font-medium text-gray-900">
                               Přihlaste se pro zobrazení kontaktních údajů
                             </p>
-                            <div className="flex gap-2 flex-shrink-0">
-                              <Link href="/prihlaseni">
-                                <Button size="sm" className="bg-black text-white hover:bg-gray-800 rounded-lg">
+                            <div className="flex flex-col sm:flex-row gap-2 flex-shrink-0 w-full sm:w-auto">
+                              <Link href="/prihlaseni" className="w-full sm:w-auto">
+                                <Button size="sm" className="bg-black text-white hover:bg-gray-800 rounded-lg w-full">
                                   Přihlásit se
                                 </Button>
                               </Link>
-                              <Link href="/registrace">
-                                <Button variant="outline" size="sm" className="rounded-lg border-gray-300">
+                              <Link href="/registrace" className="w-full sm:w-auto">
+                                <Button variant="outline" size="sm" className="rounded-lg border-gray-300 w-full">
                                   Registrace
                                 </Button>
                               </Link>

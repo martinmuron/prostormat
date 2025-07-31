@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { VenueCard } from "@/components/venue/venue-card"
 import { ScrollReveal } from "@/components/ui/scroll-reveal"
+import { AnimatedBackground, FloatingShapes } from "@/components/ui/animated-background"
 import { HeroSearch } from "@/components/ui/hero-search"
 import { Skeleton } from "@/components/ui/skeleton"
 import { db } from "@/lib/db"
@@ -87,49 +88,47 @@ async function FeaturedVenues() {
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white relative overflow-hidden">
+      {/* Animated Background */}
+      <AnimatedBackground />
+      
       {/* Hero Section */}
-      <section className="relative py-20 sm:py-28 lg:py-36 px-4 sm:px-6 bg-white">
-        <div className="max-w-5xl mx-auto text-center">
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-semibold text-black mb-8 tracking-tight leading-tight">
-            Najděte perfektní prostor<br className="hidden sm:block" />
-            <span className="sm:hidden"> </span>pro vaši akci
-          </h1>
+      <section className="relative py-20 sm:py-28 lg:py-36 px-4 sm:px-6 bg-gradient-to-br from-black via-gray-900 to-gray-800">
+        <FloatingShapes />
+        <div className="max-w-5xl mx-auto text-center relative z-20">
+          <div className="animate-slide-up">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-semibold text-white mb-8 tracking-tight leading-tight drop-shadow-lg">
+              Najděte perfektní prostor<br className="hidden sm:block" />
+              <span className="sm:hidden"> </span>pro vaši akci
+            </h1>
+          </div>
           
-          <p className="text-xl sm:text-2xl text-black mb-12 max-w-3xl mx-auto leading-relaxed font-light">
-            Objevte tisíce jedinečných prostorů v Praze pro vaše akce, oslavy a události. 
-            Od intimních setkání po velké konference.
-          </p>
+          <div className="animate-slide-up" style={{ animationDelay: '0.2s' }}>
+            <p className="text-xl sm:text-2xl text-gray-200 mb-12 max-w-3xl mx-auto leading-relaxed font-light">
+              Objevte tisíce jedinečných prostorů v Praze pro vaše akce, oslavy a události. 
+              Od intimních setkání po velké konference.
+            </p>
+          </div>
           
-          <div className="mb-12">
+          <div className="mb-12 animate-slide-up" style={{ animationDelay: '0.4s' }}>
             <HeroSearch />
           </div>
           
-          <div className="flex flex-col sm:flex-row gap-4 justify-center max-w-3xl mx-auto">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center max-w-3xl mx-auto animate-slide-up" style={{ animationDelay: '0.6s' }}>
             <Link href="/prostory" className="flex-1">
               <Button 
                 size="lg" 
-                className="w-full px-6 py-3 text-base font-medium rounded-xl bg-black text-white hover:bg-gray-800 transition-all duration-200"
+                className="magnetic-button hover-lift w-full px-6 py-3 text-base font-medium rounded-xl bg-white text-black hover:bg-gray-100 transition-all duration-200 shadow-lg"
               >
                 <Search className="w-5 h-5 mr-2" />
                 Najít prostory
               </Button>
             </Link>
-            <Link href="/prostory" className="flex-1">
-              <Button 
-                size="lg" 
-                variant="outline"
-                className="w-full px-6 py-3 text-base font-medium rounded-xl border-2 border-black text-black hover:bg-black hover:text-white transition-all duration-200"
-              >
-                <Search className="w-5 h-5 mr-2" />
-                Prohlédnout prostory
-              </Button>
-            </Link>
             <Link href="/pridat-prostor" className="flex-1">
               <Button 
+                variant="outline" 
                 size="lg" 
-                variant="outline"
-                className="w-full px-6 py-3 text-base font-medium rounded-xl border-2 border-black text-black hover:bg-black hover:text-white transition-all duration-200"
+                className="magnetic-button hover-lift w-full px-6 py-3 text-base font-medium rounded-xl border-2 border-white text-white hover:bg-white hover:text-black transition-all duration-200"
               >
                 <Upload className="w-5 h-5 mr-2" />
                 Přidat prostor
@@ -266,114 +265,121 @@ export default function HomePage() {
       </section>
 
       {/* Featured Venues */}
-      <section className="py-16 sm:py-20 px-4 sm:px-6 bg-white">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-black mb-4">
-              TOP prostory tohoto měsíce
-            </h2>
-            <p className="text-base sm:text-lg text-black max-w-2xl mx-auto">
-              Nejoblíbenější a nejlépe hodnocené prostory od našich klientů. 
-              Garantovaná kvalita a spolehlivost.
-            </p>
-          </div>
+      <section className="py-16 sm:py-20 px-4 sm:px-6 bg-gray-50">
+        <div className="max-w-6xl mx-auto">
+          <ScrollReveal>
+            <div className="text-center mb-12">
+              <h2 className="text-3xl sm:text-4xl font-bold text-black mb-4">
+                Nejnovější prostory
+              </h2>
+              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                Objevte nejnovější prostory přidané do naší platformy
+              </p>
+            </div>
+          </ScrollReveal>
           
-          <Suspense
-            fallback={
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <ScrollReveal delay={200}>
+            <Suspense fallback={
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {Array.from({ length: 6 }).map((_, i) => (
                   <VenueCardSkeleton key={i} />
                 ))}
               </div>
-            }
-          >
-            <FeaturedVenues />
-          </Suspense>
-
-          <div className="text-center mt-12">
-            <Link href="/prostory">
-              <Button 
-                variant="outline" 
-                size="lg" 
-                className="rounded-xl px-8 py-3 text-base font-medium border-2 border-black text-black hover:bg-black hover:text-white transition-all duration-200"
-              >
-                Zobrazit všechny prostory
-                <ArrowRight className="w-4 h-4 ml-2" />
-              </Button>
-            </Link>
-          </div>
+            }>
+              <FeaturedVenues />
+            </Suspense>
+          </ScrollReveal>
+          
+          <ScrollReveal delay={400}>
+            <div className="text-center mt-12">
+              <Link href="/prostory">
+                <Button 
+                  size="lg" 
+                  className="magnetic-button hover-lift px-8 py-3 text-base font-medium rounded-xl bg-black text-white hover:bg-gray-800 transition-all duration-200 shadow-lg"
+                >
+                  Zobrazit všechny prostory
+                  <ArrowRight className="w-5 h-5 ml-2" />
+                </Button>
+              </Link>
+            </div>
+          </ScrollReveal>
         </div>
       </section>
 
       {/* CTA for Venue Owners */}
       <section className="py-16 sm:py-20 px-4 sm:px-6 bg-gradient-to-br from-purple-50 to-pink-100">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-purple-600 rounded-2xl mb-6">
-              <Upload className="w-8 h-8 text-white" />
+          <ScrollReveal>
+            <div className="text-center mb-12">
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-purple-600 rounded-2xl mb-6 hover-lift">
+                <Upload className="w-8 h-8 text-white" />
+              </div>
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
+                Vlastníte prostor?
+              </h2>
+              <p className="text-lg sm:text-xl text-gray-700 max-w-3xl mx-auto leading-relaxed">
+                Prostormat je perfektní místo, aby vás našli potenciální zákazníci na firemní akce, teambuildingy, svatby a více!
+              </p>
             </div>
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
-              Vlastníte prostor?
-            </h2>
-            <p className="text-lg sm:text-xl text-gray-700 max-w-3xl mx-auto leading-relaxed">
-              Prostormat je perfektní místo, aby vás našli potenciální zákazníci na firemní akce, teambuildingy, svatby a více!
-            </p>
-          </div>
+          </ScrollReveal>
           
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-8">
-              <div className="flex items-start space-x-4">
-                <div className="flex-shrink-0 w-12 h-12 bg-purple-600 rounded-xl flex items-center justify-center">
-                  <Upload className="w-6 h-6 text-white" />
+            <ScrollReveal delay={200}>
+              <div className="space-y-8">
+                <div className="flex items-start space-x-4 hover-lift">
+                  <div className="flex-shrink-0 w-12 h-12 bg-purple-600 rounded-xl flex items-center justify-center">
+                    <Upload className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                      Přidejte prostor
+                    </h3>
+                    <p className="text-gray-600">
+                      Vytvořte profil vašeho prostoru s fotografiemi a všemi detaily.
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                    Přidejte prostor
-                  </h3>
-                  <p className="text-gray-600">
-                    Vytvořte profil vašeho prostoru s fotografiemi a všemi detaily.
-                  </p>
-                </div>
-              </div>
               
-              <div className="flex items-start space-x-4">
-                <div className="flex-shrink-0 w-12 h-12 bg-green-600 rounded-xl flex items-center justify-center">
-                  <MessageSquare className="w-6 h-6 text-white" />
+                <div className="flex items-start space-x-4 hover-lift">
+                  <div className="flex-shrink-0 w-12 h-12 bg-green-600 rounded-xl flex items-center justify-center">
+                    <MessageSquare className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                      Získejte klienty
+                    </h3>
+                    <p className="text-gray-600">
+                      Tisíce organizátorů hledá prostory každý měsíc - buďte vidět!
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                    Získejte klienty
-                  </h3>
-                  <p className="text-gray-600">
-                    Tisíce organizátorů hledá prostory každý měsíc - buďte vidět!
-                  </p>
+                
+                <div className="flex items-start space-x-4 hover-lift">
+                  <div className="flex-shrink-0 w-12 h-12 bg-orange-600 rounded-xl flex items-center justify-center">
+                    <Euro className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                      Vydělávejte více
+                    </h3>
+                    <p className="text-gray-600">
+                      Zvyšte obsazenost a příjmy díky našim kvalifikovaným klientům.
+                    </p>
+                  </div>
                 </div>
               </div>
-              
-              <div className="flex items-start space-x-4">
-                <div className="flex-shrink-0 w-12 h-12 bg-orange-600 rounded-xl flex items-center justify-center">
-                  <Euro className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                    Vydělávejte více
-                  </h3>
-                  <p className="text-gray-600">
-                    Zvyšte obsazenost a příjmy díky našim kvalifikovaným klientům.
-                  </p>
-                </div>
-              </div>
-            </div>
+            </ScrollReveal>
             
-            <div className="bg-white rounded-3xl p-8 shadow-xl border border-gray-200">
-              <div className="text-center mb-6">
-                <h3 className="text-2xl font-bold text-gray-900 mb-2">
-                  Jak začít?
-                </h3>
-                <p className="text-gray-600">
-                  Tři jednoduché kroky k novým klientům
-                </p>
-              </div>
+            <ScrollReveal delay={400}>
+              <div className="bg-white rounded-3xl p-8 shadow-xl border border-gray-200 hover-lift">
+                <div className="text-center mb-6">
+                  <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                    Jak začít?
+                  </h3>
+                  <p className="text-gray-600">
+                    Tři jednoduché kroky k novým klientům
+                  </p>
+                </div>
               
               <div className="space-y-6">
                 <div className="flex items-center space-x-4">
@@ -408,7 +414,7 @@ export default function HomePage() {
                 <Link href="/pridat-prostor" className="block">
                   <Button 
                     size="lg" 
-                    className="w-full px-6 py-3 text-base font-medium rounded-xl bg-purple-600 text-white hover:bg-purple-700 transition-all duration-200"
+                    className="magnetic-button hover-lift w-full px-6 py-3 text-base font-medium rounded-xl bg-purple-600 text-white hover:bg-purple-700 transition-all duration-200"
                   >
                     <Upload className="w-5 h-5 mr-2" />
                     Přidat prostor
@@ -424,8 +430,9 @@ export default function HomePage() {
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </Button>
                 </Link>
+                </div>
               </div>
-            </div>
+            </ScrollReveal>
           </div>
         </div>
       </section>

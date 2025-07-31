@@ -101,7 +101,7 @@ export function HeartButton({ venueId, className = "", size = "icon" }: HeartBut
       
       {/* Login Overlay */}
       {showLoginOverlay && (
-        <div className="absolute -top-16 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white px-4 py-2 rounded-lg shadow-lg z-50 text-sm whitespace-nowrap animate-fade-in">
+        <div className="absolute -top-16 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white px-3 py-2 rounded-lg shadow-lg z-50 text-xs sm:text-sm animate-fade-in max-w-[200px] sm:max-w-none text-center">
           <div className="relative">
             Musíte se přihlásit pro použití této funkce
             <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-gray-900"></div>

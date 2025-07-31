@@ -79,19 +79,13 @@ export default async function BlogPostPage({
               </p>
             )}
             
-            <div className="flex items-center gap-6 text-sm text-gray-500 mb-6">
-              <div className="flex items-center gap-2">
-                <User className="w-4 h-4" />
-                <span>{post.author.name || post.author.email}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Calendar className="w-4 h-4" />
-                <span>{new Date(post.publishedAt!).toLocaleDateString('cs-CZ', {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric'
-                })}</span>
-              </div>
+            <div className="flex items-center gap-2 text-sm text-gray-500 mb-6">
+              <Calendar className="w-4 h-4" />
+              <span>{new Date(post.publishedAt!).toLocaleDateString('cs-CZ', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+              })}</span>
             </div>
             
             <Button variant="outline" size="sm" className="rounded-xl border-2 border-gray-300 hover:bg-gray-50 transition-all duration-200 shadow-lg hover:shadow-xl">

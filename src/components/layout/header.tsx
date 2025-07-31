@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from "react"
 import Link from "next/link"
 import { useSession, signIn, signOut } from "next-auth/react"
 import { Button } from "@/components/ui/button"
@@ -12,6 +13,9 @@ import { User, Menu, LogOut, Plus } from "lucide-react"
 
 export function Header() {
   const { data: session, status } = useSession()
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+
+  const closeMobileMenu = () => setMobileMenuOpen(false)
 
   return (
     <header className="bg-white border-b border-black sticky top-0 z-50">
@@ -117,9 +121,9 @@ export function Header() {
                 </Button>
               </Link>
             )}
-            <Sheet>
+            <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="sm" className="p-2 rounded-full">
+                <Button variant="ghost" size="sm" className="rounded-full p-2">
                   <Menu className="h-5 w-5" />
                   <span className="sr-only">Toggle menu</span>
                 </Button>
@@ -129,36 +133,42 @@ export function Header() {
                   <Link 
                     href="/prostory" 
                     className="text-base font-medium text-gray-700 hover:text-black hover:bg-gray-50 transition-colors px-4 py-3 rounded-xl"
+                    onClick={closeMobileMenu}
                   >
                     Prostory
                   </Link>
                   <Link 
                     href="/pozadavky" 
                     className="text-base font-medium text-gray-700 hover:text-black hover:bg-gray-50 transition-colors px-4 py-3 rounded-xl"
+                    onClick={closeMobileMenu}
                   >
                     Požadavky na akce
                   </Link>
                   <Link 
                     href="/rychla-poptavka" 
                     className="text-base font-medium text-gray-700 hover:text-black hover:bg-gray-50 transition-colors px-4 py-3 rounded-xl"
+                    onClick={closeMobileMenu}
                   >
                     Rychlá poptávka
                   </Link>
                   <Link 
                     href="/blog" 
                     className="text-base font-medium text-gray-700 hover:text-black hover:bg-gray-50 transition-colors px-4 py-3 rounded-xl"
+                    onClick={closeMobileMenu}
                   >
                     Blog
                   </Link>
                   <Link 
                     href="/ceny" 
                     className="text-base font-medium text-gray-700 hover:text-black hover:bg-gray-50 transition-colors px-4 py-3 rounded-xl"
+                    onClick={closeMobileMenu}
                   >
                     Ceny
                   </Link>
                   <Link 
                     href="/kontakt" 
                     className="text-base font-medium text-gray-700 hover:text-black hover:bg-gray-50 transition-colors px-4 py-3 rounded-xl"
+                    onClick={closeMobileMenu}
                   >
                     Kontakt
                   </Link>
@@ -169,13 +179,13 @@ export function Header() {
                       <Skeleton className="w-full h-12 rounded-xl" />
                     ) : session ? (
                       <>
-                        <Link href="/dashboard">
+                        <Link href="/dashboard" onClick={closeMobileMenu}>
                           <Button variant="ghost" size="lg" className="w-full justify-start rounded-xl hover:bg-gray-50">
                             <User className="h-5 w-5 mr-3" />
                             {session.user?.name || session.user?.email}
                           </Button>
                         </Link>
-                        <Link href="/pridat-prostor">
+                        <Link href="/pridat-prostor" onClick={closeMobileMenu}>
                           <Button size="lg" className="w-full bg-black text-white hover:bg-gray-800 rounded-xl">
                             <Plus className="h-5 w-5 mr-2" />
                             Přidat prostor
@@ -185,7 +195,10 @@ export function Header() {
                           variant="ghost" 
                           size="lg" 
                           className="w-full justify-start text-red-600 hover:bg-red-50 rounded-xl" 
-                          onClick={() => signOut()}
+                          onClick={() => {
+                            signOut()
+                            closeMobileMenu()
+                          }}
                         >
                           <LogOut className="h-5 w-5 mr-3" />
                           Odhlásit se
@@ -193,17 +206,17 @@ export function Header() {
                       </>
                     ) : (
                       <>
-                        <Link href="/prihlaseni">
+                        <Link href="/prihlaseni" onClick={closeMobileMenu}>
                           <Button variant="outline" size="lg" className="w-full rounded-xl border-gray-200">
                             Přihlásit se
                           </Button>
                         </Link>
-                        <Link href="/registrace">
+                        <Link href="/registrace" onClick={closeMobileMenu}>
                           <Button size="lg" className="w-full bg-black text-white hover:bg-gray-800 rounded-xl">
                             Registrace
                           </Button>
                         </Link>
-                        <Link href="/pridat-prostor">
+                        <Link href="/pridat-prostor" onClick={closeMobileMenu}>
                           <Button variant="outline" size="lg" className="w-full rounded-xl border-gray-200 mt-2">
                             <Plus className="h-5 w-5 mr-2" />
                             Přidat prostor

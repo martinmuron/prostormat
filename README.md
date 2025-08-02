@@ -17,10 +17,11 @@ A modern Next.js application for connecting event organizers with curated venue 
 - **Framework**: Next.js 15 with App Router
 - **Language**: TypeScript
 - **Styling**: Tailwind CSS v4 with custom Apple design system
-- **Database**: PostgreSQL with Prisma ORM
+- **Database**: Supabase (PostgreSQL) with Prisma ORM
 - **Authentication**: NextAuth.js
 - **UI Components**: Custom components with Radix UI primitives
 - **Payments**: Stripe (for venue subscriptions)
+- **Deployment**: Vercel
 
 ## 📦 Installation
 
@@ -72,13 +73,17 @@ A modern Next.js application for connecting event organizers with curated venue 
 
 ## 🗄️ Database Schema
 
+**IMPORTANT**: All database tables MUST use the `prostormat_` prefix to ensure multi-tenancy support when sharing Supabase databases with other projects.
+
 The application includes the following main entities:
 
-- **Users** - Event organizers, venue managers, and admins
-- **Venues** - Event spaces with details, images, and pricing
-- **Event Requests** - Public requests with contact information
-- **Venue Inquiries** - Direct contact forms to venues
-- **Subscriptions** - Stripe subscriptions for venue listings
+- **Users** (`prostormat_users`) - Event organizers, venue managers, and admins
+- **Venues** (`prostormat_venues`) - Event spaces with details, images, and pricing
+- **Event Requests** (`prostormat_event_requests`) - Public requests with contact information
+- **Venue Inquiries** (`prostormat_venue_inquiries`) - Direct contact forms to venues
+- **Subscriptions** (`prostormat_subscriptions`) - Stripe subscriptions for venue listings
+
+All Prisma models use the `@@map()` directive to enforce the `prostormat_` table prefix.
 
 ## 🔐 User Roles
 
@@ -105,34 +110,35 @@ The application includes the following main entities:
 
 ## 🌐 Deployment
 
-### Railway Deployment
+### Vercel Deployment
 
-1. **Create a new Railway project**:
+1. **Install Vercel CLI**:
    ```bash
-   npm install -g @railway/cli
-   railway login
-   railway init
+   npm install -g vercel
    ```
 
-2. **Add environment variables** in Railway dashboard:
-   - `DATABASE_URL` (PostgreSQL service)
-   - `NEXTAUTH_URL` (your domain)
-   - `NEXTAUTH_SECRET`
-   - Other required variables
-
-3. **Deploy**:
+2. **Deploy to Vercel**:
    ```bash
-   railway up
+   vercel
+   ```
+
+3. **Set environment variables** in Vercel dashboard or via CLI:
+   ```bash
+   vercel env add NEXT_PUBLIC_SUPABASE_URL
+   vercel env add NEXT_PUBLIC_SUPABASE_ANON_KEY
+   vercel env add DATABASE_URL
+   vercel env add NEXTAUTH_URL
+   vercel env add NEXTAUTH_SECRET
    ```
 
 ### Domain Setup (prostormat.cz with Forpsi)
 
 1. **Configure DNS in Forpsi**:
-   - Add CNAME record: `www` → `your-railway-domain.railway.app`
-   - Add A record: `@` → Railway IP (or use CNAME flattening)
+   - Add CNAME record: `www` → `your-vercel-domain.vercel.app`
+   - Add A record: `@` → Vercel IP (or use CNAME flattening)
 
-2. **Configure custom domain in Railway**:
-   - Go to your Railway project
+2. **Configure custom domain in Vercel**:
+   - Go to your Vercel project dashboard
    - Add custom domain: `prostormat.cz` and `www.prostormat.cz`
    - Update `NEXTAUTH_URL` to `https://prostormat.cz`
 

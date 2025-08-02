@@ -1,0 +1,1 @@
+SELECT COUNT(*) as total_event_requests FROM prostormat_event_requests;

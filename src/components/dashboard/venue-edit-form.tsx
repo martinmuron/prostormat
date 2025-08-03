@@ -61,7 +61,7 @@ export function VenueEditForm({ venue }: VenueEditFormProps) {
 
     try {
       const response = await fetch(`/api/venues/${venue.id}`, {
-        method: "PUT",
+        method: "PATCH",
         headers: {
           "Content-Type": "application/json",
         },

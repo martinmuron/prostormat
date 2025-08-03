@@ -122,21 +122,79 @@ function BlogGridSkeleton() {
   )
 }
 
+// Placeholder blog posts for when database is empty
+const placeholderPosts = [
+  {
+    id: "placeholder-1",
+    title: "Jak vybrat ideální prostor pro firemní akci",
+    slug: "jak-vybrat-idealni-prostor-pro-firemni-akci",
+    excerpt: "Plánujete firemní akci a nevíte, na co se zaměřit při výběru prostoru? Zde najdete praktické tipy a checklisk, který vám pomůže vybrat to pravé místo.",
+    coverImage: "https://images.unsplash.com/photo-1517457373958-b7bdd4587205?w=800&h=400&fit=crop",
+    author: { name: "Prostormat Team", email: "team@prostormat.cz" },
+    publishedAt: new Date("2024-01-15"),
+    tags: '["Firemní akce", "Tipy", "Prostory"]'
+  },
+  {
+    id: "placeholder-2",
+    title: "5 trendů v organizaci svateb pro rok 2025",
+    slug: "5-trendu-v-organizaci-svateb-pro-rok-2025",
+    excerpt: "Objevte nejnovější trendy ve svatebním průmyslu. Od udržitelných svateb po netradiční prostory - inspirujte se pro vaši nezapomenutelnou oslavu.",
+    coverImage: "https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=800&h=400&fit=crop",
+    author: { name: "Prostormat Team", email: "team@prostormat.cz" },
+    publishedAt: new Date("2024-01-10"),
+    tags: '["Svatby", "Trendy", "2025"]'
+  },
+  {
+    id: "placeholder-3",
+    title: "Teambuilding v neobvyklých prostorech",
+    slug: "teambuilding-v-neobvyklych-prostorech",
+    excerpt: "Tradiční konferenční sály už nebaví? Přečtěte si, jak netradičně prostory mohou oživit váš teambuilding a posílit týmovou soudržnost.",
+    coverImage: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&h=400&fit=crop",
+    author: { name: "Prostormat Team", email: "team@prostormat.cz" },
+    publishedAt: new Date("2024-01-05"),
+    tags: '["Teambuilding", "Netradičně", "Týmová práce"]'
+  },
+  {
+    id: "placeholder-4",
+    title: "Checklist pro organizaci úspěšné konference",
+    slug: "checklist-pro-organizaci-uspesne-konference",
+    excerpt: "Kompletní průvodce plánováním konference od výběru prostoru až po day-of koordinaci. Nezapomeňte na žádný důležitý detail.",
+    coverImage: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&h=400&fit=crop",
+    author: { name: "Prostormat Team", email: "team@prostormat.cz" },
+    publishedAt: new Date("2023-12-28"),
+    tags: '["Konference", "Checklist", "Plánování"]'
+  },
+  {
+    id: "placeholder-5",
+    title: "Jak ušetřit na pronájmu prostoru bez kompromisů",
+    slug: "jak-usetrit-na-pronajmu-prostoru-bez-kompromisu",
+    excerpt: "Praktické rady, jak získat kvalitní prostor za rozumnou cenu. Naučte se vyjednávat a najít skryté poklady mezi dostupnými prostory.",
+    coverImage: "https://images.unsplash.com/photo-1556761175-b413da4baf72?w=800&h=400&fit=crop",
+    author: { name: "Prostormat Team", email: "team@prostormat.cz" },
+    publishedAt: new Date("2023-12-20"),
+    tags: '["Rozpočet", "Úspory", "Tipy"]'
+  },
+  {
+    id: "placeholder-6",
+    title: "Udržitelné akce: Jak zorganizovat eco-friendly event",
+    slug: "udrzitelne-akce-jak-zorganizovat-eco-friendly-event",
+    excerpt: "Ochrana životního prostředí se týká i eventů. Zjistěte, jak zorganizovat akci s minimálním dopadem na přírodu a inspirovat účastníky k udržitelnému myšlení.",
+    coverImage: "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=800&h=400&fit=crop",
+    author: { name: "Prostormat Team", email: "team@prostormat.cz" },
+    publishedAt: new Date("2023-12-15"),
+    tags: '["Udržitelnost", "Eco-friendly", "Trendy"]'
+  }
+]
+
 async function BlogGrid() {
   const posts = await getBlogPosts()
   
-  if (posts.length === 0) {
-    return (
-      <div className="text-center py-12">
-        <h3 className="text-lg font-medium text-gray-900 mb-2">No blog posts yet</h3>
-        <p className="text-gray-600">Check back soon for new content!</p>
-      </div>
-    )
-  }
+  // Use placeholder posts if no real posts exist
+  const displayPosts = posts.length > 0 ? posts : placeholderPosts
   
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {posts.map((post) => (
+      {displayPosts.map((post) => (
         <BlogPostCard key={post.id} post={post} />
       ))}
     </div>

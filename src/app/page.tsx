@@ -239,7 +239,7 @@ export default function HomePage() {
               </div>
               
               <div className="mt-8 space-y-4">
-                <Link href="/pozadavky/novy" className="block">
+                <Link href="/verejne-zakazky/novy" className="block">
                   <Button 
                     size="lg" 
                     className="w-full px-6 py-3 text-base font-medium rounded-xl bg-blue-600 text-white hover:bg-blue-700 transition-all duration-200"
@@ -248,7 +248,7 @@ export default function HomePage() {
                     Vytvořit poptávku
                   </Button>
                 </Link>
-                <Link href="/pozadavky" className="block">
+                <Link href="/verejne-zakazky" className="block">
                   <Button 
                     variant="outline" 
                     size="lg" 

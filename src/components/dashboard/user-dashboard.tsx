@@ -143,7 +143,7 @@ export function UserDashboard({ data }: UserDashboardProps) {
                 <p className="text-body text-gray-600 mb-4">
                   Zatím jste nevytvořili žádné poptávky
                 </p>
-                <Link href="/pozadavky/novy">
+                <Link href="/verejne-zakazky/novy">
                   <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white">Vytvořit první poptávku</Button>
                 </Link>
               </div>
@@ -232,7 +232,7 @@ export function UserDashboard({ data }: UserDashboardProps) {
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle className="text-gray-900">Všechny moje poptávky</CardTitle>
-          <Link href="/pozadavky/novy">
+          <Link href="/verejne-zakazky/novy">
             <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white">
               <Plus className="h-4 w-4 mr-2" />
               Nová poptávka
@@ -248,7 +248,7 @@ export function UserDashboard({ data }: UserDashboardProps) {
             <p className="text-body text-gray-600 mb-6">
               Zatím jste nevytvořili žádné poptávky na akci
             </p>
-            <Link href="/pozadavky/novy">
+            <Link href="/verejne-zakazky/novy">
               <Button className="bg-blue-600 hover:bg-blue-700 text-white">
                 <Plus className="h-4 w-4 mr-2" />
                 Vytvořit první poptávku

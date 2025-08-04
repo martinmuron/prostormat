@@ -167,7 +167,7 @@ export default function QuickRequestPage() {
             </p>
             
             <div className="space-y-4 sm:space-y-0 sm:space-x-4 sm:flex sm:justify-center">
-              <Link href="/pozadavky">
+              <Link href="/verejne-zakazky">
                 <Button size="lg" className="bg-black text-white hover:bg-gray-800 rounded-xl w-full sm:w-auto">
                   Zobrazit všechny poptávky
                 </Button>
@@ -186,40 +186,45 @@ export default function QuickRequestPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
-        {/* Header */}
-        <div className="text-center mb-8 sm:mb-12">
-          <div className="flex items-center justify-center gap-2 mb-4">
-            <Zap className="h-8 w-8 text-yellow-500" />
-            <h1 className="text-3xl sm:text-4xl font-bold text-black">Rychlá poptávka</h1>
-          </div>
-          <p className="text-lg text-gray-600 mb-6 max-w-2xl mx-auto">
-            Vyplňte formulář a my automaticky ošleme vaši poptávku všem prostorům, 
-            které odpovídají vašim požadavkům. Ušetříte čas a získáte více nabídek!
-          </p>
-          
-          {/* Features */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-            <div className="flex items-center gap-2 justify-center sm:justify-start">
-              <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                <Zap className="h-4 w-4 text-green-600" />
-              </div>
-              <span className="text-sm text-gray-700">Rychlé odeslání</span>
+      {/* Header */}
+      <div className="bg-white border-b border-black">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
+          <div className="text-center mb-8">
+            <div className="flex items-center justify-center gap-2 mb-4">
+              <Zap className="h-8 w-8 text-yellow-500" />
+              <h1 className="text-xl sm:text-2xl lg:text-title-1 text-black font-bold tracking-tight">Rychlá poptávka</h1>
             </div>
-            <div className="flex items-center gap-2 justify-center sm:justify-start">
-              <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                <Send className="h-4 w-4 text-blue-600" />
+            <p className="text-sm sm:text-body text-gray-600 mb-6 sm:mb-8 max-w-2xl mx-auto px-2 sm:px-0">
+              Vyplňte formulář a my automaticky ošleme vaši poptávku všem prostorům, 
+              které odpovídají vašim požadavkům. Ušetříte čas a získáte více nabídek!
+            </p>
+            
+            {/* Features */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+              <div className="flex items-center gap-2 justify-center sm:justify-start">
+                <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                  <Zap className="h-4 w-4 text-green-600" />
+                </div>
+                <span className="text-sm text-gray-700">Rychlé odeslání</span>
               </div>
-              <span className="text-sm text-gray-700">Více nabídek najednou</span>
-            </div>
-            <div className="flex items-center gap-2 justify-center sm:justify-start">
-              <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
-                <Clock className="h-4 w-4 text-purple-600" />
+              <div className="flex items-center gap-2 justify-center sm:justify-start">
+                <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                  <Send className="h-4 w-4 text-blue-600" />
+                </div>
+                <span className="text-sm text-gray-700">Více nabídek najednou</span>
               </div>
-              <span className="text-sm text-gray-700">Odpověď do 48h</span>
+              <div className="flex items-center gap-2 justify-center sm:justify-start">
+                <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
+                  <Clock className="h-4 w-4 text-purple-600" />
+                </div>
+                <span className="text-sm text-gray-700">Odpověď do 48h</span>
+              </div>
             </div>
           </div>
         </div>
+      </div>
+      
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
 
         {/* Auth Check */}
         {!session && (

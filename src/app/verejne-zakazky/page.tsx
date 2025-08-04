@@ -248,7 +248,7 @@ export default function EventRequestsPage() {
       <div className="bg-white border-b border-black">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
           <div className="text-center mb-8">
-            <h1 className="text-xl sm:text-2xl lg:text-title-1 text-black mb-6 sm:mb-8 font-bold tracking-tight">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl text-black mb-6 sm:mb-8 font-semibold tracking-tight">
               Veřejné zakázky
             </h1>
             <p className="text-sm sm:text-body text-gray-600 mb-6 sm:mb-8 max-w-2xl mx-auto px-2 sm:px-0">

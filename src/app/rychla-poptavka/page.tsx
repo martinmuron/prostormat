@@ -192,7 +192,7 @@ export default function QuickRequestPage() {
           <div className="text-center mb-8">
             <div className="flex items-center justify-center gap-2 mb-4">
               <Zap className="h-8 w-8 text-yellow-500" />
-              <h1 className="text-xl sm:text-2xl lg:text-title-1 text-black font-bold tracking-tight">Rychlá poptávka</h1>
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl text-black font-semibold tracking-tight">Rychlá poptávka</h1>
             </div>
             <p className="text-sm sm:text-body text-gray-600 mb-6 sm:mb-8 max-w-2xl mx-auto px-2 sm:px-0">
               Vyplňte formulář a my automaticky ošleme vaši poptávku všem prostorům, 

@@ -14,13 +14,13 @@ import { MapPin, Users, Phone, Mail, Globe, Heart } from "lucide-react"
 
 async function getVenue(slug: string) {
   try {
-    const venue = await db.venue.findUnique({
+    const venue = await db.prostormat_venues.findUnique({
       where: {
         slug,
         status: { in: ["active", "draft"] },
       },
       include: {
-        manager: {
+        prostormat_users: {
           select: {
             name: true,
             email: true,

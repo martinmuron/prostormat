@@ -18,7 +18,7 @@ export async function POST(request: Request, { params }: RouteContext) {
     const venueId = resolvedParams.id
 
     // Check if venue exists
-    const venue = await db.venue.findUnique({
+    const venue = await db.prostormat_venues.findUnique({
       where: { id: venueId }
     })
 
@@ -27,7 +27,7 @@ export async function POST(request: Request, { params }: RouteContext) {
     }
 
     // Check if already favorited
-    const existingFavorite = await db.venueFavorite.findUnique({
+    const existingFavorite = await db.prostormat_venue_favorites.findUnique({
       where: {
         userId_venueId: {
           userId: session.user.id,
@@ -41,7 +41,7 @@ export async function POST(request: Request, { params }: RouteContext) {
     }
 
     // Add to favorites
-    await db.venueFavorite.create({
+    await db.prostormat_venue_favorites.create({
       data: {
         userId: session.user.id,
         venueId: venueId
@@ -66,7 +66,7 @@ export async function DELETE(request: Request, { params }: RouteContext) {
     const venueId = resolvedParams.id
 
     // Remove from favorites
-    await db.venueFavorite.deleteMany({
+    await db.prostormat_venue_favorites.deleteMany({
       where: {
         userId: session.user.id,
         venueId: venueId
@@ -90,7 +90,7 @@ export async function GET(request: Request, { params }: RouteContext) {
     const resolvedParams = await params
     const venueId = resolvedParams.id
 
-    const favorite = await db.venueFavorite.findUnique({
+    const favorite = await db.prostormat_venue_favorites.findUnique({
       where: {
         userId_venueId: {
           userId: session.user.id,

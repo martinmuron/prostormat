@@ -25,7 +25,7 @@ async function getRelatedVenues(currentVenueId: string, venueType: string | null
     const addressParts = address.split(',')
     const location = addressParts[0].trim()
     
-    const venues = await db.venue.findMany({
+    const venues = await db.prostormat_venues.findMany({
       where: {
         AND: [
           { id: { not: currentVenueId } }, // Exclude current venue
@@ -68,7 +68,7 @@ async function getRelatedVenues(currentVenueId: string, venueType: string | null
 
     return venues
   } catch (error) {
-    console.error("Error fetching related venues:", error)
+    console.error("Error fetching related prostormat_venues:", error)
     return []
   }
 }

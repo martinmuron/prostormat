@@ -37,7 +37,7 @@ export async function PATCH(
       }
       
       // Verify venue manager owns this venue
-      const venue = await db.venue.findUnique({
+      const venue = await db.prostormat_venues.findUnique({
         where: { id },
         select: { managerId: true }
       })
@@ -61,7 +61,7 @@ export async function PATCH(
 
     // If managerId is provided and user is admin, verify the manager exists
     if (body.managerId && session.user.role === "admin") {
-      const manager = await db.user.findUnique({
+      const manager = await db.prostormat_users.findUnique({
         where: { id: body.managerId },
         select: { role: true }
       })
@@ -72,7 +72,7 @@ export async function PATCH(
     }
 
     // Update the venue
-    const updatedVenue = await db.venue.update({
+    const updatedVenue = await db.prostormat_venues.update({
       where: { id },
       data: {
         ...updateData,
@@ -111,7 +111,7 @@ export async function GET(
       }
       
       // Verify venue manager owns this venue
-      const venueCheck = await db.venue.findUnique({
+      const venueCheck = await db.prostormat_venues.findUnique({
         where: { id },
         select: { managerId: true }
       })
@@ -122,10 +122,10 @@ export async function GET(
     }
 
     // Get the venue
-    const venue = await db.venue.findUnique({
+    const venue = await db.prostormat_venues.findUnique({
       where: { id },
       include: {
-        manager: {
+        prostormat_users: {
           select: {
             id: true,
             name: true,

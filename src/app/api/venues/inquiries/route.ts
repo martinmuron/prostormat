@@ -22,7 +22,7 @@ export async function POST(request: Request) {
     const validatedData = inquirySchema.parse(body)
 
     // Check if venue exists
-    const venue = await db.venue.findUnique({
+    const venue = await db.prostormat_venues.findUnique({
       where: { id: validatedData.venueId },
       select: { id: true, name: true, contactEmail: true }
     })
@@ -35,7 +35,7 @@ export async function POST(request: Request) {
     }
 
     // Create inquiry
-    const inquiry = await db.venueInquiry.create({
+    const inquiry = await db.prostormat_venue_inquiries.create({
       data: {
         venueId: validatedData.venueId,
         userId: session?.user?.id || null,

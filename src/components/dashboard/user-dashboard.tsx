@@ -14,7 +14,7 @@ interface UserDashboardProps {
   data: {
     user: any
     eventRequests: any[]
-    inquiries: any[]
+    prostormat_venue_inquiries: any[]
     broadcasts: any[]
     stats: {
       activeRequests: number
@@ -26,7 +26,7 @@ interface UserDashboardProps {
 }
 
 export function UserDashboard({ data }: UserDashboardProps) {
-  const { user, eventRequests, inquiries, broadcasts, stats } = data
+  const { user, eventRequests, prostormat_venue_inquiries, broadcasts, stats } = data
   const [activeTab, setActiveTab] = useState('overview')
   const [favorites, setFavorites] = useState<any[]>([])
   const [loadingFavorites, setLoadingFavorites] = useState(false)
@@ -40,7 +40,7 @@ export function UserDashboard({ data }: UserDashboardProps) {
         setFavorites(data.favorites || [])
       }
     } catch (error) {
-      console.error('Error fetching favorites:', error)
+      console.error('Error fetching prostormat_venue_favorites:', error)
     } finally {
       setLoadingFavorites(false)
     }

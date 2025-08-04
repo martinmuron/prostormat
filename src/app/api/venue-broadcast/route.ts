@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Find matching venues based on criteria
-    const matchingVenues = await db.venue.findMany({
+    const matchingVenues = await db.prostormat_venues.findMany({
       where: {
         status: 'active',
         // Add more matching criteria here based on location, capacity, etc.
@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
     const venueIds = matchingVenues.map(venue => venue.id)
 
     // Create the broadcast
-    const broadcast = await db.venueBroadcast.create({
+    const broadcast = await db.prostormat_venue_broadcasts.create({
       data: {
         userId: session.user.id,
         title,
@@ -88,7 +88,7 @@ export async function POST(request: NextRequest) {
           // Skip venues without contact email
           if (!venue.contactEmail) {
             console.log(`⚠️ Skipping ${venue.name} - no contact email`)
-            return await db.venueBroadcastLog.create({
+            return await db.prostormat_venue_broadcast_logs.create({
               data: {
                 broadcastId: broadcast.id,
                 venueId: venue.id,
@@ -144,7 +144,7 @@ export async function POST(request: NextRequest) {
           }
 
           // Create broadcast log with email status
-          return await db.venueBroadcastLog.create({
+          return await db.prostormat_venue_broadcast_logs.create({
             data: {
               broadcastId: broadcast.id,
               venueId: venue.id,
@@ -156,7 +156,7 @@ export async function POST(request: NextRequest) {
           console.error(`Error processing venue ${venue.name}:`, error)
           
           // Create log entry even for errors
-          return await db.venueBroadcastLog.create({
+          return await db.prostormat_venue_broadcast_logs.create({
             data: {
               broadcastId: broadcast.id,
               venueId: venue.id,
@@ -206,15 +206,15 @@ export async function GET(request: NextRequest) {
     const skip = (page - 1) * limit
 
     const [broadcasts, total] = await Promise.all([
-      db.venueBroadcast.findMany({
+      db.prostormat_venue_broadcasts.findMany({
         where: { userId: session.user.id },
         orderBy: { createdAt: "desc" },
         skip,
         take: limit,
         include: {
-          logs: {
+          prostormat_venue_broadcast_logs: {
             include: {
-              venue: {
+              prostormat_venues: {
                 select: {
                   id: true,
                   name: true,
@@ -226,7 +226,7 @@ export async function GET(request: NextRequest) {
           }
         }
       }),
-      db.venueBroadcast.count({
+      db.prostormat_venue_broadcasts.count({
         where: { userId: session.user.id }
       })
     ])

@@ -37,7 +37,7 @@ async function findMatchingVenues(criteria: {
 }) {
   const { min: minGuests, max: maxGuests } = parseGuestCount(criteria.guestCount)
   
-  const venues = await db.venue.findMany({
+  const venues = await db.prostormat_venues.findMany({
     where: {
       status: "active",
       AND: [
@@ -70,7 +70,7 @@ async function findMatchingVenues(criteria: {
       ]
     },
     include: {
-      manager: {
+      prostormat_users: {
         select: {
           name: true,
           email: true,
@@ -87,7 +87,7 @@ async function sendEmailToVenue(venue: any, requestData: any) {
   // This is a placeholder - implement actual email sending logic
   // You might use services like SendGrid, AWS SES, or Nodemailer
   
-  console.log(`Sending email to venue ${venue.name} (${venue.manager.email})`)
+  console.log(`Sending email to venue ${venue.name} (${venue.prostormat_users.email})`)
   console.log('Request data:', requestData)
   
   // For now, we'll just simulate success
@@ -115,7 +115,7 @@ export async function POST(request: Request) {
     }
 
     // Create a broadcast record to track this request
-    const broadcast = await db.venueBroadcast.create({
+    const broadcast = await db.prostormat_venue_broadcasts.create({
       data: {
         userId: session?.user?.id || "anonymous", // Allow anonymous requests
         title: `Rychlá poptávka - ${validatedData.eventType}`,
@@ -143,7 +143,7 @@ export async function POST(request: Request) {
         })
 
         // Log the broadcast
-        await db.venueBroadcastLog.create({
+        await db.prostormat_venue_broadcast_logs.create({
           data: {
             broadcastId: broadcast.id,
             venueId: venue.id,
@@ -156,7 +156,7 @@ export async function POST(request: Request) {
         console.error(`Failed to send email to venue ${venue.id}:`, error)
         
         // Log the failed attempt
-        await db.venueBroadcastLog.create({
+        await db.prostormat_venue_broadcast_logs.create({
           data: {
             broadcastId: broadcast.id,
             venueId: venue.id,

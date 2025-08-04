@@ -8,13 +8,13 @@ export async function GET(
   try {
     const { slug } = await params
 
-    const post = await db.blogPost.findUnique({
+    const post = await db.prostormat_blog_posts.findUnique({
       where: { 
         slug,
         status: "published"
       },
       include: {
-        author: {
+        prostormat_users: {
           select: { name: true }
         }
       }

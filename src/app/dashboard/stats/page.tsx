@@ -26,26 +26,26 @@ async function getStats() {
       recentVenues,
       recentRequests
     ] = await Promise.all([
-      db.user.count(),
-      db.venue.count(),
-      db.eventRequest.count(),
-      db.venueInquiry.count(),
-      db.venue.count({ where: { status: "active" } }),
-      db.user.count({
+      db.prostormat_users.count(),
+      db.prostormat_venues.count(),
+      db.prostormat_event_requests.count(),
+      db.prostormat_venue_inquiries.count(),
+      db.prostormat_venues.count({ where: { status: "active" } }),
+      db.prostormat_users.count({
         where: {
           createdAt: {
             gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) // Last 30 days
           }
         }
       }),
-      db.venue.count({
+      db.prostormat_venues.count({
         where: {
           createdAt: {
             gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) // Last 30 days
           }
         }
       }),
-      db.eventRequest.count({
+      db.prostormat_event_requests.count({
         where: {
           createdAt: {
             gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) // Last 30 days
@@ -55,7 +55,7 @@ async function getStats() {
     ])
 
     // Get role distribution
-    const usersByRole = await db.user.groupBy({
+    const usersByRole = await db.prostormat_users.groupBy({
       by: ['role'],
       _count: {
         role: true
@@ -63,7 +63,7 @@ async function getStats() {
     })
 
     // Get venue types distribution
-    const venuesByType = await db.venue.groupBy({
+    const venuesByType = await db.prostormat_venues.groupBy({
       by: ['venueType'],
       _count: {
         venueType: true

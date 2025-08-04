@@ -231,13 +231,13 @@ const placeholderPosts = [
 
 async function getBlogPost(slug: string) {
   try {
-    const post = await db.blogPost.findUnique({
+    const post = await db.prostormat_blog_posts.findUnique({
       where: {
         slug,
         status: "published"
       },
       include: {
-        author: {
+        prostormat_users: {
           select: {
             name: true,
             email: true,
@@ -348,7 +348,7 @@ export default async function BlogPostPage({
         <footer className="mt-12 pt-8 border-t border-gray-200">
           <div className="flex items-center justify-between">
             <div className="text-sm text-gray-500">
-              <span>Autor: {post.author.name || post.author.email}</span>
+              <span>Autor: {'prostormat_users' in post ? (post.prostormat_users?.name || post.prostormat_users?.email || 'Anonymous') : (post.author?.name || post.author?.email || 'Anonymous')}</span>
             </div>
             <Link href="/blog">
               <Button variant="outline" className="rounded-xl border-2 border-gray-300 hover:bg-gray-50 transition-all duration-200 shadow-lg hover:shadow-xl">

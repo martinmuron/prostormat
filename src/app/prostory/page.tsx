@@ -67,7 +67,7 @@ async function getVenues(searchParams: SearchParams) {
       }
     }
 
-    const venues = await db.venue.findMany({
+    const venues = await db.prostormat_venues.findMany({
       where,
       orderBy: {
         createdAt: "desc",
@@ -92,7 +92,7 @@ async function getVenues(searchParams: SearchParams) {
       images: Array.isArray(venue.images) ? venue.images : []
     }))
   } catch (error) {
-    console.error("Error fetching venues:", error)
+    console.error("Error fetching prostormat_venues:", error)
     return []
   }
 }

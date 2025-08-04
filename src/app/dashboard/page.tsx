@@ -10,7 +10,7 @@ import { AdminDashboard } from "@/components/dashboard/admin-dashboard"
 async function getDashboardData(userId: string, userRole: string) {
   try {
     const baseData = {
-      user: await db.user.findUnique({
+      user: await db.prostormat_users.findUnique({
         where: { id: userId },
         select: {
           id: true,
@@ -24,16 +24,16 @@ async function getDashboardData(userId: string, userRole: string) {
     }
 
     if (userRole === "venue_manager") {
-      const venues = await db.venue.findMany({
+      const venues = await db.prostormat_venues.findMany({
         where: { managerId: userId },
         include: {
-          inquiries: {
+          prostormat_venue_inquiries: {
             orderBy: { createdAt: "desc" },
             take: 5,
           },
           _count: {
             select: {
-              inquiries: true,
+              prostormat_venue_inquiries: true,
             }
           }
         }
@@ -45,17 +45,17 @@ async function getDashboardData(userId: string, userRole: string) {
         stats: {
           totalVenues: venues.length,
           activeVenues: venues.filter(v => v.status === "active").length,
-          totalInquiries: venues.reduce((sum, venue) => sum + venue._count.inquiries, 0),
+          totalInquiries: venues.reduce((sum, venue) => sum + venue._count.prostormat_venue_inquiries, 0),
         }
       }
     }
 
     if (userRole === "admin") {
       const [userCount, venueCount, requestCount, inquiryCount] = await Promise.all([
-        db.user.count(),
-        db.venue.count(),
-        db.eventRequest.count(),
-        db.venueInquiry.count(),
+        db.prostormat_users.count(),
+        db.prostormat_venues.count(),
+        db.prostormat_event_requests.count(),
+        db.prostormat_venue_inquiries.count(),
       ])
 
       return {
@@ -75,7 +75,7 @@ async function getDashboardData(userId: string, userRole: string) {
     let broadcasts: any[] = []
     
     try {
-      eventRequests = await db.eventRequest.findMany({
+      eventRequests = await db.prostormat_event_requests.findMany({
         where: { userId },
         orderBy: { createdAt: "desc" },
         take: 5,
@@ -85,10 +85,10 @@ async function getDashboardData(userId: string, userRole: string) {
     }
     
     try {
-      inquiries = await db.venueInquiry.findMany({
+      inquiries = await db.prostormat_venue_inquiries.findMany({
         where: { userId },
         include: {
-          venue: {
+          prostormat_venues: {
             select: {
               name: true,
               slug: true,
@@ -99,16 +99,16 @@ async function getDashboardData(userId: string, userRole: string) {
         take: 5,
       })
     } catch (error) {
-      console.error("Error fetching inquiries:", error)
+      console.error("Error fetching prostormat_venue_inquiries:", error)
     }
     
     try {
-      broadcasts = await db.venueBroadcast.findMany({
+      broadcasts = await db.prostormat_venue_broadcasts.findMany({
         where: { userId },
         include: {
-          logs: {
+          prostormat_venue_broadcast_logs: {
             include: {
-              venue: {
+              prostormat_venues: {
                 select: {
                   id: true,
                   name: true,

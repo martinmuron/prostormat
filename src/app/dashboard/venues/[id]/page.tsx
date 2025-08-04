@@ -15,10 +15,10 @@ export const dynamic = 'force-dynamic';
 
 async function getVenue(id: string) {
   try {
-    const venue = await db.venue.findUnique({
+    const venue = await db.prostormat_venues.findUnique({
       where: { id },
       include: {
-        manager: {
+        prostormat_users: {
           select: {
             id: true,
             name: true,

@@ -10,12 +10,12 @@ export async function GET() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const favorites = await db.venueFavorite.findMany({
+    const favorites = await db.prostormat_venue_favorites.findMany({
       where: {
         userId: session.user.id
       },
       include: {
-        venue: {
+        prostormat_venues: {
           select: {
             id: true,
             name: true,
@@ -37,7 +37,7 @@ export async function GET() {
     })
 
     const venuesWithFavoriteInfo = favorites.map(fav => ({
-      ...fav.venue,
+      ...fav.prostormat_venues,
       favoritedAt: fav.createdAt
     }))
 

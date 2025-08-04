@@ -8,7 +8,7 @@ import { Building, MessageSquare, Eye, Plus, Calendar, Settings, CreditCard, Use
 interface VenueManagerDashboardProps {
   data: {
     user: any
-    venues: any[]
+    prostormat_venues: any[]
     stats: {
       totalVenues: number
       activeVenues: number
@@ -18,7 +18,7 @@ interface VenueManagerDashboardProps {
 }
 
 export function VenueManagerDashboard({ data }: VenueManagerDashboardProps) {
-  const { user, venues, stats } = data
+  const { user, prostormat_venues, stats } = data
 
   // Mock subscription data - replace with real data
   const subscriptionData = {
@@ -151,7 +151,7 @@ export function VenueManagerDashboard({ data }: VenueManagerDashboardProps) {
             </div>
           </CardHeader>
           <CardContent>
-            {venues.length === 0 ? (
+            {prostormat_venues.length === 0 ? (
               <div className="text-center py-8">
                 <Building className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                 <p className="text-body text-gray-600 mb-4">
@@ -163,7 +163,7 @@ export function VenueManagerDashboard({ data }: VenueManagerDashboardProps) {
               </div>
             ) : (
               <div className="space-y-4">
-                {venues.slice(0, 3).map((venue: any) => (
+                {prostormat_venues.slice(0, 3).map((venue: any) => (
                   <div key={venue.id} className="border border-gray-200 rounded-xl p-4 hover:shadow-md transition-shadow">
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex-1">
@@ -195,10 +195,10 @@ export function VenueManagerDashboard({ data }: VenueManagerDashboardProps) {
                     </div>
                   </div>
                 ))}
-                {venues.length > 3 && (
+                {prostormat_venues.length > 3 && (
                   <Link href="/dashboard/venues">
                     <Button variant="secondary" size="sm" className="w-full text-gray-700 border-gray-300 hover:bg-gray-50">
-                      Zobrazit všechny prostory ({venues.length})
+                      Zobrazit všechny prostory ({prostormat_venues.length})
                     </Button>
                   </Link>
                 )}
@@ -213,7 +213,7 @@ export function VenueManagerDashboard({ data }: VenueManagerDashboardProps) {
             <CardTitle className="text-gray-900">Nedávné dotazy</CardTitle>
           </CardHeader>
           <CardContent>
-            {venues.every(v => !v.inquiries?.length) ? (
+            {prostormat_venues.every(v => !v.inquiries?.length) ? (
               <div className="text-center py-8">
                 <MessageSquare className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                 <p className="text-body text-gray-600">
@@ -222,7 +222,7 @@ export function VenueManagerDashboard({ data }: VenueManagerDashboardProps) {
               </div>
             ) : (
               <div className="space-y-4">
-                {venues
+                {prostormat_venues
                   .flatMap(venue => 
                     (venue.inquiries || []).map((inquiry: any) => ({
                       ...inquiry,

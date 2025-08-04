@@ -120,7 +120,7 @@ export default function EventRequestsPage() {
     guestCount: "all",
     dateRange: "all",
     search: "",
-    favorites: "all",
+    prostormat_venue_favorites: "all",
   })
 
   useEffect(() => {
@@ -195,7 +195,7 @@ export default function EventRequestsPage() {
     }
 
     // Filter by favorites (only if user is logged in and favorites data is available)
-    if (filters.favorites === "favorites" && session?.user?.id) {
+    if (filters.prostormat_venue_favorites === "favorites" && session?.user?.id) {
       filtered = filtered.filter(request => 
         request.favorites?.some(fav => fav.userId === session.user.id) || false
       )
@@ -210,7 +210,7 @@ export default function EventRequestsPage() {
       guestCount: "all", 
       dateRange: "all",
       search: "",
-      favorites: "all",
+      prostormat_venue_favorites: "all",
     })
   }
 
@@ -218,7 +218,7 @@ export default function EventRequestsPage() {
                           filters.guestCount !== "all" || 
                           filters.dateRange !== "all" || 
                           filters.search !== "" ||
-                          filters.favorites !== "all"
+                          filters.prostormat_venue_favorites !== "all"
 
   if (status === "loading" || loading) {
     return (
@@ -352,7 +352,7 @@ export default function EventRequestsPage() {
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Oblíbené
                   </label>
-                  <Select value={filters.favorites} onValueChange={(value) => setFilters(prev => ({ ...prev, favorites: value }))}>
+                  <Select value={filters.prostormat_venue_favorites} onValueChange={(value) => setFilters(prev => ({ ...prev, prostormat_venue_favorites: value }))}>
                     <SelectTrigger>
                       <SelectValue placeholder="Filtrovat oblíbené" />
                     </SelectTrigger>

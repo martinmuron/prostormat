@@ -25,7 +25,7 @@ export async function POST(
     const { email } = assignManagerSchema.parse(json)
 
     // Find user by email
-    const user = await db.user.findUnique({
+    const user = await db.prostormat_users.findUnique({
       where: { email },
       select: { id: true, role: true, name: true, email: true }
     })
@@ -36,18 +36,18 @@ export async function POST(
 
     // Update user role to venue_manager if they're not already
     if (user.role !== "venue_manager") {
-      await db.user.update({
+      await db.prostormat_users.update({
         where: { id: user.id },
         data: { role: "venue_manager" }
       })
     }
 
     // Assign user as manager to the venue
-    const updatedVenue = await db.venue.update({
+    const updatedVenue = await db.prostormat_venues.update({
       where: { id },
       data: { managerId: user.id },
       include: {
-        manager: {
+        prostormat_users: {
           select: {
             id: true,
             name: true,

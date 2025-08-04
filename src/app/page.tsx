@@ -16,7 +16,7 @@ import { Search, Upload, MessageSquare, Euro, Users, MapPin, Calendar, ArrowRigh
 
 async function getFeaturedVenues() {
   try {
-    const venues = await db.venue.findMany({
+    const venues = await db.prostormat_venues.findMany({
       where: {
         status: { in: ["active", "draft"] },
       },
@@ -30,7 +30,7 @@ async function getFeaturedVenues() {
     // PostgreSQL returns arrays directly, no need to parse
     return venues
   } catch (error) {
-    console.error("Error fetching venues:", error)
+    console.error("Error fetching prostormat_venues:", error)
     return []
   }
 }

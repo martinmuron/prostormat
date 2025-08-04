@@ -8,12 +8,12 @@ import { Calendar, User, ArrowRight } from "lucide-react"
 
 async function getBlogPosts() {
   try {
-    const posts = await db.blogPost.findMany({
+    const posts = await db.prostormat_blog_posts.findMany({
       where: {
         status: "published"
       },
       include: {
-        author: {
+        prostormat_users: {
           select: {
             name: true,
             email: true,
@@ -63,7 +63,7 @@ function BlogPostCard({ post }: { post: any }) {
             <div className="flex items-center gap-4 text-sm text-gray-500 mb-4">
               <div className="flex items-center gap-1">
                 <User className="w-4 h-4" />
-                <span>{post.author.name || post.author.email}</span>
+                <span>{post.prostormat_users?.name || post.prostormat_users?.email || 'Anonymous'}</span>
               </div>
               <div className="flex items-center gap-1">
                 <Calendar className="w-4 h-4" />

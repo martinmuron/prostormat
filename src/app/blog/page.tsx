@@ -36,61 +36,71 @@ function BlogPostCard({ post }: { post: any }) {
   const tags = post.tags ? JSON.parse(post.tags) : []
   
   return (
-    <Card className="overflow-hidden hover:shadow-lg transition-shadow h-full bg-white border-2 border-black">
-      <CardContent className="p-6 h-full flex flex-col">
-        <div className="flex-1 space-y-4">
-          {post.coverImage && (
-            <div className="aspect-video relative overflow-hidden rounded-lg">
-              <img
-                src={post.coverImage}
-                alt={post.title}
-                className="object-cover w-full h-full"
-              />
-            </div>
-          )}
-          
-          <div className="flex-1">
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">
-              {post.title}
-            </h2>
-            
-            {post.excerpt && (
-              <p className="text-gray-600 mb-4 line-clamp-3">
-                {post.excerpt}
-              </p>
-            )}
-            
-            <div className="flex items-center gap-4 text-sm text-gray-500 mb-4">
-              <div className="flex items-center gap-1">
-                <User className="w-4 h-4" />
-                <span>{post.prostormat_users?.name || post.prostormat_users?.email || 'Anonymous'}</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <Calendar className="w-4 h-4" />
-                <span>{new Date(post.publishedAt).toLocaleDateString()}</span>
+    <Card className="overflow-hidden hover-lift transition-all duration-500 group border-2 border-black bg-white rounded-2xl h-full flex flex-col">
+      <Link href={`/blog/${post.slug}`}>
+        {post.coverImage && (
+          <div className="aspect-video relative overflow-hidden">
+            <img
+              src={post.coverImage}
+              alt={post.title}
+              className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-700 ease-out"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <div className="absolute top-3 right-3 sm:top-4 sm:right-4 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0">
+              <div className="w-10 h-10 bg-white/95 rounded-full flex items-center justify-center shadow-lg backdrop-blur-sm">
+                <span className="text-sm font-bold text-black">→</span>
               </div>
             </div>
-            
-            {tags.length > 0 && (
-              <div className="flex flex-wrap gap-2 mb-4">
-                {tags.map((tag: string) => (
-                  <Badge key={tag} variant="secondary" className="text-xs">
-                    {tag}
-                  </Badge>
-                ))}
-              </div>
-            )}
           </div>
-        </div>
+        )}
+      </Link>
+      
+      <CardContent className="p-4 sm:p-6 bg-white flex flex-col justify-between h-full">
+        <Link href={`/blog/${post.slug}`}>
+          <div className="flex-1 space-y-4">
+            <div className="flex-1">
+              <h2 className="text-lg sm:text-xl font-bold text-black group-hover:text-gray-500 transition-all duration-300 mb-2 leading-tight">
+                {post.title}
+              </h2>
+              
+              {post.excerpt && (
+                <p className="text-sm text-gray-600 mb-4 line-clamp-3 leading-relaxed">
+                  {post.excerpt}
+                </p>
+              )}
+              
+              <div className="flex items-center gap-4 text-sm text-gray-500 mb-4">
+                <div className="flex items-center gap-1">
+                  <User className="w-4 h-4" />
+                  <span>{post.prostormat_users?.name || post.prostormat_users?.email || post.author?.name || 'Anonymous'}</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Calendar className="w-4 h-4" />
+                  <span>{new Date(post.publishedAt).toLocaleDateString()}</span>
+                </div>
+              </div>
+              
+              {tags.length > 0 && (
+                <div className="flex flex-wrap gap-2 mb-4">
+                  {tags.map((tag: string) => (
+                    <Badge key={tag} variant="secondary" className="text-xs bg-gray-100 text-gray-700">
+                      {tag}
+                    </Badge>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </Link>
         
         <Link href={`/blog/${post.slug}`} className="mt-auto">
           <Button 
             variant="outline" 
             size="sm"
-            className="w-full bg-black text-white border-2 border-black hover:bg-gray-800 transition-all duration-200 font-medium rounded-xl group"
+            className="w-full bg-black text-white border-2 border-black hover:bg-gray-800 hover:text-white transition-all duration-200 font-medium rounded-xl"
           >
             <span>Číst více</span>
-            <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform duration-300" />
+            <span className="ml-2 transform group-hover:translate-x-1 transition-transform duration-300">→</span>
           </Button>
         </Link>
       </CardContent>

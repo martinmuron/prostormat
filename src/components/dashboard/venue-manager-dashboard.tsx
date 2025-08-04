@@ -328,7 +328,7 @@ export function VenueManagerDashboard({ data }: VenueManagerDashboardProps) {
                 Přidat nový prostor
               </Button>
             </Link>
-            <Link href="/pozadavky">
+            <Link href="/verejne-zakazky">
               <Button variant="secondary" className="w-full justify-start text-gray-700 border-gray-300 hover:bg-gray-50 h-12">
                 <Calendar className="h-4 w-4 mr-2" />
                 Veřejné zakázky

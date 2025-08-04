@@ -28,7 +28,7 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/pozadavky" className="text-body text-gray-600 hover:text-black transition-colors">
+                <Link href="/verejne-zakazky" className="text-body text-gray-600 hover:text-black transition-colors">
                   Veřejné zakázky
                 </Link>
               </li>

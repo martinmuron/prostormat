@@ -8,7 +8,7 @@ export default async function NewEventRequestPage() {
   const session = await getServerSession(authOptions)
 
   if (!session) {
-    redirect("/prihlaseni?callbackUrl=/pozadavky/novy")
+    redirect("/prihlaseni?callbackUrl=/verejne-zakazky/novy")
   }
 
   return (

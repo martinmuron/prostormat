@@ -244,20 +244,27 @@ export default function EventRequestsPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
-        {/* Header */}
-        <div className="text-center mb-8 sm:mb-12">
-          <h1 className="text-2xl sm:text-title-1 text-black mb-4">Veřejné zakázky</h1>
-          <p className="text-sm sm:text-body text-gray-600 mb-6 sm:mb-8 max-w-2xl mx-auto px-2 sm:px-0">
-            Aktuální poptávky na event prostory. Kontaktujte organizátory přímo 
-            prostřednictvím uvedených kontaktních údajů.
-          </p>
-          <Link href="/pozadavky/novy">
-            <Button size="lg" className="bg-black text-white hover:bg-gray-800 w-full sm:w-auto rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl">
-              Přidat poptávku
-            </Button>
-          </Link>
+      {/* Header */}
+      <div className="bg-white border-b border-black">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
+          <div className="text-center mb-8">
+            <h1 className="text-xl sm:text-2xl lg:text-title-1 text-black mb-6 sm:mb-8 font-bold tracking-tight">
+              Veřejné zakázky
+            </h1>
+            <p className="text-sm sm:text-body text-gray-600 mb-6 sm:mb-8 max-w-2xl mx-auto px-2 sm:px-0">
+              Aktuální poptávky na event prostory. Kontaktujte organizátory přímo 
+              prostřednictvím uvedených kontaktních údajů.
+            </p>
+            <Link href="/verejne-zakazky/novy">
+              <Button size="lg" className="bg-black text-white hover:bg-gray-800 w-full sm:w-auto rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl">
+                Přidat poptávku
+              </Button>
+            </Link>
+          </div>
         </div>
+      </div>
+      
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
 
         {/* Filters */}
         <Card className="mb-8">
@@ -393,7 +400,7 @@ export default function EventRequestsPage() {
               }
             </p>
             {requests.length === 0 ? (
-              <Link href="/pozadavky/novy">
+              <Link href="/verejne-zakazky/novy">
                 <Button className="bg-black text-white hover:bg-gray-800 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl">Přidat první poptávku</Button>
               </Link>
             ) : (

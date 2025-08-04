@@ -45,7 +45,7 @@ export function DashboardSidebar({ userRole }: DashboardSidebarProps) {
         },
         {
           name: "Veřejné zakázky",
-          href: "/pozadavky",
+          href: "/verejne-zakazky",
           icon: Calendar,
         },
         {

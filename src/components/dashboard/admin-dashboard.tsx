@@ -164,7 +164,7 @@ export function AdminDashboard({ data }: AdminDashboardProps) {
                 Blog
               </Button>
             </Link>
-            <Link href="/pozadavky">
+            <Link href="/verejne-zakazky">
               <Button variant="secondary" className="w-full justify-start">
                 <Calendar className="h-4 w-4 mr-2" />
                 Veřejné zakázky

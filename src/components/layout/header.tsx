@@ -59,6 +59,13 @@ export function Header() {
               </NavigationMenuItem>
               <NavigationMenuItem>
                 <NavigationMenuLink asChild>
+                  <Link href="/ceny" className="text-sm font-medium text-gray-600 hover:text-black transition-colors px-3 py-2 rounded-md">
+                    Ceny
+                  </Link>
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+              <NavigationMenuItem>
+                <NavigationMenuLink asChild>
                   <Link href="/kontakt" className="text-sm font-medium text-gray-600 hover:text-black transition-colors px-3 py-2 rounded-md">
                     Kontakt
                   </Link>

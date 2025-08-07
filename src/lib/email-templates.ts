@@ -170,3 +170,52 @@ prostormat.cz | info@prostormat.cz
     text: plainText
   }
 }
+
+// Password reset email template
+export function generatePasswordResetEmail(resetLink: string) {
+  const subject = `Obnovení hesla – Prostormat`
+  const html = `
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>${subject}</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #111; margin:0; }
+    .container { max-width: 600px; margin: 0 auto; background: #fff; }
+    .header { background: #000; color: #fff; padding: 28px 24px; }
+    .content { padding: 32px 24px; }
+    .cta { display: inline-block; background: #000; color: #fff; padding: 12px 20px; border-radius: 10px; text-decoration: none; font-weight: 600; }
+    .muted { color: #555; }
+    .footer { padding: 20px 24px; color: #666; background: #f7f7f7; font-size: 14px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1 style="margin:0;">Prostormat</h1>
+      <p style="margin:8px 0 0 0; opacity:.9">Obnovení hesla</p>
+    </div>
+    <div class="content">
+      <p>Dobrý den,</p>
+      <p>obdrželi jsme požadavek na obnovení hesla k vašemu účtu. Pokud jste o to nepožádali vy, tento e‑mail ignorujte.</p>
+      <p>
+        <a class="cta" href="${resetLink}">Obnovit heslo</a>
+      </p>
+      <p class="muted">Odkaz je platný 60 minut.</p>
+    </div>
+    <div class="footer">
+      <p>Prostormat – Platforma pro hledání event prostorů</p>
+      <p>Pokud tlačítko nefunguje, zkopírujte tento odkaz do prohlížeče:<br />
+        <a href="${resetLink}">${resetLink}</a>
+      </p>
+    </div>
+  </div>
+</body>
+</html>`
+
+  const text = `Obnovení hesla – Prostormat\n\nKlikněte na odkaz pro obnovení hesla (platný 60 minut):\n${resetLink}`
+
+  return { subject, html, text }
+}

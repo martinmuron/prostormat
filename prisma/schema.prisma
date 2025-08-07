@@ -121,6 +121,8 @@ model prostormat_users {
   prostormat_venue_favorites         prostormat_venue_favorites[]
   prostormat_venue_inquiries         prostormat_venue_inquiries[]
   prostormat_venues                  prostormat_venues[]
+  // Back relation for password reset tokens
+  prostormat_password_reset_tokens   prostormat_password_reset_tokens[]
 }
 
 model prostormat_venue_broadcast_logs {
@@ -230,4 +232,16 @@ model prostormat_verification_tokens {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+// Password reset tokens for credentials users
+model prostormat_password_reset_tokens {
+  id         String   @id @default(cuid())
+  userId     String
+  token      String   @unique
+  expiresAt  DateTime
+  usedAt     DateTime?
+  createdAt  DateTime @default(now())
+
+  prostormat_users prostormat_users @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

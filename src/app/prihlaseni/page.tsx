@@ -153,7 +153,12 @@ function SignInForm() {
               Přihlásit se přes Google
             </Button>
 
-            <div className="text-center mt-4 sm:mt-6">
+            <div className="text-center mt-4 sm:mt-6 space-y-2">
+              <p className="text-sm sm:text-callout text-gray-600">
+                <Link href="/zapomenute-heslo" className="text-black hover:underline font-medium">
+                  Zapomněli jste heslo?
+                </Link>
+              </p>
               <p className="text-sm sm:text-callout text-gray-600">
                 Nemáte účet?{" "}
                 <Link 

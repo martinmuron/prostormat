@@ -219,3 +219,371 @@ export function generatePasswordResetEmail(resetLink: string) {
 
   return { subject, html, text }
 }
+
+// Welcome email template for normal users
+interface WelcomeUserData {
+  name: string
+  email: string
+}
+
+export function generateWelcomeEmailForUser(data: WelcomeUserData) {
+  const { name } = data
+  const subject = `Vítejte v Prostormatu, ${name}!`
+  
+  const html = `
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${subject}</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background-color: #f8f9fa; }
+        .container { max-width: 600px; margin: 0 auto; background: white; }
+        .header { background: #000; color: white; padding: 30px; text-align: center; }
+        .content { padding: 40px 30px; }
+        .cta-button { display: inline-block; background: #000; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 600; margin: 20px 0; }
+        .footer { background: #f8f9fa; padding: 20px 30px; text-align: center; color: #6c757d; font-size: 14px; }
+        .highlight { background: #f0f0f0; padding: 20px; border-radius: 8px; margin: 20px 0; }
+        .feature-list { list-style: none; padding: 0; }
+        .feature-list li { padding: 8px 0; border-bottom: 1px solid #eee; }
+        .feature-list li:last-child { border-bottom: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 style="margin: 0; font-size: 28px;">Prostormat</h1>
+            <p style="margin: 10px 0 0 0; opacity: 0.9;">Vítejte na platformě pro hledání event prostorů</p>
+        </div>
+        
+        <div class="content">
+            <h2 style="color: #212529; margin-bottom: 20px;">Ahoj ${name}! 👋</h2>
+            
+            <p>Děkujeme, že jste se zaregistrovali do Prostormatu – vaší nové platformy pro hledání dokonalých event prostorů v České republice.</p>
+            
+            <div class="highlight">
+                <h3 style="margin: 0 0 15px 0; color: #000;">Co vás čeká:</h3>
+                <ul class="feature-list">
+                    <li>🔍 <strong>Rychlé vyhledávání</strong> – Najděte ideální prostor pro váš event</li>
+                    <li>💬 <strong>Přímá komunikace</strong> – Kontaktujte majitele prostorů přímo</li>
+                    <li>📊 <strong>Srovnání nabídek</strong> – Porovnejte ceny a vybavení</li>
+                    <li>⭐ <strong>Ověřené recenze</strong> – Čtěte zkušenosti ostatních</li>
+                    <li>📅 <strong>Snadné rezervace</strong> – Rezervujte prostor v několika krocích</li>
+                </ul>
+            </div>
+            
+            <p>Připravili jsme pro vás intuitivní prostředí, kde snadno najdete prostor pro:</p>
+            <ul>
+                <li>Firemní akce a teambuildingy</li>
+                <li>Konference a školení</li>
+                <li>Oslavy a večírky</li>
+                <li>Workshopy a prezentace</li>
+                <li>A mnoho dalších událostí</li>
+            </ul>
+            
+            <p style="margin: 30px 0 20px 0;">
+                <strong>Začněte hned teď</strong> a objevte stovky prostorů po celé České republice:
+            </p>
+            
+            <a href="https://prostormat-production.up.railway.app/prostory" class="cta-button">
+                Prohlédnout prostory
+            </a>
+            
+            <p style="margin-top: 30px;">
+                Máte otázky? Neváhejte nás kontaktovat na <a href="mailto:info@prostormat.cz" style="color: #000;">info@prostormat.cz</a>
+            </p>
+        </div>
+        
+        <div class="footer">
+            <p><strong>Prostormat</strong> – Platforma pro hledání event prostorů</p>
+            <p>
+                <a href="mailto:info@prostormat.cz" style="color: #007bff;">info@prostormat.cz</a> | 
+                <a href="https://prostormat-production.up.railway.app" style="color: #007bff;">prostormat.cz</a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>`
+
+  const text = `
+Vítejte v Prostormatu, ${name}!
+
+Děkujeme, že jste se zaregistrovali do Prostormatu – vaší nové platformy pro hledání dokonalých event prostorů v České republice.
+
+Co vás čeká:
+- Rychlé vyhledávání ideálních prostorů
+- Přímá komunikace s majiteli
+- Srovnání nabídek a cen
+- Ověřené recenze od uživatelů
+- Snadné rezervace
+
+Začněte hned teď na: https://prostormat-production.up.railway.app/prostory
+
+Máte otázky? Kontaktujte nás na info@prostormat.cz
+
+--
+Prostormat – Platforma pro hledání event prostorů
+prostormat.cz | info@prostormat.cz
+`
+
+  return { subject, html, text }
+}
+
+// Welcome email template for location owners
+interface WelcomeLocationOwnerData {
+  name: string
+  email: string
+}
+
+export function generateWelcomeEmailForLocationOwner(data: WelcomeLocationOwnerData) {
+  const { name } = data
+  const subject = `Vítejte v Prostormatu, ${name}! Začněte nabízet své prostory`
+  
+  const html = `
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${subject}</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background-color: #f8f9fa; }
+        .container { max-width: 600px; margin: 0 auto; background: white; }
+        .header { background: #000; color: white; padding: 30px; text-align: center; }
+        .content { padding: 40px 30px; }
+        .cta-button { display: inline-block; background: #000; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 600; margin: 20px 0; }
+        .secondary-button { display: inline-block; background: #f8f9fa; color: #000; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 600; margin: 10px 10px 10px 0; border: 2px solid #000; }
+        .footer { background: #f8f9fa; padding: 20px 30px; text-align: center; color: #6c757d; font-size: 14px; }
+        .highlight { background: #e8f5e8; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #16a34a; }
+        .feature-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0; }
+        .feature-item { background: #f8f9fa; padding: 15px; border-radius: 6px; }
+        .step-list { counter-reset: step-counter; list-style: none; padding: 0; }
+        .step-list li { counter-increment: step-counter; padding: 15px 0; border-bottom: 1px solid #eee; position: relative; padding-left: 50px; }
+        .step-list li:last-child { border-bottom: none; }
+        .step-list li::before { content: counter(step-counter); position: absolute; left: 0; top: 15px; background: #000; color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 style="margin: 0; font-size: 28px;">Prostormat</h1>
+            <p style="margin: 10px 0 0 0; opacity: 0.9;">Začněte vydělávat se svými prostory</p>
+        </div>
+        
+        <div class="content">
+            <h2 style="color: #212529; margin-bottom: 20px;">Vítejte ${name}! 🏢</h2>
+            
+            <p>Gratulujeme k registraci jako majitel prostorů na Prostormatu! Připojili jste se k síti úspěšných majitelů, kteří vydělávají pronájmem svých prostorů pro eventy.</p>
+            
+            <div class="highlight">
+                <h3 style="margin: 0 0 15px 0; color: #16a34a;">💰 Začněte vydělávat už dnes!</h3>
+                <p style="margin: 0;">Díky naší platformě můžete zvýšit využití vašich prostorů až o 300% a generovat stabilní pasivní příjem.</p>
+            </div>
+            
+            <h3 style="color: #212529; margin: 30px 0 20px 0;">Jak začít:</h3>
+            <ol class="step-list">
+                <li><strong>Přidejte svůj prostor</strong><br>Vytvořte atraktivní profil s fotkami a detailním popisem</li>
+                <li><strong>Nastavte ceny</strong><br>Určete si vlastní cenník a dostupnost</li>
+                <li><strong>Přijímejte rezervace</strong><br>Komunikujte s klienty a potvrzujte rezervace</li>
+                <li><strong>Vydělávejte</strong><br>Získávejte platby za každou úspěšnou rezervaci</li>
+            </ol>
+            
+            <div style="margin: 30px 0;">
+                <h3 style="color: #212529; margin-bottom: 15px;">Proč majitelé prostorů milují Prostormat:</h3>
+                <div class="feature-grid">
+                    <div class="feature-item">
+                        <strong>📈 Více rezervací</strong><br>
+                        Vyšší viditelnost = více klientů
+                    </div>
+                    <div class="feature-item">
+                        <strong>💻 Snadná správa</strong><br>
+                        Vše pod kontrolou v jednom místě
+                    </div>
+                    <div class="feature-item">
+                        <strong>🛡️ Bezpečné platby</strong><br>
+                        Garantované a rychlé platby
+                    </div>
+                    <div class="feature-item">
+                        <strong>⭐ Ověření klientů</strong><br>
+                        Kvalitní a spolehliví nájemci
+                    </div>
+                </div>
+            </div>
+            
+            <p style="margin: 30px 0 20px 0;">
+                <strong>Připraveni začít?</strong> Přidejte svůj první prostor a začněte přijímat rezervace:
+            </p>
+            
+            <a href="https://prostormat-production.up.railway.app/pridat-prostor" class="cta-button">
+                Přidat prostor
+            </a>
+            <a href="https://prostormat-production.up.railway.app/dashboard" class="secondary-button">
+                Dashboard
+            </a>
+            
+            <p style="margin-top: 30px;">
+                <strong>Potřebujete pomoct?</strong> Náš tým je tu pro vás:<br>
+                📧 <a href="mailto:info@prostormat.cz" style="color: #000;">info@prostormat.cz</a><br>
+                💬 Živý chat na našem webu
+            </p>
+        </div>
+        
+        <div class="footer">
+            <p><strong>Prostormat</strong> – Platforma pro pronájem event prostorů</p>
+            <p>
+                <a href="mailto:info@prostormat.cz" style="color: #007bff;">info@prostormat.cz</a> | 
+                <a href="https://prostormat-production.up.railway.app" style="color: #007bff;">prostormat.cz</a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>`
+
+  const text = `
+Vítejte v Prostormatu, ${name}!
+
+Gratulujeme k registraci jako majitel prostorů na Prostormatu! Připojili jste se k síti úspěšných majitelů, kteří vydělávají pronájmem svých prostorů pro eventy.
+
+Jak začít:
+1. Přidejte svůj prostor - Vytvořte atraktivní profil s fotkami
+2. Nastavte ceny - Určete si vlastní cenník a dostupnost  
+3. Přijímejte rezervace - Komunikujte s klienty
+4. Vydělávejte - Získávejte platby za každou rezervaci
+
+Proč majitelé prostorů milují Prostormat:
+- Více rezervací díky vyšší viditelnosti
+- Snadná správa v jednom místě
+- Bezpečné a rychlé platby
+- Ověření a kvalitní klienti
+
+Začněte hned: https://prostormat-production.up.railway.app/pridat-prostor
+
+Potřebujete pomoct? Kontaktujte nás na info@prostormat.cz
+
+--
+Prostormat – Platforma pro pronájem event prostorů  
+prostormat.cz | info@prostormat.cz
+`
+
+  return { subject, html, text }
+}
+
+// Contact form thank you email template
+interface ContactFormThankYouData {
+  name: string
+  email: string
+  subject: string
+  message: string
+}
+
+export function generateContactFormThankYouEmail(data: ContactFormThankYouData) {
+  const { name } = data
+  const subject = `Děkujeme za vaši zprávu, ${name}!`
+  
+  const html = `
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${subject}</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background-color: #f8f9fa; }
+        .container { max-width: 600px; margin: 0 auto; background: white; }
+        .header { background: #000; color: white; padding: 30px; text-align: center; }
+        .content { padding: 40px 30px; }
+        .cta-button { display: inline-block; background: #000; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 600; margin: 20px 0; }
+        .footer { background: #f8f9fa; padding: 20px 30px; text-align: center; color: #6c757d; font-size: 14px; }
+        .highlight { background: #e8f5e8; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #16a34a; }
+        .response-time { background: #fff3cd; padding: 15px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #ffc107; }
+        .contact-info { background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 style="margin: 0; font-size: 28px;">Prostormat</h1>
+            <p style="margin: 10px 0 0 0; opacity: 0.9;">Děkujeme za váš zájem</p>
+        </div>
+        
+        <div class="content">
+            <h2 style="color: #212529; margin-bottom: 20px;">Ahoj ${name}! 👋</h2>
+            
+            <div class="highlight">
+                <h3 style="margin: 0 0 15px 0; color: #16a34a;">✅ Vaše zpráva byla úspěšně odeslána!</h3>
+                <p style="margin: 0;">Děkujeme, že jste nás kontaktovali. Vaši zprávu jsme obdrželi a brzy se vám ozveme.</p>
+            </div>
+            
+            <p>Potvrzujeme, že jsme obdrželi vaši zprávu týkající se: <strong>"${data.subject}"</strong></p>
+            
+            <div class="response-time">
+                <h3 style="margin: 0 0 10px 0; color: #856404;">⏰ Doba odezvy</h3>
+                <p style="margin: 0; color: #856404;"><strong>Odpovíme vám do 24 hodin</strong> během pracovních dnů (pondělí-pátek).</p>
+            </div>
+            
+            <p>Mezitím můžete:</p>
+            <ul>
+                <li>📍 <strong>Prohlédnout si naše prostory</strong> - Objevte stovky event prostorů</li>
+                <li>📚 <strong>Přečíst si FAQ</strong> - Možná najdete odpověď na vaši otázku</li>
+                <li>📧 <strong>Sledovat náš blog</strong> - Tipy a trendy pro eventy</li>
+                <li>📱 <strong>Sledovat nás na sociálních sítích</strong> - Nejnovější aktuality</li>
+            </ul>
+            
+            <div style="margin: 30px 0;">
+                <a href="https://prostormat-production.up.railway.app/prostory" class="cta-button">
+                    Prohlédnout prostory
+                </a>
+                <a href="https://prostormat-production.up.railway.app/faq" class="cta-button" style="background: #f8f9fa; color: #000; border: 2px solid #000; margin-left: 10px;">
+                    Zobrazit FAQ
+                </a>
+            </div>
+            
+            <div class="contact-info">
+                <h3 style="margin: 0 0 15px 0; color: #212529;">Potřebujete okamžitou pomoc?</h3>
+                <p style="margin: 0;"><strong>📧 Email:</strong> <a href="mailto:info@prostormat.cz" style="color: #000;">info@prostormat.cz</a></p>
+                <p style="margin: 5px 0 0 0;"><strong>📞 Telefon:</strong> <a href="tel:+420775654639" style="color: #000;">+420 775 654 639</a></p>
+                <p style="margin: 5px 0 0 0; color: #6c757d; font-size: 14px;">Pracovní doba: Pondělí-Pátek 9:00-18:00</p>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p><strong>Prostormat</strong> – Platforma pro hledání event prostorů</p>
+            <p>Tento email je automatická odpověď na vaši zprávu odeslanou přes kontaktní formulář.</p>
+            <p>
+                <a href="mailto:info@prostormat.cz" style="color: #007bff;">info@prostormat.cz</a> | 
+                <a href="https://prostormat-production.up.railway.app" style="color: #007bff;">prostormat.cz</a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>`
+
+  const text = `
+Děkujeme za vaši zprávu, ${name}!
+
+Vaše zpráva byla úspěšně odeslána!
+
+Potvrzujeme, že jsme obdrželi vaši zprávu týkající se: "${data.subject}"
+
+DOBA ODEZVY:
+Odpovíme vám do 24 hodin během pracovních dnů (pondělí-pátek).
+
+Mezitím můžete:
+- Prohlédnout si naše prostory na: https://prostormat-production.up.railway.app/prostory
+- Přečíst si FAQ na: https://prostormat-production.up.railway.app/faq
+- Sledovat náš blog pro tipy a trendy
+
+Potřebujete okamžitou pomoc?
+Email: info@prostormat.cz
+Telefon: +420 775 654 639
+Pracovní doba: Pondělí-Pátek 9:00-18:00
+
+--
+Prostormat – Platforma pro hledání event prostorů
+Tento email je automatická odpověď na vaši zprávu.
+prostormat.cz | info@prostormat.cz
+`
+
+  return { subject, html, text }
+}

@@ -81,7 +81,7 @@ export function AdminDashboard({ data }: AdminDashboardProps) {
       </div>
 
       {/* Management Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 mb-8">
         <Card>
           <CardHeader>
             <CardTitle>Správa uživatelů</CardTitle>
@@ -137,6 +137,20 @@ export function AdminDashboard({ data }: AdminDashboardProps) {
             </Link>
           </CardContent>
         </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Email šablony</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-body text-gray-600 mb-4">
+              Spravujte vítací emaily a odesílejte hromadné emaily uživatelům.
+            </p>
+            <Link href="/admin/email-templates">
+              <Button>Spravovat šablony</Button>
+            </Link>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Quick Actions */}
@@ -145,7 +159,7 @@ export function AdminDashboard({ data }: AdminDashboardProps) {
           <CardTitle>Rychlé akce</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
             <Link href="/dashboard/users">
               <Button variant="secondary" className="w-full justify-start">
                 <Users className="h-4 w-4 mr-2" />
@@ -180,6 +194,12 @@ export function AdminDashboard({ data }: AdminDashboardProps) {
               <Button variant="secondary" className="w-full justify-start">
                 <Mail className="h-4 w-4 mr-2" />
                 Email Flow
+              </Button>
+            </Link>
+            <Link href="/admin/email-templates">
+              <Button variant="secondary" className="w-full justify-start">
+                <Mail className="h-4 w-4 mr-2" />
+                Email šablony
               </Button>
             </Link>
           </div>

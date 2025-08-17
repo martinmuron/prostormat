@@ -11,11 +11,55 @@ export default function ContactPage() {
     subject: '',
     message: ''
   })
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitStatus, setSubmitStatus] = useState<{
+    type: 'success' | 'error' | null
+    message: string
+  }>({ type: null, message: '' })
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // Handle form submission - will be implemented later
-    console.log('Form submitted:', formData)
+    setIsSubmitting(true)
+    setSubmitStatus({ type: null, message: '' })
+
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      })
+
+      const data = await response.json()
+
+      if (response.ok) {
+        setSubmitStatus({
+          type: 'success',
+          message: data.message || 'Zpráva byla úspěšně odeslána!'
+        })
+        // Reset form
+        setFormData({
+          name: '',
+          email: '',
+          subject: '',
+          message: ''
+        })
+      } else {
+        setSubmitStatus({
+          type: 'error',
+          message: data.error || 'Došlo k chybě při odesílání zprávy.'
+        })
+      }
+    } catch (error) {
+      console.error('Error submitting form:', error)
+      setSubmitStatus({
+        type: 'error',
+        message: 'Došlo k chybě při odesílání zprávy. Zkuste to prosím znovu.'
+      })
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -136,6 +180,23 @@ export default function ContactPage() {
                 <h2 className="text-2xl font-bold text-gray-900 mb-6">
                   Napište nám zprávu
                 </h2>
+                
+                {/* Status Message */}
+                {submitStatus.type && (
+                  <div className={`p-4 rounded-lg mb-6 ${
+                    submitStatus.type === 'success' 
+                      ? 'bg-green-100 border border-green-400 text-green-700' 
+                      : 'bg-red-100 border border-red-400 text-red-700'
+                  }`}>
+                    <div className="flex items-center">
+                      <div className={`w-4 h-4 rounded-full mr-2 ${
+                        submitStatus.type === 'success' ? 'bg-green-500' : 'bg-red-500'
+                      }`} />
+                      {submitStatus.message}
+                    </div>
+                  </div>
+                )}
+                
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div>
                     <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
@@ -203,9 +264,14 @@ export default function ContactPage() {
 
                   <button
                     type="submit"
-                    className="w-full magnetic-button hover-lift px-10 py-4 text-lg font-semibold rounded-2xl bg-black text-white hover:bg-gray-800 transition-all duration-300 shadow-xl"
+                    disabled={isSubmitting}
+                    className={`w-full magnetic-button hover-lift px-10 py-4 text-lg font-semibold rounded-2xl transition-all duration-300 shadow-xl ${
+                      isSubmitting 
+                        ? 'bg-gray-400 text-gray-200 cursor-not-allowed' 
+                        : 'bg-black text-white hover:bg-gray-800'
+                    }`}
                   >
-                    Odeslat zprávu
+                    {isSubmitting ? 'Odesílání...' : 'Odeslat zprávu'}
                   </button>
                 </form>
               </div>

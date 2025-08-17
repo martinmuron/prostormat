@@ -123,6 +123,8 @@ model prostormat_users {
   prostormat_venues                  prostormat_venues[]
   // Back relation for password reset tokens
   prostormat_password_reset_tokens   prostormat_password_reset_tokens[]
+  // Back relation for email flow logs
+  prostormat_email_flow_logs_sent_by prostormat_email_flow_logs[]       @relation("EmailFlowSentBy")
 }
 
 model prostormat_venue_broadcast_logs {
@@ -244,4 +246,18 @@ model prostormat_password_reset_tokens {
   createdAt  DateTime @default(now())
 
   prostormat_users prostormat_users @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// Email Flow tracking system for admin monitoring
+model prostormat_email_flow_logs {
+  id                          String            @id @default(cuid())
+  emailType                   String            // 'welcome_user', 'welcome_location_owner', 'custom_admin', 'venue_broadcast', 'password_reset'
+  recipient                   String
+  subject                     String
+  status                      String            // 'sent', 'failed', 'pending'
+  error                       String?
+  recipientType               String?           // 'user', 'venue_manager', null
+  sentBy                      String
+  createdAt                   DateTime          @default(now())
+  prostormat_users_sent_by    prostormat_users  @relation("EmailFlowSentBy", fields: [sentBy], references: [id])
 }

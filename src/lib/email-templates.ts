@@ -587,3 +587,321 @@ prostormat.cz | info@prostormat.cz
 
   return { subject, html, text }
 }
+
+// Add Venue (Pridat Prostor) Thank You email template
+interface AddVenueThankYouData {
+  name: string
+  email: string
+  venueName?: string
+  venueType?: string
+}
+
+export function generateAddVenueThankYouEmail(data: AddVenueThankYouData) {
+  const { name, venueName } = data
+  const subject = `Děkujeme za přidání prostoru, ${name}!`
+  
+  const html = `
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${subject}</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background-color: #f8f9fa; }
+        .container { max-width: 600px; margin: 0 auto; background: white; }
+        .header { background: #000; color: white; padding: 30px; text-align: center; }
+        .content { padding: 40px 30px; }
+        .cta-button { display: inline-block; background: #000; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 600; margin: 20px 0; }
+        .footer { background: #f8f9fa; padding: 20px 30px; text-align: center; color: #6c757d; font-size: 14px; }
+        .highlight { background: #e8f5e8; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #16a34a; }
+        .next-steps { background: #f0f8ff; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #007bff; }
+        .contact-info { background: #fff3cd; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #ffc107; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 style="margin: 0; font-size: 28px;">Prostormat</h1>
+            <p style="margin: 10px 0 0 0; opacity: 0.9;">Děkujeme za přidání prostoru</p>
+        </div>
+        
+        <div class="content">
+            <h2 style="color: #212529; margin-bottom: 20px;">Ahoj ${name}! 🎉</h2>
+            
+            <div class="highlight">
+                <h3 style="margin: 0 0 15px 0; color: #16a34a;">✅ Váš prostor byl úspěšně přidán!</h3>
+                <p style="margin: 0;">Děkujeme, že jste přidali ${venueName ? `"${venueName}"` : 'svůj prostor'} do naší platformy. Váš prostor je nyní v procesu schvalování.</p>
+            </div>
+            
+            <div class="next-steps">
+                <h3 style="margin: 0 0 15px 0; color: #0056b3;">🔄 Co bude následovat:</h3>
+                <ol style="margin: 0; padding-left: 20px;">
+                    <li><strong>Kontrola prostoru</strong> - Náš tým zkontroluje všechny údaje (1-2 pracovní dny)</li>
+                    <li><strong>Schválení</strong> - Po schválení bude váš prostor zveřejněn na platformě</li>
+                    <li><strong>Začátek pronájmu</strong> - Můžete začít přijímat rezervace od klientů</li>
+                </ol>
+            </div>
+            
+            <p><strong>Co můžete dělat mezitím:</strong></p>
+            <ul>
+                <li>📱 <strong>Přihlásit se do dashboardu</strong> - Spravujte svůj profil a prostory</li>
+                <li>📊 <strong>Nastavit ceny</strong> - Upravte cenník podle svých představ</li>
+                <li>📅 <strong>Nastavit dostupnost</strong> - Určete, kdy je váš prostor k dispozici</li>
+                <li>📞 <strong>Přidat kontaktní údaje</strong> - Aby vás klienti mohli snadno kontaktovat</li>
+            </ul>
+            
+            <div style="margin: 30px 0;">
+                <a href="https://prostormat-production.up.railway.app/dashboard" class="cta-button">
+                    Přihlásit se do dashboardu
+                </a>
+            </div>
+            
+            <div class="contact-info">
+                <h3 style="margin: 0 0 15px 0; color: #856404;">🤝 Náš obchodní tým vás brzy kontaktuje</h3>
+                <p style="margin: 0; color: #856404;">Jeden z našich specialistů se vám ozve <strong>do 24 hodin</strong> pro dokončení procesu a zodpovězení všech otázek.</p>
+            </div>
+            
+            <p><strong>Máte otázky hned teď?</strong> Neváhejte nás kontaktovat:</p>
+            <p>📧 <a href="mailto:info@prostormat.cz" style="color: #000;">info@prostormat.cz</a><br>
+            📞 <a href="tel:+420775654639" style="color: #000;">+420 775 654 639</a></p>
+        </div>
+        
+        <div class="footer">
+            <p><strong>Prostormat</strong> – Platforma pro pronájem event prostorů</p>
+            <p>Tento email je automatické potvrzení přidání nového prostoru.</p>
+            <p>
+                <a href="mailto:info@prostormat.cz" style="color: #007bff;">info@prostormat.cz</a> | 
+                <a href="https://prostormat-production.up.railway.app" style="color: #007bff;">prostormat.cz</a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>`
+
+  const text = `
+Děkujeme za přidání prostoru, ${name}!
+
+Váš prostor byl úspěšně přidán!
+
+Děkujeme, že jste přidali ${venueName ? `"${venueName}"` : 'svůj prostor'} do naší platformy. Váš prostor je nyní v procesu schvalování.
+
+CO BUDE NÁSLEDOVAT:
+1. Kontrola prostoru - Náš tým zkontroluje všechny údaje (1-2 pracovní dny)
+2. Schválení - Po schválení bude váš prostor zveřejněn na platformě  
+3. Začátek pronájmu - Můžete začít přijímat rezervace od klientů
+
+Co můžete dělat mezitím:
+- Přihlásit se do dashboardu: https://prostormat-production.up.railway.app/dashboard
+- Nastavit ceny a dostupnost
+- Přidat kontaktní údaje
+- Spravovat svůj profil
+
+NÁŠ OBCHODNÍ TÝM VÁS BRZY KONTAKTUJE:
+Jeden z našich specialistů se vám ozve do 24 hodin pro dokončení procesu a zodpovězení všech otázek.
+
+Máte otázky hned teď?
+Email: info@prostormat.cz
+Telefon: +420 775 654 639
+
+--
+Prostormat – Platforma pro pronájem event prostorů
+Tento email je automatické potvrzení přidání nového prostoru.
+prostormat.cz | info@prostormat.cz
+`
+
+  return { subject, html, text }
+}
+
+// Quick Request Venue Notification email template
+interface QuickRequestVenueNotificationData {
+  venueName: string
+  venueContactEmail: string
+  quickRequest: {
+    eventType: string
+    eventDate?: Date | null
+    guestCount?: number | null
+    budgetRange?: string
+    locationPreference?: string
+    additionalInfo?: string
+    contactName: string
+    contactEmail: string
+    contactPhone?: string
+  }
+}
+
+export function generateQuickRequestVenueNotificationEmail(data: QuickRequestVenueNotificationData) {
+  const { venueName, quickRequest } = data
+  const eventTypeLabel = EVENT_TYPES[quickRequest.eventType as EventType] || quickRequest.eventType
+  
+  const subject = `Zákazník má zájem o váš prostor! - ${venueName}`
+  
+  const html = `
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${subject}</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background-color: #f8f9fa; }
+        .container { max-width: 600px; margin: 0 auto; background: white; }
+        .header { background: #28a745; color: white; padding: 30px; text-align: center; }
+        .content { padding: 40px 30px; }
+        .event-details { background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0; }
+        .detail-row { margin: 10px 0; }
+        .label { font-weight: 600; color: #495057; }
+        .cta-button { display: inline-block; background: #28a745; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 600; margin: 20px 0; }
+        .footer { background: #f8f9fa; padding: 20px 30px; text-align: center; color: #6c757d; font-size: 14px; }
+        .highlight { background: #d4edda; padding: 20px; border-left: 4px solid #28a745; margin: 20px 0; border-radius: 6px; }
+        .urgent-notice { background: #fff3cd; padding: 15px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #ffc107; }
+        .contact-highlight { background: #e9ecef; padding: 20px; border-radius: 8px; margin: 20px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 style="margin: 0; font-size: 24px;">🎯 Máte nového zájemce!</h1>
+            <p style="margin: 10px 0 0 0; opacity: 0.9;">Prostormat - Rychlá poptávka</p>
+        </div>
+        
+        <div class="content">
+            <h2 style="color: #212529; margin-bottom: 10px;">Dobrý den,</h2>
+            
+            <div class="highlight">
+                <h3 style="margin: 0 0 10px 0; color: #155724;">🏢 Zákazník má zájem o váš prostor "${venueName}"!</h3>
+                <p style="margin: 0; color: #155724;">Uživatel Prostormatu vyplnil rychlou poptávku a hledá prostor jako je ten váš.</p>
+            </div>
+            
+            <div class="urgent-notice">
+                <h3 style="margin: 0 0 10px 0; color: #856404;">⚡ Rychle zareagujte!</h3>
+                <p style="margin: 0; color: #856404;"><strong>Pošlete mu nabídku co nejdříve</strong> - klienti obvykle vybírají z prvních odpovědí.</p>
+            </div>
+            
+            <div class="event-details">
+                <h4 style="margin: 0 0 15px 0; color: #212529;">Detaily poptávky:</h4>
+                
+                <div class="detail-row">
+                    <span class="label">Typ akce:</span> ${eventTypeLabel}
+                </div>
+                
+                ${quickRequest.eventDate ? `
+                <div class="detail-row">
+                    <span class="label">Datum akce:</span> ${new Date(quickRequest.eventDate).toLocaleDateString('cs-CZ')}
+                </div>
+                ` : ''}
+                
+                ${quickRequest.guestCount ? `
+                <div class="detail-row">
+                    <span class="label">Počet hostů:</span> ${quickRequest.guestCount}
+                </div>
+                ` : ''}
+                
+                ${quickRequest.budgetRange ? `
+                <div class="detail-row">
+                    <span class="label">Rozpočet:</span> ${quickRequest.budgetRange}
+                </div>
+                ` : ''}
+                
+                ${quickRequest.locationPreference ? `
+                <div class="detail-row">
+                    <span class="label">Lokalita:</span> ${quickRequest.locationPreference}
+                </div>
+                ` : ''}
+                
+                ${quickRequest.additionalInfo ? `
+                <div class="detail-row">
+                    <span class="label">Dodatečné informace:</span> ${quickRequest.additionalInfo}
+                </div>
+                ` : ''}
+            </div>
+            
+            <div class="contact-highlight">
+                <h4 style="color: #212529; margin: 0 0 15px 0;">📞 Kontaktujte zákazníka:</h4>
+                <div class="detail-row">
+                    <span class="label">Jméno:</span> ${quickRequest.contactName}
+                </div>
+                <div class="detail-row">
+                    <span class="label">Email:</span> <a href="mailto:${quickRequest.contactEmail}" style="color: #28a745; font-weight: bold;">${quickRequest.contactEmail}</a>
+                </div>
+                ${quickRequest.contactPhone ? `
+                <div class="detail-row">
+                    <span class="label">Telefon:</span> <a href="tel:${quickRequest.contactPhone}" style="color: #28a745; font-weight: bold;">${quickRequest.contactPhone}</a>
+                </div>
+                ` : ''}
+            </div>
+            
+            <p style="margin: 30px 0 20px 0;">
+                <strong>💡 Doporučujeme:</strong>
+            </p>
+            <ul>
+                <li><strong>Odpovězte do 1 hodiny</strong> - Rychlost je klíčová!</li>
+                <li><strong>Připravte konkrétní nabídku</strong> - Cena, dostupnost, možnosti</li>
+                <li><strong>Přiložte fotky prostoru</strong> - Vizuál přesvědčí</li>
+                <li><strong>Nabídněte prohlídku</strong> - Osobní kontakt vždy zabere</li>
+            </ul>
+            
+            <a href="mailto:${quickRequest.contactEmail}?subject=Nabídka prostoru ${venueName} - Prostormat&body=Dobrý den ${quickRequest.contactName},%0A%0Aděkuji za váš zájem o náš prostor ${venueName}.%0A%0A[Zde napište svou nabídku]%0A%0AS pozdravem" class="cta-button">
+                📧 Napsat nabídku
+            </a>
+            
+            <p style="margin-top: 30px; color: #6c757d;">
+                <strong>Tip:</strong> Pro lepší správu poptávek se přihlaste do svého <a href="https://prostormat-production.up.railway.app/dashboard" style="color: #28a745;">dashboardu</a> na Prostormatu.
+            </p>
+        </div>
+        
+        <div class="footer">
+            <p><strong>Prostormat</strong> - Platforma pro pronájem event prostorů</p>
+            <p>Tento email jste obdrželi, protože váš prostor odpovídá kritériím rychlé poptávky.</p>
+            <p>
+                <a href="mailto:info@prostormat.cz" style="color: #007bff;">info@prostormat.cz</a> | 
+                <a href="https://prostormat-production.up.railway.app" style="color: #007bff;">prostormat.cz</a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>`
+
+  const plainText = `
+Zákazník má zájem o váš prostor! - ${venueName}
+
+Dobrý den,
+
+máte nového zájemce! Uživatel Prostormatu vyplnil rychlou poptávku a hledá prostor jako je váš "${venueName}".
+
+⚡ RYCHLE ZAREAGUJTE!
+Pošlete mu nabídku co nejdříve - klienti obvykle vybírají z prvních odpovědí.
+
+Detaily poptávky:
+- Typ akce: ${eventTypeLabel}
+${quickRequest.eventDate ? `- Datum akce: ${new Date(quickRequest.eventDate).toLocaleDateString('cs-CZ')}` : ''}
+${quickRequest.guestCount ? `- Počet hostů: ${quickRequest.guestCount}` : ''}
+${quickRequest.budgetRange ? `- Rozpočet: ${quickRequest.budgetRange}` : ''}
+${quickRequest.locationPreference ? `- Lokalita: ${quickRequest.locationPreference}` : ''}
+${quickRequest.additionalInfo ? `- Dodatečné informace: ${quickRequest.additionalInfo}` : ''}
+
+Kontaktujte zákazníka:
+- Jméno: ${quickRequest.contactName}
+- Email: ${quickRequest.contactEmail}
+${quickRequest.contactPhone ? `- Telefon: ${quickRequest.contactPhone}` : ''}
+
+DOPORUČUJEME:
+- Odpovězte do 1 hodiny - Rychlost je klíčová!
+- Připravte konkrétní nabídku - Cena, dostupnost, možnosti
+- Přiložte fotky prostoru - Vizuál přesvědčí
+- Nabídněte prohlídku - Osobní kontakt vždy zabere
+
+Dashboard: https://prostormat-production.up.railway.app/dashboard
+
+--
+Prostormat - Platforma pro pronájem event prostorů
+Tento email jste obdrželi, protože váš prostor odpovídá kritériím rychlé poptávky.
+prostormat.cz | info@prostormat.cz
+`
+
+  return {
+    subject,
+    html,
+    text: plainText
+  }
+}

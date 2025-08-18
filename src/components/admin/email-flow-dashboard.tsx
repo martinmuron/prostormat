@@ -35,7 +35,9 @@ const EMAIL_TYPE_LABELS: Record<string, string> = {
   'custom_admin': 'Vlastní admin email',
   'venue_broadcast': 'Broadcast prostorům',
   'password_reset': 'Reset hesla',
-  'contact_form_thank_you': 'Poděkování za kontakt'
+  'contact_form_thank_you': 'Poděkování za kontakt',
+  'add_venue_thank_you': 'Poděkování za přidání prostoru',
+  'quick_request_venue_notification': 'Rychlá poptávka - notifikace prostoru'
 }
 
 const STATUS_LABELS: Record<string, string> = {

@@ -4,6 +4,7 @@ import { authOptions } from '@/lib/auth'
 import { db } from '@/lib/db'
 import { resend, FROM_EMAIL, REPLY_TO_EMAIL } from '@/lib/resend'
 import { generateVenueBroadcastEmail } from '@/lib/email-templates'
+import { randomUUID } from 'crypto'
 
 export async function POST(request: NextRequest) {
   try {
@@ -65,6 +66,7 @@ export async function POST(request: NextRequest) {
     // Create the broadcast
     const broadcast = await db.prostormat_venue_broadcasts.create({
       data: {
+        id: randomUUID(),
         userId: session.user.id,
         title,
         description,
@@ -77,7 +79,8 @@ export async function POST(request: NextRequest) {
         contactEmail,
         contactPhone,
         contactName,
-        sentVenues: venueIds
+        sentVenues: venueIds,
+        updatedAt: new Date()
       }
     })
 
@@ -90,6 +93,7 @@ export async function POST(request: NextRequest) {
             console.log(`⚠️ Skipping ${venue.name} - no contact email`)
             return await db.prostormat_venue_broadcast_logs.create({
               data: {
+                id: randomUUID(),
                 broadcastId: broadcast.id,
                 venueId: venue.id,
                 emailStatus: 'skipped',
@@ -146,6 +150,7 @@ export async function POST(request: NextRequest) {
           // Create broadcast log with email status
           return await db.prostormat_venue_broadcast_logs.create({
             data: {
+              id: randomUUID(),
               broadcastId: broadcast.id,
               venueId: venue.id,
               emailStatus,
@@ -158,6 +163,7 @@ export async function POST(request: NextRequest) {
           // Create log entry even for errors
           return await db.prostormat_venue_broadcast_logs.create({
             data: {
+              id: randomUUID(),
               broadcastId: broadcast.id,
               venueId: venue.id,
               emailStatus: 'failed',

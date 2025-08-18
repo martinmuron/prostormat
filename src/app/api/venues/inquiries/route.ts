@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth"
 import { z } from "zod"
 import { db } from "@/lib/db"
 import { authOptions } from "@/lib/auth"
+import { randomUUID } from "crypto"
 
 const inquirySchema = z.object({
   venueId: z.string(),
@@ -37,6 +38,7 @@ export async function POST(request: Request) {
     // Create inquiry
     const inquiry = await db.prostormat_venue_inquiries.create({
       data: {
+        id: randomUUID(),
         venueId: validatedData.venueId,
         userId: session?.user?.id || null,
         name: validatedData.name,

@@ -4,6 +4,7 @@ import { z } from "zod"
 import { db } from "@/lib/db"
 import { authOptions } from "@/lib/auth"
 import bcrypt from "bcryptjs"
+import { randomUUID } from "crypto"
 
 const venueSchema = z.object({
   // Account fields
@@ -71,6 +72,7 @@ export async function POST(request: Request) {
       // Create user
       const user = await tx.prostormat_users.create({
         data: {
+          id: randomUUID(),
           name: validatedData.userName,
           email: validatedData.userEmail,
           password: hashedPassword,
@@ -82,6 +84,7 @@ export async function POST(request: Request) {
       // Create venue
       const venue = await tx.prostormat_venues.create({
         data: {
+          id: randomUUID(),
           name: validatedData.name,
           slug,
           description: validatedData.description || null,
@@ -98,6 +101,7 @@ export async function POST(request: Request) {
           managerId: user.id,
           status: "draft", // Start as draft
           expiresAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000), // 1 year from now
+          updatedAt: new Date(),
         },
       })
 

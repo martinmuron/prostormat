@@ -15,7 +15,7 @@ interface EmailLog {
   error?: string | null
   recipientType?: string | null
   createdAt: string
-  prostormat_users_sent_by?: {
+  prostormat_users?: {
     name: string
     email: string
   }
@@ -236,7 +236,7 @@ export function EmailFlowDashboard() {
                         {new Date(log.createdAt).toLocaleString('cs-CZ')}
                       </td>
                       <td className="py-3 px-4 text-sm">
-                        {log.prostormat_users_sent_by?.name || 'System'}
+                        {log.prostormat_users?.name || 'System'}
                       </td>
                     </tr>
                   ))}

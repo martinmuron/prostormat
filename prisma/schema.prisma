@@ -8,7 +8,7 @@ datasource db {
 }
 
 model prostormat_accounts {
-  id                String           @id @default(cuid())
+  id                String           @id
   userId            String
   type              String
   provider          String
@@ -26,7 +26,7 @@ model prostormat_accounts {
 }
 
 model prostormat_blog_posts {
-  id               String           @id @default(cuid())
+  id               String           @id
   title            String
   slug             String           @unique
   excerpt          String?
@@ -43,8 +43,21 @@ model prostormat_blog_posts {
   prostormat_users prostormat_users @relation(fields: [authorId], references: [id])
 }
 
+model prostormat_email_flow_logs {
+  id               String           @id
+  emailType        String
+  recipient        String
+  subject          String
+  status           String
+  error            String?
+  recipientType    String?
+  sentBy           String
+  createdAt        DateTime         @default(now())
+  prostormat_users prostormat_users @relation(fields: [sentBy], references: [id])
+}
+
 model prostormat_event_request_favorites {
-  id                        String                    @id @default(cuid())
+  id                        String                    @id
   userId                    String
   eventRequestId            String
   createdAt                 DateTime                  @default(now())
@@ -55,7 +68,7 @@ model prostormat_event_request_favorites {
 }
 
 model prostormat_event_requests {
-  id                                 String                               @id @default(cuid())
+  id                                 String                               @id
   userId                             String
   title                              String
   description                        String?
@@ -82,8 +95,18 @@ model prostormat_notes {
   created_at DateTime? @default(now()) @db.Timestamptz(6)
 }
 
+model prostormat_password_reset_tokens {
+  id               String           @id
+  userId           String
+  token            String           @unique
+  expiresAt        DateTime
+  usedAt           DateTime?
+  createdAt        DateTime         @default(now())
+  prostormat_users prostormat_users @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
 model prostormat_sessions {
-  id               String           @id @default(cuid())
+  id               String           @id
   sessionToken     String           @unique
   userId           String
   expires          DateTime
@@ -91,7 +114,7 @@ model prostormat_sessions {
 }
 
 model prostormat_subscriptions {
-  id                   String            @id @default(cuid())
+  id                   String            @id
   venueId              String            @unique
   stripeSubscriptionId String            @unique
   stripeCustomerId     String
@@ -102,7 +125,7 @@ model prostormat_subscriptions {
 }
 
 model prostormat_users {
-  id                                 String                               @id @default(cuid())
+  id                                 String                               @id
   name                               String?
   email                              String                               @unique
   emailVerified                      DateTime?
@@ -114,21 +137,19 @@ model prostormat_users {
   createdAt                          DateTime                             @default(now())
   prostormat_accounts                prostormat_accounts[]
   prostormat_blog_posts              prostormat_blog_posts[]
+  prostormat_email_flow_logs         prostormat_email_flow_logs[]
   prostormat_event_request_favorites prostormat_event_request_favorites[]
   prostormat_event_requests          prostormat_event_requests[]
+  prostormat_password_reset_tokens   prostormat_password_reset_tokens[]
   prostormat_sessions                prostormat_sessions[]
   prostormat_venue_broadcasts        prostormat_venue_broadcasts[]
   prostormat_venue_favorites         prostormat_venue_favorites[]
   prostormat_venue_inquiries         prostormat_venue_inquiries[]
   prostormat_venues                  prostormat_venues[]
-  // Back relation for password reset tokens
-  prostormat_password_reset_tokens   prostormat_password_reset_tokens[]
-  // Back relation for email flow logs
-  prostormat_email_flow_logs_sent_by prostormat_email_flow_logs[]       @relation("EmailFlowSentBy")
 }
 
 model prostormat_venue_broadcast_logs {
-  id                          String                      @id @default(cuid())
+  id                          String                      @id
   broadcastId                 String
   venueId                     String
   sentAt                      DateTime                    @default(now())
@@ -139,7 +160,7 @@ model prostormat_venue_broadcast_logs {
 }
 
 model prostormat_venue_broadcasts {
-  id                              String                            @id @default(cuid())
+  id                              String                            @id
   userId                          String
   title                           String
   description                     String
@@ -154,13 +175,13 @@ model prostormat_venue_broadcasts {
   contactName                     String
   sentVenues                      String[]
   createdAt                       DateTime                          @default(now())
-  updatedAt                       DateTime                          @updatedAt
+  updatedAt                       DateTime
   prostormat_venue_broadcast_logs prostormat_venue_broadcast_logs[]
   prostormat_users                prostormat_users                  @relation(fields: [userId], references: [id])
 }
 
 model prostormat_venue_favorites {
-  id                String            @id @default(cuid())
+  id                String            @id
   userId            String
   venueId           String
   createdAt         DateTime          @default(now())
@@ -171,7 +192,7 @@ model prostormat_venue_favorites {
 }
 
 model prostormat_venue_inquiries {
-  id                String            @id @default(cuid())
+  id                String            @id
   venueId           String
   userId            String?
   name              String
@@ -186,19 +207,19 @@ model prostormat_venue_inquiries {
 }
 
 model prostormat_venue_news {
-  id                String            @id @default(cuid())
+  id                String            @id
   venueId           String
   title             String
   content           String
   images            String[]
   isPublished       Boolean           @default(true)
   createdAt         DateTime          @default(now())
-  updatedAt         DateTime          @updatedAt
+  updatedAt         DateTime
   prostormat_venues prostormat_venues @relation(fields: [venueId], references: [id], onDelete: Cascade)
 }
 
 model prostormat_venues {
-  id                              String                            @id @default(cuid())
+  id                              String                            @id
   name                            String
   slug                            String                            @unique
   description                     String?
@@ -219,7 +240,7 @@ model prostormat_venues {
   subscriptionId                  String?
   expiresAt                       DateTime?
   createdAt                       DateTime                          @default(now())
-  updatedAt                       DateTime                          @updatedAt
+  updatedAt                       DateTime
   prostormat_subscriptions        prostormat_subscriptions?
   prostormat_venue_broadcast_logs prostormat_venue_broadcast_logs[]
   prostormat_venue_favorites      prostormat_venue_favorites[]
@@ -234,30 +255,4 @@ model prostormat_verification_tokens {
   expires    DateTime
 
   @@unique([identifier, token])
-}
-
-// Password reset tokens for credentials users
-model prostormat_password_reset_tokens {
-  id         String   @id @default(cuid())
-  userId     String
-  token      String   @unique
-  expiresAt  DateTime
-  usedAt     DateTime?
-  createdAt  DateTime @default(now())
-
-  prostormat_users prostormat_users @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
-// Email Flow tracking system for admin monitoring
-model prostormat_email_flow_logs {
-  id                          String            @id @default(cuid())
-  emailType                   String            // 'welcome_user', 'welcome_location_owner', 'custom_admin', 'venue_broadcast', 'password_reset'
-  recipient                   String
-  subject                     String
-  status                      String            // 'sent', 'failed', 'pending'
-  error                       String?
-  recipientType               String?           // 'user', 'venue_manager', null
-  sentBy                      String
-  createdAt                   DateTime          @default(now())
-  prostormat_users_sent_by    prostormat_users  @relation("EmailFlowSentBy", fields: [sentBy], references: [id])
 }

@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth"
 import { z } from "zod"
 import { db } from "@/lib/db"
 import { authOptions } from "@/lib/auth"
+import { randomUUID } from "crypto"
 
 const quickRequestSchema = z.object({
   eventType: z.string().min(1, "Event type is required"),
@@ -117,6 +118,7 @@ export async function POST(request: Request) {
     // Create a broadcast record to track this request
     const broadcast = await db.prostormat_venue_broadcasts.create({
       data: {
+        id: randomUUID(),
         userId: session?.user?.id || "anonymous", // Allow anonymous requests
         title: `Rychlá poptávka - ${validatedData.eventType}`,
         description: validatedData.message || "Rychlá poptávka prostoru",
@@ -130,6 +132,7 @@ export async function POST(request: Request) {
         contactPhone: validatedData.contactPhone || null,
         contactName: validatedData.contactName,
         sentVenues: matchingVenues.map(v => v.id),
+        updatedAt: new Date()
       }
     })
 
@@ -145,6 +148,7 @@ export async function POST(request: Request) {
         // Log the broadcast
         await db.prostormat_venue_broadcast_logs.create({
           data: {
+            id: randomUUID(),
             broadcastId: broadcast.id,
             venueId: venue.id,
             emailStatus: "sent",
@@ -158,6 +162,7 @@ export async function POST(request: Request) {
         // Log the failed attempt
         await db.prostormat_venue_broadcast_logs.create({
           data: {
+            id: randomUUID(),
             broadcastId: broadcast.id,
             venueId: venue.id,
             emailStatus: "failed",

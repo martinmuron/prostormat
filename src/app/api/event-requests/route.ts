@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth"
 import { z } from "zod"
 import { db } from "@/lib/db"
 import { authOptions } from "@/lib/auth"
+import { randomUUID } from "crypto"
 
 const eventRequestSchema = z.object({
   title: z.string().min(5),
@@ -68,6 +69,7 @@ export async function POST(request: Request) {
     // Create event request
     const eventRequest = await db.prostormat_event_requests.create({
       data: {
+        id: randomUUID(),
         userId: session.user.id,
         title: validatedData.title,
         description: validatedData.description || null,

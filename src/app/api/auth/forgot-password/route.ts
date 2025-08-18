@@ -31,6 +31,7 @@ export async function POST(req: Request) {
 
     await db.prostormat_password_reset_tokens.create({
       data: {
+        id: crypto.randomUUID(),
         userId: user.id,
         token,
         expiresAt,

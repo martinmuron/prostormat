@@ -35,6 +35,7 @@ export async function POST(request: Request) {
     // Create user
     const user = await db.prostormat_users.create({
       data: {
+        id: crypto.randomUUID(),
         name: validatedData.name,
         email: validatedData.email,
         password: hashedPassword,

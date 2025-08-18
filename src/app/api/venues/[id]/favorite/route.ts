@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { db } from '@/lib/db'
+import { randomUUID } from 'crypto'
 
 interface RouteContext {
   params: Promise<{ id: string }>
@@ -43,6 +44,7 @@ export async function POST(request: Request, { params }: RouteContext) {
     // Add to favorites
     await db.prostormat_venue_favorites.create({
       data: {
+        id: randomUUID(),
         userId: session.user.id,
         venueId: venueId
       }

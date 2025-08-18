@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { db } from "@/lib/db"
+import { randomUUID } from "crypto"
 
 export async function GET() {
   try {
@@ -63,14 +64,14 @@ export async function POST(request: NextRequest) {
 
     const logEntry = await db.prostormat_email_flow_logs.create({
       data: {
+        id: randomUUID(),
         emailType,
         recipient,
         subject,
         status,
         error: error || null,
         sentBy: sentBy || session.user.id,
-        recipientType: recipientType || null,
-        createdAt: new Date()
+        recipientType: recipientType || null
       }
     })
 

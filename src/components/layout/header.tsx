@@ -26,7 +26,7 @@ export function Header() {
             <Logo variant="black" size="md" />
           </div>
 
-          {/* Desktop Navigation */}
+          {/* Desktop Navigation - Updated with FAQ */}
           <NavigationMenu className="hidden lg:flex">
             <NavigationMenuList className="space-x-1">
               <NavigationMenuItem>

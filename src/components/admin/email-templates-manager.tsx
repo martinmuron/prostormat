@@ -8,15 +8,15 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Mail, Users, Building, Send, Eye, Save } from "lucide-react"
-import { generateWelcomeEmailForUser, generateWelcomeEmailForLocationOwner, generateContactFormThankYouEmail } from "@/lib/email-templates"
+import { Mail, Users, Building, Send, Eye, Save, Plus, Bell } from "lucide-react"
+import { generateWelcomeEmailForUser, generateWelcomeEmailForLocationOwner, generateContactFormThankYouEmail, generateAddVenueThankYouEmail, generateQuickRequestVenueNotificationEmail } from "@/lib/email-templates"
 
 interface EmailTemplate {
   id: string
   name: string
   subject: string
   content: string
-  type: 'welcome_user' | 'welcome_location_owner' | 'contact_form_thank_you' | 'custom'
+  type: 'welcome_user' | 'welcome_location_owner' | 'contact_form_thank_you' | 'add_venue_thank_you' | 'quick_request_venue_notification' | 'custom'
 }
 
 const predefinedTemplates: EmailTemplate[] = [
@@ -40,6 +40,20 @@ const predefinedTemplates: EmailTemplate[] = [
     subject: 'Děkujeme za vaši zprávu!',
     content: '',
     type: 'contact_form_thank_you'
+  },
+  {
+    id: 'add_venue_thank_you',
+    name: 'Poděkování za přidání prostoru',
+    subject: 'Děkujeme za přidání prostoru!',
+    content: '',
+    type: 'add_venue_thank_you'
+  },
+  {
+    id: 'quick_request_venue_notification',
+    name: 'Notifikace prostoru o rychlé poptávce',
+    subject: 'Zákazník má zájem o váš prostor!',
+    content: '',
+    type: 'quick_request_venue_notification'
   }
 ]
 
@@ -73,6 +87,29 @@ export function EmailTemplatesManager() {
         email: "jana.svobodova@example.com",
         subject: "Dotaz ohledně pronájmu prostoru",
         message: "Dobrý den, zajímá mě pronájem vašeho prostoru pro firemní akci..."
+      })
+    } else if (templateId === 'add_venue_thank_you') {
+      emailData = generateAddVenueThankYouEmail({
+        name: "Martin Novák",
+        email: "martin.novak@example.com",
+        venueName: "Stylová galerie v centru Prahy",
+        venueType: "galerie"
+      })
+    } else if (templateId === 'quick_request_venue_notification') {
+      emailData = generateQuickRequestVenueNotificationEmail({
+        venueName: "Stylová galerie v centru Prahy",
+        venueContactEmail: "galerie@example.com",
+        quickRequest: {
+          eventType: "firemni-akce",
+          eventDate: new Date("2024-12-15"),
+          guestCount: 50,
+          budgetRange: "50000-100000 Kč",
+          locationPreference: "Praha centrum",
+          additionalInfo: "Potřebujeme prostor s kvalitním osvětlením a prezentační technikou.",
+          contactName: "Anna Svobodová",
+          contactEmail: "anna.svobodova@firma.cz",
+          contactPhone: "+420 777 123 456"
+        }
       })
     }
     
@@ -153,6 +190,10 @@ export function EmailTemplatesManager() {
                       <Users className="h-5 w-5" />
                     ) : template.type === 'welcome_location_owner' ? (
                       <Building className="h-5 w-5" />
+                    ) : template.type === 'add_venue_thank_you' ? (
+                      <Plus className="h-5 w-5" />
+                    ) : template.type === 'quick_request_venue_notification' ? (
+                      <Bell className="h-5 w-5" />
                     ) : (
                       <Mail className="h-5 w-5" />
                     )}
@@ -175,7 +216,7 @@ export function EmailTemplatesManager() {
                       <Eye className="h-4 w-4" />
                       Náhled
                     </Button>
-                    {template.type !== 'contact_form_thank_you' && (
+                    {(template.type === 'welcome_user' || template.type === 'welcome_location_owner') && (
                       <Button
                         size="sm"
                         onClick={() => handleSendWelcomeEmail(template.type as 'welcome_user' | 'welcome_location_owner')}
@@ -189,6 +230,16 @@ export function EmailTemplatesManager() {
                     {template.type === 'contact_form_thank_you' && (
                       <p className="text-sm text-gray-500 mt-2">
                         Automaticky odesíláno při odeslání kontaktního formuláře
+                      </p>
+                    )}
+                    {template.type === 'add_venue_thank_you' && (
+                      <p className="text-sm text-gray-500 mt-2">
+                        Automaticky odesíláno při přidání nového prostoru
+                      </p>
+                    )}
+                    {template.type === 'quick_request_venue_notification' && (
+                      <p className="text-sm text-gray-500 mt-2">
+                        Automaticky odesíláno prostorům při rychlé poptávce
                       </p>
                     )}
                   </div>

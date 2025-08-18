@@ -66,6 +66,13 @@ export function Header() {
               </NavigationMenuItem>
               <NavigationMenuItem>
                 <NavigationMenuLink asChild>
+                  <Link href="/faq" className="text-sm font-medium text-gray-600 hover:text-black transition-colors px-3 py-2 rounded-md">
+                    FAQ
+                  </Link>
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+              <NavigationMenuItem>
+                <NavigationMenuLink asChild>
                   <Link href="/kontakt" className="text-sm font-medium text-gray-600 hover:text-black transition-colors px-3 py-2 rounded-md">
                     Kontakt
                   </Link>
@@ -171,6 +178,13 @@ export function Header() {
                     onClick={closeMobileMenu}
                   >
                     Ceny
+                  </Link>
+                  <Link 
+                    href="/faq" 
+                    className="text-base font-medium text-gray-700 hover:text-black hover:bg-gray-50 transition-colors px-4 py-3 rounded-xl"
+                    onClick={closeMobileMenu}
+                  >
+                    FAQ
                   </Link>
                   <Link 
                     href="/kontakt" 

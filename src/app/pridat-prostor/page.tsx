@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { StripeCheckout } from "@/components/payment/stripe-checkout"
 import { VENUE_TYPES } from "@/types"
 import { 
   Upload, 
@@ -25,7 +26,9 @@ import {
   Plus,
   Minus,
   CheckCircle,
-  AlertCircle
+  AlertCircle,
+  CreditCard,
+  ArrowLeft
 } from "lucide-react"
 
 const venueFormSchema = z.object({
@@ -78,12 +81,17 @@ function isValidYouTubeUrl(url: string): boolean {
   return patterns.some(pattern => pattern.test(url))
 }
 
+type FormStep = 'form' | 'payment' | 'success'
+
 export default function AddVenuePage() {
   const router = useRouter()
+  const [currentStep, setCurrentStep] = useState<FormStep>('form')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [images, setImages] = useState<File[]>([])
   const [imageUrls, setImageUrls] = useState<string[]>([])
   const [amenities, setAmenities] = useState<string[]>([])
+  const [formData, setFormData] = useState<VenueFormData | null>(null)
+  const [paymentError, setPaymentError] = useState<string | null>(null)
 
   const {
     register,
@@ -193,7 +201,7 @@ export default function AddVenuePage() {
       // Upload images first
       const uploadedImageUrls = await uploadImages()
 
-      // Prepare data for API
+      // Prepare data for payment step
       const submitData = {
         // Account data
         userName: data.userName,
@@ -205,8 +213,8 @@ export default function AddVenuePage() {
         name: data.name,
         description: data.description,
         address: data.address,
-        capacitySeated: data.capacitySeated ? parseInt(data.capacitySeated) : undefined,
-        capacityStanding: data.capacityStanding ? parseInt(data.capacityStanding) : undefined,
+        capacitySeated: data.capacitySeated || undefined,
+        capacityStanding: data.capacityStanding || undefined,
         venueType: data.venueType,
         contactEmail: data.contactEmail,
         contactPhone: data.contactPhone,
@@ -216,33 +224,118 @@ export default function AddVenuePage() {
         images: uploadedImageUrls,
       }
 
-      const response = await fetch("/api/venues", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(submitData),
-      })
-
-      const result = await response.json()
-
-      if (response.ok) {
-        // Show success message
-        alert(`Gratulujeme! Váš účet i prostor "${data.name}" byly úspěšně vytvořeny. Nyní se můžete přihlásit a spravovat svůj prostor.`)
-        
-        // Redirect to login page with success message
-        router.push(`/prihlaseni?message=account-created&venue=${encodeURIComponent(data.name)}`)
-      } else {
-        throw new Error(result.error || "Chyba při vytváření účtu a prostoru")
-      }
+      // Store form data and move to payment step
+      setFormData(submitData)
+      setCurrentStep('payment')
+      
     } catch (error) {
-      console.error("Error creating account and venue:", error)
-      alert("Došlo k chybě při vytváření účtu a prostoru. Zkuste to prosím znovu.")
+      console.error("Error preparing venue data:", error)
+      alert("Došlo k chybě při přípravě dat. Zkuste to prosím znovu.")
     } finally {
       setIsSubmitting(false)
     }
   }
 
+  const handlePaymentSuccess = () => {
+    setCurrentStep('success')
+  }
+
+  const handlePaymentError = (error: string) => {
+    setPaymentError(error)
+  }
+
+  const goBackToForm = () => {
+    setCurrentStep('form')
+    setPaymentError(null)
+  }
+
+  // Success step
+  if (currentStep === 'success') {
+    return (
+      <div className="min-h-screen bg-white">
+        <div className="max-w-2xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
+          <div className="text-center">
+            <CheckCircle className="h-16 w-16 text-green-600 mx-auto mb-6" />
+            <h1 className="text-2xl sm:text-3xl font-bold text-black mb-4">
+              Platba úspěšně dokončena!
+            </h1>
+            <p className="text-gray-600 mb-6">
+              Děkujeme za platbu. Váš prostor "{formData?.name}" byl přidán a čeká na schválení administrátorem.
+            </p>
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+              <h3 className="font-semibold text-blue-900 mb-2">Co se stane dále?</h3>
+              <ul className="text-sm text-blue-800 space-y-1 text-left">
+                <li>✅ Váš účet byl úspěšně vytvořen</li>
+                <li>⏳ Prostor nyní čeká na schválení</li>
+                <li>📧 Po schválení vám zašleme emailové oznámení</li>
+                <li>🎯 Poté můžete začít přijímat rezervace</li>
+              </ul>
+            </div>
+            <div className="space-y-3">
+              <Button
+                onClick={() => router.push('/prihlaseni')}
+                className="w-full"
+              >
+                Přihlásit se do účtu
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => router.push('/')}
+                className="w-full"
+              >
+                Návrat na hlavní stránku
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // Payment step
+  if (currentStep === 'payment' && formData) {
+    return (
+      <div className="min-h-screen bg-white">
+        <div className="max-w-2xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
+          <div className="mb-6">
+            <button
+              onClick={goBackToForm}
+              className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Zpět k formuláři
+            </button>
+            <h1 className="text-2xl sm:text-3xl font-bold text-black mb-2">
+              Dokončit platbu
+            </h1>
+            <p className="text-gray-600">
+              Dokončete platbu 12,000 CZK pro přidání prostoru "{formData.name}" na platformu.
+            </p>
+          </div>
+
+          {paymentError && (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+              <div className="flex items-start gap-2">
+                <AlertCircle className="h-5 w-5 text-red-600 mt-0.5 flex-shrink-0" />
+                <div>
+                  <h3 className="font-semibold text-red-900 mb-1">Chyba při platbě</h3>
+                  <p className="text-sm text-red-800">{paymentError}</p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          <StripeCheckout
+            venueData={formData}
+            onPaymentSuccess={handlePaymentSuccess}
+            onPaymentError={handlePaymentError}
+          />
+        </div>
+      </div>
+    )
+  }
+
+  // Form step
   return (
     <div className="min-h-screen bg-white">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
@@ -254,11 +347,18 @@ export default function AddVenuePage() {
             Vytvořte si účet a přidejte svůj event prostor. Staňte se součástí největší platformy 
             pro event prostory v Praze a začněte přijímat rezervace ještě dnes.
           </p>
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 sm:p-4 mt-4">
-            <p className="text-sm sm:text-callout text-blue-800">
-              💡 <strong>Tip:</strong> Vyplněním tohoto formuláře vytvoříte účet i přidáte prostor najednou. 
-              Po odeslání se budete moci přihlásit a spravovat svůj prostor.
-            </p>
+          <div className="bg-orange-50 border border-orange-200 rounded-lg p-3 sm:p-4 mt-4">
+            <div className="flex items-start gap-2">
+              <CreditCard className="h-5 w-5 text-orange-600 mt-0.5 flex-shrink-0" />
+              <div>
+                <p className="text-sm sm:text-callout text-orange-800 font-medium mb-1">
+                  Poplatek za přidání prostoru: 12,000 CZK
+                </p>
+                <p className="text-sm text-orange-700">
+                  Po vyplnění formuláře budete přesměrováni na bezpečnou platbu kartou.
+                </p>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -657,7 +757,7 @@ export default function AddVenuePage() {
               disabled={isSubmitting}
               className="w-full sm:flex-1 order-1 sm:order-2 min-h-[44px] sm:min-h-[48px]"
             >
-              {isSubmitting ? "Vytvářím účet a prostor..." : "Vytvořit účet a přidat prostor"}
+              {isSubmitting ? "Připravuji platbu..." : "Pokračovat k platbě (12,000 CZK)"}
             </Button>
           </div>
         </form>

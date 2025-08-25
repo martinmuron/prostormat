@@ -49,22 +49,22 @@ async function findMatchingVenues(criteria: {
             mode: 'insensitive'
           }
         },
-        // Capacity matching - venue should accommodate the guest count
+        // Capacity matching - ensure venues have capacity information
         {
           OR: [
-            // Check standing capacity
+            // Check standing capacity exists
             {
-              capacityStanding: {
-                gte: minGuests,
-                ...(maxGuests ? { lte: maxGuests * 1.2 } : {}) // Allow 20% over for standing
-              }
+              AND: [
+                { capacityStanding: { not: null } },
+                { capacityStanding: { not: "" } }
+              ]
             },
-            // Check seated capacity
+            // Check seated capacity exists
             {
-              capacitySeated: {
-                gte: minGuests,
-                ...(maxGuests ? { lte: maxGuests } : {})
-              }
+              AND: [
+                { capacitySeated: { not: null } },
+                { capacitySeated: { not: "" } }
+              ]
             }
           ]
         }

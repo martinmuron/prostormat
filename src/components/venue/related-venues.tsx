@@ -12,8 +12,8 @@ interface Venue {
   name: string
   slug: string
   address: string
-  capacitySeated: number | null
-  capacityStanding: number | null
+  capacitySeated: string | null
+  capacityStanding: string | null
   venueType: string | null
   images: string[]
   amenities: string[]
@@ -93,7 +93,7 @@ export async function RelatedVenues({ currentVenueId, venueType, address, amenit
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {relatedVenues.map((venue) => {
           const venueTypeLabel = venue.venueType ? VENUE_TYPES[venue.venueType as VenueType] || venue.venueType : null
-          const totalCapacity = Math.max(venue.capacitySeated || 0, venue.capacityStanding || 0)
+          const totalCapacity = Math.max(Number(venue.capacitySeated) || 0, Number(venue.capacityStanding) || 0)
           
           return (
             <Card key={venue.id} className="group hover:shadow-lg transition-all duration-300">

@@ -224,8 +224,8 @@ model prostormat_venues {
   slug                            String                            @unique
   description                     String?
   address                         String
-  capacitySeated                  Int?
-  capacityStanding                Int?
+  capacitySeated                  String?
+  capacityStanding                String?
   venueType                       String?
   amenities                       String[]
   contactEmail                    String?
@@ -239,6 +239,9 @@ model prostormat_venues {
   managerId                       String
   subscriptionId                  String?
   expiresAt                       DateTime?
+  views                           Int                               @default(0)
+  totalViews                      Int                               @default(0)
+  lastViewedAt                    DateTime?
   createdAt                       DateTime                          @default(now())
   updatedAt                       DateTime
   prostormat_subscriptions        prostormat_subscriptions?
@@ -246,7 +249,20 @@ model prostormat_venues {
   prostormat_venue_favorites      prostormat_venue_favorites[]
   prostormat_venue_inquiries      prostormat_venue_inquiries[]
   prostormat_venue_news           prostormat_venue_news[]
+  prostormat_venue_views          prostormat_venue_views[]
   prostormat_users                prostormat_users                  @relation(fields: [managerId], references: [id])
+}
+
+model prostormat_venue_views {
+  id                String            @id
+  venueId           String
+  ipAddress         String?
+  userAgent         String?
+  referrer          String?
+  viewedAt          DateTime          @default(now())
+  prostormat_venues prostormat_venues @relation(fields: [venueId], references: [id], onDelete: Cascade)
+
+  @@index([venueId, viewedAt])
 }
 
 model prostormat_verification_tokens {

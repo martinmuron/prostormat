@@ -8,6 +8,13 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
+import { ImageManager } from "@/components/ui/image-manager"
+import { YouTubeManager } from "@/components/ui/youtube-manager"
+import { AmenitiesManager } from "@/components/ui/amenities-manager"
+import { ProfileCompletion } from "@/components/ui/profile-completion"
+import { VenueInfo } from "@/components/ui/venue-info"
+import { VenuePreview } from "@/components/ui/venue-preview"
 import { formatDate } from "@/lib/utils"
 import { 
   Building, 
@@ -20,7 +27,12 @@ import {
   Eye,
   MessageSquare,
   Calendar,
-  Settings
+  Settings,
+  Camera,
+  Video,
+  Star,
+  BarChart3,
+  Monitor
 } from "lucide-react"
 
 interface VenueEditFormProps {
@@ -30,6 +42,8 @@ interface VenueEditFormProps {
 export function VenueEditForm({ venue }: VenueEditFormProps) {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false)
+  const [activeTab, setActiveTab] = useState("basic")
   const [formData, setFormData] = useState({
     name: venue.name || "",
     description: venue.description || "",
@@ -40,6 +54,9 @@ export function VenueEditForm({ venue }: VenueEditFormProps) {
     contactEmail: venue.contactEmail || "",
     contactPhone: venue.contactPhone || "",
     websiteUrl: venue.websiteUrl || "",
+    youtubeUrl: venue.youtubeUrl || "",
+    images: venue.images || [],
+    amenities: venue.amenities || [],
     status: venue.status || "draft"
   })
 
@@ -81,277 +98,70 @@ export function VenueEditForm({ venue }: VenueEditFormProps) {
     }
   }
 
-  const handleChange = (field: string, value: string | number) => {
+  const handleChange = (field: string, value: string | number | string[]) => {
     setFormData(prev => ({
       ...prev,
       [field]: value
     }))
   }
 
+  const handleSectionFocus = (section: string) => {
+    const sectionMap: { [key: string]: string } = {
+      'basic-info': 'basic',
+      'images': 'media',
+      'video': 'media',
+      'capacity': 'basic',
+      'contact': 'basic',
+      'venue-type': 'basic',
+      'amenities': 'features',
+      'website': 'basic'
+    }
+    const targetTab = sectionMap[section] || 'basic'
+    setActiveTab(targetTab)
+  }
+
   return (
     <div className="space-y-8">
-      {/* Venue Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <Card className="bg-white">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-caption text-gray-500 mb-1">Status</p>
-                <Badge 
-                  variant={venue.status === "active" ? "default" : "secondary"}
-                  className={venue.status === "active" ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-800"}
-                >
-                  {venue.status === "active" ? "Aktivní" : "Neaktivní"}
-                </Badge>
-              </div>
-              <Building className="h-8 w-8 text-blue-500" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-white">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-caption text-gray-500 mb-1">Dotazy</p>
-                <p className="text-title-2 text-gray-900">{venue._count.inquiries}</p>
-              </div>
-              <MessageSquare className="h-8 w-8 text-purple-500" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-white">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-caption text-gray-500 mb-1">Kapacita</p>
-                <p className="text-title-2 text-gray-900">{venue.capacitySeated || 0}</p>
-              </div>
-              <Users className="h-8 w-8 text-green-500" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-white">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-caption text-gray-500 mb-1">Vytvořen</p>
-                <p className="text-caption text-gray-900">{formatDate(new Date(venue.createdAt))}</p>
-              </div>
-              <Calendar className="h-8 w-8 text-orange-500" />
-            </div>
-          </CardContent>
-        </Card>
+      {/* Header with Quick Actions */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">{venue.name}</h1>
+          <p className="text-gray-600">Správa vašeho prostoru</p>
+        </div>
+        <div className="flex gap-3">
+          <Button 
+            variant="outline"
+            onClick={() => setIsPreviewOpen(true)}
+          >
+            <Eye className="h-4 w-4 mr-2" />
+            Náhled
+          </Button>
+          <Button 
+            onClick={() => window.open(`/prostory/${venue.slug}`, '_blank')}
+            variant="secondary"
+          >
+            <Monitor className="h-4 w-4 mr-2" />
+            Zobrazit živě
+          </Button>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Edit Form */}
-        <div className="lg:col-span-2">
-          <Card className="bg-white">
-            <CardHeader>
-              <CardTitle className="text-gray-900 flex items-center">
-                <Settings className="h-5 w-5 mr-2" />
-                Upravit informace o prostoru
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-6">
-                {/* Basic Info */}
-                <div className="space-y-4">
-                  <h3 className="text-lg font-medium text-gray-900">Základní informace</h3>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Název prostoru *
-                    </label>
-                    <Input
-                      type="text"
-                      value={formData.name}
-                      onChange={(e) => handleChange("name", e.target.value)}
-                      placeholder="Název vašeho prostoru"
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Popis
-                    </label>
-                    <Textarea
-                      value={formData.description}
-                      onChange={(e) => handleChange("description", e.target.value)}
-                      placeholder="Popište váš prostor, jeho výhody a možnosti..."
-                      rows={4}
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Adresa *
-                    </label>
-                    <Input
-                      type="text"
-                      value={formData.address}
-                      onChange={(e) => handleChange("address", e.target.value)}
-                      placeholder="Ulice a číslo, město, PSČ"
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Typ prostoru
-                    </label>
-                    <Select
-                      value={formData.venueType}
-                      onValueChange={(value) => handleChange("venueType", value)}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Vyberte typ prostoru" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {venueTypes.map((type) => (
-                          <SelectItem key={type.value} value={type.value}>
-                            {type.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-
-                {/* Capacity */}
-                <div className="space-y-4">
-                  <h3 className="text-lg font-medium text-gray-900">Kapacita</h3>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        K sezení
-                      </label>
-                      <Input
-                        type="number"
-                        value={formData.capacitySeated}
-                        onChange={(e) => handleChange("capacitySeated", parseInt(e.target.value) || 0)}
-                        placeholder="50"
-                        min="0"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Ke stání
-                      </label>
-                      <Input
-                        type="number"
-                        value={formData.capacityStanding}
-                        onChange={(e) => handleChange("capacityStanding", parseInt(e.target.value) || 0)}
-                        placeholder="100"
-                        min="0"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Contact Info */}
-                <div className="space-y-4">
-                  <h3 className="text-lg font-medium text-gray-900">Kontaktní informace</h3>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      E-mail *
-                    </label>
-                    <Input
-                      type="email"
-                      value={formData.contactEmail}
-                      onChange={(e) => handleChange("contactEmail", e.target.value)}
-                      placeholder="kontakt@prostor.cz"
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Telefon
-                    </label>
-                    <Input
-                      type="tel"
-                      value={formData.contactPhone}
-                      onChange={(e) => handleChange("contactPhone", e.target.value)}
-                      placeholder="+420 123 456 789"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Webové stránky
-                    </label>
-                    <Input
-                      type="url"
-                      value={formData.websiteUrl}
-                      onChange={(e) => handleChange("websiteUrl", e.target.value)}
-                      placeholder="https://www.prostor.cz"
-                    />
-                  </div>
-                </div>
-
-                {/* Status */}
-                <div className="space-y-4">
-                  <h3 className="text-lg font-medium text-gray-900">Stav prostoru</h3>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Status
-                    </label>
-                    <Select
-                      value={formData.status}
-                      onValueChange={(value) => handleChange("status", value)}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Vyberte stav" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="draft">Koncept</SelectItem>
-                        <SelectItem value="active">Aktivní</SelectItem>
-                        <SelectItem value="expired">Neaktivní</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-
-                {/* Actions */}
-                <div className="flex gap-4 pt-6 border-t border-gray-200">
-                  <Button 
-                    type="submit" 
-                    disabled={isLoading}
-                    className="bg-blue-600 hover:bg-blue-700 text-white"
-                  >
-                    <Save className="h-4 w-4 mr-2" />
-                    {isLoading ? "Ukládá se..." : "Uložit změny"}
-                  </Button>
-                  <Button 
-                    type="button" 
-                    variant="secondary"
-                    onClick={() => router.push("/dashboard")}
-                    className="text-gray-700 border-gray-300 hover:bg-gray-50"
-                  >
-                    Zrušit
-                  </Button>
-                </div>
-              </form>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Recent Inquiries */}
-        <div>
-          <Card className="bg-white">
+      {/* Main Content */}
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        {/* Left Sidebar - Profile Completion */}
+        <div className="lg:col-span-1">
+          <ProfileCompletion 
+            venue={formData} 
+            onSectionFocus={handleSectionFocus}
+          />
+          
+          {/* Recent Inquiries */}
+          <Card className="mt-6 bg-white">
             <CardHeader>
               <CardTitle className="text-gray-900">Nedávné dotazy</CardTitle>
             </CardHeader>
             <CardContent>
-              {venue.inquiries.length === 0 ? (
+              {venue.inquiries?.length === 0 ? (
                 <div className="text-center py-8">
                   <MessageSquare className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                   <p className="text-body text-gray-600">
@@ -360,15 +170,15 @@ export function VenueEditForm({ venue }: VenueEditFormProps) {
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {venue.inquiries.slice(0, 5).map((inquiry: any) => (
-                    <div key={inquiry.id} className="border border-gray-200 rounded-lg p-4">
+                  {venue.inquiries?.slice(0, 3).map((inquiry: any) => (
+                    <div key={inquiry.id} className="border border-gray-200 rounded-lg p-3">
                       <div className="flex items-start justify-between mb-2">
                         <h4 className="text-sm font-medium text-gray-900">{inquiry.name}</h4>
                         <Badge variant="secondary" className="bg-blue-100 text-blue-800 text-xs">
                           Nový
                         </Badge>
                       </div>
-                      <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+                      <p className="text-xs text-gray-600 mb-2 line-clamp-2">
                         {inquiry.message}
                       </p>
                       <div className="flex items-center justify-between">
@@ -384,18 +194,258 @@ export function VenueEditForm({ venue }: VenueEditFormProps) {
                       </div>
                     </div>
                   ))}
-                  {venue.inquiries.length > 5 && (
+                  {venue.inquiries?.length > 3 && (
                     <p className="text-sm text-gray-500 text-center">
-                      +{venue.inquiries.length - 5} dalších dotazů
+                      +{venue.inquiries.length - 3} dalších
                     </p>
                   )}
                 </div>
               )}
             </CardContent>
           </Card>
+        </div>
 
-          {/* Quick Actions */}
-          <Card className="mt-6 bg-white">
+        {/* Main Edit Form */}
+        <div className="lg:col-span-2">
+          <Card className="bg-white">
+            <CardContent className="p-0">
+              <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+                <TabsList className="grid w-full grid-cols-4 rounded-none border-b bg-gray-50">
+                  <TabsTrigger value="basic" className="flex items-center gap-2">
+                    <Settings className="h-4 w-4" />
+                    <span className="hidden sm:inline">Základní</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="media" className="flex items-center gap-2">
+                    <Camera className="h-4 w-4" />
+                    <span className="hidden sm:inline">Média</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="features" className="flex items-center gap-2">
+                    <Star className="h-4 w-4" />
+                    <span className="hidden sm:inline">Vybavení</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="info" className="flex items-center gap-2">
+                    <Building className="h-4 w-4" />
+                    <span className="hidden sm:inline">Info</span>
+                  </TabsTrigger>
+                </TabsList>
+
+                <div className="p-6">
+                  <TabsContent value="basic" className="space-y-6 mt-0">
+                    <form onSubmit={handleSubmit} className="space-y-6">
+                      {/* Basic Info */}
+                      <div className="space-y-4">
+                        <h3 className="text-lg font-medium text-gray-900">Základní informace</h3>
+                        
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Název prostoru *
+                          </label>
+                          <Input
+                            type="text"
+                            value={formData.name}
+                            onChange={(e) => handleChange("name", e.target.value)}
+                            placeholder="Název vašeho prostoru"
+                            required
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Popis
+                          </label>
+                          <Textarea
+                            value={formData.description}
+                            onChange={(e) => handleChange("description", e.target.value)}
+                            placeholder="Popište váš prostor, jeho výhody a možnosti..."
+                            rows={4}
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Adresa *
+                          </label>
+                          <Input
+                            type="text"
+                            value={formData.address}
+                            onChange={(e) => handleChange("address", e.target.value)}
+                            placeholder="Ulice a číslo, město, PSČ"
+                            required
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Typ prostoru
+                          </label>
+                          <Select
+                            value={formData.venueType}
+                            onValueChange={(value) => handleChange("venueType", value)}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Vyberte typ prostoru" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {venueTypes.map((type) => (
+                                <SelectItem key={type.value} value={type.value}>
+                                  {type.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+
+                      {/* Capacity */}
+                      <div className="space-y-4">
+                        <h3 className="text-lg font-medium text-gray-900">Kapacita</h3>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                              K sezení
+                            </label>
+                            <Input
+                              type="text"
+                              value={formData.capacitySeated}
+                              onChange={(e) => handleChange("capacitySeated", e.target.value)}
+                              placeholder="50"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                              Ke stání
+                            </label>
+                            <Input
+                              type="text"
+                              value={formData.capacityStanding}
+                              onChange={(e) => handleChange("capacityStanding", e.target.value)}
+                              placeholder="100"
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Contact Info */}
+                      <div className="space-y-4">
+                        <h3 className="text-lg font-medium text-gray-900">Kontaktní informace</h3>
+                        
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            E-mail *
+                          </label>
+                          <Input
+                            type="email"
+                            value={formData.contactEmail}
+                            onChange={(e) => handleChange("contactEmail", e.target.value)}
+                            placeholder="kontakt@prostor.cz"
+                            required
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Telefon
+                          </label>
+                          <Input
+                            type="tel"
+                            value={formData.contactPhone}
+                            onChange={(e) => handleChange("contactPhone", e.target.value)}
+                            placeholder="+420 123 456 789"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Webové stránky
+                          </label>
+                          <Input
+                            type="url"
+                            value={formData.websiteUrl}
+                            onChange={(e) => handleChange("websiteUrl", e.target.value)}
+                            placeholder="https://www.prostor.cz"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Status */}
+                      <div className="space-y-4">
+                        <h3 className="text-lg font-medium text-gray-900">Stav prostoru</h3>
+                        
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Status
+                          </label>
+                          <Select
+                            value={formData.status}
+                            onValueChange={(value) => handleChange("status", value)}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Vyberte stav" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="draft">Koncept</SelectItem>
+                              <SelectItem value="active">Aktivní</SelectItem>
+                              <SelectItem value="expired">Neaktivní</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+
+                      {/* Actions */}
+                      <div className="flex gap-4 pt-6 border-t border-gray-200">
+                        <Button 
+                          type="submit" 
+                          disabled={isLoading}
+                          className="bg-blue-600 hover:bg-blue-700 text-white"
+                        >
+                          <Save className="h-4 w-4 mr-2" />
+                          {isLoading ? "Ukládá se..." : "Uložit změny"}
+                        </Button>
+                        <Button 
+                          type="button" 
+                          variant="secondary"
+                          onClick={() => router.push("/dashboard")}
+                          className="text-gray-700 border-gray-300 hover:bg-gray-50"
+                        >
+                          Zrušit
+                        </Button>
+                      </div>
+                    </form>
+                  </TabsContent>
+
+                  <TabsContent value="media" className="space-y-6 mt-0">
+                    <div className="space-y-6">
+                      <ImageManager 
+                        images={formData.images} 
+                        onImagesChange={(images) => handleChange("images", images)}
+                      />
+                      <YouTubeManager 
+                        videoUrl={formData.youtubeUrl}
+                        onVideoChange={(url) => handleChange("youtubeUrl", url)}
+                      />
+                    </div>
+                  </TabsContent>
+
+                  <TabsContent value="features" className="space-y-6 mt-0">
+                    <AmenitiesManager 
+                      selectedAmenities={formData.amenities}
+                      onAmenitiesChange={(amenities) => handleChange("amenities", amenities)}
+                    />
+                  </TabsContent>
+
+                  <TabsContent value="info" className="space-y-6 mt-0">
+                    <VenueInfo venue={venue} />
+                  </TabsContent>
+                </div>
+              </Tabs>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Right Sidebar - Quick Actions */}
+        <div className="lg:col-span-1">
+          <Card className="bg-white sticky top-4">
             <CardHeader>
               <CardTitle className="text-gray-900">Rychlé akce</CardTitle>
             </CardHeader>
@@ -404,10 +454,18 @@ export function VenueEditForm({ venue }: VenueEditFormProps) {
                 <Button 
                   variant="secondary" 
                   className="w-full justify-start text-gray-700 border-gray-300 hover:bg-gray-50"
-                  onClick={() => window.open(`/prostory/${venue.slug}`, '_blank')}
+                  onClick={() => setIsPreviewOpen(true)}
                 >
                   <Eye className="h-4 w-4 mr-2" />
-                  Zobrazit prostor
+                  Náhled profilu
+                </Button>
+                <Button 
+                  variant="secondary" 
+                  className="w-full justify-start text-gray-700 border-gray-300 hover:bg-gray-50"
+                  onClick={() => window.open(`/prostory/${venue.slug}`, '_blank')}
+                >
+                  <Monitor className="h-4 w-4 mr-2" />
+                  Zobrazit živě
                 </Button>
                 <Button 
                   variant="secondary" 
@@ -430,6 +488,13 @@ export function VenueEditForm({ venue }: VenueEditFormProps) {
           </Card>
         </div>
       </div>
+
+      {/* Preview Modal */}
+      <VenuePreview 
+        venue={{ ...formData, slug: venue.slug }}
+        isOpen={isPreviewOpen}
+        onClose={() => setIsPreviewOpen(false)}
+      />
     </div>
   )
 }

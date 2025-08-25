@@ -1,0 +1,151 @@
+{
+  "mcpServers": {
+    "prostormat-stripe": {
+      "description": "Prostormat Stripe payment processing",
+      "endpoints": {
+        "createPaymentIntent": {
+          "url": "/api/create-payment-intent",
+          "method": "POST",
+          "description": "Create payment intent for venue submission (12,000 CZK)"
+        },
+        "confirmPayment": {
+          "url": "/api/confirm-payment", 
+          "method": "POST",
+          "description": "Confirm payment and create venue + user account"
+        },
+        "webhook": {
+          "url": "/api/webhooks/stripe",
+          "method": "POST", 
+          "description": "Handle Stripe webhook events"
+        }
+      },
+      "capabilities": [
+        "payment_processing",
+        "venue_creation",
+        "user_account_creation",
+        "email_notifications"
+      ]
+    },
+    
+    "prostormat-supabase": {
+      "description": "Prostormat Supabase database operations",
+      "database": {
+        "host": "aws-0-us-east-1.pooler.supabase.com",
+        "port": 6543,
+        "database": "postgres",
+        "ssl": true
+      },
+      "tables": [
+        "prostormat_users",
+        "prostormat_venues", 
+        "prostormat_venue_broadcasts",
+        "prostormat_email_flow_logs",
+        "prostormat_payment_intents",
+        "prostormat_event_requests",
+        "prostormat_subscriptions"
+      ],
+      "capabilities": [
+        "user_management",
+        "venue_management", 
+        "payment_tracking",
+        "email_logging",
+        "event_management"
+      ]
+    },
+
+    "prostormat-vercel": {
+      "description": "Prostormat Vercel deployment and hosting",
+      "deployment": {
+        "platform": "vercel",
+        "domain": "prostormat.cz",
+        "framework": "Next.js 15.3.4"
+      },
+      "endpoints": {
+        "production": "https://prostormat.cz",
+        "preview": "https://prostormat-*.vercel.app"
+      },
+      "capabilities": [
+        "automatic_deployment",
+        "serverless_functions",
+        "edge_runtime",
+        "analytics",
+        "cdn_optimization"
+      ]
+    }
+  },
+
+  "integrations": {
+    "stripe": {
+      "apiVersion": "2025-07-30.basil",
+      "webhookEndpoint": "https://prostormat.cz/api/webhooks/stripe",
+      "webhookEvents": [
+        "payment_intent.succeeded",
+        "payment_intent.payment_failed", 
+        "payment_intent.canceled"
+      ]
+    },
+    
+    "supabase": {
+      "projectRef": "hlwgpjdhhjaibkqcyjts",
+      "features": [
+        "PostgreSQL Database",
+        "Point-in-time Recovery",
+        "Automatic Backups",
+        "SSL Connections"
+      ]
+    },
+
+    "vercel": {
+      "deploymentUrl": "https://prostormat.cz",
+      "features": [
+        "Automatic HTTPS",
+        "Global CDN",
+        "Serverless Functions",
+        "Preview Deployments"
+      ]
+    }
+  },
+
+  "workflows": {
+    "venue_submission": {
+      "steps": [
+        "User fills venue form",
+        "Stripe creates payment intent",
+        "User completes payment",
+        "Webhook confirms payment", 
+        "User account created in Supabase",
+        "Venue created with pending status",
+        "Admin email sent",
+        "User confirmation email sent"
+      ],
+      "services": ["stripe", "supabase", "vercel"]
+    },
+
+    "venue_approval": {
+      "steps": [
+        "Admin views pending venues",
+        "Admin approves venue",
+        "Venue status updated to published",
+        "Approval email sent to owner"
+      ],
+      "services": ["supabase", "vercel"]
+    }
+  },
+
+  "monitoring": {
+    "stripe": {
+      "payments": "Track via Stripe dashboard",
+      "webhooks": "Logged in prostormat_email_flow_logs"
+    },
+    "supabase": {
+      "database": "11MB current size",
+      "backups": "7-day point-in-time recovery",
+      "monitoring": "Built-in Supabase analytics"
+    },
+    "vercel": {
+      "deployments": "Automatic via Git push",
+      "analytics": "Built-in Vercel analytics",
+      "performance": "Edge CDN optimization"
+    }
+  }
+}

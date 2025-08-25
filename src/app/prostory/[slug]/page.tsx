@@ -119,7 +119,7 @@ export default async function VenueDetailPage({
                     <CardContent>
                       <div className="flex items-center gap-2">
                         <span className="text-lg font-semibold">
-                          {Math.max(venue.capacitySeated || 0, venue.capacityStanding || 0)} osob
+                          {Math.max(Number(venue.capacitySeated) || 0, Number(venue.capacityStanding) || 0)} osob
                         </span>
                       </div>
                       {venue.capacitySeated && venue.capacityStanding && (

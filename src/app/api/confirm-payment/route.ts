@@ -1,0 +1,207 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { stripe } from '@/lib/stripe';
+import { prisma } from '@/lib/prisma';
+import bcrypt from 'bcryptjs';
+import { nanoid } from 'nanoid';
+import { resend } from '@/lib/resend';
+
+export async function POST(request: NextRequest) {
+  try {
+    const { paymentIntentId } = await request.json();
+
+    if (!paymentIntentId) {
+      return NextResponse.json(
+        { error: 'Payment Intent ID is required' },
+        { status: 400 }
+      );
+    }
+
+    // Retrieve payment intent from Stripe
+    const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+
+    if (paymentIntent.status !== 'succeeded') {
+      return NextResponse.json(
+        { error: 'Payment not completed' },
+        { status: 400 }
+      );
+    }
+
+    // Get payment record from database
+    const paymentRecord = await prisma.$queryRaw<{
+      id: string;
+      venue_data: string;
+      user_email: string;
+      status: string;
+    }[]>`
+      SELECT id, venue_data, user_email, status 
+      FROM prostormat_payment_intents 
+      WHERE stripe_payment_intent_id = ${paymentIntentId}
+      LIMIT 1
+    `;
+
+    if (!paymentRecord || paymentRecord.length === 0) {
+      return NextResponse.json(
+        { error: 'Payment record not found' },
+        { status: 404 }
+      );
+    }
+
+    const payment = paymentRecord[0];
+
+    if (payment.status === 'completed') {
+      return NextResponse.json({
+        message: 'Payment already processed',
+        success: true,
+      });
+    }
+
+    // Parse venue data
+    const venueData = JSON.parse(payment.venue_data);
+
+    // Create user account first
+    const hashedPassword = await bcrypt.hash(venueData.userPassword, 12);
+    const userId = nanoid();
+
+    await prisma.prostormat_users.create({
+      data: {
+        id: userId,
+        name: venueData.userName,
+        email: venueData.userEmail,
+        password: hashedPassword,
+        phone: venueData.userPhone || null,
+        role: 'venue_manager',
+        createdAt: new Date(),
+      },
+    });
+
+    // Create venue (status: pending approval)
+    const venueId = nanoid();
+    const venueSlug = venueData.name
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)/g, '');
+
+    await prisma.prostormat_venues.create({
+      data: {
+        id: venueId,
+        name: venueData.name,
+        slug: `${venueSlug}-${venueId.slice(0, 8)}`,
+        description: venueData.description || null,
+        address: venueData.address,
+        capacitySeated: venueData.capacitySeated || null,
+        capacityStanding: venueData.capacityStanding || null,
+        venueType: venueData.venueType || null,
+        amenities: venueData.amenities || [],
+        contactEmail: venueData.contactEmail || null,
+        contactPhone: venueData.contactPhone || null,
+        websiteUrl: venueData.websiteUrl || null,
+        images: venueData.images || [],
+        videoUrl: venueData.videoUrl || null,
+        status: 'pending', // Requires admin approval
+        managerId: userId,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+    });
+
+    // Update payment record
+    await prisma.$executeRaw`
+      UPDATE prostormat_payment_intents 
+      SET 
+        status = 'completed',
+        venue_id = ${venueId},
+        payment_completed_at = NOW(),
+        updated_at = NOW()
+      WHERE stripe_payment_intent_id = ${paymentIntentId}
+    `;
+
+    // Send confirmation email to user
+    try {
+      await resend.emails.send({
+        from: 'Prostormat <noreply@prostormat.cz>',
+        to: venueData.userEmail,
+        subject: '✅ Platba úspěšně přijata - Prostor čeká na schválení',
+        html: `
+          <h2>Děkujeme za platbu!</h2>
+          <p>Vaše platba za přidání prostoru "<strong>${venueData.name}</strong>" byla úspěšně přijata.</p>
+          
+          <h3>Co bude dále?</h3>
+          <ul>
+            <li>✅ Váš účet byl vytvořen</li>
+            <li>⏳ Váš prostor čeká na schválení administrátorem</li>
+            <li>📧 Po schválení vám pošleme email a prostor se zpřístupní</li>
+            <li>🎯 Pak budete moci přijímat rezervace!</li>
+          </ul>
+          
+          <p><strong>Přihlašovací údaje:</strong></p>
+          <ul>
+            <li>Email: ${venueData.userEmail}</li>
+            <li>Heslo: (které jste si zvolili při registraci)</li>
+          </ul>
+          
+          <p>Můžete se přihlásit na: <a href="https://prostormat.cz/prihlaseni">prostormat.cz/prihlaseni</a></p>
+          
+          <p>Děkujeme za důvěru!<br>Tým Prostormat</p>
+        `,
+      });
+    } catch (emailError) {
+      console.error('Failed to send confirmation email:', emailError);
+      // Don't fail the whole process if email fails
+    }
+
+    // Send notification to admin
+    try {
+      await resend.emails.send({
+        from: 'Prostormat <noreply@prostormat.cz>',
+        to: 'info@prostormat.cz',
+        subject: '🔔 Nový prostor čeká na schválení',
+        html: `
+          <h2>Nový prostor byl přidán a zaplacen</h2>
+          <p><strong>Prostor:</strong> ${venueData.name}</p>
+          <p><strong>Majitel:</strong> ${venueData.userName}</p>
+          <p><strong>Email:</strong> ${venueData.userEmail}</p>
+          <p><strong>Adresa:</strong> ${venueData.address}</p>
+          <p><strong>Platba:</strong> ✅ Úspěšně zaplaceno (12,000 CZK)</p>
+          
+          <p>Prostor čeká na schválení v admin dashboardu.</p>
+          
+          <p><a href="https://prostormat.cz/dashboard">Schválit prostor</a></p>
+        `,
+      });
+    } catch (emailError) {
+      console.error('Failed to send admin notification:', emailError);
+    }
+
+    // Log the email activity
+    try {
+      await prisma.prostormat_email_flow_logs.create({
+        data: {
+          id: nanoid(),
+          emailType: 'venue_payment_confirmation',
+          recipient: venueData.userEmail,
+          subject: 'Platba úspěšně přijata - Prostor čeká na schválení',
+          status: 'sent',
+          recipientType: 'venue_owner',
+          sentBy: userId,
+          createdAt: new Date(),
+        },
+      });
+    } catch (logError) {
+      console.error('Failed to log email activity:', logError);
+    }
+
+    return NextResponse.json({
+      message: 'Payment confirmed and venue created successfully',
+      success: true,
+      venueId,
+      userId,
+    });
+
+  } catch (error) {
+    console.error('Error confirming payment:', error);
+    return NextResponse.json(
+      { error: 'Failed to process payment confirmation' },
+      { status: 500 }
+    );
+  }
+}

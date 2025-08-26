@@ -74,7 +74,7 @@ fi
 
 # Test database connection
 echo -n "🔌 Testing database connection... "
-if PGPASSWORD="yJYklwqJD8YO5mne" psql -h "aws-0-us-east-1.pooler.supabase.com" -p "6543" -U "postgres.hlwgpjdhhjaibkqcyjts" -d "postgres" -c "SELECT 1;" >/dev/null 2>&1; then
+if psql "$DATABASE_URL" -c "SELECT 1;" >/dev/null 2>&1; then
     echo -e "${GREEN}CONNECTED${NC}"
 else
     echo -e "${RED}FAILED${NC}"
@@ -82,7 +82,7 @@ fi
 
 # Check payment intents table
 echo -n "📊 Checking payment_intents table... "
-if PGPASSWORD="yJYklwqJD8YO5mne" psql -h "aws-0-us-east-1.pooler.supabase.com" -p "6543" -U "postgres.hlwgpjdhhjaibkqcyjts" -d "postgres" -c "SELECT COUNT(*) FROM prostormat_payment_intents;" >/dev/null 2>&1; then
+if psql "$DATABASE_URL" -c "SELECT COUNT(*) FROM prostormat_payment_intents;" >/dev/null 2>&1; then
     echo -e "${GREEN}EXISTS${NC}"
 else
     echo -e "${RED}MISSING${NC}"

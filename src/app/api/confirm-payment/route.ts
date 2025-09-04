@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { stripe } from '@/lib/stripe';
+import { stripe, isStripeConfigured } from '@/lib/stripe';
 import { prisma } from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
 import { nanoid } from 'nanoid';
@@ -7,6 +7,14 @@ import { resend } from '@/lib/resend';
 
 export async function POST(request: NextRequest) {
   try {
+    // Check if Stripe is configured
+    if (!isStripeConfigured() || !stripe) {
+      return NextResponse.json(
+        { error: 'Payment system is not configured' },
+        { status: 503 }
+      );
+    }
+
     const { paymentIntentId } = await request.json();
 
     if (!paymentIntentId) {

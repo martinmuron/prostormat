@@ -1,10 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { stripe } from '@/lib/stripe';
+import { stripe, isStripeConfigured } from '@/lib/stripe';
 import { prisma } from '@/lib/prisma';
 import { resend } from '@/lib/resend';
 import { nanoid } from 'nanoid';
 
 export async function POST(request: NextRequest) {
+  // Check if Stripe is configured
+  if (!isStripeConfigured() || !stripe) {
+    return NextResponse.json(
+      { error: 'Stripe webhook is not configured' },
+      { status: 503 }
+    );
+  }
+
   const body = await request.text();
   const signature = request.headers.get('stripe-signature');
 

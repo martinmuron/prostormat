@@ -3,15 +3,19 @@ import { loadStripe } from '@stripe/stripe-js';
 import type { Stripe as StripeJS } from '@stripe/stripe-js';
 
 // Initialize Stripe with secret key (server-side)
-export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-07-30.basil',
-});
+export const stripe = process.env.STRIPE_SECRET_KEY 
+  ? new Stripe(process.env.STRIPE_SECRET_KEY, {
+      apiVersion: '2025-07-30.basil',
+    })
+  : null;
 
 // Initialize Stripe.js (client-side)
 let stripePromise: Promise<StripeJS | null>;
 export const getStripe = () => {
   if (!stripePromise) {
-    stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
+    stripePromise = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY 
+      ? loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY)
+      : Promise.resolve(null);
   }
   return stripePromise;
 };
@@ -24,3 +28,8 @@ export const VENUE_PAYMENT_CONFIG = {
 } as const;
 
 export default stripe;
+
+// Helper function to check if Stripe is configured
+export const isStripeConfigured = () => {
+  return Boolean(process.env.STRIPE_SECRET_KEY && process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
+};

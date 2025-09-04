@@ -1,9 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { stripe, VENUE_PAYMENT_CONFIG } from '@/lib/stripe';
+import { stripe, VENUE_PAYMENT_CONFIG, isStripeConfigured } from '@/lib/stripe';
 import { prisma } from '@/lib/prisma';
 
 export async function POST(request: NextRequest) {
   try {
+    // Check if Stripe is configured
+    if (!isStripeConfigured() || !stripe) {
+      return NextResponse.json(
+        { error: 'Payment system is not configured' },
+        { status: 503 }
+      );
+    }
+
     const { venueData } = await request.json();
 
     // Validate required fields

@@ -14,7 +14,7 @@ export async function POST(req: Request) {
     const body = await req.json()
     const { email } = schema.parse(body)
 
-    const user = await db.prostormat_users.findUnique({ where: { email } })
+    const user = await db.user.findUnique({ where: { email } })
 
     // Always respond 200 to avoid user enumeration
     if (!user) {

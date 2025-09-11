@@ -24,7 +24,7 @@ export async function POST(req: Request) {
     const hashed = await bcrypt.hash(password, 12)
 
     await db.$transaction([
-      db.prostormat_users.update({ where: { id: record.userId }, data: { password: hashed } }),
+      db.user.update({ where: { id: record.userId }, data: { password: hashed } }),
       (db as any).prostormat_password_reset_tokens.update({ where: { token }, data: { usedAt: new Date() } })
     ])
 

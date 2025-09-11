@@ -18,7 +18,7 @@ export async function POST(request: Request) {
     const validatedData = registerSchema.parse(body)
 
     // Check if user already exists
-    const existingUser = await db.prostormat_users.findUnique({
+    const existingUser = await db.user.findUnique({
       where: { email: validatedData.email },
     })
 
@@ -33,7 +33,7 @@ export async function POST(request: Request) {
     const hashedPassword = await bcrypt.hash(validatedData.password, 12)
 
     // Create user
-    const user = await db.prostormat_users.create({
+    const user = await db.user.create({
       data: {
         id: crypto.randomUUID(),
         name: validatedData.name,

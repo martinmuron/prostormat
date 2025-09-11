@@ -43,7 +43,7 @@ export async function POST(request: Request) {
     const validatedData = venueSchema.parse(body)
 
     // Check if user already exists
-    const existingUser = await db.prostormat_users.findUnique({
+    const existingUser = await db.user.findUnique({
       where: { email: validatedData.userEmail },
     })
 

@@ -61,7 +61,7 @@ export async function PATCH(
 
     // If managerId is provided and user is admin, verify the manager exists
     if (body.managerId && session.user.role === "admin") {
-      const manager = await db.prostormat_users.findUnique({
+      const manager = await db.user.findUnique({
         where: { id: body.managerId },
         select: { role: true }
       })

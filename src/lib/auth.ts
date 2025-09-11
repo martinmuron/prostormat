@@ -29,7 +29,7 @@ export const authOptions: NextAuthOptions = {
           return null
         }
 
-        const user = await db.prostormat_users.findUnique({
+        const user = await db.user.findUnique({
           where: {
             email: credentials.email
           }

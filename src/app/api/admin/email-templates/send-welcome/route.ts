@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
     const errors: string[] = []
 
     if (templateType === 'welcome_user') {
-      users = await db.prostormat_users.findMany({
+      users = await db.user.findMany({
         where: {
           role: 'user'
         },
@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
         }
       })
     } else {
-      users = await db.prostormat_users.findMany({
+      users = await db.user.findMany({
         where: {
           role: 'venue_manager'
         },

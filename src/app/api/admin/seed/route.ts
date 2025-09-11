@@ -225,6 +225,8 @@ export async function POST(request: Request) {
       const venue = await prisma.venue.create({
         data: {
           ...venueData,
+          amenities: JSON.stringify(venueData.amenities),
+          images: JSON.stringify(venueData.images),
           expiresAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
         }
       })

@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
     }
     // For 'all', we don't filter by role
 
-    const users = await db.prostormat_users.findMany({
+    const users = await db.user.findMany({
       where: whereClause,
       select: {
         id: true,

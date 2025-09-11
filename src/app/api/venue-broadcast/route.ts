@@ -79,7 +79,7 @@ export async function POST(request: NextRequest) {
         contactEmail,
         contactPhone,
         contactName,
-        sentVenues: venueIds,
+        sentVenues: JSON.stringify(venueIds),
         updatedAt: new Date()
       }
     })

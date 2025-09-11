@@ -55,6 +55,7 @@ model User {
   blogPosts     BlogPost[]
   venueBroadcasts VenueBroadcast[]
   emailFlowLogs EmailFlowLog[]
+  eventRequestFavorites EventRequestFavorite[]
   createdAt     DateTime  @default(now())
 
   @@map("prostormat_users")
@@ -117,6 +118,7 @@ model EventRequest {
   createdAt           DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id])
+  favorites EventRequestFavorite[]
 }
 
 model VenueInquiry {
@@ -213,4 +215,16 @@ model EmailFlowLog {
   user             User             @relation(fields: [sentBy], references: [id])
 
   @@map("prostormat_email_flow_logs")
+}
+
+model EventRequestFavorite {
+  id               String           @id @default(cuid())
+  userId           String
+  eventRequestId   String
+  createdAt        DateTime         @default(now())
+
+  user             User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  eventRequest     EventRequest     @relation(fields: [eventRequestId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, eventRequestId])
 }

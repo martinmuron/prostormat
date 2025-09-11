@@ -4,9 +4,9 @@ import { prisma } from '@/lib/prisma';
 export async function GET() {
   try {
     // Get all venues (not just pending ones)
-    const venues = await prisma.prostormat_venues.findMany({
+    const venues = await prisma.venue.findMany({
       include: {
-        prostormat_users: {
+        manager: {
           select: {
             name: true,
             email: true,

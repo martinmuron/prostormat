@@ -218,7 +218,7 @@ export async function GET(request: NextRequest) {
         skip,
         take: limit,
         include: {
-          venueBroadcastLog: {
+          logs: {
             include: {
               venue: {
                 select: {

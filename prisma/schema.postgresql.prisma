@@ -94,6 +94,8 @@ model Venue {
   inquiries    VenueInquiry[]
   subscription Subscription?
   broadcastLogs VenueBroadcastLog[]
+
+  @@map("prostormat_venues")
 }
 
 model EventRequest {

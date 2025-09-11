@@ -15,10 +15,10 @@ export async function POST(request: NextRequest) {
     }
 
     // Get venue details
-    const venue = await prisma.prostormat_venues.findUnique({
+    const venue = await prisma.venue.findUnique({
       where: { id: venueId },
       include: {
-        prostormat_users: true, // Get venue manager details
+        manager: true, // Get venue manager details
       },
     });
 
@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Update venue status to published
-    await prisma.prostormat_venues.update({
+    await prisma.venue.update({
       where: { id: venueId },
       data: {
         status: 'published',
@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
     try {
       await resend.emails.send({
         from: 'Prostormat <noreply@prostormat.cz>',
-        to: venue.prostormat_users.email!,
+        to: venue.manager.email!,
         subject: '🎉 Váš prostor byl schválen!',
         html: `
           <h2>Gratulujeme! Váš prostor byl schválen</h2>
@@ -87,7 +87,7 @@ export async function POST(request: NextRequest) {
         data: {
           id: nanoid(),
           emailType: 'venue_approval_confirmation',
-          recipient: venue.prostormat_users.email!,
+          recipient: venue.manager.email!,
           subject: 'Váš prostor byl schválen!',
           status: 'sent',
           recipientType: 'venue_owner',
@@ -118,10 +118,10 @@ export async function POST(request: NextRequest) {
 export async function GET() {
   try {
     // Get all pending venues
-    const pendingVenues = await prisma.prostormat_venues.findMany({
+    const pendingVenues = await prisma.venue.findMany({
       where: { status: 'pending' },
       include: {
-        prostormat_users: {
+        manager: {
           select: {
             name: true,
             email: true,

@@ -15,7 +15,7 @@ export async function GET() {
         userId: session.user.id
       },
       include: {
-        prostormat_venues: {
+        venue: {
           select: {
             id: true,
             name: true,
@@ -37,7 +37,7 @@ export async function GET() {
     })
 
     const venuesWithFavoriteInfo = favorites.map(fav => ({
-      ...fav.prostormat_venues,
+      ...fav.venue,
       favoritedAt: fav.createdAt
     }))
 

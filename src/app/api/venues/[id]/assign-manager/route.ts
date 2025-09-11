@@ -43,11 +43,11 @@ export async function POST(
     }
 
     // Assign user as manager to the venue
-    const updatedVenue = await db.prostormat_venues.update({
+    const updatedVenue = await db.venue.update({
       where: { id },
       data: { managerId: user.id },
       include: {
-        prostormat_users: {
+        manager: {
           select: {
             id: true,
             name: true,

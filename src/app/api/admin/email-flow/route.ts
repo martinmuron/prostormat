@@ -17,7 +17,7 @@ export async function GET() {
       orderBy: { createdAt: 'desc' },
       take: 100,
       include: {
-        prostormat_users: {
+        user: {
           select: {
             name: true,
             email: true

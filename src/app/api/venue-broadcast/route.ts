@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Find matching venues based on criteria
-    const matchingVenues = await db.prostormat_venues.findMany({
+    const matchingVenues = await db.venue.findMany({
       where: {
         status: 'active',
         // Add more matching criteria here based on location, capacity, etc.
@@ -220,7 +220,7 @@ export async function GET(request: NextRequest) {
         include: {
           prostormat_venue_broadcast_logs: {
             include: {
-              prostormat_venues: {
+              venue: {
                 select: {
                   id: true,
                   name: true,

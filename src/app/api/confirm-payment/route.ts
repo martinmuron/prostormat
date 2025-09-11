@@ -70,7 +70,7 @@ export async function POST(request: NextRequest) {
     const hashedPassword = await bcrypt.hash(venueData.userPassword, 12);
     const userId = nanoid();
 
-    await prisma.prostormat_users.create({
+    await prisma.user.create({
       data: {
         id: userId,
         name: venueData.userName,
@@ -89,7 +89,7 @@ export async function POST(request: NextRequest) {
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/(^-|-$)/g, '');
 
-    await prisma.prostormat_venues.create({
+    await prisma.venue.create({
       data: {
         id: venueId,
         name: venueData.name,

@@ -38,7 +38,7 @@ async function findMatchingVenues(criteria: {
 }) {
   const { min: minGuests, max: maxGuests } = parseGuestCount(criteria.guestCount)
   
-  const venues = await db.prostormat_venues.findMany({
+  const venues = await db.venue.findMany({
     where: {
       status: "active",
       AND: [
@@ -71,7 +71,7 @@ async function findMatchingVenues(criteria: {
       ]
     },
     include: {
-      prostormat_users: {
+      manager: {
         select: {
           name: true,
           email: true,
@@ -88,7 +88,7 @@ async function sendEmailToVenue(venue: any, requestData: any) {
   // This is a placeholder - implement actual email sending logic
   // You might use services like SendGrid, AWS SES, or Nodemailer
   
-  console.log(`Sending email to venue ${venue.name} (${venue.prostormat_users.email})`)
+  console.log(`Sending email to venue ${venue.name} (${venue.manager.email})`)
   console.log('Request data:', requestData)
   
   // For now, we'll just simulate success

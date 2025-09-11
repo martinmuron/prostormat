@@ -14,7 +14,7 @@ export async function GET(
         status: "published"
       },
       include: {
-        prostormat_users: {
+        user: {
           select: { name: true }
         }
       }

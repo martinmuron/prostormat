@@ -62,7 +62,7 @@ export async function POST(request: Request) {
     let slug = baseSlug
     let counter = 1
 
-    while (await db.prostormat_venues.findUnique({ where: { slug } })) {
+    while (await db.venue.findUnique({ where: { slug } })) {
       slug = `${baseSlug}-${counter}`
       counter++
     }
@@ -70,7 +70,7 @@ export async function POST(request: Request) {
     // Create user and venue in a transaction
     const result = await db.$transaction(async (tx) => {
       // Create user
-      const user = await tx.prostormat_users.create({
+      const user = await tx.user.create({
         data: {
           id: randomUUID(),
           name: validatedData.userName,
@@ -82,7 +82,7 @@ export async function POST(request: Request) {
       })
 
       // Create venue
-      const venue = await tx.prostormat_venues.create({
+      const venue = await tx.venue.create({
         data: {
           id: randomUUID(),
           name: validatedData.name,
@@ -111,8 +111,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ 
       success: true, 
       message: "Účet a prostor byly úspěšně vytvořeny",
-      prostormat_venues: { id: result.venue.id, slug: result.venue.slug },
-      prostormat_users: { id: result.user.id, email: result.user.email }
+      venue: { id: result.venue.id, slug: result.venue.slug },
+      user: { id: result.user.id, email: result.user.email }
     })
   } catch (error) {
     console.error("Error creating user and venue:", error)

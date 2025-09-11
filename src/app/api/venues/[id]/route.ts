@@ -37,7 +37,7 @@ export async function PATCH(
       }
       
       // Verify venue manager owns this venue
-      const venue = await db.prostormat_venues.findUnique({
+      const venue = await db.venue.findUnique({
         where: { id },
         select: { managerId: true }
       })
@@ -72,7 +72,7 @@ export async function PATCH(
     }
 
     // Update the venue
-    const updatedVenue = await db.prostormat_venues.update({
+    const updatedVenue = await db.venue.update({
       where: { id },
       data: {
         ...updateData,
@@ -111,7 +111,7 @@ export async function GET(
       }
       
       // Verify venue manager owns this venue
-      const venueCheck = await db.prostormat_venues.findUnique({
+      const venueCheck = await db.venue.findUnique({
         where: { id },
         select: { managerId: true }
       })
@@ -122,10 +122,10 @@ export async function GET(
     }
 
     // Get the venue
-    const venue = await db.prostormat_venues.findUnique({
+    const venue = await db.venue.findUnique({
       where: { id },
       include: {
-        prostormat_users: {
+        manager: {
           select: {
             id: true,
             name: true,

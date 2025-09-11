@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Get venue details to verify it exists
-    const venue = await prisma.prostormat_venues.findUnique({
+    const venue = await prisma.venue.findUnique({
       where: { id: venueId },
     });
 
@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Update venue status
-    await prisma.prostormat_venues.update({
+    await prisma.venue.update({
       where: { id: venueId },
       data: {
         status,

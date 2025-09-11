@@ -23,7 +23,7 @@ export async function POST(request: Request) {
     const validatedData = inquirySchema.parse(body)
 
     // Check if venue exists
-    const venue = await db.prostormat_venues.findUnique({
+    const venue = await db.venue.findUnique({
       where: { id: validatedData.venueId },
       select: { id: true, name: true, contactEmail: true }
     })

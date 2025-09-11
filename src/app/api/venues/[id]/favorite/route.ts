@@ -19,7 +19,7 @@ export async function POST(request: Request, { params }: RouteContext) {
     const venueId = resolvedParams.id
 
     // Check if venue exists
-    const venue = await db.prostormat_venues.findUnique({
+    const venue = await db.venue.findUnique({
       where: { id: venueId }
     })
 

@@ -32,7 +32,7 @@ export async function GET() {
         createdAt: "desc",
       },
       include: {
-        prostormat_users: {
+        user: {
           select: {
             name: true,
           }

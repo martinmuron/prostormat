@@ -7,12 +7,12 @@ async function main() {
   try {
     console.log('Starting safe seed process...')
     console.log('NODE_ENV:', process.env.NODE_ENV)
-    console.log('RAILWAY_ENVIRONMENT:', process.env.RAILWAY_ENVIRONMENT)
+    console.log('VERCEL_ENV:', process.env.VERCEL_ENV)
     console.log('DATABASE_URL exists:', !!process.env.DATABASE_URL)
     
-    // Run in production environment or Railway deployment
-    if (process.env.NODE_ENV !== 'production' && !process.env.RAILWAY_ENVIRONMENT) {
-      console.log('Skipping safe seed - not in production or Railway environment')
+    // Run in production environment or Vercel deployment
+    if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL_ENV) {
+      console.log('Skipping safe seed - not in production or Vercel environment')
       return
     }
 

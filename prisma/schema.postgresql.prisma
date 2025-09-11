@@ -54,7 +54,10 @@ model User {
   venueInquiries VenueInquiry[]
   blogPosts     BlogPost[]
   venueBroadcasts VenueBroadcast[]
+  emailFlowLogs prostormat_email_flow_logs[]
   createdAt     DateTime  @default(now())
+
+  @@map("prostormat_users")
 }
 
 model VerificationToken {
@@ -193,4 +196,19 @@ model VenueBroadcastLog {
 
   broadcast VenueBroadcast @relation(fields: [broadcastId], references: [id])
   venue Venue @relation(fields: [venueId], references: [id])
+}
+
+model prostormat_email_flow_logs {
+  id               String           @id
+  emailType        String
+  recipient        String
+  subject          String
+  status           String
+  error            String?
+  recipientType    String?
+  sentBy           String
+  createdAt        DateTime         @default(now())
+  user             User             @relation(fields: [sentBy], references: [id])
+
+  @@map("prostormat_email_flow_logs")
 }

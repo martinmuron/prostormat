@@ -1,33 +1,38 @@
 import { PrismaClient } from '@prisma/client'
 import bcrypt from 'bcryptjs'
+import { randomUUID } from 'crypto'
 
 const prisma = new PrismaClient()
 
 async function main() {
   // Create a sample admin user
   const adminPassword = await bcrypt.hash('admin123', 12)
-  const admin = await prisma.user.upsert({
+  const admin = await prisma.prostormat_users.upsert({
     where: { email: 'admin@prostormat.cz' },
     update: {},
     create: {
+      id: randomUUID(),
       email: 'admin@prostormat.cz',
       name: 'Admin',
       password: adminPassword,
       role: 'admin',
+      createdAt: new Date(),
     },
   })
 
   // Create venue manager
   const managerPassword = await bcrypt.hash('manager123', 12)
-  const manager1 = await prisma.user.upsert({
+  const manager1 = await prisma.prostormat_users.upsert({
     where: { email: 'manager@example.com' },
     update: {},
     create: {
+      id: randomUUID(),
       email: 'manager@example.com',
       name: 'Venue Manager',
       password: managerPassword,
       role: 'venue_manager',
       phone: '+420 222 333 444',
+      createdAt: new Date(),
     },
   })
 
@@ -38,8 +43,8 @@ async function main() {
       slug: 'restaurant-terasa',
       description: 'Elegantní restaurace s výhledem na Pražský hrad, ideální pro firemní akce a slavnostní večery.',
       address: 'Kampa Island 1, Praha 1',
-      capacitySeated: 80,
-      capacityStanding: 120,
+      capacitySeated: '80',
+      capacityStanding: '120',
       venueType: 'restaurant',
       amenities: ['Klimatizace', 'Projektor', 'Zvukový systém', 'WiFi', 'Terasa', 'Parking'],
       contactEmail: 'info@restaurant-terasa.cz',
@@ -57,8 +62,8 @@ async function main() {
       slug: 'galerie-moderna',
       description: 'Moderní galerie v centru Prahy s flexibilními prostory pro konference, výstavy a networking events.',
       address: 'Národní 20, Praha 1',
-      capacitySeated: 150,
-      capacityStanding: 250,
+      capacitySeated: '150',
+      capacityStanding: '250',
       venueType: 'gallery',
       amenities: ['Multimediální vybavení', 'Catering možnosti', 'Výstavní systém', 'Klimatizace'],
       contactEmail: 'rezervace@galerie-moderna.cz',
@@ -76,8 +81,8 @@ async function main() {
       slug: 'skybar-prague',
       description: 'Exkluzivní střešní terasa s panoramatickým výhledem na Prahu. Perfektní pro cocktail party a letní akce.',
       address: 'Wenceslas Square 14, Praha 1',
-      capacitySeated: 60,
-      capacityStanding: 100,
+      capacitySeated: '60',
+      capacityStanding: '100',
       venueType: 'rooftop',
       amenities: ['Bar', 'DJ booth', 'Vytápění', 'Zastřešená část', 'VIP sekce', 'Výhled na město'],
       contactEmail: 'events@skybar-prague.com',
@@ -95,8 +100,8 @@ async function main() {
       slug: 'conference-center-prague',
       description: 'Moderní konferenční centrum s nejnovější technologií pro firemní akce a semináře.',
       address: 'Karlovo náměstí 5, Praha 2',
-      capacitySeated: 200,
-      capacityStanding: 300,
+      capacitySeated: '200',
+      capacityStanding: '300',
       venueType: 'conference',
       amenities: ['Projektor', 'Zvukový systém', 'WiFi', 'Klimatizace', 'Catering', 'Parking'],
       contactEmail: 'info@conference-prague.cz',
@@ -114,8 +119,8 @@ async function main() {
       slug: 'garden-villa-petrin',
       description: 'Romantická zahradní vila pod Petřínem s krásnou zahradou pro svatby a soukromé akce.',
       address: 'Petřínské sady 15, Praha 1',
-      capacitySeated: 50,
-      capacityStanding: 80,
+      capacitySeated: '50',
+      capacityStanding: '80',
       venueType: 'garden',
       amenities: ['Zahrada', 'Terasa', 'Gril', 'Parkování', 'Dětské hřiště'],
       contactEmail: 'rezervace@villa-petrin.cz',
@@ -133,8 +138,8 @@ async function main() {
       slug: 'industrial-loft-karlin',
       description: 'Industriální loft v Karlíně s vysokými stropy a moderním designem pro kreativní akce.',
       address: 'Sokolovská 100, Praha 8',
-      capacitySeated: 120,
-      capacityStanding: 180,
+      capacitySeated: '120',
+      capacityStanding: '180',
       venueType: 'loft',
       amenities: ['Vysoké stropy', 'Industriální design', 'Projektor', 'Zvukový systém', 'WiFi'],
       contactEmail: 'booking@loft-karlin.cz',
@@ -151,13 +156,14 @@ async function main() {
 
   // Create venues
   for (const venueData of venues) {
-    await prisma.venue.upsert({
+    await prisma.prostormat_venues.upsert({
       where: { slug: venueData.slug },
       update: {},
       create: {
         ...venueData,
-        amenities: JSON.stringify(venueData.amenities),
-        images: JSON.stringify(venueData.images),
+        id: randomUUID(),
+        createdAt: new Date(),
+        updatedAt: new Date(),
       },
     })
     console.log(`Created venue: ${venueData.name}`)

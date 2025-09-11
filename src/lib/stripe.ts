@@ -5,7 +5,7 @@ import type { Stripe as StripeJS } from '@stripe/stripe-js';
 // Initialize Stripe with secret key (server-side)
 export const stripe = process.env.STRIPE_SECRET_KEY 
   ? new Stripe(process.env.STRIPE_SECRET_KEY, {
-      apiVersion: '2025-07-30.basil',
+      apiVersion: '2025-08-27.basil',
     })
   : null;
 

@@ -138,9 +138,6 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 
-# Railway
-.railway/
-
 # Prisma
 prisma/migrations/
 .vercel

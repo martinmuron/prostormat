@@ -1,11 +1,12 @@
 # 🚀 Deployment Guide - Prostormat
 
-## Supabase Deployment with prostormat.cz Domain
+## Vercel Deployment with prostormat.cz Domain
 
 ### Prerequisites
-- Supabase account
+- Vercel account
 - Forpsi domain (prostormat.cz)
 - GitHub repository
+- Supabase database
 
 ### Step 1: Set Up Supabase Project
 
@@ -39,161 +40,169 @@
 
 ### Step 4: Configure Environment Variables
 
+**⚠️ SECURITY WARNING: Never commit these variables to git!**
+
 In your deployment environment, add these environment variables:
 
+Use Vercel CLI to set environment variables:
+
+```bash
+vercel env add DATABASE_URL production
+vercel env add POSTGRES_PRISMA_URL production
+vercel env add SUPABASE_URL production
+vercel env add SUPABASE_SERVICE_ROLE_KEY production
+vercel env add NEXT_PUBLIC_SUPABASE_ANON_KEY production
+# ... add all other required variables
+```
+
+Required environment variables:
 ```env
-# Database (from Supabase project settings)
-DATABASE_URL=postgresql://user:password@host:port/database
+# Database (Supabase)
+DATABASE_URL=postgres://...
+POSTGRES_PRISMA_URL=postgres://...
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
 
 # NextAuth
 NEXTAUTH_URL=https://prostormat.cz
 NEXTAUTH_SECRET=your-nextauth-secret-key
 
-# OAuth (optional but recommended)
-GOOGLE_CLIENT_ID=your-google-client-id
-GOOGLE_CLIENT_SECRET=your-google-client-secret
-
-# Stripe (for future payments)
-STRIPE_PUBLISHABLE_KEY=pk_live_...
-STRIPE_SECRET_KEY=sk_live_...
-STRIPE_WEBHOOK_SECRET=whsec_...
-
-# Email (optional)
+# Email (Resend)
 RESEND_API_KEY=re_...
+
+# Stripe (if using payments)
+STRIPE_PUBLISHABLE_KEY=pk_...
+STRIPE_SECRET_KEY=sk_...
+STRIPE_WEBHOOK_SECRET=whsec_...
 ```
 
 ### Step 5: Deploy Application
 
-1. **Deploy to your hosting platform** (Vercel, Netlify, etc.)
-2. **Configure build settings**:
-   - Build command: `npm run build`
-   - Output directory: `.next`
-
-### Step 6: Database Management
-
-**Remember: Supabase uses `prostormat_` table prefixes**
-
-1. **Check database structure**:
+1. **Deploy to Vercel**:
    ```bash
-   npx prisma db pull
+   vercel deploy --prod
    ```
 
-2. **Run migrations**:
+2. **Vercel will automatically**:
+   - Install dependencies
+   - Run `npm run build`
+   - Generate Prisma client
+   - Deploy to CDN
+
+### Step 6: Set Up Database Schema
+
+1. **Push database schema** (if needed):
    ```bash
+   # Connect to your project first
+   vercel env pull .env.local
    npx prisma db push
    ```
 
 ### Step 7: Configure Custom Domain (prostormat.cz)
 
-#### In your hosting platform:
+#### In Vercel Dashboard:
 
 1. Go to your project settings
-2. Add custom domain: `prostormat.cz`
-3. Add another domain: `www.prostormat.cz`
-4. Copy the provided CNAME target
+2. Click "Domains" tab
+3. Add custom domain: `prostormat.cz`
+4. Add another domain: `www.prostormat.cz`
+5. Vercel will provide DNS instructions
 
 #### In Forpsi DNS Management:
 
 1. **Login to Forpsi** customer panel
 2. **Go to DNS management** for prostormat.cz
-3. **Add DNS records**:
+3. **Add DNS records** as instructed by Vercel:
 
    ```
    Type: CNAME
    Name: www
-   Target: your-deployment-url
+   Target: cname.vercel-dns.com
    TTL: 3600
    
-   Type: A (or CNAME if supported)
+   Type: A
    Name: @
-   Target: your-deployment-url
+   Target: 76.76.19.19 (or as provided by Vercel)
    TTL: 3600
    ```
 
 4. **Save changes** - DNS propagation takes 5-60 minutes
 
-### Step 8: Update Environment Variables
-
-Once domain is working, update:
-```env
-NEXTAUTH_URL=https://prostormat.cz
-```
-
-### Step 9: Verify Deployment
+### Step 8: Verify Deployment
 
 1. **Check application**: https://prostormat.cz
-2. **Test authentication**: Create account and login
-3. **Test functionality**: Browse venues, create requests
-4. **Check admin access**: Login with `admin@prostormat.cz` / `admin123`
+2. **Test database connectivity**: Check venue listings
+3. **Test authentication**: Create account and login
+4. **Test functionality**: Browse venues, create requests
 
-### Step 10: SSL Certificate
+### Step 9: SSL Certificate
 
-Most hosting platforms automatically provide SSL certificates for custom domains. Once DNS propagates:
+Vercel automatically provides SSL certificates for custom domains:
 - https://prostormat.cz ✅
 - https://www.prostormat.cz ✅
 
-## Sample Accounts Created by Seed
+## Environment Management
 
-After running the seed script, you'll have these test accounts:
+### Adding New Environment Variables
 
-### Admin Account
-- **Email**: admin@prostormat.cz
-- **Password**: admin123
-- **Role**: admin
+```bash
+# Add to production
+vercel env add VARIABLE_NAME production
 
-### Venue Manager Accounts
-- **Email**: terasa@example.com
-- **Password**: manager123
-- **Role**: venue_manager
+# Add to preview
+vercel env add VARIABLE_NAME preview
 
-- **Email**: galerie@example.com  
-- **Password**: manager123
-- **Role**: venue_manager
+# Add to development
+vercel env add VARIABLE_NAME development
+```
 
-- **Email**: skybar@example.com
-- **Password**: manager123
-- **Role**: venue_manager
+### Updating Environment Variables
 
-### Regular User Account
-- **Email**: user@example.com
-- **Password**: user123
-- **Role**: user
+```bash
+# Remove old variable
+vercel env rm OLD_VARIABLE_NAME production
 
-## Post-Deployment Tasks
-
-1. **Change default passwords** for all sample accounts
-2. **Add real venue content** and images
-3. **Configure Google OAuth** (optional)
-4. **Set up Stripe** for payments (future feature)
-5. **Monitor application** with Railway metrics
+# Add new variable
+vercel env add NEW_VARIABLE_NAME production
+```
 
 ## Troubleshooting
 
 ### Build Errors
-- Check Railway build logs
+- Check Vercel build logs in dashboard
 - Ensure all environment variables are set
-- Verify Node.js version compatibility
+- Verify TypeScript compilation locally
 
 ### Database Issues
 - Confirm DATABASE_URL is correct
-- Run `npx prisma db push` to sync schema
-- Check Supabase project status and connection
+- Check Supabase project status
+- Verify table names use `prostormat_` prefix
 
 ### Domain Issues
 - Verify DNS records in Forpsi
 - Wait for DNS propagation (up to 24 hours)
-- Check hosting platform domain configuration
+- Check Vercel domain configuration
 
 ### SSL Issues
-- Ensure domain is properly configured
-- SSL certificates are automatic via most hosting platforms
+- Ensure domain is properly configured in Vercel
+- SSL certificates are automatic
 - May take up to 1 hour to provision
 
 ## Monitoring
 
-- **Hosting Dashboard**: Monitor deployments and logs
+- **Vercel Dashboard**: Monitor deployments and analytics
+- **Supabase Dashboard**: Monitor database performance
 - **Application Health**: Set up uptime monitoring
 - **Error Tracking**: Consider adding Sentry integration
+
+## Security Best Practices
+
+- ✅ Never commit environment variables to git
+- ✅ Use Vercel CLI for environment variable management
+- ✅ Rotate API keys regularly
+- ✅ Monitor for security vulnerabilities
+- ✅ Use HTTPS for all communications
 
 ---
 

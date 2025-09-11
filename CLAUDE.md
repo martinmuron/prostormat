@@ -5,11 +5,12 @@ Prostormat is a platform for finding and managing event spaces in Czech Republic
 
 ## 🔒 CRITICAL SECURITY REQUIREMENTS
 
-**NEVER HARDCODE SENSITIVE DATA**:
+**NEVER COMMIT SENSITIVE INFORMATION TO GIT**:
 - ❌ **NO passwords, API keys, tokens, or credentials in code**
 - ❌ **NO sensitive data in git commits or commit messages**
 - ❌ **NO database credentials in repository files**
 - ❌ **NO third-party service keys in source code**
+- ❌ **NO API endpoints with embedded credentials**
 
 **ALWAYS use environment variables**:
 - ✅ Store all secrets in `.env.local` (never commit this file)
@@ -18,16 +19,23 @@ Prostormat is a platform for finding and managing event spaces in Czech Republic
 - ✅ Use placeholder values in examples (e.g., `your-api-key-here`)
 
 **Git commit security**:
-- ✅ Review all changes before committing
+- ✅ Review all changes before committing with `git diff --cached`
 - ✅ Never mention actual credentials in commit messages
-- ✅ Use `.gitignore` to exclude sensitive files
-- ✅ Double-check staging area with `git diff --cached`
+- ✅ Use `.gitignore` to exclude sensitive files (`.env.local`, `.env`)
+- ✅ Double-check staging area before pushing
+
+**Deployment security**:
+- ✅ Set environment variables in Vercel dashboard, not in code
+- ✅ Use Vercel CLI `vercel env` commands for secure variable management
+- ✅ Rotate credentials immediately if accidentally exposed
+- ✅ Use different credentials for development and production
 
 **If credentials are accidentally exposed**:
-1. Immediately rotate/regenerate all exposed credentials
-2. Use `git reset` to remove from history before pushing
+1. **IMMEDIATELY** rotate/regenerate all exposed credentials
+2. Use `git reset --hard` or `git filter-branch` to remove from history
 3. Update all affected services with new credentials
 4. Review and strengthen security practices
+5. Never push exposed credentials to remote repositories
 
 ## 🗄️ CRITICAL DATABASE INFORMATION
 

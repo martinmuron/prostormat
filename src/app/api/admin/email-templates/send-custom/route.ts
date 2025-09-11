@@ -72,7 +72,7 @@ export async function POST(request: NextRequest) {
             <p><strong>Prostormat</strong> – Platforma pro hledání event prostorů</p>
             <p>
                 <a href="mailto:info@prostormat.cz" style="color: #007bff;">info@prostormat.cz</a> | 
-                <a href="https://prostormat-production.up.railway.app" style="color: #007bff;">prostormat.cz</a>
+                <a href="https://prostormat.cz" style="color: #007bff;">prostormat.cz</a>
             </p>
         </div>
     </div>

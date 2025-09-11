@@ -117,7 +117,7 @@ export function generateVenueBroadcastEmail(data: VenueBroadcastEmailData) {
                 <strong>Máte zájem o tuto akci?</strong> Kontaktujte organizátora přímo na uvedených kontaktech nebo se přihlaste do systému Prostormat pro správu vašich poptávek.
             </p>
             
-            <a href="https://prostormat-production.up.railway.app/dashboard" class="cta-button">
+            <a href="https://prostormat.cz/dashboard" class="cta-button">
                 Přihlásit se do Prostormatu
             </a>
         </div>
@@ -127,7 +127,7 @@ export function generateVenueBroadcastEmail(data: VenueBroadcastEmailData) {
             <p>Tento email jste obdrželi, protože váš prostor byl automaticky vybrán na základě kritérií poptávky.</p>
             <p>
                 <a href="mailto:info@prostormat.cz" style="color: #007bff;">info@prostormat.cz</a> | 
-                <a href="https://prostormat-production.up.railway.app" style="color: #007bff;">prostormat.cz</a>
+                <a href="https://prostormat.cz" style="color: #007bff;">prostormat.cz</a>
             </p>
         </div>
     </div>
@@ -286,7 +286,7 @@ export function generateWelcomeEmailForUser(data: WelcomeUserData) {
                 <strong>Začněte hned teď</strong> a objevte stovky prostorů po celé České republice:
             </p>
             
-            <a href="https://prostormat-production.up.railway.app/prostory" class="cta-button">
+            <a href="https://prostormat.cz/prostory" class="cta-button">
                 Prohlédnout prostory
             </a>
             
@@ -299,7 +299,7 @@ export function generateWelcomeEmailForUser(data: WelcomeUserData) {
             <p><strong>Prostormat</strong> – Platforma pro hledání event prostorů</p>
             <p>
                 <a href="mailto:info@prostormat.cz" style="color: #007bff;">info@prostormat.cz</a> | 
-                <a href="https://prostormat-production.up.railway.app" style="color: #007bff;">prostormat.cz</a>
+                <a href="https://prostormat.cz" style="color: #007bff;">prostormat.cz</a>
             </p>
         </div>
     </div>
@@ -318,7 +318,7 @@ Co vás čeká:
 - Ověřené recenze od uživatelů
 - Snadné rezervace
 
-Začněte hned teď na: https://prostormat-production.up.railway.app/prostory
+Začněte hned teď na: https://prostormat.cz/prostory
 
 Máte otázky? Kontaktujte nás na info@prostormat.cz
 
@@ -415,10 +415,10 @@ export function generateWelcomeEmailForLocationOwner(data: WelcomeLocationOwnerD
                 <strong>Připraveni začít?</strong> Přidejte svůj první prostor a začněte přijímat rezervace:
             </p>
             
-            <a href="https://prostormat-production.up.railway.app/pridat-prostor" class="cta-button">
+            <a href="https://prostormat.cz/pridat-prostor" class="cta-button">
                 Přidat prostor
             </a>
-            <a href="https://prostormat-production.up.railway.app/dashboard" class="secondary-button">
+            <a href="https://prostormat.cz/dashboard" class="secondary-button">
                 Dashboard
             </a>
             
@@ -433,7 +433,7 @@ export function generateWelcomeEmailForLocationOwner(data: WelcomeLocationOwnerD
             <p><strong>Prostormat</strong> – Platforma pro pronájem event prostorů</p>
             <p>
                 <a href="mailto:info@prostormat.cz" style="color: #007bff;">info@prostormat.cz</a> | 
-                <a href="https://prostormat-production.up.railway.app" style="color: #007bff;">prostormat.cz</a>
+                <a href="https://prostormat.cz" style="color: #007bff;">prostormat.cz</a>
             </p>
         </div>
     </div>
@@ -457,7 +457,7 @@ Proč majitelé prostorů milují Prostormat:
 - Bezpečné a rychlé platby
 - Ověření a kvalitní klienti
 
-Začněte hned: https://prostormat-production.up.railway.app/pridat-prostor
+Začněte hned: https://prostormat.cz/pridat-prostor
 
 Potřebujete pomoct? Kontaktujte nás na info@prostormat.cz
 
@@ -531,10 +531,10 @@ export function generateContactFormThankYouEmail(data: ContactFormThankYouData) 
             </ul>
             
             <div style="margin: 30px 0;">
-                <a href="https://prostormat-production.up.railway.app/prostory" class="cta-button">
+                <a href="https://prostormat.cz/prostory" class="cta-button">
                     Prohlédnout prostory
                 </a>
-                <a href="https://prostormat-production.up.railway.app/faq" class="cta-button" style="background: #f8f9fa; color: #000; border: 2px solid #000; margin-left: 10px;">
+                <a href="https://prostormat.cz/faq" class="cta-button" style="background: #f8f9fa; color: #000; border: 2px solid #000; margin-left: 10px;">
                     Zobrazit FAQ
                 </a>
             </div>
@@ -552,7 +552,7 @@ export function generateContactFormThankYouEmail(data: ContactFormThankYouData) 
             <p>Tento email je automatická odpověď na vaši zprávu odeslanou přes kontaktní formulář.</p>
             <p>
                 <a href="mailto:info@prostormat.cz" style="color: #007bff;">info@prostormat.cz</a> | 
-                <a href="https://prostormat-production.up.railway.app" style="color: #007bff;">prostormat.cz</a>
+                <a href="https://prostormat.cz" style="color: #007bff;">prostormat.cz</a>
             </p>
         </div>
     </div>
@@ -570,8 +570,8 @@ DOBA ODEZVY:
 Odpovíme vám do 24 hodin během pracovních dnů (pondělí-pátek).
 
 Mezitím můžete:
-- Prohlédnout si naše prostory na: https://prostormat-production.up.railway.app/prostory
-- Přečíst si FAQ na: https://prostormat-production.up.railway.app/faq
+- Prohlédnout si naše prostory na: https://prostormat.cz/prostory
+- Přečíst si FAQ na: https://prostormat.cz/faq
 - Sledovat náš blog pro tipy a trendy
 
 Potřebujete okamžitou pomoc?
@@ -801,7 +801,7 @@ export function generateAddVenueThankYouEmail(data: AddVenueThankYouData) {
             </ul>
             
             <div style="margin: 30px 0;">
-                <a href="https://prostormat-production.up.railway.app/dashboard" class="cta-button">
+                <a href="https://prostormat.cz/dashboard" class="cta-button">
                     Přihlásit se do dashboardu
                 </a>
             </div>
@@ -821,7 +821,7 @@ export function generateAddVenueThankYouEmail(data: AddVenueThankYouData) {
             <p>Tento email je automatické potvrzení přidání nového prostoru.</p>
             <p>
                 <a href="mailto:info@prostormat.cz" style="color: #007bff;">info@prostormat.cz</a> | 
-                <a href="https://prostormat-production.up.railway.app" style="color: #007bff;">prostormat.cz</a>
+                <a href="https://prostormat.cz" style="color: #007bff;">prostormat.cz</a>
             </p>
         </div>
     </div>
@@ -841,7 +841,7 @@ CO BUDE NÁSLEDOVAT:
 3. Začátek pronájmu - Můžete začít přijímat rezervace od klientů
 
 Co můžete dělat mezitím:
-- Přihlásit se do dashboardu: https://prostormat-production.up.railway.app/dashboard
+- Přihlásit se do dashboardu: https://prostormat.cz/dashboard
 - Nastavit ceny a dostupnost
 - Přidat kontaktní údaje
 - Spravovat svůj profil
@@ -995,7 +995,7 @@ export function generateQuickRequestVenueNotificationEmail(data: QuickRequestVen
             </a>
             
             <p style="margin-top: 30px; color: #6c757d;">
-                <strong>Tip:</strong> Pro lepší správu poptávek se přihlaste do svého <a href="https://prostormat-production.up.railway.app/dashboard" style="color: #28a745;">dashboardu</a> na Prostormatu.
+                <strong>Tip:</strong> Pro lepší správu poptávek se přihlaste do svého <a href="https://prostormat.cz/dashboard" style="color: #28a745;">dashboardu</a> na Prostormatu.
             </p>
         </div>
         
@@ -1004,7 +1004,7 @@ export function generateQuickRequestVenueNotificationEmail(data: QuickRequestVen
             <p>Tento email jste obdrželi, protože váš prostor odpovídá kritériím rychlé poptávky.</p>
             <p>
                 <a href="mailto:info@prostormat.cz" style="color: #007bff;">info@prostormat.cz</a> | 
-                <a href="https://prostormat-production.up.railway.app" style="color: #007bff;">prostormat.cz</a>
+                <a href="https://prostormat.cz" style="color: #007bff;">prostormat.cz</a>
             </p>
         </div>
     </div>
@@ -1040,7 +1040,7 @@ DOPORUČUJEME:
 - Přiložte fotky prostoru - Vizuál přesvědčí
 - Nabídněte prohlídku - Osobní kontakt vždy zabere
 
-Dashboard: https://prostormat-production.up.railway.app/dashboard
+Dashboard: https://prostormat.cz/dashboard
 
 --
 Prostormat - Platforma pro pronájem event prostorů

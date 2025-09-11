@@ -73,7 +73,7 @@ async function handlePaymentSucceeded(paymentIntent: any) {
   try {
     // Update payment status in database
     await prisma.$executeRaw`
-      UPDATE prostormat_payment_intents 
+      UPDATE paymentIntent 
       SET 
         status = 'succeeded',
         updated_at = NOW()
@@ -82,7 +82,7 @@ async function handlePaymentSucceeded(paymentIntent: any) {
     `;
 
     // Log successful payment webhook
-    await prisma.prostormat_email_flow_logs.create({
+    await prisma.emailFlowLog.create({
       data: {
         id: nanoid(),
         emailType: 'stripe_webhook_payment_succeeded',
@@ -108,7 +108,7 @@ async function handlePaymentFailed(paymentIntent: any) {
   try {
     // Update payment status in database
     await prisma.$executeRaw`
-      UPDATE prostormat_payment_intents 
+      UPDATE paymentIntent 
       SET 
         status = 'failed',
         updated_at = NOW()
@@ -122,7 +122,7 @@ async function handlePaymentFailed(paymentIntent: any) {
       user_email: string;
     }[]>`
       SELECT id, venue_data, user_email 
-      FROM prostormat_payment_intents 
+      FROM paymentIntent 
       WHERE stripe_payment_intent_id = ${paymentIntent.id}
       LIMIT 1
     `;
@@ -156,7 +156,7 @@ async function handlePaymentFailed(paymentIntent: any) {
         });
 
         // Log the email
-        await prisma.prostormat_email_flow_logs.create({
+        await prisma.emailFlowLog.create({
           data: {
             id: nanoid(),
             emailType: 'payment_failed_notification',
@@ -186,7 +186,7 @@ async function handlePaymentCanceled(paymentIntent: any) {
   try {
     // Update payment status in database
     await prisma.$executeRaw`
-      UPDATE prostormat_payment_intents 
+      UPDATE paymentIntent 
       SET 
         status = 'canceled',
         updated_at = NOW()

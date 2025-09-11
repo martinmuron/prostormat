@@ -13,7 +13,7 @@ export async function GET() {
     }
 
     // Get email flow logs (we'll need to create this table)
-    const emailLogs = await (db as any).prostormat_email_flow_logs.findMany({
+    const emailLogs = await (db as any).emailFlowLog.findMany({
       orderBy: { createdAt: 'desc' },
       take: 100,
       include: {
@@ -27,7 +27,7 @@ export async function GET() {
     })
 
     // Get summary statistics
-    const stats = await (db as any).prostormat_email_flow_logs.groupBy({
+    const stats = await (db as any).emailFlowLog.groupBy({
       by: ['emailType', 'status'],
       _count: {
         id: true
@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
     }
 
-    const logEntry = await (db as any).prostormat_email_flow_logs.create({
+    const logEntry = await (db as any).emailFlowLog.create({
       data: {
         id: randomUUID(),
         emailType,

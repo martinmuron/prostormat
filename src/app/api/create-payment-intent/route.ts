@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
     // Store pending payment in database for tracking
     // We'll create the actual venue after successful payment
     await prisma.$executeRaw`
-      INSERT INTO prostormat_payment_intents (
+      INSERT INTO paymentIntent (
         stripe_payment_intent_id, 
         amount, 
         currency, 

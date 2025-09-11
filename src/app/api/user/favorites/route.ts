@@ -10,7 +10,7 @@ export async function GET() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const favorites = await db.prostormat_venue_favorites.findMany({
+    const favorites = await db.venueFavorite.findMany({
       where: {
         userId: session.user.id
       },

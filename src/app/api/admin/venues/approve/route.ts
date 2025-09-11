@@ -148,7 +148,7 @@ export async function GET() {
           stripe_payment_intent_id: string;
         }[]>`
           SELECT amount, currency, payment_completed_at, stripe_payment_intent_id
-          FROM prostormat_payment_intents 
+          FROM paymentIntent 
           WHERE venue_id = ${venue.id} AND status = 'completed'
           LIMIT 1
         `;

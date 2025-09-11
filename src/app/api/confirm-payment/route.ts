@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
       status: string;
     }[]>`
       SELECT id, venue_data, user_email, status 
-      FROM prostormat_payment_intents 
+      FROM paymentIntent 
       WHERE stripe_payment_intent_id = ${paymentIntentId}
       LIMIT 1
     `;
@@ -114,7 +114,7 @@ export async function POST(request: NextRequest) {
 
     // Update payment record
     await prisma.$executeRaw`
-      UPDATE prostormat_payment_intents 
+      UPDATE paymentIntent 
       SET 
         status = 'completed',
         venue_id = ${venueId},
@@ -182,7 +182,7 @@ export async function POST(request: NextRequest) {
 
     // Log the email activity
     try {
-      await prisma.prostormat_email_flow_logs.create({
+      await prisma.emailFlowLog.create({
         data: {
           id: nanoid(),
           emailType: 'venue_payment_confirmation',

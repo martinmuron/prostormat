@@ -21,7 +21,7 @@ const eventRequestSchema = z.object({
 
 export async function GET() {
   try {
-    const requests = await db.prostormat_event_requests.findMany({
+    const requests = await db.eventRequest.findMany({
       where: {
         status: "active",
         expiresAt: {
@@ -37,7 +37,7 @@ export async function GET() {
             name: true,
           }
         },
-        prostormat_event_request_favorites: {
+        eventRequestFavorite: {
           select: {
             userId: true,
           }
@@ -67,7 +67,7 @@ export async function POST(request: Request) {
     const validatedData = eventRequestSchema.parse(body)
 
     // Create event request
-    const eventRequest = await db.prostormat_event_requests.create({
+    const eventRequest = await db.eventRequest.create({
       data: {
         id: randomUUID(),
         userId: session.user.id,

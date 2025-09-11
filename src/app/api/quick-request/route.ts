@@ -116,7 +116,7 @@ export async function POST(request: Request) {
     }
 
     // Create a broadcast record to track this request
-    const broadcast = await db.prostormat_venue_broadcasts.create({
+    const broadcast = await db.venueBroadcast.create({
       data: {
         id: randomUUID(),
         userId: session?.user?.id || "anonymous", // Allow anonymous requests
@@ -146,7 +146,7 @@ export async function POST(request: Request) {
         })
 
         // Log the broadcast
-        await db.prostormat_venue_broadcast_logs.create({
+        await db.venueBroadcastLog.create({
           data: {
             id: randomUUID(),
             broadcastId: broadcast.id,
@@ -160,7 +160,7 @@ export async function POST(request: Request) {
         console.error(`Failed to send email to venue ${venue.id}:`, error)
         
         // Log the failed attempt
-        await db.prostormat_venue_broadcast_logs.create({
+        await db.venueBroadcastLog.create({
           data: {
             id: randomUUID(),
             broadcastId: broadcast.id,

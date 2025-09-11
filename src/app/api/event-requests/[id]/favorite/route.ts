@@ -19,7 +19,7 @@ export async function POST(request: Request, { params }: RouteContext) {
     const eventRequestId = resolvedParams.id
 
     // Check if event request exists
-    const eventRequest = await db.prostormat_event_requests.findUnique({
+    const eventRequest = await db.eventRequest.findUnique({
       where: { id: eventRequestId }
     })
 
@@ -28,7 +28,7 @@ export async function POST(request: Request, { params }: RouteContext) {
     }
 
     // Check if already favorited
-    const existingFavorite = await db.prostormat_event_request_favorites.findUnique({
+    const existingFavorite = await db.eventRequestFavorite.findUnique({
       where: {
         userId_eventRequestId: {
           userId: session.user.id,
@@ -42,7 +42,7 @@ export async function POST(request: Request, { params }: RouteContext) {
     }
 
     // Add to favorites
-    await db.prostormat_event_request_favorites.create({
+    await db.eventRequestFavorite.create({
       data: {
         id: randomUUID(),
         userId: session.user.id,
@@ -68,7 +68,7 @@ export async function DELETE(request: Request, { params }: RouteContext) {
     const eventRequestId = resolvedParams.id
 
     // Remove from favorites
-    await db.prostormat_event_request_favorites.deleteMany({
+    await db.eventRequestFavorite.deleteMany({
       where: {
         userId: session.user.id,
         eventRequestId: eventRequestId
@@ -92,7 +92,7 @@ export async function GET(request: Request, { params }: RouteContext) {
     const resolvedParams = await params
     const eventRequestId = resolvedParams.id
 
-    const favorite = await db.prostormat_event_request_favorites.findUnique({
+    const favorite = await db.eventRequestFavorite.findUnique({
       where: {
         userId_eventRequestId: {
           userId: session.user.id,

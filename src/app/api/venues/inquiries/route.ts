@@ -36,7 +36,7 @@ export async function POST(request: Request) {
     }
 
     // Create inquiry
-    const inquiry = await db.prostormat_venue_inquiries.create({
+    const inquiry = await db.venueInquiry.create({
       data: {
         id: randomUUID(),
         venueId: validatedData.venueId,

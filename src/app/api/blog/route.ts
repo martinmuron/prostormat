@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
     }
 
     const [posts, total] = await Promise.all([
-      db.prostormat_blog_posts.findMany({
+      db.blogPost.findMany({
         where,
         select: {
           id: true,
@@ -41,7 +41,7 @@ export async function GET(request: NextRequest) {
         skip,
         take: limit
       }),
-      db.prostormat_blog_posts.count({ where })
+      db.blogPost.count({ where })
     ])
 
     return NextResponse.json({

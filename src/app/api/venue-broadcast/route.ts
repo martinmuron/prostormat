@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
     const venueIds = matchingVenues.map(venue => venue.id)
 
     // Create the broadcast
-    const broadcast = await db.prostormat_venue_broadcasts.create({
+    const broadcast = await db.venueBroadcast.create({
       data: {
         id: randomUUID(),
         userId: session.user.id,
@@ -91,7 +91,7 @@ export async function POST(request: NextRequest) {
           // Skip venues without contact email
           if (!venue.contactEmail) {
             console.log(`⚠️ Skipping ${venue.name} - no contact email`)
-            return await db.prostormat_venue_broadcast_logs.create({
+            return await db.venueBroadcastLog.create({
               data: {
                 id: randomUUID(),
                 broadcastId: broadcast.id,
@@ -148,7 +148,7 @@ export async function POST(request: NextRequest) {
           }
 
           // Create broadcast log with email status
-          return await db.prostormat_venue_broadcast_logs.create({
+          return await db.venueBroadcastLog.create({
             data: {
               id: randomUUID(),
               broadcastId: broadcast.id,
@@ -161,7 +161,7 @@ export async function POST(request: NextRequest) {
           console.error(`Error processing venue ${venue.name}:`, error)
           
           // Create log entry even for errors
-          return await db.prostormat_venue_broadcast_logs.create({
+          return await db.venueBroadcastLog.create({
             data: {
               id: randomUUID(),
               broadcastId: broadcast.id,
@@ -212,13 +212,13 @@ export async function GET(request: NextRequest) {
     const skip = (page - 1) * limit
 
     const [broadcasts, total] = await Promise.all([
-      db.prostormat_venue_broadcasts.findMany({
+      db.venueBroadcast.findMany({
         where: { userId: session.user.id },
         orderBy: { createdAt: "desc" },
         skip,
         take: limit,
         include: {
-          prostormat_venue_broadcast_logs: {
+          venueBroadcastLog: {
             include: {
               venue: {
                 select: {
@@ -232,7 +232,7 @@ export async function GET(request: NextRequest) {
           }
         }
       }),
-      db.prostormat_venue_broadcasts.count({
+      db.venueBroadcast.count({
         where: { userId: session.user.id }
       })
     ])

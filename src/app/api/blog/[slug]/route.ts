@@ -14,7 +14,7 @@ export async function GET(
         status: "published"
       },
       include: {
-        user: {
+        author: {
           select: { name: true }
         }
       }

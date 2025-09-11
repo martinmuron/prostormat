@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
           coverImage: true,
           tags: true,
           publishedAt: true,
-          user: {
+          author: {
             select: { name: true }
           }
         },

@@ -56,14 +56,14 @@ async function findMatchingVenues(criteria: {
             {
               AND: [
                 { capacityStanding: { not: null } },
-                { capacityStanding: { not: "" } }
+                { capacityStanding: { gt: 0 } }
               ]
             },
             // Check seated capacity exists
             {
               AND: [
                 { capacitySeated: { not: null } },
-                { capacitySeated: { not: "" } }
+                { capacitySeated: { gt: 0 } }
               ]
             }
           ]

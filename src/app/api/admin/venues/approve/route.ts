@@ -82,19 +82,24 @@ export async function POST(request: NextRequest) {
         `,
       });
 
-      // Log the email
-      await prisma.emailFlowLog.create({
-        data: {
-          id: nanoid(),
-          emailType: 'venue_approval_confirmation',
-          recipient: venue.manager.email!,
-          subject: 'Váš prostor byl schválen!',
-          status: 'sent',
-          recipientType: 'venue_owner',
-          sentBy: 'system', // We don't have admin user ID here
-          createdAt: new Date(),
-        },
-      });
+      // Log the email (skip for now due to model issues)
+      try {
+        // await prisma.emailFlowLog.create({
+        //   data: {
+        //     id: nanoid(),
+        //     emailType: 'venue_approval_confirmation',
+        //     recipient: venue.manager.email!,
+        //     subject: 'Váš prostor byl schválen!',
+        //     status: 'sent',
+        //     recipientType: 'venue_owner',
+        //     sentBy: 'system', // We don't have admin user ID here
+        //     createdAt: new Date(),
+        //   },
+        // });
+        console.log('Email sent successfully (logging temporarily disabled)');
+      } catch (logError) {
+        console.error('Failed to log email:', logError);
+      }
 
     } catch (emailError) {
       console.error('Failed to send approval email:', emailError);

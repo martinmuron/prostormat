@@ -86,7 +86,7 @@ export async function POST(request: Request) {
         capacitySeated: 80,
         capacityStanding: 120,
         venueType: 'restaurant',
-        amenities: ['Klimatizace', 'Projektor', 'Zvukový systém', 'WiFi', 'Terasa', 'Parking'],
+        amenities: JSON.stringify(['Klimatizace', 'Projektor', 'Zvukový systém', 'WiFi', 'Terasa', 'Parking']),
         contactEmail: 'info@restaurant-terasa.cz',
         contactPhone: '+420 222 333 444',
         images: [
@@ -105,7 +105,7 @@ export async function POST(request: Request) {
         capacitySeated: 150,
         capacityStanding: 250,
         venueType: 'gallery',
-        amenities: ['Multimediální vybavení', 'Catering možnosti', 'Výstavní systém', 'Klimatizace'],
+        amenities: JSON.stringify(['Multimediální vybavení', 'Catering možnosti', 'Výstavní systém', 'Klimatizace']),
         contactEmail: 'rezervace@galerie-moderna.cz',
         contactPhone: '+420 111 222 333',
         images: [
@@ -122,7 +122,7 @@ export async function POST(request: Request) {
         capacitySeated: 60,
         capacityStanding: 100,
         venueType: 'rooftop',
-        amenities: ['Bar', 'DJ booth', 'Vytápění', 'Výhled na město'],
+        amenities: JSON.stringify(['Bar', 'DJ booth', 'Vytápění', 'Výhled na město']),
         contactEmail: 'events@skybar-prague.com',
         contactPhone: '+420 777 888 999',
         images: [
@@ -140,7 +140,7 @@ export async function POST(request: Request) {
         capacitySeated: 500,
         capacityStanding: 800,
         venueType: 'conference',
-        amenities: ['Profesionální zvuk', 'Osvětlení', 'Projekce', 'VIP prostory', 'Parkování'],
+        amenities: JSON.stringify(['Profesionální zvuk', 'Osvětlení', 'Projekce', 'VIP prostory', 'Parkování']),
         contactEmail: 'events@forumkarlin.cz',
         contactPhone: '+420 225 315 555',
         images: [
@@ -157,7 +157,7 @@ export async function POST(request: Request) {
         capacitySeated: 70,
         capacityStanding: 110,
         venueType: 'loft',
-        amenities: ['Vysoké stropy', 'Industriální design', 'WiFi', 'Bar'],
+        amenities: JSON.stringify(['Vysoké stropy', 'Industriální design', 'WiFi', 'Bar']),
         contactEmail: 'info@loft39.cz',
         contactPhone: '+420 602 123 789',
         images: [
@@ -174,7 +174,7 @@ export async function POST(request: Request) {
         capacitySeated: 100,
         capacityStanding: 150,
         venueType: 'villa',
-        amenities: ['Zahrada', 'Historický interiér', 'Parkování', 'WiFi'],
+        amenities: JSON.stringify(['Zahrada', 'Historický interiér', 'Parkování', 'WiFi']),
         contactEmail: 'events@villalanna.cz',
         contactPhone: '+420 224 312 456',
         images: [
@@ -191,7 +191,7 @@ export async function POST(request: Request) {
         capacitySeated: 90,
         capacityStanding: 140,
         venueType: 'rooftop',
-        amenities: ['Panoramatický výhled', 'Bar', 'Klimatizace', 'DJ booth'],
+        amenities: JSON.stringify(['Panoramatický výhled', 'Bar', 'Klimatizace', 'DJ booth']),
         contactEmail: 'events@rooftoplucerna.cz',
         contactPhone: '+420 224 219 108',
         images: [
@@ -208,7 +208,7 @@ export async function POST(request: Request) {
         capacitySeated: 65,
         capacityStanding: 95,
         venueType: 'restaurant',
-        amenities: ['Gril', 'Bar', 'Projektor', 'WiFi'],
+        amenities: JSON.stringify(['Gril', 'Bar', 'Projektor', 'WiFi']),
         contactEmail: 'info@ribsofprague.cz',
         contactPhone: '+420 257 317 178',
         images: [

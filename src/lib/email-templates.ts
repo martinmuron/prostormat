@@ -588,6 +588,155 @@ prostormat.cz | info@prostormat.cz
   return { subject, html, text }
 }
 
+// Organize Event thank you email template
+interface OrganizeEventThankYouData {
+  name: string
+  eventType?: string
+  guestCount?: number
+  eventDate?: Date | null
+}
+
+export function generateOrganizeEventThankYouEmail(data: OrganizeEventThankYouData) {
+  const subject = `Děkujeme – postaráme se o vaši akci`
+  const dateStr = data.eventDate ? new Date(data.eventDate).toLocaleDateString('cs-CZ') : null
+  const details = [
+    data.eventType ? `Typ akce: ${data.eventType}` : null,
+    typeof data.guestCount === 'number' ? `Počet hostů: ${data.guestCount}` : null,
+    dateStr ? `Datum: ${dateStr}` : null,
+  ].filter(Boolean).join(' • ')
+
+  const html = `
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>${subject}</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #111; margin:0; }
+    .container { max-width: 600px; margin: 0 auto; background: #fff; }
+    .header { background: #000; color: #fff; padding: 28px 24px; }
+    .content { padding: 32px 24px; }
+    .cta { display: inline-block; background: #000; color: #fff; padding: 12px 20px; border-radius: 10px; text-decoration: none; font-weight: 600; }
+    .muted { color: #555; }
+    .note { background: #fff3cd; padding: 16px; border-radius: 10px; border-left: 4px solid #f59e0b; }
+    .footer { padding: 20px 24px; color: #666; background: #f7f7f7; font-size: 14px; }
+  </style>
+  </head>
+  <body>
+  <div class="container">
+    <div class="header">
+      <h1 style="margin:0;">Prostormat</h1>
+      <p style="margin:8px 0 0 0; opacity:.9">Organizace vaší akce</p>
+    </div>
+    <div class="content">
+      <p>Ahoj ${data.name} 👋</p>
+      <p>Děkujeme za váš zájem – náš tým se vám brzy ozve s návrhem prostorů a kompletní organizací akce.</p>
+      ${details ? `<p class="muted" style="margin: 12px 0 0 0">${details}</p>` : ''}
+      <div class="note" style="margin: 20px 0;">
+        <strong>Vzhledem k vysoké poptávce</strong> aktuálně přijímáme pouze akce pro <strong>100+ osob</strong>.
+      </div>
+      <p>Mezitím si můžete prohlédnout vybrané prostory:</p>
+      <p>
+        <a class="cta" href="https://prostormat-production.up.railway.app/prostory">Prohlédnout prostory</a>
+      </p>
+      <p class="muted">Pokud máte doplňující informace, stačí odpovědět na tento e‑mail.</p>
+    </div>
+    <div class="footer">
+      <p>Prostormat – Platforma pro hledání event prostorů</p>
+      <p>info@prostormat.cz • prostormat.cz</p>
+    </div>
+  </div>
+  </body>
+  </html>`
+
+  const text = `Děkujeme – postaráme se o vaši akci
+
+Ahoj ${data.name},
+děkujeme za váš zájem – brzy se vám ozveme s návrhem prostorů a kompletní organizací akce.
+${details ? `\n${details}\n` : ''}
+Vzhledem k vysoké poptávce aktuálně přijímáme pouze akce pro 100+ osob.
+
+Prostory: https://prostormat-production.up.railway.app/prostory
+
+Prostormat – Platforma pro hledání event prostorů`
+
+  return { subject, html, text }
+}
+
+// Organize Event admin notification email
+interface OrganizeEventAdminData {
+  name: string
+  email: string
+  phone?: string
+  company?: string
+  eventType?: string
+  guestCount?: number
+  eventDate?: Date | null
+  budgetRange?: string
+  locationPreference?: string
+  message?: string
+}
+
+export function generateOrganizeEventAdminNotification(data: OrganizeEventAdminData) {
+  const subject = `Nová poptávka na organizaci akce${
+    data.guestCount ? ` (${data.guestCount} osob)` : ''
+  }`
+  const dateStr = data.eventDate ? new Date(data.eventDate).toLocaleDateString('cs-CZ') : 'Neuvedeno'
+  const html = `
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>${subject}</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #111; margin:0; }
+    .container { max-width: 640px; margin: 0 auto; background: #fff; }
+    .header { background: #000; color: #fff; padding: 24px 24px; }
+    .content { padding: 24px; }
+    .row { margin-bottom: 8px; }
+    .label { color: #555; font-weight: 600; }
+    .note { background: #fff3cd; padding: 14px; border-left: 4px solid #f59e0b; border-radius: 8px; }
+  </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1 style="margin:0;">Prostormat</h1>
+        <p style="margin:8px 0 0 0; opacity:.9">Nová poptávka – Organizace akce</p>
+      </div>
+      <div class="content">
+        <p class="row"><span class="label">Jméno:</span> ${data.name}</p>
+        <p class="row"><span class="label">E‑mail:</span> <a href="mailto:${data.email}">${data.email}</a></p>
+        ${data.phone ? `<p class="row"><span class="label">Telefon:</span> <a href="tel:${data.phone}">${data.phone}</a></p>` : ''}
+        ${data.company ? `<p class="row"><span class="label">Společnost:</span> ${data.company}</p>` : ''}
+        ${data.eventType ? `<p class="row"><span class="label">Typ akce:</span> ${data.eventType}</p>` : ''}
+        ${typeof data.guestCount === 'number' ? `<p class="row"><span class="label">Počet hostů:</span> ${data.guestCount}</p>` : ''}
+        <p class="row"><span class="label">Datum:</span> ${dateStr}</p>
+        ${data.locationPreference ? `<p class="row"><span class="label">Lokalita:</span> ${data.locationPreference}</p>` : ''}
+        ${data.budgetRange ? `<p class="row"><span class="label">Rozpočet:</span> ${data.budgetRange}</p>` : ''}
+        ${data.message ? `<div class="row" style="margin-top:12px"><span class="label">Poznámka:</span><div style="margin-top:4px; white-space:pre-wrap">${data.message}</div></div>` : ''}
+        <div class="note" style="margin-top:16px;">
+          Vzhledem k vysoké poptávce aktuálně přijímáme pouze akce pro 100+ osob.
+        </div>
+      </div>
+    </div>
+  </body>
+</html>`
+
+  const text = `Nová poptávka – Organizace akce
+
+Jméno: ${data.name}
+E‑mail: ${data.email}
+${data.phone ? `Telefon: ${data.phone}\n` : ''}${data.company ? `Společnost: ${data.company}\n` : ''}${data.eventType ? `Typ akce: ${data.eventType}\n` : ''}${typeof data.guestCount === 'number' ? `Počet hostů: ${data.guestCount}\n` : ''}Datum: ${dateStr}
+${data.locationPreference ? `Lokalita: ${data.locationPreference}\n` : ''}${data.budgetRange ? `Rozpočet: ${data.budgetRange}\n` : ''}${data.message ? `\nPoznámka:\n${data.message}\n` : ''}
+
+Pozn.: Vzhledem k vysoké poptávce aktuálně přijímáme pouze akce pro 100+ osob.`
+
+  return { subject, html, text }
+}
+
 // Add Venue (Pridat Prostor) Thank You email template
 interface AddVenueThankYouData {
   name: string

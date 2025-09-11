@@ -52,6 +52,13 @@ export function Header() {
               </NavigationMenuItem>
               <NavigationMenuItem>
                 <NavigationMenuLink asChild>
+                  <Link href="/organizace-akce" className="text-sm font-medium text-gray-600 hover:text-black transition-colors px-3 py-2 rounded-md">
+                    Organizace akce
+                  </Link>
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+              <NavigationMenuItem>
+                <NavigationMenuLink asChild>
                   <Link href="/blog" className="text-sm font-medium text-gray-600 hover:text-black transition-colors px-3 py-2 rounded-md">
                     Blog
                   </Link>
@@ -164,6 +171,13 @@ export function Header() {
                     onClick={closeMobileMenu}
                   >
                     Rychlá poptávka
+                  </Link>
+                  <Link 
+                    href="/organizace-akce" 
+                    className="text-base font-medium text-gray-700 hover:text-black hover:bg-gray-50 transition-colors px-4 py-3 rounded-xl"
+                    onClick={closeMobileMenu}
+                  >
+                    Organizace akce
                   </Link>
                   <Link 
                     href="/blog" 

@@ -22,14 +22,14 @@ export async function POST(req: Request) {
     }
 
     // Invalidate previous tokens for this user
-    await db.prostormat_password_reset_tokens.deleteMany({
+    await (db as any).prostormat_password_reset_tokens.deleteMany({
       where: { userId: user.id },
     })
 
     const token = crypto.randomBytes(32).toString("hex")
     const expiresAt = new Date(Date.now() + 60 * 60 * 1000) // 60 minutes
 
-    await db.prostormat_password_reset_tokens.create({
+    await (db as any).prostormat_password_reset_tokens.create({
       data: {
         id: crypto.randomUUID(),
         userId: user.id,

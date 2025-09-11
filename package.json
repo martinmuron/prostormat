@@ -16,7 +16,7 @@
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
     "db:migrate": "prisma migrate deploy",
-    "db:seed": "tsx prisma/seed.ts",
+    "db:seed": "tsx prisma/seed-clean.ts",
     "db:reset": "./scripts/db-reset.sh",
     "db:setup:local": "cp prisma/schema.sqlite.prisma prisma/schema.prisma && prisma db push --force-reset && npm run db:seed"
   },
@@ -80,6 +80,6 @@
     "typescript": "^5.8.3"
   },
   "prisma": {
-    "seed": "tsx prisma/seed-safe.ts"
+    "seed": "tsx prisma/seed-clean.ts"
   }
 }

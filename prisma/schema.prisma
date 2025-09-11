@@ -1,14 +1,17 @@
+// This is your Prisma schema file for SQLite (local development)
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
-model prostormat_accounts {
-  id                String           @id
+model Account {
+  id                String  @id @default(cuid())
   userId            String
   type              String
   provider          String
@@ -20,255 +23,174 @@ model prostormat_accounts {
   scope             String?
   id_token          String?
   session_state     String?
-  prostormat_users  prostormat_users @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
 }
 
-model prostormat_blog_posts {
-  id               String           @id
-  title            String
-  slug             String           @unique
-  excerpt          String?
-  content          String
-  coverImage       String?
-  status           String           @default("draft")
-  authorId         String
-  tags             String
-  metaTitle        String?
-  metaDescription  String?
-  publishedAt      DateTime?
-  createdAt        DateTime         @default(now())
-  updatedAt        DateTime
-  prostormat_users prostormat_users @relation(fields: [authorId], references: [id])
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-model prostormat_email_flow_logs {
-  id               String           @id
-  emailType        String
-  recipient        String
-  subject          String
-  status           String
-  error            String?
-  recipientType    String?
-  sentBy           String
-  createdAt        DateTime         @default(now())
-  prostormat_users prostormat_users @relation(fields: [sentBy], references: [id])
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?   // for credential-based auth
+  phone         String?
+  role          String    @default("user") // user, venue_manager, admin
+  company       String?   // for event organizers
+  accounts      Account[]
+  sessions      Session[]
+  venues        Venue[]
+  eventRequests EventRequest[]
+  venueInquiries VenueInquiry[]
+  blogPosts     BlogPost[]
+  venueBroadcasts VenueBroadcast[]
+  createdAt     DateTime  @default(now())
 }
 
-model prostormat_event_request_favorites {
-  id                        String                    @id
-  userId                    String
-  eventRequestId            String
-  createdAt                 DateTime                  @default(now())
-  prostormat_event_requests prostormat_event_requests @relation(fields: [eventRequestId], references: [id], onDelete: Cascade)
-  prostormat_users          prostormat_users          @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, eventRequestId])
-}
-
-model prostormat_event_requests {
-  id                                 String                               @id
-  userId                             String
-  title                              String
-  description                        String?
-  eventType                          String
-  eventDate                          DateTime?
-  guestCount                         Int?
-  budgetRange                        String?
-  locationPreference                 String?
-  requirements                       String?
-  contactEmail                       String
-  contactPhone                       String?
-  contactName                        String
-  status                             String                               @default("active")
-  expiresAt                          DateTime
-  createdAt                          DateTime                             @default(now())
-  prostormat_event_request_favorites prostormat_event_request_favorites[]
-  prostormat_users                   prostormat_users                     @relation(fields: [userId], references: [id])
-}
-
-/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
-model prostormat_notes {
-  id         BigInt    @id @default(autoincrement())
-  title      String
-  created_at DateTime? @default(now()) @db.Timestamptz(6)
-}
-
-model prostormat_password_reset_tokens {
-  id               String           @id
-  userId           String
-  token            String           @unique
-  expiresAt        DateTime
-  usedAt           DateTime?
-  createdAt        DateTime         @default(now())
-  prostormat_users prostormat_users @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
-model prostormat_sessions {
-  id               String           @id
-  sessionToken     String           @unique
-  userId           String
-  expires          DateTime
-  prostormat_users prostormat_users @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
-model prostormat_subscriptions {
-  id                   String            @id
-  venueId              String            @unique
-  stripeSubscriptionId String            @unique
-  stripeCustomerId     String
-  status               String
-  currentPeriodEnd     DateTime
-  createdAt            DateTime          @default(now())
-  prostormat_venues    prostormat_venues @relation(fields: [venueId], references: [id])
-}
-
-model prostormat_users {
-  id                                 String                               @id
-  name                               String?
-  email                              String                               @unique
-  emailVerified                      DateTime?
-  image                              String?
-  password                           String?
-  phone                              String?
-  role                               String                               @default("user")
-  company                            String?
-  createdAt                          DateTime                             @default(now())
-  prostormat_accounts                prostormat_accounts[]
-  prostormat_blog_posts              prostormat_blog_posts[]
-  prostormat_email_flow_logs         prostormat_email_flow_logs[]
-  prostormat_event_request_favorites prostormat_event_request_favorites[]
-  prostormat_event_requests          prostormat_event_requests[]
-  prostormat_password_reset_tokens   prostormat_password_reset_tokens[]
-  prostormat_sessions                prostormat_sessions[]
-  prostormat_venue_broadcasts        prostormat_venue_broadcasts[]
-  prostormat_venue_favorites         prostormat_venue_favorites[]
-  prostormat_venue_inquiries         prostormat_venue_inquiries[]
-  prostormat_venues                  prostormat_venues[]
-}
-
-model prostormat_venue_broadcast_logs {
-  id                          String                      @id
-  broadcastId                 String
-  venueId                     String
-  sentAt                      DateTime                    @default(now())
-  emailStatus                 String                      @default("sent")
-  emailError                  String?
-  prostormat_venue_broadcasts prostormat_venue_broadcasts @relation(fields: [broadcastId], references: [id])
-  prostormat_venues           prostormat_venues           @relation(fields: [venueId], references: [id])
-}
-
-model prostormat_venue_broadcasts {
-  id                              String                            @id
-  userId                          String
-  title                           String
-  description                     String
-  eventType                       String
-  eventDate                       DateTime?
-  guestCount                      Int?
-  budgetRange                     String?
-  locationPreference              String?
-  requirements                    String?
-  contactEmail                    String
-  contactPhone                    String?
-  contactName                     String
-  sentVenues                      String[]
-  createdAt                       DateTime                          @default(now())
-  updatedAt                       DateTime
-  prostormat_venue_broadcast_logs prostormat_venue_broadcast_logs[]
-  prostormat_users                prostormat_users                  @relation(fields: [userId], references: [id])
-}
-
-model prostormat_venue_favorites {
-  id                String            @id
-  userId            String
-  venueId           String
-  createdAt         DateTime          @default(now())
-  prostormat_users  prostormat_users  @relation(fields: [userId], references: [id], onDelete: Cascade)
-  prostormat_venues prostormat_venues @relation(fields: [venueId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, venueId])
-}
-
-model prostormat_venue_inquiries {
-  id                String            @id
-  venueId           String
-  userId            String?
-  name              String
-  email             String
-  phone             String?
-  eventDate         DateTime?
-  guestCount        Int?
-  message           String?
-  createdAt         DateTime          @default(now())
-  prostormat_users  prostormat_users? @relation(fields: [userId], references: [id])
-  prostormat_venues prostormat_venues @relation(fields: [venueId], references: [id])
-}
-
-model prostormat_venue_news {
-  id                String            @id
-  venueId           String
-  title             String
-  content           String
-  images            String[]
-  isPublished       Boolean           @default(true)
-  createdAt         DateTime          @default(now())
-  updatedAt         DateTime
-  prostormat_venues prostormat_venues @relation(fields: [venueId], references: [id], onDelete: Cascade)
-}
-
-model prostormat_venues {
-  id                              String                            @id
-  name                            String
-  slug                            String                            @unique
-  description                     String?
-  address                         String
-  capacitySeated                  String?
-  capacityStanding                String?
-  venueType                       String?
-  amenities                       String[]
-  contactEmail                    String?
-  contactPhone                    String?
-  websiteUrl                      String?
-  images                          String[]
-  videoUrl                        String?
-  youtubeUrl                      String?
-  status                          String                            @default("draft")
-  isRecommended                   Boolean                           @default(false)
-  managerId                       String
-  subscriptionId                  String?
-  expiresAt                       DateTime?
-  views                           Int                               @default(0)
-  totalViews                      Int                               @default(0)
-  lastViewedAt                    DateTime?
-  createdAt                       DateTime                          @default(now())
-  updatedAt                       DateTime
-  prostormat_subscriptions        prostormat_subscriptions?
-  prostormat_venue_broadcast_logs prostormat_venue_broadcast_logs[]
-  prostormat_venue_favorites      prostormat_venue_favorites[]
-  prostormat_venue_inquiries      prostormat_venue_inquiries[]
-  prostormat_venue_news           prostormat_venue_news[]
-  prostormat_venue_views          prostormat_venue_views[]
-  prostormat_users                prostormat_users                  @relation(fields: [managerId], references: [id])
-}
-
-model prostormat_venue_views {
-  id                String            @id
-  venueId           String
-  ipAddress         String?
-  userAgent         String?
-  referrer          String?
-  viewedAt          DateTime          @default(now())
-  prostormat_venues prostormat_venues @relation(fields: [venueId], references: [id], onDelete: Cascade)
-
-  @@index([venueId, viewedAt])
-}
-
-model prostormat_verification_tokens {
+model VerificationToken {
   identifier String
   token      String   @unique
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+model Venue {
+  id               String   @id @default(cuid())
+  name             String
+  slug             String   @unique
+  description      String?
+  address          String
+  capacitySeated   Int?
+  capacityStanding Int?
+  venueType        String?
+  amenities        String   // JSON string for SQLite
+  contactEmail     String?
+  contactPhone     String?
+  websiteUrl       String?
+  images           String   // JSON string for SQLite
+  videoUrl         String?
+  status           String   @default("draft") // draft, active, expired
+  managerId        String
+  subscriptionId   String?  // Stripe subscription ID
+  expiresAt        DateTime?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  manager      User           @relation(fields: [managerId], references: [id])
+  inquiries    VenueInquiry[]
+  subscription Subscription?
+  broadcastLogs VenueBroadcastLog[]
+}
+
+model EventRequest {
+  id                  String   @id @default(cuid())
+  userId              String
+  title               String
+  description         String?
+  eventType           String   // firemni-akce, teambuilding, svatba, soukroma-akce
+  eventDate           DateTime?
+  guestCount          Int?
+  budgetRange         String?
+  locationPreference  String?  // Praha 1, Praha 2, etc.
+  requirements        String?
+  contactEmail        String   // PUBLIC - for direct contact
+  contactPhone        String?
+  contactName         String   // PUBLIC
+  status              String   @default("active") // active, closed, expired
+  expiresAt           DateTime
+  createdAt           DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model VenueInquiry {
+  id         String    @id @default(cuid())
+  venueId    String
+  userId     String?   // can be null for anonymous inquiries
+  name       String
+  email      String
+  phone      String?
+  eventDate  DateTime?
+  guestCount Int?
+  message    String?
+  createdAt  DateTime  @default(now())
+
+  venue Venue @relation(fields: [venueId], references: [id])
+  user  User? @relation(fields: [userId], references: [id])
+}
+
+model Subscription {
+  id                   String   @id @default(cuid())
+  venueId              String   @unique
+  stripeSubscriptionId String   @unique
+  stripeCustomerId     String
+  status               String   // active, canceled, past_due
+  currentPeriodEnd     DateTime
+  createdAt            DateTime @default(now())
+
+  venue Venue @relation(fields: [venueId], references: [id])
+}
+
+model BlogPost {
+  id              String   @id @default(cuid())
+  title           String
+  slug            String   @unique
+  excerpt         String?
+  content         String
+  coverImage      String?
+  status          String   @default("draft") // draft, published
+  authorId        String
+  tags            String // JSON string
+  metaTitle       String?
+  metaDescription String?
+  publishedAt     DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  author User @relation(fields: [authorId], references: [id])
+}
+
+model VenueBroadcast {
+  id               String   @id @default(cuid())
+  userId           String
+  title            String
+  description      String
+  eventType        String   // firemni-akce, teambuilding, svatba, soukroma-akce
+  eventDate        DateTime?
+  guestCount       Int?
+  budgetRange      String?
+  locationPreference String?  // Praha 1, Praha 2, etc.
+  requirements     String?
+  contactEmail     String
+  contactPhone     String?
+  contactName      String
+  sentVenues       String   // JSON string for SQLite
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
+  logs VenueBroadcastLog[]
+}
+
+model VenueBroadcastLog {
+  id            String   @id @default(cuid())
+  broadcastId   String
+  venueId       String
+  sentAt        DateTime @default(now())
+  emailStatus   String   @default("sent") // sent, delivered, failed, pending, skipped
+  emailError    String?  // Error message if email failed
+
+  broadcast VenueBroadcast @relation(fields: [broadcastId], references: [id])
+  venue Venue @relation(fields: [venueId], references: [id])
 }

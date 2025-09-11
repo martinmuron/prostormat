@@ -1,9 +1,18 @@
+// DEPRECATED: This seed file contains placeholder venues
+// Use prisma/seed-clean.ts instead for production seeding
+// This file is kept for reference but should not be used
+
 import { PrismaClient } from '@prisma/client'
 import bcrypt from 'bcryptjs'
 
 const prisma = new PrismaClient()
 
 async function main() {
+  console.log('WARNING: This seed file contains placeholder venues and is deprecated.')
+  console.log('Use "npx tsx prisma/seed-clean.ts" instead.')
+  console.log('Exiting without seeding...')
+  return
+  
   // Create a sample admin user
   const adminPassword = await bcrypt.hash('admin123', 12)
   const admin = await prisma.user.upsert({

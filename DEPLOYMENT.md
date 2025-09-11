@@ -1,57 +1,48 @@
 # 🚀 Deployment Guide - Prostormat
 
-## Railway Deployment with prostormat.cz Domain
+## Supabase Deployment with prostormat.cz Domain
 
 ### Prerequisites
-- Railway account
+- Supabase account
 - Forpsi domain (prostormat.cz)
 - GitHub repository
 
-### Step 1: Prepare Repository
+### Step 1: Set Up Supabase Project
 
-1. **Initialize Git and push to GitHub**:
-   ```bash
-   git init
-   git add .
-   git commit -m "Initial commit - Prostormat MVP"
-   git branch -M main
-   git remote add origin https://github.com/YOUR_USERNAME/prostormat.git
-   git push -u origin main
-   ```
-
-### Step 2: Create Railway Project
-
-1. **Install Railway CLI**:
-   ```bash
-   npm install -g @railway/cli
-   ```
-
-2. **Login and create project**:
-   ```bash
-   railway login
-   railway init
-   ```
-
-3. **Connect GitHub repository** in Railway dashboard:
-   - Go to railway.app
+1. **Create Supabase project**:
+   - Go to supabase.com
    - Create new project
-   - Connect GitHub repository
+   - Choose region and database password
 
-### Step 3: Set Up PostgreSQL Database
+2. **Get database credentials**:
+   - Go to Project Settings → Database
+   - Copy connection string and credentials
 
-1. **Add PostgreSQL service**:
-   - In Railway dashboard, click "Add Service"
-   - Select "PostgreSQL"
-   - Railway will automatically create DATABASE_URL
+### Step 2: Configure Database
 
-2. **Copy DATABASE_URL** from Railway environment variables
+**IMPORTANT: Supabase Database Schema**
+- All tables use the `prostormat_` prefix (e.g., `prostormat_venues`, `prostormat_users`)
+- When working with the database directly, always reference the correct table names
+- The Prisma schema models map to these prefixed tables in production
+
+### Step 3: Set Up Database Schema
+
+1. **Run migrations**:
+   ```bash
+   npx prisma db push
+   ```
+
+2. **Seed with real venues**:
+   ```bash
+   npx prisma db seed
+   ```
 
 ### Step 4: Configure Environment Variables
 
-In Railway project settings, add these environment variables:
+In your deployment environment, add these environment variables:
 
 ```env
-# Database (automatically provided by Railway PostgreSQL service)
+# Database (from Supabase project settings)
 DATABASE_URL=postgresql://user:password@host:port/database
 
 # NextAuth
@@ -73,38 +64,33 @@ RESEND_API_KEY=re_...
 
 ### Step 5: Deploy Application
 
-1. **Trigger deployment**:
+1. **Deploy to your hosting platform** (Vercel, Netlify, etc.)
+2. **Configure build settings**:
+   - Build command: `npm run build`
+   - Output directory: `.next`
+
+### Step 6: Database Management
+
+**Remember: Supabase uses `prostormat_` table prefixes**
+
+1. **Check database structure**:
    ```bash
-   railway up
+   npx prisma db pull
    ```
 
-2. **Wait for build** - Railway will:
-   - Install dependencies
-   - Run `npm run build`
-   - Generate Prisma client
-   - Deploy application
-
-### Step 6: Set Up Database
-
-1. **Run database migrations**:
+2. **Run migrations**:
    ```bash
-   railway run npx prisma db push
-   ```
-
-2. **Seed with sample data**:
-   ```bash
-   railway run npx prisma db seed
+   npx prisma db push
    ```
 
 ### Step 7: Configure Custom Domain (prostormat.cz)
 
-#### In Railway Dashboard:
+#### In your hosting platform:
 
 1. Go to your project settings
-2. Click "Domains" tab
-3. Add custom domain: `prostormat.cz`
-4. Add another domain: `www.prostormat.cz`
-5. Copy the provided CNAME target (e.g., `your-project.railway.app`)
+2. Add custom domain: `prostormat.cz`
+3. Add another domain: `www.prostormat.cz`
+4. Copy the provided CNAME target
 
 #### In Forpsi DNS Management:
 
@@ -115,12 +101,12 @@ RESEND_API_KEY=re_...
    ```
    Type: CNAME
    Name: www
-   Target: your-project.railway.app
+   Target: your-deployment-url
    TTL: 3600
    
    Type: A (or CNAME if supported)
    Name: @
-   Target: your-project.railway.app (or Railway IP)
+   Target: your-deployment-url
    TTL: 3600
    ```
 
@@ -128,7 +114,7 @@ RESEND_API_KEY=re_...
 
 ### Step 8: Update Environment Variables
 
-Once domain is working, update in Railway:
+Once domain is working, update:
 ```env
 NEXTAUTH_URL=https://prostormat.cz
 ```
@@ -142,7 +128,7 @@ NEXTAUTH_URL=https://prostormat.cz
 
 ### Step 10: SSL Certificate
 
-Railway automatically provides SSL certificates for custom domains. Once DNS propagates:
+Most hosting platforms automatically provide SSL certificates for custom domains. Once DNS propagates:
 - https://prostormat.cz ✅
 - https://www.prostormat.cz ✅
 
@@ -190,22 +176,22 @@ After running the seed script, you'll have these test accounts:
 
 ### Database Issues
 - Confirm DATABASE_URL is correct
-- Run `railway run npx prisma db push` to sync schema
-- Check PostgreSQL service status in Railway
+- Run `npx prisma db push` to sync schema
+- Check Supabase project status and connection
 
 ### Domain Issues
 - Verify DNS records in Forpsi
 - Wait for DNS propagation (up to 24 hours)
-- Check Railway domain configuration
+- Check hosting platform domain configuration
 
 ### SSL Issues
 - Ensure domain is properly configured
-- SSL certificates are automatic via Railway
+- SSL certificates are automatic via most hosting platforms
 - May take up to 1 hour to provision
 
 ## Monitoring
 
-- **Railway Dashboard**: Monitor deployments and logs
+- **Hosting Dashboard**: Monitor deployments and logs
 - **Application Health**: Set up uptime monitoring
 - **Error Tracking**: Consider adding Sentry integration
 

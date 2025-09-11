@@ -29,6 +29,26 @@ Prostormat is a platform for finding and managing event spaces in Czech Republic
 3. Update all affected services with new credentials
 4. Review and strengthen security practices
 
+## 🗄️ CRITICAL DATABASE INFORMATION
+
+**Supabase Production Database**:
+- **All tables use `prostormat_` prefix** (e.g., `prostormat_venues`, `prostormat_users`)
+- **Never forget the prefix** when writing raw SQL queries or direct database operations
+- **Prisma models map to prefixed tables** in production environment
+- **Always reference correct table names** when debugging or managing data
+
+**Common Tables**:
+- `prostormat_venues` - Venue listings
+- `prostormat_users` - User accounts  
+- `prostormat_venue_inquiries` - Venue contact requests
+- `prostormat_venue_broadcasts` - Email broadcast campaigns
+- `prostormat_venue_broadcast_logs` - Email send tracking
+
+**When working with database**:
+- ✅ Use: `SELECT * FROM prostormat_venues`
+- ❌ Never: `SELECT * FROM venues`
+- ✅ Always check table names with: `SELECT table_name FROM information_schema.tables WHERE table_schema = 'public'`
+
 ## Email Flow Admin Section
 
 **CRITICAL REQUIREMENT**: Every email sent programmatically with Resend MUST be tracked in the "Email Flow" admin section.

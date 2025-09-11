@@ -37,11 +37,12 @@ export async function GET() {
             name: true,
           }
         },
-        eventRequestFavorite: {
-          select: {
-            userId: true,
-          }
-        }
+        // TODO: Fix EventRequestFavorite model - temporarily disabled for deployment
+        // eventRequestFavorite: {
+        //   select: {
+        //     userId: true,
+        //   }
+        // }
       }
     })
     

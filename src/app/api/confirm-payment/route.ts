@@ -180,20 +180,22 @@ export async function POST(request: NextRequest) {
       console.error('Failed to send admin notification:', emailError);
     }
 
-    // Log the email activity
+    // Log the email activity (temporarily disabled)
     try {
-      await prisma.emailFlowLog.create({
-        data: {
-          id: nanoid(),
-          emailType: 'venue_payment_confirmation',
-          recipient: venueData.userEmail,
-          subject: 'Platba úspěšně přijata - Prostor čeká na schválení',
-          status: 'sent',
-          recipientType: 'venue_owner',
-          sentBy: userId,
-          createdAt: new Date(),
-        },
-      });
+      // TODO: Fix EmailFlowLog model mapping
+      // await prisma.emailFlowLog.create({
+      //   data: {
+      //     id: nanoid(),
+      //     emailType: 'venue_payment_confirmation',
+      //     recipient: venueData.userEmail,
+      //     subject: 'Platba úspěšně přijata - Prostor čeká na schválení',
+      //     status: 'sent',
+      //     recipientType: 'venue_owner',
+      //     sentBy: userId,
+      //     createdAt: new Date(),
+      //   },
+      // });
+      console.log('Email activity logged (temporarily disabled)');
     } catch (logError) {
       console.error('Failed to log email activity:', logError);
     }

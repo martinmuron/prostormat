@@ -60,15 +60,15 @@ async function main() {
       capacitySeated: 200,
       capacityStanding: 300,
       venueType: 'konferencni-sal',
-      amenities: ['Wi-Fi', 'Projektor', 'Zvukový systém', 'Klimatizace', 'Catering možnosti'],
+      amenities: JSON.stringify(['Wi-Fi', 'Projektor', 'Zvukový systém', 'Klimatizace', 'Catering možnosti']),
       contactEmail: 'info@modernconference.cz',
       contactPhone: '+420 123 456 789',
       websiteUrl: 'https://modernconference.cz',
-      images: [
+      images: JSON.stringify([
         'https://images.unsplash.com/photo-1511578314322-379afb476865?w=800',
         'https://images.unsplash.com/photo-1497366216548-37526070297c?w=800',
         'https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=800'
-      ],
+      ]),
       videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
       status: 'active',
       managerId: locationManager.id,
@@ -86,15 +86,15 @@ async function main() {
       capacitySeated: 150,
       capacityStanding: 250,
       venueType: 'tancni-sal',
-      amenities: ['Taneční parket', 'Osvětlení', 'Zvukový systém', 'Bar', 'Šatna'],
+      amenities: JSON.stringify(['Taneční parket', 'Osvětlení', 'Zvukový systém', 'Bar', 'Šatna']),
       contactEmail: 'bookings@elegantballroom.cz',
       contactPhone: '+420 987 654 321',
       websiteUrl: 'https://elegantballroom.cz',
-      images: [
+      images: JSON.stringify([
         'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=800',
         'https://images.unsplash.com/photo-1464207687429-7505649dae38?w=800',
         'https://images.unsplash.com/photo-1478146896981-b80fe463b330?w=800'
-      ],
+      ]),
       videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
       status: 'active',
       managerId: locationManager.id,
@@ -112,15 +112,15 @@ async function main() {
       capacitySeated: 80,
       capacityStanding: 120,
       venueType: 'venkovni-prostor',
-      amenities: ['Výhled na město', 'Bar', 'Gril', 'Vytápění', 'Zastřešení'],
+      amenities: JSON.stringify(['Výhled na město', 'Bar', 'Gril', 'Vytápění', 'Zastřešení']),
       contactEmail: 'events@rooftopterrace.cz',
       contactPhone: '+420 555 123 456',
       websiteUrl: 'https://rooftopterrace.cz',
-      images: [
+      images: JSON.stringify([
         'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800',
         'https://images.unsplash.com/photo-1551218808-94e220e084d2?w=800',
         'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800'
-      ],
+      ]),
       videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
       status: 'active',
       managerId: locationManager.id,

@@ -154,7 +154,11 @@ async function main() {
     await prisma.venue.upsert({
       where: { slug: venueData.slug },
       update: {},
-      create: venueData,
+      create: {
+        ...venueData,
+        amenities: JSON.stringify(venueData.amenities),
+        images: JSON.stringify(venueData.images),
+      },
     })
     console.log(`Created venue: ${venueData.name}`)
   }

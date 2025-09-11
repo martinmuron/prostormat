@@ -3,6 +3,32 @@
 ## Project Overview
 Prostormat is a platform for finding and managing event spaces in Czech Republic. It connects venue owners with event organizers through a marketplace-style platform.
 
+## 🔒 CRITICAL SECURITY REQUIREMENTS
+
+**NEVER HARDCODE SENSITIVE DATA**:
+- ❌ **NO passwords, API keys, tokens, or credentials in code**
+- ❌ **NO sensitive data in git commits or commit messages**
+- ❌ **NO database credentials in repository files**
+- ❌ **NO third-party service keys in source code**
+
+**ALWAYS use environment variables**:
+- ✅ Store all secrets in `.env.local` (never commit this file)
+- ✅ Use `process.env.VARIABLE_NAME` in code
+- ✅ Document required environment variables in `.env.example`
+- ✅ Use placeholder values in examples (e.g., `your-api-key-here`)
+
+**Git commit security**:
+- ✅ Review all changes before committing
+- ✅ Never mention actual credentials in commit messages
+- ✅ Use `.gitignore` to exclude sensitive files
+- ✅ Double-check staging area with `git diff --cached`
+
+**If credentials are accidentally exposed**:
+1. Immediately rotate/regenerate all exposed credentials
+2. Use `git reset` to remove from history before pushing
+3. Update all affected services with new credentials
+4. Review and strengthen security practices
+
 ## Email Flow Admin Section
 
 **CRITICAL REQUIREMENT**: Every email sent programmatically with Resend MUST be tracked in the "Email Flow" admin section.

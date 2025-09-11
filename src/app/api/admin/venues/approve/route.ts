@@ -83,7 +83,7 @@ export async function POST(request: NextRequest) {
       });
 
       // Log the email
-      await prisma.prostormat_email_flow_logs.create({
+      await prisma.emailFlowLog.create({
         data: {
           id: nanoid(),
           emailType: 'venue_approval_confirmation',

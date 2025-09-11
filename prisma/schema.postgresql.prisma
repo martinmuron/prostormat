@@ -54,7 +54,7 @@ model User {
   venueInquiries VenueInquiry[]
   blogPosts     BlogPost[]
   venueBroadcasts VenueBroadcast[]
-  emailFlowLogs prostormat_email_flow_logs[]
+  emailFlowLogs EmailFlowLog[]
   createdAt     DateTime  @default(now())
 
   @@map("prostormat_users")
@@ -200,7 +200,7 @@ model VenueBroadcastLog {
   venue Venue @relation(fields: [venueId], references: [id])
 }
 
-model prostormat_email_flow_logs {
+model EmailFlowLog {
   id               String           @id
   emailType        String
   recipient        String

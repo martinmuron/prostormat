@@ -157,19 +157,21 @@ async function handlePaymentFailed(paymentIntent: any) {
           `,
         });
 
+        // TODO: Fix EmailFlowLog model - temporarily disabled for deployment
         // Log the email
-        await prisma.emailFlowLog.create({
-          data: {
-            id: nanoid(),
-            emailType: 'payment_failed_notification',
-            recipient: payment.user_email,
-            subject: 'Platba se nezdařila - Prostormat',
-            status: 'sent',
-            recipientType: 'venue_owner',
-            sentBy: 'stripe_webhook',
-            createdAt: new Date(),
-          },
-        });
+        // await prisma.emailFlowLog.create({
+        //   data: {
+        //     id: nanoid(),
+        //     emailType: 'payment_failed_notification',
+        //     recipient: payment.user_email,
+        //     subject: 'Platba se nezdařila - Prostormat',
+        //     status: 'sent',
+        //     recipientType: 'venue_owner',
+        //     sentBy: 'stripe_webhook',
+        //     createdAt: new Date(),
+        //   },
+        // });
+        console.log('Payment failed email sent (logging temporarily disabled)');
       } catch (emailError) {
         console.error('Failed to send payment failed email:', emailError);
       }

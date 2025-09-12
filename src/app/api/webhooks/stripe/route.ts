@@ -81,19 +81,21 @@ async function handlePaymentSucceeded(paymentIntent: any) {
       AND status = 'pending'
     `;
 
+    // TODO: Fix EmailFlowLog model - temporarily disabled for deployment
     // Log successful payment webhook
-    await prisma.emailFlowLog.create({
-      data: {
-        id: nanoid(),
-        emailType: 'stripe_webhook_payment_succeeded',
-        recipient: 'system',
-        subject: `Payment succeeded: ${paymentIntent.id}`,
-        status: 'processed',
-        recipientType: 'system',
-        sentBy: 'stripe_webhook',
-        createdAt: new Date(),
-      },
-    });
+    // await prisma.emailFlowLog.create({
+    //   data: {
+    //     id: nanoid(),
+    //     emailType: 'stripe_webhook_payment_succeeded',
+    //     recipient: 'system',
+    //     subject: `Payment succeeded: ${paymentIntent.id}`,
+    //     status: 'processed',
+    //     recipientType: 'system',
+    //     sentBy: 'stripe_webhook',
+    //     createdAt: new Date(),
+    //   },
+    // })
+    console.log('Payment webhook processed successfully (email logging temporarily disabled)');
 
     console.log(`Payment ${paymentIntent.id} marked as succeeded`);
   } catch (error) {

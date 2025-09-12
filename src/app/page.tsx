@@ -437,7 +437,8 @@ export default function HomePage() {
       {/* Organize For You CTA */}
       <section className="py-12 sm:py-16 px-4 sm:px-6 bg-white">
         <div className="max-w-6xl mx-auto">
-          <div className="bg-black rounded-3xl p-8 sm:p-10 text-white flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+          <ScrollReveal>
+          <div className="bg-black rounded-3xl p-8 sm:p-10 text-white flex flex-col md:flex-row items-start md:items-center justify-between gap-6 hover-lift">
             <div>
               <h3 className="text-2xl sm:text-3xl font-bold mb-2">Nechcete hledat ani organizovat?</h3>
               <p className="text-white/80">Zařídíme akci za vás – prostor, catering, techniku i produkci. (Aktuálně 100+ osob)</p>
@@ -446,6 +447,7 @@ export default function HomePage() {
               <Button size="lg" className="bg-white text-black hover:bg-gray-100 rounded-xl">Organizaci zajistíme za vás</Button>
             </Link>
           </div>
+          </ScrollReveal>
         </div>
       </section>
     </div>

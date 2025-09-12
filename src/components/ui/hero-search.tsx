@@ -26,7 +26,7 @@ export function HeroSearch() {
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Unified Filter Box */}
         <div className="bg-white/90 backdrop-blur rounded-2xl p-6 md:p-8 border-2 border-gray-200 shadow-lg max-w-5xl mx-auto animate-slide-up">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
             {/* Venue Type */}
             <div>
               <label className="flex items-center text-sm font-medium text-black mb-2">
@@ -89,21 +89,20 @@ export function HeroSearch() {
                 </SelectContent>
               </Select>
             </div>
+
+            {/* Submit */}
+            <div className="mt-2 md:mt-0">
+              <Button 
+                type="submit" 
+                className="w-full h-11 md:h-[42px] bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow-md hover:shadow-lg transition-all"
+              >
+                <Search className="w-4 h-4 mr-2" />
+                Najít prostory
+              </Button>
+            </div>
           </div>
         </div>
-
-        {/* Search Button */}
-        <div className="flex justify-center mt-8">
-          <Button 
-            type="submit" 
-            size="lg" 
-            className="px-12 py-4 text-lg font-medium rounded-2xl bg-blue-600 hover:bg-blue-700 text-white transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
-          >
-            <Search className="w-6 h-6 mr-3" />
-            Najít prostory
-          </Button>
-        </div>
-
+        
       </form>
     </div>
   )

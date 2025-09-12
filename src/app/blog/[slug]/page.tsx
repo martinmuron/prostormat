@@ -237,7 +237,7 @@ async function getBlogPost(slug: string) {
         status: "published"
       },
       include: {
-        prostormat_users: {
+        author: {
           select: {
             name: true,
             email: true,

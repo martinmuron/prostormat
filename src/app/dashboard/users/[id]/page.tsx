@@ -32,11 +32,11 @@ async function getUser(id: string) {
           orderBy: { createdAt: 'desc' },
           take: 5,
         },
-        inquiries: {
+        venueInquiries: {
           orderBy: { createdAt: 'desc' },
           take: 5,
           include: {
-            venues: {
+            venue: {
               select: {
                 name: true,
                 slug: true,
@@ -143,7 +143,7 @@ export default async function UserProfilePage({
         <TabsList>
           <TabsTrigger value="venues">Prostory ({user.venues.length})</TabsTrigger>
           <TabsTrigger value="requests">Veřejné zakázky ({user.eventRequests.length})</TabsTrigger>
-          <TabsTrigger value="inquiries">Dotazy ({user.inquiries.length})</TabsTrigger>
+          <TabsTrigger value="inquiries">Dotazy ({user.venueInquiries.length})</TabsTrigger>
           <TabsTrigger value="billing">Fakturace</TabsTrigger>
         </TabsList>
 
@@ -236,12 +236,12 @@ export default async function UserProfilePage({
               <CardTitle>Dotazy na prostory</CardTitle>
             </CardHeader>
             <CardContent>
-              {user.inquiries.length > 0 ? (
+              {user.venueInquiries.length > 0 ? (
                 <div className="space-y-4">
-                  {user.inquiries.map((inquiry) => (
+                  {user.venueInquiries.map((inquiry) => (
                     <div key={inquiry.id} className="p-4 border rounded-lg">
                       <div className="flex items-center justify-between mb-2">
-                        <h3 className="font-medium">{inquiry.venues.name}</h3>
+                        <h3 className="font-medium">{inquiry.venue.name}</h3>
                         <Badge variant="outline">
                           {inquiry.eventDate ? new Date(inquiry.eventDate).toLocaleDateString('cs-CZ') : 'Neuvedeno'}
                         </Badge>

@@ -9,7 +9,7 @@ import { Mail, Phone, User } from "lucide-react"
 type VenueManagerProps = {
   venue: {
     id: string
-    prostormat_users: {
+    manager: {
       id: string
       name: string | null
       email: string
@@ -20,7 +20,7 @@ type VenueManagerProps = {
 }
 
 export function VenueManager({ venue }: VenueManagerProps) {
-  if (!venue.prostormat_users) {
+  if (!venue.manager) {
     return (
       <div className="text-center py-8">
         <User className="mx-auto h-12 w-12 text-gray-400 mb-4" />
@@ -44,28 +44,28 @@ export function VenueManager({ venue }: VenueManagerProps) {
         <CardContent>
           <div className="flex items-center space-x-4">
             <Avatar className="h-16 w-16">
-              <AvatarImage src={venue.prostormat_users.image || undefined} />
+              <AvatarImage src={venue.manager.image || undefined} />
               <AvatarFallback className="text-lg">
-                {venue.prostormat_users.name?.[0]?.toUpperCase() || venue.prostormat_users.email[0]?.toUpperCase()}
+                {venue.manager.name?.[0]?.toUpperCase() || venue.manager.email[0]?.toUpperCase()}
               </AvatarFallback>
             </Avatar>
             <div className="space-y-2">
               <div>
-                <h3 className="text-xl font-semibold">{venue.prostormat_users.name || "Bez jména"}</h3>
+                <h3 className="text-xl font-semibold">{venue.manager.name || "Bez jména"}</h3>
                 <Badge variant="outline">Správce prostoru</Badge>
               </div>
               <div className="space-y-1">
                 <div className="flex items-center text-sm text-gray-600">
                   <Mail className="mr-2 h-4 w-4" />
-                  <a href={`mailto:${venue.prostormat_users.email}`} className="hover:underline">
-                    {venue.prostormat_users.email}
+                  <a href={`mailto:${venue.manager.email}`} className="hover:underline">
+                    {venue.manager.email}
                   </a>
                 </div>
-                {venue.prostormat_users.phone && (
+                {venue.manager.phone && (
                   <div className="flex items-center text-sm text-gray-600">
                     <Phone className="mr-2 h-4 w-4" />
-                    <a href={`tel:${venue.prostormat_users.phone}`} className="hover:underline">
-                      {venue.prostormat_users.phone}
+                    <a href={`tel:${venue.manager.phone}`} className="hover:underline">
+                      {venue.manager.phone}
                     </a>
                   </div>
                 )}

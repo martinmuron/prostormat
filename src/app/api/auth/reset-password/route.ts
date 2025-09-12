@@ -13,7 +13,7 @@ export async function POST(req: Request) {
     const body = await req.json()
     const { token, password } = schema.parse(body)
 
-    const record = await (db as any).prostormat_password_reset_tokens.findUnique({
+    const record = await db.passwordResetToken.findUnique({
       where: { token },
     })
 
@@ -25,7 +25,7 @@ export async function POST(req: Request) {
 
     await db.$transaction([
       db.user.update({ where: { id: record.userId }, data: { password: hashed } }),
-      (db as any).prostormat_password_reset_tokens.update({ where: { token }, data: { usedAt: new Date() } })
+      db.passwordResetToken.update({ where: { token }, data: { usedAt: new Date() } })
     ])
 
     return NextResponse.json({ success: true })

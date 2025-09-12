@@ -26,16 +26,16 @@ export type Venue = {
   billingName?: string | null
   taxId?: string | null
   vatId?: string | null
-  prostormat_users: {
+  manager: {
     id: string
     name: string | null
     email: string
     phone: string | null
   } | null
   _count: {
-    prostormat_venue_inquiries: number
+    inquiries: number
     broadcastLogs: number
-    prostormat_venue_favorites: number
+    // TODO: add favorites when model is implemented
   }
   featured: boolean
   subscriptionStatus?: string | null
@@ -100,7 +100,7 @@ export const columns: ColumnDef<Venue>[] = [
     accessorKey: "manager",
     header: "Správce",
     cell: ({ row }) => {
-      const manager = row.original.prostormat_users
+      const manager = row.original.manager
       return manager ? (
         <div className="space-y-1">
           <div className="font-medium">{manager.name || manager.email}</div>
@@ -140,7 +140,7 @@ export const columns: ColumnDef<Venue>[] = [
       return (
         <div className="flex space-x-2">
           <Badge variant="outline" className="text-xs">
-            {stats.prostormat_venue_inquiries} dotazů
+            {stats.inquiries} dotazů
           </Badge>
           <Badge variant="outline" className="text-xs">
             {stats.broadcastLogs} rozesílek
@@ -181,8 +181,8 @@ export const columns: ColumnDef<Venue>[] = [
                 Fakturace
               </DropdownMenuItem>
             </Link>
-            <Link href={`/dashboard/users/${venue.prostormat_users?.id}`}>
-              <DropdownMenuItem className="cursor-pointer" disabled={!venue.prostormat_users}>
+            <Link href={`/dashboard/users/${venue.manager?.id}`}>
+              <DropdownMenuItem className="cursor-pointer" disabled={!venue.manager}>
                 Profil správce
               </DropdownMenuItem>
             </Link>

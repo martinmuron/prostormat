@@ -13,7 +13,7 @@ export async function GET() {
     }
 
     // Get email flow logs (we'll need to create this table)
-    const emailLogs = await (db as any).emailFlowLog.findMany({
+    const emailLogs = await db.emailFlowLog.findMany({
       orderBy: { createdAt: 'desc' },
       take: 100,
       include: {
@@ -27,7 +27,7 @@ export async function GET() {
     })
 
     // Get summary statistics
-    const stats = await (db as any).emailFlowLog.groupBy({
+    const stats = await db.emailFlowLog.groupBy({
       by: ['emailType', 'status'],
       _count: {
         id: true
@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
     }
 
-    const logEntry = await (db as any).emailFlowLog.create({
+    const logEntry = await db.emailFlowLog.create({
       data: {
         id: randomUUID(),
         emailType,

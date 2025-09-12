@@ -1,4 +1,4 @@
-// This is your Prisma schema file
+// This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
@@ -54,7 +54,12 @@ model User {
   venueInquiries VenueInquiry[]
   blogPosts     BlogPost[]
   venueBroadcasts VenueBroadcast[]
+  emailFlowLogs EmailFlowLog[]
+  eventRequestFavorites EventRequestFavorite[]
+  passwordResetTokens PasswordResetToken[]
   createdAt     DateTime  @default(now())
+
+  @@map("prostormat_users")
 }
 
 model VerificationToken {
@@ -74,11 +79,11 @@ model Venue {
   capacitySeated   Int?
   capacityStanding Int?
   venueType        String?
-  amenities        String   // JSON string for SQLite
+  amenities        String[]
   contactEmail     String?
   contactPhone     String?
   websiteUrl       String?
-  images           String   // JSON string for SQLite
+  images           String[]
   videoUrl         String?
   status           String   @default("draft") // draft, active, expired
   managerId        String
@@ -91,6 +96,8 @@ model Venue {
   inquiries    VenueInquiry[]
   subscription Subscription?
   broadcastLogs VenueBroadcastLog[]
+
+  @@map("prostormat_venues")
 }
 
 model EventRequest {
@@ -112,6 +119,7 @@ model EventRequest {
   createdAt           DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id])
+  favorites EventRequestFavorite[]
 }
 
 model VenueInquiry {
@@ -151,7 +159,7 @@ model BlogPost {
   coverImage      String?
   status          String   @default("draft") // draft, published
   authorId        String
-  tags            String // JSON string
+  tags            String // JSON array
   metaTitle       String?
   metaDescription String?
   publishedAt     DateTime?
@@ -175,7 +183,7 @@ model VenueBroadcast {
   contactEmail     String
   contactPhone     String?
   contactName      String
-  sentVenues       String   // JSON string for SQLite
+  sentVenues       String[] // Array of venue IDs that received the email
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 
@@ -193,4 +201,43 @@ model VenueBroadcastLog {
 
   broadcast VenueBroadcast @relation(fields: [broadcastId], references: [id])
   venue Venue @relation(fields: [venueId], references: [id])
+}
+
+model EmailFlowLog {
+  id               String           @id
+  emailType        String
+  recipient        String
+  subject          String
+  status           String
+  error            String?
+  recipientType    String?
+  sentBy           String
+  createdAt        DateTime         @default(now())
+  user             User             @relation(fields: [sentBy], references: [id])
+
+  @@map("prostormat_email_flow_logs")
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("prostormat_password_reset_tokens")
+}
+
+model EventRequestFavorite {
+  id               String           @id @default(cuid())
+  userId           String
+  eventRequestId   String
+  createdAt        DateTime         @default(now())
+
+  user             User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  eventRequest     EventRequest     @relation(fields: [eventRequestId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, eventRequestId])
 }

@@ -67,7 +67,7 @@ async function getVenues(searchParams: SearchParams) {
       }
     }
 
-    const venues = await db.prostormat_venues.findMany({
+  const venues = await db.venue.findMany({
       where,
       orderBy: {
         createdAt: "desc",

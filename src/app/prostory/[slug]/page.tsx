@@ -14,13 +14,13 @@ import { MapPin, Users, Phone, Mail, Globe, Heart } from "lucide-react"
 
 async function getVenue(slug: string) {
   try {
-    const venue = await db.prostormat_venues.findUnique({
+  const venue = await db.venue.findUnique({
       where: {
         slug,
         status: { in: ["active", "draft"] },
       },
       include: {
-        prostormat_users: {
+        manager: {
           select: {
             name: true,
             email: true,
@@ -64,12 +64,12 @@ export default async function VenueDetailPage({
             <VenueGallery images={venue.images} venueName={venue.name} />
 
             {/* YouTube Video */}
-            {venue.youtubeUrl && (
+            {venue.videoUrl && (
               <div className="mt-8">
                 <h2 className="text-title-3 text-black mb-4">Video prezentace</h2>
                 <div className="aspect-video w-full rounded-lg overflow-hidden shadow-lg">
                   <iframe
-                    src={venue.youtubeUrl.replace('watch?v=', 'embed/')}
+                    src={venue.videoUrl.includes('embed') ? venue.videoUrl : venue.videoUrl.replace('watch?v=', 'embed/')}
                     title={`${venue.name} - Video prezentace`}
                     className="w-full h-full"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

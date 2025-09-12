@@ -53,6 +53,11 @@ export async function PATCH(
 
     // Prepare update data
     const updateData: any = { ...body }
+    // Map youtubeUrl from payload to videoUrl in DB
+    if (typeof updateData.youtubeUrl !== 'undefined') {
+      updateData.videoUrl = updateData.youtubeUrl
+      delete updateData.youtubeUrl
+    }
     
     // Only admins can change managerId
     if (session.user.role !== "admin" && body.managerId) {

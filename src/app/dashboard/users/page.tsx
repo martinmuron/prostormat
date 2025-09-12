@@ -18,7 +18,7 @@ import Link from "next/link"
 
 async function getUsers() {
   try {
-    const users = await db.prostormat_users.findMany({
+    const users = await db.user.findMany({
       select: {
         id: true,
         name: true,
@@ -29,9 +29,9 @@ async function getUsers() {
         createdAt: true,
         _count: {
           select: {
-            prostormat_venues: true,
-            prostormat_event_requests: true,
-            prostormat_venue_inquiries: true,
+            venues: true,
+            eventRequests: true,
+            venueInquiries: true,
           }
         }
       },
@@ -163,9 +163,9 @@ export default async function UsersPage() {
                   </TableCell>
                   <TableCell>
                     <div className="text-sm">
-                      <div>Prostory: {user._count.prostormat_venues}</div>
-                      <div>Veřejné zakázky: {user._count.prostormat_event_requests}</div>
-                      <div>Dotazy: {user._count.prostormat_venue_inquiries}</div>
+                      <div>Prostory: {user._count.venues}</div>
+                      <div>Veřejné zakázky: {user._count.eventRequests}</div>
+                      <div>Dotazy: {user._count.venueInquiries}</div>
                     </div>
                   </TableCell>
                   <TableCell>

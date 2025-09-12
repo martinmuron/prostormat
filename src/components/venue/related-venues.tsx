@@ -12,8 +12,8 @@ interface Venue {
   name: string
   slug: string
   address: string
-  capacitySeated: string | null
-  capacityStanding: string | null
+  capacitySeated: number | null
+  capacityStanding: number | null
   venueType: string | null
   images: string[]
   amenities: string[]
@@ -25,7 +25,7 @@ async function getRelatedVenues(currentVenueId: string, venueType: string | null
     const addressParts = address.split(',')
     const location = addressParts[0].trim()
     
-    const venues = await db.prostormat_venues.findMany({
+  const venues = await db.venue.findMany({
       where: {
         AND: [
           { id: { not: currentVenueId } }, // Exclude current venue
@@ -61,7 +61,6 @@ async function getRelatedVenues(currentVenueId: string, venueType: string | null
       },
       take: 8, // Show up to 8 related venues
       orderBy: [
-        { isRecommended: 'desc' }, // Recommended venues first
         { createdAt: 'desc' }
       ]
     })

@@ -12,19 +12,19 @@ interface VenueEditPageProps {
 
 async function getVenueData(venueId: string, userId: string) {
   try {
-    const venue = await db.prostormat_venues.findFirst({
+    const venue = await db.venue.findFirst({
       where: {
         id: venueId,
         managerId: userId, // Ensure user owns this venue
       },
       include: {
-        prostormat_venue_inquiries: {
+        inquiries: {
           orderBy: { createdAt: "desc" },
           take: 10,
         },
         _count: {
           select: {
-            prostormat_venue_inquiries: true,
+            inquiries: true,
           }
         }
       }

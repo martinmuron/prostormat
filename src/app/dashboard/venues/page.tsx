@@ -13,19 +13,19 @@ export const dynamic = 'force-dynamic';
 
 async function getVenues() {
   try {
-    return await db.prostormat_venues.findMany({
+    return await db.venue.findMany({
       include: {
-        prostormat_users: {
+        manager: {
           select: { name: true, email: true, phone: true },
         },
         _count: {
-          select: { prostormat_venue_inquiries: true, prostormat_venue_broadcast_logs: true, prostormat_venue_favorites: true },
+          select: { inquiries: true, broadcastLogs: true },
         },
       },
       orderBy: { updatedAt: 'desc' },
     });
   } catch (error) {
-    console.error('Error fetching prostormat_venues:', error);
+    console.error('Error fetching venues:', error);
     return [];
   }
 }

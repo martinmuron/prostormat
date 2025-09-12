@@ -16,7 +16,7 @@ import { Search, Upload, MessageSquare, Euro, Users, MapPin, Calendar, ArrowRigh
 
 async function getFeaturedVenues() {
   try {
-    const venues = await db.prostormat_venues.findMany({
+    const venues = await db.venue.findMany({
       where: {
         status: { in: ["active", "draft"] },
       },

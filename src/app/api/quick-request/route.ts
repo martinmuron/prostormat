@@ -131,7 +131,7 @@ export async function POST(request: Request) {
         contactEmail: validatedData.contactEmail,
         contactPhone: validatedData.contactPhone || null,
         contactName: validatedData.contactName,
-        sentVenues: JSON.stringify(matchingVenues.map(v => v.id)),
+        sentVenues: matchingVenues.map(v => v.id),
         updatedAt: new Date()
       }
     })

@@ -281,8 +281,8 @@ async function addRealVenues() {
       const venue = await prisma.venue.create({
         data: {
           ...venueData,
-          amenities: JSON.stringify(venueData.amenities), // Convert array to JSON string
-          images: JSON.stringify(venueData.images), // Convert array to JSON string
+          amenities: venueData.amenities, // PostgreSQL schema expects array
+          images: venueData.images, // PostgreSQL schema expects array
           status: 'active',
           managerId: realVenuesManager.id,
           expiresAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000), // 1 year from now

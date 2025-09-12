@@ -27,13 +27,13 @@ async function getDashboardData(userId: string, userRole: string) {
       const venues = await db.venue.findMany({
         where: { managerId: userId },
         include: {
-          venueInquiry: {
+          inquiries: {
             orderBy: { createdAt: "desc" },
             take: 5,
           },
           _count: {
             select: {
-              venueInquiry: true,
+              inquiries: true,
             }
           }
         }
@@ -45,7 +45,7 @@ async function getDashboardData(userId: string, userRole: string) {
         stats: {
           totalVenues: venues.length,
           activeVenues: venues.filter(v => v.status === "active").length,
-          totalInquiries: venues.reduce((sum, venue) => sum + venue._count.venueInquiry, 0),
+          totalInquiries: venues.reduce((sum, venue) => sum + venue._count.inquiries, 0),
         }
       }
     }

@@ -22,8 +22,8 @@ async function getUser(id: string) {
             _count: {
               select: {
                 inquiries: true,
-                prostormat_venue_broadcast_logs: true,
-                prostormat_venue_favorites: true,
+                broadcastLogs: true,
+                // favorites: true, // TODO: Fix VenueFavorite model
               },
             },
           },
@@ -169,8 +169,8 @@ export default async function UserProfilePage({
                         <p className="text-sm text-muted-foreground">{venue.address}</p>
                         <div className="flex space-x-4 text-xs text-muted-foreground">
                           <span>{venue._count.inquiries} dotazů</span>
-                          <span>{venue._count.prostormat_venue_broadcast_logs} rozesílek</span>
-                          <span>{venue._count.prostormat_venue_favorites} oblíbených</span>
+                          <span>{venue._count.broadcastLogs} rozesílek</span>
+                          <span>{0} oblíbených</span>
                         </div>
                       </div>
                       <div className="flex space-x-2">

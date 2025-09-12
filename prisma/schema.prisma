@@ -167,6 +167,8 @@ model BlogPost {
   updatedAt       DateTime @updatedAt
 
   author User @relation(fields: [authorId], references: [id])
+
+  @@map("prostormat_blog_posts")
 }
 
 model VenueBroadcast {

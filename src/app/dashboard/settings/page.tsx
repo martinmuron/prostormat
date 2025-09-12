@@ -20,9 +20,9 @@ import Link from "next/link"
 async function getSystemInfo() {
   try {
     const [userCount, venueCount, requestCount] = await Promise.all([
-      db.prostormat_users.count(),
-      db.prostormat_venues.count(),
-      db.prostormat_event_requests.count(),
+      db.user.count(),
+      db.venue.count(),
+      db.eventRequest.count(),
     ])
 
     return {

@@ -8,12 +8,12 @@ import { Calendar, User, ArrowRight } from "lucide-react"
 
 async function getBlogPosts() {
   try {
-    const posts = await db.prostormat_blog_posts.findMany({
+    const posts = await db.blogPost.findMany({
       where: {
         status: "published"
       },
       include: {
-        prostormat_users: {
+        author: {
           select: {
             name: true,
             email: true,

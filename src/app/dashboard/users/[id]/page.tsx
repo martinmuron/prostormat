@@ -14,29 +14,29 @@ export const dynamic = 'force-dynamic';
 
 async function getUser(id: string) {
   try {
-    const user = await db.prostormat_users.findUnique({
+    const user = await db.user.findUnique({
       where: { id },
       include: {
-        prostormat_venues: {
+        venues: {
           include: {
             _count: {
               select: {
-                prostormat_venue_inquiries: true,
+                inquiries: true,
                 prostormat_venue_broadcast_logs: true,
                 prostormat_venue_favorites: true,
               },
             },
           },
         },
-        prostormat_event_requests: {
+        eventRequests: {
           orderBy: { createdAt: 'desc' },
           take: 5,
         },
-        prostormat_venue_inquiries: {
+        inquiries: {
           orderBy: { createdAt: 'desc' },
           take: 5,
           include: {
-            prostormat_venues: {
+            venues: {
               select: {
                 name: true,
                 slug: true,
@@ -141,9 +141,9 @@ export default async function UserProfilePage({
 
       <Tabs defaultValue="venues" className="space-y-4">
         <TabsList>
-          <TabsTrigger value="venues">Prostory ({user.prostormat_venues.length})</TabsTrigger>
-          <TabsTrigger value="requests">Veřejné zakázky ({user.prostormat_event_requests.length})</TabsTrigger>
-          <TabsTrigger value="inquiries">Dotazy ({user.prostormat_venue_inquiries.length})</TabsTrigger>
+          <TabsTrigger value="venues">Prostory ({user.venues.length})</TabsTrigger>
+          <TabsTrigger value="requests">Veřejné zakázky ({user.eventRequests.length})</TabsTrigger>
+          <TabsTrigger value="inquiries">Dotazy ({user.inquiries.length})</TabsTrigger>
           <TabsTrigger value="billing">Fakturace</TabsTrigger>
         </TabsList>
 
@@ -153,9 +153,9 @@ export default async function UserProfilePage({
               <CardTitle>Spravované prostory</CardTitle>
             </CardHeader>
             <CardContent>
-              {user.prostormat_venues.length > 0 ? (
+              {user.venues.length > 0 ? (
                 <div className="space-y-4">
-                  {user.prostormat_venues.map((venue) => (
+                  {user.venues.map((venue) => (
                     <div key={venue.id} className="flex items-center justify-between p-4 border rounded-lg">
                       <div className="space-y-1">
                         <div className="flex items-center space-x-2">
@@ -168,7 +168,7 @@ export default async function UserProfilePage({
                         </div>
                         <p className="text-sm text-muted-foreground">{venue.address}</p>
                         <div className="flex space-x-4 text-xs text-muted-foreground">
-                          <span>{venue._count.prostormat_venue_inquiries} dotazů</span>
+                          <span>{venue._count.inquiries} dotazů</span>
                           <span>{venue._count.prostormat_venue_broadcast_logs} rozesílek</span>
                           <span>{venue._count.prostormat_venue_favorites} oblíbených</span>
                         </div>
@@ -203,9 +203,9 @@ export default async function UserProfilePage({
               <CardTitle>Veřejné zakázky</CardTitle>
             </CardHeader>
             <CardContent>
-              {user.prostormat_event_requests.length > 0 ? (
+              {user.eventRequests.length > 0 ? (
                 <div className="space-y-4">
-                  {user.prostormat_event_requests.map((request) => (
+                  {user.eventRequests.map((request) => (
                     <div key={request.id} className="p-4 border rounded-lg">
                       <div className="flex items-center justify-between mb-2">
                         <h3 className="font-medium">{request.eventType}</h3>
@@ -236,12 +236,12 @@ export default async function UserProfilePage({
               <CardTitle>Dotazy na prostory</CardTitle>
             </CardHeader>
             <CardContent>
-              {user.prostormat_venue_inquiries.length > 0 ? (
+              {user.inquiries.length > 0 ? (
                 <div className="space-y-4">
-                  {user.prostormat_venue_inquiries.map((inquiry) => (
+                  {user.inquiries.map((inquiry) => (
                     <div key={inquiry.id} className="p-4 border rounded-lg">
                       <div className="flex items-center justify-between mb-2">
-                        <h3 className="font-medium">{inquiry.prostormat_venues.name}</h3>
+                        <h3 className="font-medium">{inquiry.venues.name}</h3>
                         <Badge variant="outline">
                           {inquiry.eventDate ? new Date(inquiry.eventDate).toLocaleDateString('cs-CZ') : 'Neuvedeno'}
                         </Badge>
@@ -289,11 +289,11 @@ export default async function UserProfilePage({
                   )}
                 </div>
                 
-                {user.prostormat_venues.length > 0 && (
+                {user.venues.length > 0 && (
                   <div className="mt-6">
                     <h3 className="text-lg font-medium mb-4">Fakturace prostorů</h3>
                     <div className="space-y-4">
-                      {user.prostormat_venues.map((venue) => (
+                      {user.venues.map((venue) => (
                         <div key={venue.id} className="p-4 border rounded-lg">
                           <div className="flex items-center justify-between">
                             <div>

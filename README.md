@@ -2,6 +2,8 @@
 
 A modern Next.js application for connecting event organizers with curated venue listings in Prague, Czech Republic.
 
+Note on structure: this repo is now unified. The single live app is under `src/` (Next.js App Router). If you see a local `prostormat/` folder, it’s a legacy copy and is ignored by Git.
+
 ## 🚀 Features
 
 - **Apple-inspired Design System** - Clean, minimalist UI with Czech localization

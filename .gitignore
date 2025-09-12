@@ -78,6 +78,9 @@ web_modules/
 .next
 out
 
+# Legacy nested app (unified to root `src/` app)
+prostormat/
+
 # Nuxt.js build / generate output
 .nuxt
 dist

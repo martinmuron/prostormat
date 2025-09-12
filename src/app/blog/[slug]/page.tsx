@@ -231,7 +231,7 @@ const placeholderPosts = [
 
 async function getBlogPost(slug: string) {
   try {
-    const post = await db.prostormat_blog_posts.findUnique({
+    const post = await db.blogPost.findUnique({
       where: {
         slug,
         status: "published"

@@ -55,6 +55,7 @@ export default function PricingPage() {
                 {/* Features List */}
                 <div className="space-y-4 mb-10">
                   {[
+                    'Profesionální promo video vaší lokace (zdarma v rámci ročního plánu)',
                     'Profil prostoru s fotogalerií',
                     'Neomezené dotazy od klientů',
                     'Přístup k požadavkům na akce',
@@ -113,10 +114,10 @@ export default function PricingPage() {
           </ScrollReveal>
 
           {/* Premium Pricing Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16 items-stretch">
             {/* Priority Package */}
             <ScrollReveal delay={100}>
-              <div className="bg-white rounded-3xl p-8 hover-lift transition-all duration-300 shadow-lg border border-gray-100 relative overflow-hidden group">
+              <div className="bg-white rounded-3xl p-8 hover-lift transition-all duration-300 shadow-lg border border-gray-100 relative overflow-hidden group h-full flex flex-col">
                 <div className="absolute top-4 right-4">
                   <span className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
                     NOVINKA
@@ -135,12 +136,13 @@ export default function PricingPage() {
                   <span className="text-4xl font-black text-black">2 200</span>
                   <span className="text-lg text-gray-600 ml-2">Kč / měsíc</span>
                 </div>
+                <div className="mt-auto" />
               </div>
             </ScrollReveal>
 
             {/* Top Priority Package */}
             <ScrollReveal delay={200}>
-              <div className="bg-white rounded-3xl p-8 hover-lift transition-all duration-300 shadow-lg border border-gray-100 relative overflow-hidden group">
+              <div className="bg-white rounded-3xl p-8 hover-lift transition-all duration-300 shadow-lg border border-gray-100 relative overflow-hidden group h-full flex flex-col">
                 <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-500 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
                   <TrendingUp className="w-8 h-8 text-white" />
                 </div>
@@ -157,12 +159,13 @@ export default function PricingPage() {
                 <p className="text-sm font-semibold text-green-600 text-center mb-6">
                   Až o 52% více poptávek
                 </p>
+                <div className="mt-auto" />
               </div>
             </ScrollReveal>
 
             {/* Double Package */}
             <ScrollReveal delay={300}>
-              <div className="bg-white rounded-3xl p-8 hover-lift transition-all duration-300 shadow-lg border-2 border-purple-200 relative overflow-hidden group">
+              <div className="bg-white rounded-3xl p-8 hover-lift transition-all duration-300 shadow-lg border-2 border-purple-200 relative overflow-hidden group h-full flex flex-col">
                 <div className="absolute top-4 right-4">
                   <span className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
                     POPULÁRNÍ
@@ -187,15 +190,16 @@ export default function PricingPage() {
                 <p className="text-sm font-semibold text-green-600 text-center mb-6">
                   Až o 90% více poptávek
                 </p>
+                <div className="mt-auto" />
               </div>
             </ScrollReveal>
           </div>
 
           {/* Premium Packages Row 2 */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-stretch">
             {/* Home Package */}
             <ScrollReveal delay={400}>
-              <div className="bg-white rounded-3xl p-8 hover-lift transition-all duration-300 shadow-lg border border-gray-100 relative overflow-hidden group">
+              <div className="bg-white rounded-3xl p-8 hover-lift transition-all duration-300 shadow-lg border border-gray-100 relative overflow-hidden group h-full flex flex-col">
                 <div className="absolute top-4 right-4">
                   <span className="bg-gradient-to-r from-green-500 to-teal-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
                     NOVINKA
@@ -217,12 +221,13 @@ export default function PricingPage() {
                 <p className="text-sm text-gray-500 text-center mb-6">
                   Nebo 2 900 Kč/týden
                 </p>
+                <div className="mt-auto" />
               </div>
             </ScrollReveal>
 
             {/* Cover Package */}
             <ScrollReveal delay={500}>
-              <div className="bg-white rounded-3xl p-8 hover-lift transition-all duration-300 shadow-lg border border-gray-100 relative overflow-hidden group">
+              <div className="bg-white rounded-3xl p-8 hover-lift transition-all duration-300 shadow-lg border border-gray-100 relative overflow-hidden group h-full flex flex-col">
                 <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-blue-500 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
                   <Mail className="w-8 h-8 text-white" />
                 </div>
@@ -236,12 +241,13 @@ export default function PricingPage() {
                   <span className="text-4xl font-black text-black">10 400</span>
                   <span className="text-lg text-gray-600 ml-2">Kč / měsíc</span>
                 </div>
+                <div className="mt-auto" />
               </div>
             </ScrollReveal>
 
             {/* Homepage + Top Priority Combo */}
             <ScrollReveal delay={600}>
-              <div className="bg-gradient-to-br from-black to-gray-800 rounded-3xl p-8 hover-lift transition-all duration-300 shadow-xl border border-gray-700 relative overflow-hidden group text-white">
+              <div className="bg-gradient-to-br from-black to-gray-800 rounded-3xl p-8 hover-lift transition-all duration-300 shadow-xl border border-gray-700 relative overflow-hidden group text-white h-full flex flex-col">
                 <div className="absolute top-4 right-4">
                   <span className="bg-gradient-to-r from-yellow-400 to-orange-500 text-black px-3 py-1 rounded-full text-sm font-bold">
                     NEJLEPŠÍ HODNOTA
@@ -269,6 +275,7 @@ export default function PricingPage() {
                 <p className="text-sm font-semibold text-yellow-400 text-center mb-6">
                   Úspora 1 400 Kč měsíčně
                 </p>
+                <div className="mt-auto" />
               </div>
             </ScrollReveal>
           </div>

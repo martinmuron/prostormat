@@ -14,7 +14,6 @@ import {
   AlertCircle,
   CheckCircle2
 } from 'lucide-react';
-import { uploadImage } from '@/lib/cloudinary';
 
 interface ImageManagerProps {
   images: string[];
@@ -83,7 +82,7 @@ export function ImageManager({
       try {
         setUploadProgress(prev => ({ ...prev, [uploadId]: 0 }));
         
-        // Convert to base64 for now (in production, use Cloudinary)
+        // Convert to base64 (stored directly without external service)
         const base64 = await convertToBase64(file);
         newImages.push(base64);
         

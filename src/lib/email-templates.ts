@@ -597,6 +597,7 @@ interface OrganizeEventThankYouData {
 }
 
 export function generateOrganizeEventThankYouEmail(data: OrganizeEventThankYouData) {
+  const baseUrl = process.env.NEXTAUTH_URL || 'https://prostormat-future-developments.vercel.app'
   const subject = `Děkujeme – postaráme se o vaši akci`
   const dateStr = data.eventDate ? new Date(data.eventDate).toLocaleDateString('cs-CZ') : null
   const details = [
@@ -638,7 +639,7 @@ export function generateOrganizeEventThankYouEmail(data: OrganizeEventThankYouDa
       </div>
       <p>Mezitím si můžete prohlédnout vybrané prostory:</p>
       <p>
-        <a class="cta" href="https://prostormat-production.up.railway.app/prostory">Prohlédnout prostory</a>
+        <a class="cta" href="${baseUrl}/prostory">Prohlédnout prostory</a>
       </p>
       <p class="muted">Pokud máte doplňující informace, stačí odpovědět na tento e‑mail.</p>
     </div>
@@ -657,7 +658,7 @@ děkujeme za váš zájem – brzy se vám ozveme s návrhem prostorů a komplet
 ${details ? `\n${details}\n` : ''}
 Vzhledem k vysoké poptávce aktuálně přijímáme pouze akce pro 100+ osob.
 
-Prostory: https://prostormat-production.up.railway.app/prostory
+Prostory: ${baseUrl}/prostory
 
 Prostormat – Platforma pro hledání event prostorů`
 

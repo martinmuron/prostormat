@@ -115,15 +115,6 @@ export default function HomePage() {
           </div>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center max-w-3xl mx-auto animate-slide-up" style={{ animationDelay: '0.6s' }}>
-            <Link href="/prostory" className="flex-1">
-              <Button 
-                size="lg" 
-                className="magnetic-button hover-lift w-full px-6 py-3 text-base font-medium rounded-xl bg-blue-600 text-white hover:bg-blue-700 transition-all duration-200 shadow-lg"
-              >
-                <Search className="w-5 h-5 mr-2" />
-                Najít prostory
-              </Button>
-            </Link>
             <Link href="/pridat-prostor" className="flex-1">
               <Button 
                 variant="outline" 
@@ -142,6 +133,7 @@ export default function HomePage() {
       {/* Quick Request Section */}
       <section className="py-16 sm:py-20 px-4 sm:px-6 bg-gradient-to-br from-blue-50 to-indigo-100">
         <div className="max-w-6xl mx-auto">
+          <ScrollReveal>
           <div className="text-center mb-12">
             <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-600 rounded-2xl mb-6">
               <Zap className="w-8 h-8 text-white" />
@@ -153,8 +145,10 @@ export default function HomePage() {
               Nemáte čas hledat? Popište svou akci a nechte majitele prostorů, aby se ozvali vám!
             </p>
           </div>
+          </ScrollReveal>
           
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <ScrollReveal>
             <div className="space-y-8">
               <div className="flex items-start space-x-4">
                 <div className="flex-shrink-0 w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center">
@@ -198,7 +192,9 @@ export default function HomePage() {
                 </div>
               </div>
             </div>
+            </ScrollReveal>
             
+            <ScrollReveal delay={150}>
             <div className="bg-white rounded-3xl p-8 shadow-xl border border-gray-200">
               <div className="text-center mb-6">
                 <h3 className="text-2xl font-bold text-gray-900 mb-2">
@@ -260,6 +256,7 @@ export default function HomePage() {
                 </Link>
               </div>
             </div>
+            </ScrollReveal>
           </div>
         </div>
       </section>

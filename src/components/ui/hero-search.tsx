@@ -24,19 +24,19 @@ export function HeroSearch() {
   return (
     <div className="max-w-4xl mx-auto">
       <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Filter Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-          {/* Venue Type Filter */}
-          <div className="bg-white rounded-2xl p-6 border-2 border-blue-700">
-            <div className="flex items-center justify-center mb-4">
-              <div className="w-8 h-8 bg-blue-700 rounded-lg flex items-center justify-center mr-3">
-                <Calendar className="h-4 w-4 text-white" />
-              </div>
-              <label className="text-base font-medium text-black">Typ prostoru</label>
-            </div>
-            <div className="flex justify-center">
+        {/* Unified Filter Box */}
+        <div className="bg-white/90 backdrop-blur rounded-2xl p-6 md:p-8 border-2 border-gray-200 shadow-lg max-w-5xl mx-auto animate-slide-up">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Venue Type */}
+            <div>
+              <label className="flex items-center text-sm font-medium text-black mb-2">
+                <span className="inline-flex items-center justify-center w-7 h-7 bg-blue-700 rounded-md mr-2">
+                  <Calendar className="h-4 w-4 text-white" />
+                </span>
+                Typ prostoru
+              </label>
               <Select value={selectedType} onValueChange={setSelectedType}>
-                <SelectTrigger className="bg-white border-2 border-blue-700 text-black focus:border-black w-full max-w-xs">
+                <SelectTrigger className="bg-white border-2 border-blue-700 text-black focus:border-black">
                   <SelectValue placeholder="Všechny typy" />
                 </SelectTrigger>
                 <SelectContent>
@@ -47,19 +47,17 @@ export function HeroSearch() {
                 </SelectContent>
               </Select>
             </div>
-          </div>
 
-          {/* Capacity Filter */}
-          <div className="bg-white rounded-2xl p-6 border-2 border-green-700">
-            <div className="flex items-center justify-center mb-4">
-              <div className="w-8 h-8 bg-green-700 rounded-lg flex items-center justify-center mr-3">
-                <Users className="h-4 w-4 text-white" />
-              </div>
-              <label className="text-base font-medium text-black">Kapacita</label>
-            </div>
-            <div className="flex justify-center">
+            {/* Capacity */}
+            <div>
+              <label className="flex items-center text-sm font-medium text-black mb-2">
+                <span className="inline-flex items-center justify-center w-7 h-7 bg-green-700 rounded-md mr-2">
+                  <Users className="h-4 w-4 text-white" />
+                </span>
+                Kapacita
+              </label>
               <Select value={selectedCapacity} onValueChange={setSelectedCapacity}>
-                <SelectTrigger className="bg-white border-2 border-green-700 text-black focus:border-black w-full max-w-xs">
+                <SelectTrigger className="bg-white border-2 border-green-700 text-black focus:border-black">
                   <SelectValue placeholder="Libovolná kapacita" />
                 </SelectTrigger>
                 <SelectContent>
@@ -70,19 +68,17 @@ export function HeroSearch() {
                 </SelectContent>
               </Select>
             </div>
-          </div>
 
-          {/* Location Filter */}
-          <div className="bg-white rounded-2xl p-6 border-2 border-amber-700">
-            <div className="flex items-center justify-center mb-4">
-              <div className="w-8 h-8 bg-amber-700 rounded-lg flex items-center justify-center mr-3">
-                <MapPin className="h-4 w-4 text-white" />
-              </div>
-              <label className="text-base font-medium text-black">Lokalita</label>
-            </div>
-            <div className="flex justify-center">
+            {/* Location */}
+            <div>
+              <label className="flex items-center text-sm font-medium text-black mb-2">
+                <span className="inline-flex items-center justify-center w-7 h-7 bg-amber-700 rounded-md mr-2">
+                  <MapPin className="h-4 w-4 text-white" />
+                </span>
+                Lokalita
+              </label>
               <Select value={selectedDistrict} onValueChange={setSelectedDistrict}>
-                <SelectTrigger className="bg-white border-2 border-amber-700 text-black focus:border-black w-full max-w-xs">
+                <SelectTrigger className="bg-white border-2 border-amber-700 text-black focus:border-black">
                   <SelectValue placeholder="Celá Praha" />
                 </SelectTrigger>
                 <SelectContent>

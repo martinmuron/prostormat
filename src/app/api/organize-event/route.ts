@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
 
     if (typeof data.guestCount !== 'number' || data.guestCount < 100) {
       return NextResponse.json({
-        error: "Vzhledem k vysoké poptávce aktuálně přijímáme pouze akce pro 100+ osob.",
+        error: "Vzhledem k vysoké poptávce aktuálně přijímáme pouze akce pro 30+ osob.",
       }, { status: 400 })
     }
 
@@ -120,4 +120,3 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Interní chyba serveru" }, { status: 500 })
   }
 }
-

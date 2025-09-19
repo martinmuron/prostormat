@@ -11,18 +11,18 @@ export default function PricingPage() {
       <AnimatedBackground />
       
       {/* Hero Section */}
-      <section className="relative py-32 px-6 bg-gradient-to-br from-black via-gray-900 to-gray-800">
+      <section className="relative py-24 px-6 bg-white border-b border-gray-200">
         <FloatingShapes />
         <div className="max-w-4xl mx-auto text-center relative z-20">
           <div className="animate-slide-up">
-            <h1 className="text-display text-white mb-6 font-black tracking-tight drop-shadow-lg">
+            <h1 className="text-display text-gray-900 mb-6 font-black tracking-tight">
               Jednoduché ceny<br />
               pro váš prostor
             </h1>
           </div>
           
           <div className="animate-slide-up" style={{ animationDelay: '0.2s' }}>
-            <p className="text-title-3 text-gray-200 mb-12 max-w-3xl mx-auto font-medium leading-relaxed">
+            <p className="text-title-3 text-gray-600 mb-12 max-w-3xl mx-auto font-medium leading-relaxed">
               Bez skrytých poplatků. Bez provizí z rezervací. Pouze roční předplatné 
               za maximální viditelnost vašeho prostoru.
             </p>
@@ -300,17 +300,16 @@ export default function PricingPage() {
       </section>
 
       {/* Final CTA Section */}
-      <section className="relative py-20 px-6 bg-gradient-to-br from-black via-gray-900 to-gray-800 overflow-hidden">
-        {/* Background decorative elements */}
-        <div className="absolute top-10 left-10 w-32 h-32 bg-white/10 rounded-full blur-2xl animate-float-slow" />
-        <div className="absolute bottom-10 right-10 w-40 h-40 bg-white/5 rounded-full blur-2xl animate-float-medium" />
+      <section className="relative py-20 px-6 bg-gray-50 overflow-hidden border-t border-gray-200">
+        <div className="absolute top-12 left-16 w-32 h-32 bg-blue-100/50 rounded-full blur-3xl animate-float-slow" />
+        <div className="absolute bottom-12 right-20 w-36 h-36 bg-indigo-100/40 rounded-full blur-3xl animate-float-medium" />
         
         <div className="max-w-4xl mx-auto relative z-10 text-center">
           <ScrollReveal>
-            <h2 className="text-3xl sm:text-title-1 text-white mb-6 leading-tight font-bold">
+            <h2 className="text-3xl sm:text-title-1 text-gray-900 mb-6 leading-tight font-bold">
               Připraveni začít?
             </h2>
-            <p className="text-lg sm:text-title-3 text-gray-200 max-w-3xl mx-auto leading-relaxed font-medium mb-12">
+            <p className="text-lg sm:text-title-3 text-gray-600 max-w-3xl mx-auto leading-relaxed font-medium mb-12">
               Přidejte svůj prostor na největší platformu event prostorů v Praze
               a začněte získávat nové klienty už dnes.
             </p>
@@ -318,9 +317,9 @@ export default function PricingPage() {
             <div className="flex flex-col sm:flex-row gap-6 justify-center max-w-lg mx-auto">
               <Link href="/pridat-prostor">
                 <Button 
-                  variant="secondary"
+                  variant="default"
                   size="lg" 
-                  className="magnetic-button hover-lift w-full sm:w-auto px-12 py-4 text-lg font-semibold rounded-2xl bg-white text-black hover:bg-gray-100 transition-all duration-300 shadow-xl"
+                  className="magnetic-button hover-lift w-full sm:w-auto px-12 py-4 text-lg font-semibold rounded-2xl bg-black text-white hover:bg-gray-900 transition-all duration-300 shadow-xl"
                 >
                   Přidat prostor
                 </Button>
@@ -328,7 +327,7 @@ export default function PricingPage() {
               <Link href="mailto:info@prostormat.cz">
                 <Button 
                   size="lg" 
-                  className="hover-lift magnetic-button w-full sm:w-auto px-12 py-4 text-lg font-semibold rounded-2xl border-2 border-white text-white bg-transparent hover:bg-white hover:text-black transition-all duration-300"
+                  className="hover-lift magnetic-button w-full sm:w-auto px-12 py-4 text-lg font-semibold rounded-2xl border-2 border-black text-black bg-transparent hover:bg-black hover:text-white transition-all duration-300"
                 >
                   Kontaktovat nás
                 </Button>

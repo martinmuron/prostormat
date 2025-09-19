@@ -72,8 +72,13 @@ export default function ContactPage() {
   return (
     <div className="min-h-screen bg-white relative overflow-hidden">
       {/* Hero Section */}
-      <section className="relative py-24 px-6 bg-white">
-        <div className="max-w-4xl mx-auto text-center">
+      <section className="relative py-20 px-6 bg-white border-b border-gray-200 overflow-hidden">
+        <div className="absolute inset-0">
+          <div className="absolute top-12 left-16 w-72 h-72 bg-blue-100/40 rounded-full blur-3xl animate-float-slow" />
+          <div className="absolute bottom-0 right-20 w-64 h-64 bg-indigo-100/40 rounded-full blur-3xl animate-float-medium" />
+        </div>
+
+        <div className="max-w-4xl mx-auto text-center relative z-10">
           <div className="animate-slide-up">
             <h1 className="text-4xl sm:text-5xl font-bold text-black mb-6 tracking-tight">
               Kontakt
@@ -89,9 +94,9 @@ export default function ContactPage() {
       </section>
 
       {/* Contact Content */}
-      <section className="py-20 px-6 bg-white relative">
+      <section className="py-16 px-6 bg-white relative">
         <div className="max-w-7xl mx-auto">
-          <div className="grid md:grid-cols-2 gap-12">
+          <div className="grid md:grid-cols-2 gap-10">
             {/* Contact Info */}
             <ScrollReveal>
               <div className="space-y-8">
@@ -281,23 +286,22 @@ export default function ContactPage() {
       </section>
 
       {/* FAQ Section */}
-      <section className="relative py-20 px-6 bg-gradient-to-br from-gray-900 via-black to-gray-800 overflow-hidden">
-        {/* Background decorative elements */}
-        <div className="absolute top-10 left-10 w-32 h-32 bg-white/10 rounded-full blur-2xl animate-float-slow" />
-        <div className="absolute bottom-10 right-10 w-40 h-40 bg-white/5 rounded-full blur-2xl animate-float-medium" />
+      <section className="relative py-20 px-6 bg-gray-50 overflow-hidden border-t border-gray-200">
+        <div className="absolute top-12 left-16 w-32 h-32 bg-blue-100/50 rounded-full blur-3xl animate-float-slow" />
+        <div className="absolute bottom-12 right-20 w-36 h-36 bg-indigo-100/40 rounded-full blur-3xl animate-float-medium" />
         
         <div className="max-w-7xl mx-auto relative z-10">
           <ScrollReveal>
             <div className="text-center">
-              <h2 className="text-3xl sm:text-title-1 text-white mb-6 leading-tight font-bold">
+              <h2 className="text-3xl sm:text-title-1 text-gray-900 mb-6 leading-tight font-bold">
                 Často kladené otázky
               </h2>
-              <p className="text-lg sm:text-title-3 text-gray-200 max-w-3xl mx-auto leading-relaxed font-medium mb-12">
+              <p className="text-lg sm:text-title-3 text-gray-600 max-w-3xl mx-auto leading-relaxed font-medium mb-12">
                 Možná najdete odpověď na vaši otázku v našich FAQ
               </p>
               <a
                 href="/faq"
-                className="magnetic-button hover-lift px-10 py-4 text-lg font-semibold rounded-2xl bg-white text-black hover:bg-gray-100 transition-all duration-300 shadow-xl inline-block"
+                className="magnetic-button hover-lift px-10 py-4 text-lg font-semibold rounded-2xl bg-black text-white hover:bg-gray-900 transition-all duration-300 shadow-xl inline-block"
               >
                 Zobrazit FAQ
               </a>

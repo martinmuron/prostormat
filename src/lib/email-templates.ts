@@ -635,7 +635,7 @@ export function generateOrganizeEventThankYouEmail(data: OrganizeEventThankYouDa
       <p>Děkujeme za váš zájem – náš tým se vám brzy ozve s návrhem prostorů a kompletní organizací akce.</p>
       ${details ? `<p class="muted" style="margin: 12px 0 0 0">${details}</p>` : ''}
       <div class="note" style="margin: 20px 0;">
-        <strong>Vzhledem k vysoké poptávce</strong> aktuálně přijímáme pouze akce pro <strong>100+ osob</strong>.
+        <strong>Vzhledem k vysoké poptávce</strong> aktuálně přijímáme pouze akce pro <strong>30+ osob</strong>.
       </div>
       <p>Mezitím si můžete prohlédnout vybrané prostory:</p>
       <p>
@@ -656,7 +656,7 @@ export function generateOrganizeEventThankYouEmail(data: OrganizeEventThankYouDa
 Ahoj ${data.name},
 děkujeme za váš zájem – brzy se vám ozveme s návrhem prostorů a kompletní organizací akce.
 ${details ? `\n${details}\n` : ''}
-Vzhledem k vysoké poptávce aktuálně přijímáme pouze akce pro 100+ osob.
+Vzhledem k vysoké poptávce aktuálně přijímáme pouze akce pro 30+ osob.
 
 Prostory: ${baseUrl}/prostory
 
@@ -719,7 +719,7 @@ export function generateOrganizeEventAdminNotification(data: OrganizeEventAdminD
         ${data.budgetRange ? `<p class="row"><span class="label">Rozpočet:</span> ${data.budgetRange}</p>` : ''}
         ${data.message ? `<div class="row" style="margin-top:12px"><span class="label">Poznámka:</span><div style="margin-top:4px; white-space:pre-wrap">${data.message}</div></div>` : ''}
         <div class="note" style="margin-top:16px;">
-          Vzhledem k vysoké poptávce aktuálně přijímáme pouze akce pro 100+ osob.
+          Vzhledem k vysoké poptávce aktuálně přijímáme pouze akce pro 30+ osob.
         </div>
       </div>
     </div>
@@ -733,7 +733,7 @@ E‑mail: ${data.email}
 ${data.phone ? `Telefon: ${data.phone}\n` : ''}${data.company ? `Společnost: ${data.company}\n` : ''}${data.eventType ? `Typ akce: ${data.eventType}\n` : ''}${typeof data.guestCount === 'number' ? `Počet hostů: ${data.guestCount}\n` : ''}Datum: ${dateStr}
 ${data.locationPreference ? `Lokalita: ${data.locationPreference}\n` : ''}${data.budgetRange ? `Rozpočet: ${data.budgetRange}\n` : ''}${data.message ? `\nPoznámka:\n${data.message}\n` : ''}
 
-Pozn.: Vzhledem k vysoké poptávce aktuálně přijímáme pouze akce pro 100+ osob.`
+Pozn.: Vzhledem k vysoké poptávce aktuálně přijímáme pouze akce pro 30+ osob.`
 
   return { subject, html, text }
 }

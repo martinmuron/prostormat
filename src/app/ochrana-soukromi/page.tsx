@@ -7,33 +7,30 @@ export default function PrivacyPolicyPage() {
   return (
     <div className="min-h-screen bg-white relative overflow-hidden">
       {/* Hero Section */}
-      <section className="relative py-32 px-6 bg-gradient-to-br from-gray-900 via-black to-gray-800 overflow-hidden">
-        {/* Animated geometric shapes */}
+      <section className="relative py-24 px-6 bg-white border-b border-gray-200 overflow-hidden">
         <div className="absolute inset-0">
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-white opacity-5 rounded-full blur-3xl animate-float-slow"></div>
-          <div className="absolute top-1/3 right-1/3 w-72 h-72 bg-white opacity-3 rounded-full blur-2xl animate-float-medium"></div>
-          <div className="absolute bottom-1/4 left-1/3 w-80 h-80 bg-white opacity-4 rounded-full blur-3xl animate-float-fast"></div>
+          <div className="absolute top-1/4 left-1/4 w-80 h-80 bg-blue-100/50 rounded-full blur-3xl animate-float-slow"></div>
+          <div className="absolute top-1/3 right-1/3 w-64 h-64 bg-indigo-100/40 rounded-full blur-3xl animate-float-medium"></div>
+          <div className="absolute bottom-1/4 left-1/3 w-72 h-72 bg-teal-100/40 rounded-full blur-3xl animate-float-fast"></div>
         </div>
         
-        {/* Grid pattern overlay */}
-        <div className="absolute inset-0 bg-gradient-to-br from-transparent via-white/5 to-transparent"></div>
         <div className="absolute inset-0" style={{
           backgroundImage: `
-            linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px)
+            linear-gradient(rgba(59, 130, 246, 0.06) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(59, 130, 246, 0.06) 1px, transparent 1px)
           `,
           backgroundSize: '50px 50px'
         }}></div>
         
         <div className="max-w-4xl mx-auto text-center relative z-20">
           <div className="animate-slide-up">
-            <h1 className="text-display text-white mb-6 font-black tracking-tight drop-shadow-2xl">
+            <h1 className="text-display text-gray-900 mb-6 font-black tracking-tight">
               Ochrana soukromí
             </h1>
           </div>
           
           <div className="animate-slide-up" style={{ animationDelay: '0.2s' }}>
-            <p className="text-title-3 text-gray-300 mb-12 max-w-2xl mx-auto font-medium">
+            <p className="text-title-3 text-gray-600 mb-12 max-w-2xl mx-auto font-medium">
               Jak zpracováváme a chráníme vaše osobní údaje
             </p>
           </div>

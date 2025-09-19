@@ -20,7 +20,7 @@ const formSchema = z.object({
   company: z.string().optional(),
   eventType: z.string().optional(),
   eventDate: z.string().optional(),
-  guestCount: z.coerce.number().int().min(100, 'Aktuálně přijímáme pouze akce pro 100+ osob'),
+  guestCount: z.coerce.number().int().min(30, 'Aktuálně přijímáme pouze akce pro 30+ osob'),
   budgetRange: z.string().optional(),
   locationPreference: z.string().optional(),
   message: z.string().optional(),
@@ -35,7 +35,7 @@ export default function OrganizeEventPage() {
   const { register, handleSubmit, formState: { errors }, reset, setValue, watch } = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      guestCount: 100,
+      guestCount: 30,
     }
   })
 
@@ -50,7 +50,7 @@ export default function OrganizeEventPage() {
 
       if (res.ok) {
         setIsSuccess(true)
-        reset({ guestCount: 100 })
+        reset({ guestCount: 30 })
       } else {
         const data = await res.json()
         alert(data.error || 'Nepodařilo se odeslat formulář')
@@ -92,7 +92,7 @@ export default function OrganizeEventPage() {
               Nechcete hledat prostory? Nemáte čas organizovat akci? Chcete lepší podmínky? Postaráme se o všechno – od prostoru přes catering až po techniku.
             </p>
             <div className="mx-auto max-w-xl bg-amber-50 border border-amber-200 rounded-xl p-4 text-amber-900">
-              <strong>Vzhledem k vysoké poptávce</strong> aktuálně přijímáme pouze akce pro <strong>100+ osob</strong>.
+              <strong>Vzhledem k vysoké poptávce</strong> aktuálně přijímáme pouze akce pro <strong>30+ osob</strong>.
             </div>
           </div>
         </div>
@@ -232,4 +232,3 @@ export default function OrganizeEventPage() {
     </div>
   )
 }
-

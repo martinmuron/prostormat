@@ -91,7 +91,7 @@ export function HeroSearch() {
             </div>
 
             {/* Submit */}
-            <div className="mt-2 md:mt-0">
+            <div className="mt-2 md:mt-0 md:self-center">
               <Button 
                 type="submit" 
                 className="w-full h-11 md:h-[42px] bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow-md hover:shadow-lg transition-all"

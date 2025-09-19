@@ -3,6 +3,8 @@
 import { useState } from 'react'
 import { Mail, Phone, MapPin, Clock } from 'lucide-react'
 import { ScrollReveal } from "@/components/ui/scroll-reveal"
+import { PageHero } from "@/components/layout/page-hero"
+import { Button } from "@/components/ui/button"
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -70,31 +72,34 @@ export default function ContactPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white relative overflow-hidden">
-      {/* Hero Section */}
-      <section className="relative py-20 px-6 bg-white border-b border-gray-200 overflow-hidden">
-        <div className="absolute inset-0">
-          <div className="absolute top-12 left-16 w-72 h-72 bg-blue-100/40 rounded-full blur-3xl animate-float-slow" />
-          <div className="absolute bottom-0 right-20 w-64 h-64 bg-indigo-100/40 rounded-full blur-3xl animate-float-medium" />
-        </div>
-
-        <div className="max-w-4xl mx-auto text-center relative z-10">
-          <div className="animate-slide-up">
-            <h1 className="text-4xl sm:text-5xl font-bold text-black mb-6 tracking-tight">
-              Kontakt
-            </h1>
-          </div>
-          
-          <div className="animate-slide-up" style={{ animationDelay: '0.2s' }}>
-            <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
-              Máte dotaz nebo potřebujete pomoc? Rádi vám pomůžeme!
-            </p>
-          </div>
-        </div>
-      </section>
+    <div className="min-h-screen bg-white">
+      <PageHero
+        eyebrow="Kontakt"
+        title="Jsme připraveni vám pomoci"
+        subtitle="Máte dotaz nebo potřebujete pomoc? Ozvěte se a náš tým se vám co nejdříve ozve zpět."
+        actions={
+          <>
+            <Button
+              asChild
+              size="lg"
+              className="magnetic-button hover-lift rounded-2xl px-8 py-4 text-base font-semibold shadow-lg bg-black text-white hover:bg-gray-900"
+            >
+              <a href="mailto:info@prostormat.cz">Napsat email</a>
+            </Button>
+            <Button
+              asChild
+              variant="outline"
+              size="lg"
+              className="magnetic-button hover-lift rounded-2xl px-8 py-4 text-base font-semibold border-2 border-black text-black hover:bg-black hover:text-white"
+            >
+              <a href="tel:+420775654639">Zavolat</a>
+            </Button>
+          </>
+        }
+      />
 
       {/* Contact Content */}
-      <section className="py-16 px-6 bg-white relative">
+      <section className="py-16 px-4 sm:px-6 bg-white relative">
         <div className="max-w-7xl mx-auto">
           <div className="grid md:grid-cols-2 gap-10">
             {/* Contact Info */}
@@ -286,7 +291,7 @@ export default function ContactPage() {
       </section>
 
       {/* FAQ Section */}
-      <section className="relative py-20 px-6 bg-gray-50 overflow-hidden border-t border-gray-200">
+      <section className="relative py-20 px-4 sm:px-6 bg-gray-50 overflow-hidden border-t border-gray-200">
         <div className="absolute top-12 left-16 w-32 h-32 bg-blue-100/50 rounded-full blur-3xl animate-float-slow" />
         <div className="absolute bottom-12 right-20 w-36 h-36 bg-indigo-100/40 rounded-full blur-3xl animate-float-medium" />
         

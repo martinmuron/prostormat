@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { ChevronDown, ChevronUp } from 'lucide-react'
 import { ScrollReveal } from "@/components/ui/scroll-reveal"
+import { PageHero } from "@/components/layout/page-hero"
 
 interface FAQItem {
   question: string
@@ -64,40 +65,15 @@ export default function FAQPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white relative overflow-hidden">
-      {/* Hero Section */}
-      <section className="relative py-24 px-6 bg-white border-b border-gray-200 overflow-hidden">
-        <div className="absolute inset-0">
-          <div className="absolute top-1/4 left-1/4 w-80 h-80 bg-blue-100/50 rounded-full blur-3xl animate-float-slow"></div>
-          <div className="absolute top-1/3 right-1/3 w-64 h-64 bg-indigo-100/40 rounded-full blur-3xl animate-float-medium"></div>
-          <div className="absolute bottom-1/4 left-1/3 w-72 h-72 bg-purple-100/40 rounded-full blur-3xl animate-float-fast"></div>
-        </div>
-        
-        <div className="absolute inset-0" style={{
-          backgroundImage: `
-            linear-gradient(rgba(59, 130, 246, 0.08) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(59, 130, 246, 0.08) 1px, transparent 1px)
-          `,
-          backgroundSize: '50px 50px'
-        }}></div>
-        
-        <div className="max-w-4xl mx-auto text-center relative z-20">
-          <div className="animate-slide-up">
-            <h1 className="text-display text-gray-900 mb-6 font-black tracking-tight">
-              Často kladené otázky
-            </h1>
-          </div>
-          
-          <div className="animate-slide-up" style={{ animationDelay: '0.2s' }}>
-            <p className="text-title-3 text-gray-600 mb-12 max-w-2xl mx-auto font-medium">
-              Najděte odpovědi na nejčastější otázky o ProstorMat
-            </p>
-          </div>
-        </div>
-      </section>
+    <div className="min-h-screen bg-white">
+      <PageHero
+        eyebrow="FAQ"
+        title="Často kladené otázky"
+        subtitle="Najděte odpovědi na nejčastější otázky o ProstorMat."
+      />
 
       {/* FAQ Content */}
-      <section className="py-20 px-6 bg-white relative">
+      <section className="py-20 px-4 sm:px-6 bg-white relative">
         <div className="max-w-7xl mx-auto">
           <ScrollReveal>
             <div className="text-center mb-16">
@@ -146,7 +122,7 @@ export default function FAQPage() {
       </section>
 
       {/* Contact CTA */}
-      <section className="relative py-20 px-6 bg-gray-50 overflow-hidden border-t border-gray-200">
+      <section className="relative py-20 px-4 sm:px-6 bg-gray-50 overflow-hidden border-t border-gray-200">
         <div className="absolute top-12 left-16 w-32 h-32 bg-blue-100/50 rounded-full blur-3xl animate-float-slow" />
         <div className="absolute bottom-12 right-20 w-36 h-36 bg-purple-100/40 rounded-full blur-3xl animate-float-medium" />
         

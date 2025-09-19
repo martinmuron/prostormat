@@ -1,37 +1,25 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { ScrollReveal } from "@/components/ui/scroll-reveal"
-import { AnimatedBackground, FloatingShapes } from "@/components/ui/animated-background"
+import { PageHero } from "@/components/layout/page-hero"
 import { Check, Star, Zap, TrendingUp, Mail } from "lucide-react"
 
 export default function PricingPage() {
   return (
-    <div className="min-h-screen bg-white relative overflow-hidden">
-      {/* Animated Background */}
-      <AnimatedBackground />
-      
-      {/* Hero Section */}
-      <section className="relative py-24 px-6 bg-white border-b border-gray-200">
-        <FloatingShapes />
-        <div className="max-w-4xl mx-auto text-center relative z-20">
-          <div className="animate-slide-up">
-            <h1 className="text-display text-gray-900 mb-6 font-black tracking-tight">
-              Jednoduché ceny<br />
-              pro váš prostor
-            </h1>
-          </div>
-          
-          <div className="animate-slide-up" style={{ animationDelay: '0.2s' }}>
-            <p className="text-title-3 text-gray-600 mb-12 max-w-3xl mx-auto font-medium leading-relaxed">
-              Bez skrytých poplatků. Bez provizí z rezervací. Pouze roční předplatné 
-              za maximální viditelnost vašeho prostoru.
-            </p>
-          </div>
-        </div>
-      </section>
+    <div className="min-h-screen bg-white">
+      <PageHero
+        eyebrow="Ceník"
+        title={
+          <>
+            Jednoduché ceny
+            <br className="hidden sm:block" /> pro váš prostor
+          </>
+        }
+        subtitle="Bez skrytých poplatků. Bez provizí z rezervací. Pouze roční předplatné za maximální viditelnost vašeho prostoru."
+      />
 
       {/* Pricing Section */}
-      <section className="py-20 px-6 bg-white relative">
+      <section className="py-20 px-4 sm:px-6 bg-white relative">
         <div className="max-w-4xl mx-auto">
           <ScrollReveal>
             <div className="bg-white border-2 border-gray-100 rounded-3xl p-8 sm:p-12 hover-lift transition-all duration-300 shadow-xl relative overflow-hidden">
@@ -100,7 +88,7 @@ export default function PricingPage() {
       </section>
 
       {/* Premium Packages Section */}
-      <section className="py-20 px-6 bg-gray-50 relative">
+      <section className="py-20 px-4 sm:px-6 bg-gray-50 relative">
         <div className="max-w-6xl mx-auto">
           <ScrollReveal>
             <div className="text-center mb-16">
@@ -300,7 +288,7 @@ export default function PricingPage() {
       </section>
 
       {/* Final CTA Section */}
-      <section className="relative py-20 px-6 bg-gray-50 overflow-hidden border-t border-gray-200">
+      <section className="relative py-20 px-4 sm:px-6 bg-gray-50 overflow-hidden border-t border-gray-200">
         <div className="absolute top-12 left-16 w-32 h-32 bg-blue-100/50 rounded-full blur-3xl animate-float-slow" />
         <div className="absolute bottom-12 right-20 w-36 h-36 bg-indigo-100/40 rounded-full blur-3xl animate-float-medium" />
         

@@ -15,7 +15,7 @@ import Link from "next/link"
 export type Venue = {
   id: string
   name: string
-  status: "draft" | "active" | "expired" | "suspended"
+  status: "draft" | "pending" | "published" | "hidden" | "active"
   venueType?: string | null
   address: string
   district?: string | null
@@ -118,10 +118,11 @@ export const columns: ColumnDef<Venue>[] = [
     cell: ({ row }) => {
       const status = row.getValue("status") as string
       const statusMap = {
+        published: { label: "Zveřejněný", icon: CheckCircle, color: "bg-green-100 text-green-800" },
         active: { label: "Aktivní", icon: CheckCircle, color: "bg-green-100 text-green-800" },
         draft: { label: "Koncept", icon: Clock, color: "bg-yellow-100 text-yellow-800" },
-        expired: { label: "Expirovaný", icon: XCircle, color: "bg-red-100 text-red-800" },
-        suspended: { label: "Pozastaveno", icon: XCircle, color: "bg-gray-100 text-gray-800" },
+        pending: { label: "Čeká", icon: Clock, color: "bg-orange-100 text-orange-800" },
+        hidden: { label: "Skrytý", icon: XCircle, color: "bg-gray-100 text-gray-800" },
       }
       const statusInfo = statusMap[status as keyof typeof statusMap] || { label: status, color: "bg-gray-100 text-gray-800" }
       

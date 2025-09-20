@@ -4,6 +4,7 @@ import { VenueFilters } from "@/components/venue/venue-filters"
 import { Button } from "@/components/ui/button"
 import { db } from "@/lib/db"
 import { VENUE_TYPES, PRAGUE_DISTRICTS, CAPACITY_RANGES } from "@/types"
+import { buildVenueWhereClause } from "@/lib/venue-filters"
 
 interface SearchParams {
   q?: string
@@ -14,60 +15,14 @@ interface SearchParams {
 
 async function getVenues(searchParams: SearchParams) {
   try {
-    const where: any = {
-      status: { in: ["active", "draft"] },
-    }
+    const where = buildVenueWhereClause({
+      q: searchParams.q ?? null,
+      type: searchParams.type ?? null,
+      district: searchParams.district ?? null,
+      capacity: searchParams.capacity ?? null,
+    })
 
-    // Search query
-    if (searchParams.q) {
-      where.OR = [
-        { name: { contains: searchParams.q, mode: 'insensitive' } },
-        { description: { contains: searchParams.q, mode: 'insensitive' } },
-        { address: { contains: searchParams.q, mode: 'insensitive' } },
-      ]
-    }
-
-    // Venue type filter
-    if (searchParams.type && searchParams.type !== 'all') {
-      where.venueType = searchParams.type
-    }
-
-    // District filter
-    if (searchParams.district && searchParams.district !== 'all') {
-      where.address = {
-        contains: searchParams.district,
-        mode: 'insensitive'
-      }
-    }
-
-    // Capacity filter
-    if (searchParams.capacity && searchParams.capacity !== 'all') {
-      const capacityRanges: { [key: string]: any } = {
-        'Do 25 lidí': { OR: [{ capacitySeated: { lte: 25 } }, { capacityStanding: { lte: 25 } }] },
-        '25 - 50 lidí': { OR: [
-          { capacitySeated: { gte: 25, lte: 50 } },
-          { capacityStanding: { gte: 25, lte: 50 } }
-        ]},
-        '50 - 100 lidí': { OR: [
-          { capacitySeated: { gte: 50, lte: 100 } },
-          { capacityStanding: { gte: 50, lte: 100 } }
-        ]},
-        '100 - 200 lidí': { OR: [
-          { capacitySeated: { gte: 100, lte: 200 } },
-          { capacityStanding: { gte: 100, lte: 200 } }
-        ]},
-        'Nad 200 lidí': { OR: [
-          { capacitySeated: { gte: 200 } },
-          { capacityStanding: { gte: 200 } }
-        ]},
-      }
-
-      if (capacityRanges[searchParams.capacity]) {
-        Object.assign(where, capacityRanges[searchParams.capacity])
-      }
-    }
-
-  const venues = await db.venue.findMany({
+    const venues = await db.venue.findMany({
       where,
       orderBy: {
         createdAt: "desc",

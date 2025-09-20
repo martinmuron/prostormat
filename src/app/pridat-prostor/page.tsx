@@ -268,6 +268,7 @@ export default function AddVenuePage() {
                 <li>✅ Váš účet byl úspěšně vytvořen</li>
                 <li>⏳ Prostor nyní čeká na schválení</li>
                 <li>📧 Po schválení vám zašleme emailové oznámení</li>
+                <li>✏️ Po přihlášení můžete prostor ihned upravovat v administraci</li>
                 <li>🎯 Poté můžete začít přijímat rezervace</li>
               </ul>
             </div>

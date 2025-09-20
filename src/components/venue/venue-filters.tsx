@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from "react"
-import { useRouter, useSearchParams } from "next/navigation"
+import { useRouter } from "next/navigation"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -19,7 +19,6 @@ interface VenueFiltersProps {
 
 export function VenueFilters({ initialValues }: VenueFiltersProps) {
   const router = useRouter()
-  const searchParams = useSearchParams()
   
   const [filters, setFilters] = useState({
     q: initialValues.q || '',
@@ -27,6 +26,8 @@ export function VenueFilters({ initialValues }: VenueFiltersProps) {
     district: initialValues.district || '',
     capacity: initialValues.capacity || '',
   })
+  const [matchingCount, setMatchingCount] = useState<number | null>(null)
+  const [isCounting, setIsCounting] = useState(false)
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -35,12 +36,67 @@ export function VenueFilters({ initialValues }: VenueFiltersProps) {
     Object.entries(filters).forEach(([key, value]) => {
       if (value && value !== 'all') params.set(key, value)
     })
-    
-    router.push(`/prostory?${params.toString()}`)
+
+    const paramsString = params.toString()
+    router.push(paramsString ? `/prostory?${paramsString}` : '/prostory')
   }
 
   const handleFilterChange = (key: string, value: string) => {
     setFilters(prev => ({ ...prev, [key]: value }))
+  }
+
+  useEffect(() => {
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => {
+      const params = new URLSearchParams()
+      Object.entries(filters).forEach(([key, value]) => {
+        if (value && value !== 'all') params.set(key, value)
+      })
+
+      const paramsString = params.toString()
+      const url = paramsString
+        ? `/api/venues/count?${paramsString}`
+        : '/api/venues/count'
+
+      setIsCounting(true)
+      fetch(url, {
+        signal: controller.signal,
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error('Failed to fetch count')
+          }
+          return response.json()
+        })
+        .then((data) => {
+          setMatchingCount(typeof data.count === 'number' ? data.count : null)
+        })
+        .catch((error) => {
+          if (error.name !== 'AbortError') {
+            console.error('Error fetching venue count:', error)
+            setMatchingCount(null)
+          }
+        })
+        .finally(() => {
+          setIsCounting(false)
+        })
+    }, 300)
+
+    return () => {
+      controller.abort()
+      clearTimeout(timeoutId)
+    }
+  }, [filters])
+
+  const getButtonLabel = () => {
+    if (isCounting) return 'Počítám…'
+    if (matchingCount === null) return 'Najít prostory'
+    if (matchingCount === 0) return 'Žádné prostory'
+    if (matchingCount === 1) return 'Najít 1 prostor'
+    if (matchingCount >= 2 && matchingCount <= 4) {
+      return `Najít ${matchingCount} prostory`
+    }
+    return `Najít ${matchingCount} prostorů`
   }
 
   return (
@@ -134,12 +190,23 @@ export function VenueFilters({ initialValues }: VenueFiltersProps) {
             </div>
           </div>
 
-          <Button 
-            type="submit" 
-            className="h-12 px-6 text-sm rounded-xl font-semibold bg-black text-white hover:bg-gray-800 transition-all duration-200 whitespace-nowrap"
-          >
-            Filtrovat
-          </Button>
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+            <Button 
+              type="submit" 
+              className="h-12 px-6 text-sm rounded-xl font-semibold bg-black text-white hover:bg-gray-800 transition-all duration-200 whitespace-nowrap"
+            >
+              {getButtonLabel()}
+            </Button>
+            {!isCounting && matchingCount !== null && (
+              <span className="text-sm text-gray-600">
+                {matchingCount === 0
+                  ? 'Aktuálním filtrům neodpovídá žádný prostor'
+                  : matchingCount === 1
+                    ? '1 prostor odpovídá zvoleným filtrům'
+                    : `${matchingCount} prostorů odpovídá zvoleným filtrům`}
+              </span>
+            )}
+          </div>
         </div>
       </div>
     </form>

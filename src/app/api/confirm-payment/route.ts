@@ -66,21 +66,51 @@ export async function POST(request: NextRequest) {
     // Parse venue data
     const venueData = JSON.parse(payment.venue_data);
 
-    // Create user account first
+    // Create or update user account first
     const hashedPassword = await bcrypt.hash(venueData.userPassword, 12);
-    const userId = nanoid();
+    const normalizedName = typeof venueData.userName === 'string' ? venueData.userName.trim() : null;
+    const normalizedPhone = typeof venueData.userPhone === 'string' ? venueData.userPhone.trim() : null;
 
-    await prisma.user.create({
-      data: {
-        id: userId,
-        name: venueData.userName,
-        email: venueData.userEmail,
-        password: hashedPassword,
-        phone: venueData.userPhone || null,
-        role: 'venue_manager',
-        createdAt: new Date(),
-      },
+    const existingUser = await prisma.user.findUnique({
+      where: { email: venueData.userEmail },
     });
+
+    let userId: string;
+
+    if (existingUser) {
+      userId = existingUser.id;
+      const targetRole = existingUser.role === 'admin' ? existingUser.role : 'venue_manager';
+
+      const updatedPhone = normalizedPhone === null
+        ? existingUser.phone
+        : normalizedPhone.length > 0
+          ? normalizedPhone
+          : null;
+
+      await prisma.user.update({
+        where: { id: existingUser.id },
+        data: {
+          name: normalizedName && normalizedName.length > 0 ? normalizedName : existingUser.name,
+          phone: updatedPhone,
+          role: targetRole,
+          password: hashedPassword,
+        },
+      });
+    } else {
+      userId = nanoid();
+
+      await prisma.user.create({
+        data: {
+          id: userId,
+          name: normalizedName && normalizedName.length > 0 ? normalizedName : null,
+          email: venueData.userEmail,
+          password: hashedPassword,
+          phone: normalizedPhone === null ? null : normalizedPhone.length > 0 ? normalizedPhone : null,
+          role: 'venue_manager',
+          createdAt: new Date(),
+        },
+      });
+    }
 
     // Create venue (status: pending approval)
     const venueId = nanoid();
@@ -138,6 +168,7 @@ export async function POST(request: NextRequest) {
             <li>✅ Váš účet byl vytvořen</li>
             <li>⏳ Váš prostor čeká na schválení administrátorem</li>
             <li>📧 Po schválení vám pošleme email a prostor se zpřístupní</li>
+            <li>✏️ Po přihlášení můžete prostor ihned upravovat v administraci</li>
             <li>🎯 Pak budete moci přijímat rezervace!</li>
           </ul>
           

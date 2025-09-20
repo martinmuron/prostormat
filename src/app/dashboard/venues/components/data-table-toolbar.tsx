@@ -10,20 +10,24 @@ import { DataTableFacetedFilter } from "./data-table-faceted-filter"
 
 const statuses = [
   {
-    value: "active",
-    label: "Aktivní",
+    value: "published",
+    label: "Zveřejněné",
   },
   {
     value: "draft",
     label: "Koncept",
   },
   {
-    value: "expired",
-    label: "Expirované",
+    value: "pending",
+    label: "Čekající",
   },
   {
-    value: "suspended",
-    label: "Pozastavené",
+    value: "hidden",
+    label: "Skryté",
+  },
+  {
+    value: "active",
+    label: "Aktivní (legacy)",
   },
 ]
 

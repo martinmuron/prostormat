@@ -6,14 +6,19 @@ import { z } from "zod"
 
 const updateVenueSchema = z.object({
   name: z.string().min(2).optional(),
-  description: z.string().optional(),
+  description: z.string().optional().or(z.literal("")),
   address: z.string().min(5).optional(),
-  district: z.string().min(3).optional(),
+  district: z.string().min(2).optional().or(z.literal("")),
   venueType: z.string().optional().nullable(),
-  contactEmail: z.string().email().optional().nullable(),
-  contactPhone: z.string().optional().nullable(),
-  youtubeUrl: z.string().url().optional().nullable(),
-  status: z.enum(["draft", "active", "expired", "suspended"]).optional(),
+  contactEmail: z.union([z.string().email(), z.literal("")]).optional(),
+  contactPhone: z.union([z.string(), z.literal("")]).optional(),
+  websiteUrl: z.union([z.string().url(), z.literal("")]).optional(),
+  youtubeUrl: z.union([z.string().url(), z.literal("")]).optional(),
+  capacitySeated: z.union([z.string(), z.number()]).optional(),
+  capacityStanding: z.union([z.string(), z.number()]).optional(),
+  amenities: z.array(z.string()).optional(),
+  images: z.array(z.string()).optional(),
+  status: z.enum(["draft", "pending", "published", "hidden", "active"]).optional(),
   featured: z.boolean().optional(),
   managerId: z.string().optional(), // Allow admin to assign managers
 })
@@ -51,16 +56,50 @@ export async function PATCH(
     const json = await request.json()
     const body = updateVenueSchema.parse(json)
 
-    // Prepare update data
-    const updateData: any = { ...body }
-    // Map youtubeUrl from payload to videoUrl in DB
-    if (typeof updateData.youtubeUrl !== 'undefined') {
-      updateData.videoUrl = updateData.youtubeUrl
-      delete updateData.youtubeUrl
+    const normalizeString = (value: unknown) => {
+      if (typeof value !== "string") return value
+      const trimmed = value.trim()
+      return trimmed.length === 0 ? null : trimmed
     }
-    
-    // Only admins can change managerId
-    if (session.user.role !== "admin" && body.managerId) {
+
+    const normalizeCapacity = (value: unknown) => {
+      if (typeof value === "number") {
+        return Number.isNaN(value) ? null : value
+      }
+      if (typeof value === "string") {
+        const trimmed = value.trim()
+        if (!trimmed) return null
+        const parsed = Number.parseInt(trimmed, 10)
+        return Number.isNaN(parsed) ? null : parsed
+      }
+      return null
+    }
+
+    const updateData: Record<string, unknown> = {}
+
+    if (typeof body.name !== "undefined") updateData.name = body.name
+    if (typeof body.description !== "undefined") updateData.description = normalizeString(body.description)
+    if (typeof body.address !== "undefined") updateData.address = body.address
+    if (typeof body.district !== "undefined") updateData.district = normalizeString(body.district)
+    if (typeof body.venueType !== "undefined") updateData.venueType = body.venueType ?? null
+    if (typeof body.contactEmail !== "undefined") updateData.contactEmail = normalizeString(body.contactEmail)
+    if (typeof body.contactPhone !== "undefined") updateData.contactPhone = normalizeString(body.contactPhone)
+    if (typeof body.websiteUrl !== "undefined") updateData.websiteUrl = normalizeString(body.websiteUrl)
+    if (typeof body.youtubeUrl !== "undefined") {
+      updateData.videoUrl = normalizeString(body.youtubeUrl)
+    }
+    if (typeof body.capacitySeated !== "undefined") updateData.capacitySeated = normalizeCapacity(body.capacitySeated)
+    if (typeof body.capacityStanding !== "undefined") updateData.capacityStanding = normalizeCapacity(body.capacityStanding)
+    if (typeof body.amenities !== "undefined") updateData.amenities = body.amenities ?? []
+    if (typeof body.images !== "undefined") updateData.images = body.images ?? []
+    if (typeof body.status !== "undefined") updateData.status = body.status
+    if (typeof body.featured !== "undefined") updateData.featured = body.featured
+    if (typeof body.managerId !== "undefined") updateData.managerId = body.managerId
+
+    // Only admins can change status, featured, or manager assignments
+    if (session.user.role !== "admin") {
+      delete updateData.status
+      delete updateData.featured
       delete updateData.managerId
     }
 

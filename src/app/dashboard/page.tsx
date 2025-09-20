@@ -44,7 +44,7 @@ async function getDashboardData(userId: string, userRole: string) {
         venues,
         stats: {
           totalVenues: venues.length,
-          activeVenues: venues.filter(v => v.status === "active").length,
+          activeVenues: venues.filter(v => v.status === "active" || v.status === "published").length,
           totalInquiries: venues.reduce((sum, venue) => sum + venue._count.inquiries, 0),
         }
       }

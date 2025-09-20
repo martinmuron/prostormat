@@ -20,7 +20,7 @@ export type EventType =
 
 export type UserRole = 'user' | 'venue_manager' | 'admin'
 
-export type VenueStatus = 'draft' | 'active' | 'expired'
+export type VenueStatus = 'draft' | 'pending' | 'published' | 'hidden' | 'active'
 
 export type EventStatus = 'active' | 'closed' | 'expired'
 

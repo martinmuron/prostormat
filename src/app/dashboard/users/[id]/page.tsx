@@ -160,11 +160,21 @@ export default async function UserProfilePage({
                       <div className="space-y-1">
                         <div className="flex items-center space-x-2">
                           <h3 className="font-medium">{venue.name}</h3>
-                          <Badge variant={venue.status === 'active' ? 'default' : 'secondary'}>
-                            {venue.status === 'active' ? 'Aktivní' : 
-                             venue.status === 'draft' ? 'Koncept' : 
-                             venue.status === 'expired' ? 'Expirovaný' : 'Pozastavený'}
-                          </Badge>
+                          {(() => {
+                            const statusMeta: Record<string, { label: string; variant: "default" | "secondary" | "outline" }> = {
+                              published: { label: 'Zveřejněno', variant: 'default' },
+                              active: { label: 'Aktivní', variant: 'default' },
+                              draft: { label: 'Koncept', variant: 'secondary' },
+                              pending: { label: 'Čeká na schválení', variant: 'secondary' },
+                              hidden: { label: 'Skryto', variant: 'secondary' },
+                            }
+                            const meta = statusMeta[venue.status as keyof typeof statusMeta] ?? { label: venue.status, variant: 'secondary' }
+                            return (
+                              <Badge variant={meta.variant}>
+                                {meta.label}
+                              </Badge>
+                            )
+                          })()}
                         </div>
                         <p className="text-sm text-muted-foreground">{venue.address}</p>
                         <div className="flex space-x-4 text-xs text-muted-foreground">

@@ -54,23 +54,31 @@ export function VenueEditForm({ venue }: VenueEditFormProps) {
     contactEmail: venue.contactEmail || "",
     contactPhone: venue.contactPhone || "",
     websiteUrl: venue.websiteUrl || "",
-    youtubeUrl: venue.youtubeUrl || "",
+    youtubeUrl: venue.videoUrl || "",
     images: venue.images || [],
     amenities: venue.amenities || [],
     status: venue.status || "draft"
   })
 
-  const venueTypes = [
-    { value: "conference-hall", label: "Konferenční sál" },
-    { value: "wedding-venue", label: "Svatební prostor" },
-    { value: "corporate-space", label: "Firemní prostor" },
-    { value: "gallery", label: "Galerie" },
-    { value: "restaurant", label: "Restaurace" },
-    { value: "hotel", label: "Hotel" },
-    { value: "outdoor-space", label: "Venkovní prostor" },
-    { value: "theater", label: "Divadlo" },
-    { value: "other", label: "Jiné" }
-  ]
+const venueTypes = [
+  { value: "conference-hall", label: "Konferenční sál" },
+  { value: "wedding-venue", label: "Svatební prostor" },
+  { value: "corporate-space", label: "Firemní prostor" },
+  { value: "gallery", label: "Galerie" },
+  { value: "restaurant", label: "Restaurace" },
+  { value: "hotel", label: "Hotel" },
+  { value: "outdoor-space", label: "Venkovní prostor" },
+  { value: "theater", label: "Divadlo" },
+  { value: "other", label: "Jiné" }
+]
+
+const statusLabels: Record<string, string> = {
+  draft: "Koncept",
+  pending: "Čeká na schválení",
+  published: "Zveřejněný",
+  active: "Aktivní",
+  hidden: "Skrytý",
+}
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -78,7 +86,7 @@ export function VenueEditForm({ venue }: VenueEditFormProps) {
 
     try {
       const response = await fetch(`/api/venues/${venue.id}`, {
-        method: "PUT",
+        method: "PATCH",
         headers: {
           "Content-Type": "application/json",
         },
@@ -371,24 +379,14 @@ export function VenueEditForm({ venue }: VenueEditFormProps) {
                       {/* Status */}
                       <div className="space-y-4">
                         <h3 className="text-lg font-medium text-gray-900">Stav prostoru</h3>
-                        
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Status
-                          </label>
-                          <Select
-                            value={formData.status}
-                            onValueChange={(value) => handleChange("status", value)}
-                          >
-                            <SelectTrigger>
-                              <SelectValue placeholder="Vyberte stav" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="draft">Koncept</SelectItem>
-                              <SelectItem value="active">Aktivní</SelectItem>
-                              <SelectItem value="expired">Neaktivní</SelectItem>
-                            </SelectContent>
-                          </Select>
+                        <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
+                          <p className="text-sm text-gray-600 mb-1">Aktuální stav</p>
+                          <p className="text-base font-semibold text-gray-900">
+                            {statusLabels[formData.status] || formData.status}
+                          </p>
+                          <p className="text-xs text-gray-500 mt-2">
+                            Stav prostoru upravuje tým Prostormat. Pokud potřebujete změnu viditelnosti, kontaktujte nás prosím.
+                          </p>
                         </div>
                       </div>
 

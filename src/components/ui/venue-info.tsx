@@ -78,6 +78,8 @@ export function VenueInfo({ venue }: VenueInfoProps) {
         return 'bg-yellow-100 text-yellow-800 border-yellow-300';
       case 'draft':
         return 'bg-gray-100 text-gray-800 border-gray-300';
+      case 'hidden':
+        return 'bg-gray-200 text-gray-800 border-gray-400';
       default:
         return 'bg-red-100 text-red-800 border-red-300';
     }
@@ -93,6 +95,8 @@ export function VenueInfo({ venue }: VenueInfoProps) {
         return 'Čeká na schválení';
       case 'draft':
         return 'Koncept';
+      case 'hidden':
+        return 'Skryto';
       default:
         return 'Neaktivní';
     }

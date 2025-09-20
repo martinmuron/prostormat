@@ -125,9 +125,9 @@ export function VenueForm({ venue }: VenueFormProps) {
             onChange={(e) => handleChange('status', e.target.value)}
           >
             <option value="draft">Koncept</option>
-            <option value="active">Aktivní</option>
-            <option value="expired">Expirovaný</option>
-            <option value="suspended">Pozastavený</option>
+            <option value="pending">Čeká na schválení</option>
+            <option value="published">Zveřejněný</option>
+            <option value="hidden">Skrytý</option>
           </select>
         </div>
       </div>

@@ -8,7 +8,7 @@ import { Building, MessageSquare, Eye, Plus, Calendar, Settings, CreditCard, Use
 interface VenueManagerDashboardProps {
   data: {
     user: any
-    prostormat_venues: any[]
+    venues?: any[]
     stats: {
       totalVenues: number
       activeVenues: number
@@ -18,7 +18,16 @@ interface VenueManagerDashboardProps {
 }
 
 export function VenueManagerDashboard({ data }: VenueManagerDashboardProps) {
-  const { user, prostormat_venues, stats } = data
+  const { user, venues: rawVenues = [], stats } = data
+  const venues = Array.isArray(rawVenues) ? rawVenues : []
+
+  const statusLabelMap: Record<string, { label: string; isActive: boolean }> = {
+    published: { label: "Zveřejněno", isActive: true },
+    active: { label: "Aktivní", isActive: true },
+    draft: { label: "Koncept", isActive: false },
+    pending: { label: "Čeká na schválení", isActive: false },
+    hidden: { label: "Skryto", isActive: false },
+  }
 
   // Mock subscription data - replace with real data
   const subscriptionData = {
@@ -151,7 +160,7 @@ export function VenueManagerDashboard({ data }: VenueManagerDashboardProps) {
             </div>
           </CardHeader>
           <CardContent>
-            {prostormat_venues.length === 0 ? (
+            {venues.length === 0 ? (
               <div className="text-center py-8">
                 <Building className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                 <p className="text-body text-gray-600 mb-4">
@@ -163,42 +172,47 @@ export function VenueManagerDashboard({ data }: VenueManagerDashboardProps) {
               </div>
             ) : (
               <div className="space-y-4">
-                {prostormat_venues.slice(0, 3).map((venue: any) => (
-                  <div key={venue.id} className="border border-gray-200 rounded-xl p-4 hover:shadow-md transition-shadow">
-                    <div className="flex items-start justify-between mb-3">
-                      <div className="flex-1">
-                        <h4 className="text-callout font-medium text-gray-900 mb-1">{venue.name}</h4>
-                        <p className="text-caption text-gray-600">
-                          {venue.inquiries?.length || 0} dotazů • {venue.capacitySeated || 0} míst k sezení
-                        </p>
+                {venues.slice(0, 3).map((venue: any) => {
+                  const statusMeta = statusLabelMap[venue.status] || { label: venue.status, isActive: false }
+                  const isActive = statusMeta.isActive
+
+                  return (
+                    <div key={venue.id} className="border border-gray-200 rounded-xl p-4 hover:shadow-md transition-shadow">
+                      <div className="flex items-start justify-between mb-3">
+                        <div className="flex-1">
+                          <h4 className="text-callout font-medium text-gray-900 mb-1">{venue.name}</h4>
+                          <p className="text-caption text-gray-600">
+                            {venue.inquiries?.length || 0} dotazů • {venue.capacitySeated || 0} míst k sezení
+                          </p>
+                        </div>
+                        <Badge 
+                          variant={isActive ? "default" : "secondary"}
+                          className={isActive ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-800"}
+                        >
+                          {statusMeta.label}
+                        </Badge>
                       </div>
-                      <Badge 
-                        variant={venue.status === "active" ? "default" : "secondary"}
-                        className={venue.status === "active" ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-800"}
-                      >
-                        {venue.status === "active" ? "Aktivní" : venue.status}
-                      </Badge>
+                      <div className="flex gap-2">
+                        <Link href={`/prostory/${venue.slug}`}>
+                          <Button variant="secondary" size="sm" className="text-gray-700 border-gray-300 hover:bg-gray-50">
+                            <Eye className="h-3 w-3 mr-1" />
+                            Zobrazit
+                          </Button>
+                        </Link>
+                        <Link href={`/dashboard/venue/${venue.id}/edit`}>
+                          <Button size="sm" className="bg-orange-600 hover:bg-orange-700 text-white">
+                            <Settings className="h-3 w-3 mr-1" />
+                            Upravit
+                          </Button>
+                        </Link>
+                      </div>
                     </div>
-                    <div className="flex gap-2">
-                      <Link href={`/prostory/${venue.slug}`}>
-                        <Button variant="secondary" size="sm" className="text-gray-700 border-gray-300 hover:bg-gray-50">
-                          <Eye className="h-3 w-3 mr-1" />
-                          Zobrazit
-                        </Button>
-                      </Link>
-                      <Link href={`/dashboard/venue/${venue.id}/edit`}>
-                        <Button size="sm" className="bg-orange-600 hover:bg-orange-700 text-white">
-                          <Settings className="h-3 w-3 mr-1" />
-                          Upravit
-                        </Button>
-                      </Link>
-                    </div>
-                  </div>
-                ))}
-                {prostormat_venues.length > 3 && (
+                  )
+                })}
+                {venues.length > 3 && (
                   <Link href="/dashboard/venues">
                     <Button variant="secondary" size="sm" className="w-full text-gray-700 border-gray-300 hover:bg-gray-50">
-                      Zobrazit všechny prostory ({prostormat_venues.length})
+                      Zobrazit všechny prostory ({venues.length})
                     </Button>
                   </Link>
                 )}
@@ -213,7 +227,7 @@ export function VenueManagerDashboard({ data }: VenueManagerDashboardProps) {
             <CardTitle className="text-gray-900">Nedávné dotazy</CardTitle>
           </CardHeader>
           <CardContent>
-            {prostormat_venues.every(v => !v.inquiries?.length) ? (
+            {venues.every(v => !v.inquiries?.length) ? (
               <div className="text-center py-8">
                 <MessageSquare className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                 <p className="text-body text-gray-600">
@@ -222,7 +236,7 @@ export function VenueManagerDashboard({ data }: VenueManagerDashboardProps) {
               </div>
             ) : (
               <div className="space-y-4">
-                {prostormat_venues
+                {venues
                   .flatMap(venue => 
                     (venue.inquiries || []).map((inquiry: any) => ({
                       ...inquiry,

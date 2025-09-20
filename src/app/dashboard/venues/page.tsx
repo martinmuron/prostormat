@@ -37,9 +37,10 @@ export default async function VenuesPage() {
   }
 
   const venues = await getVenues();
-  const activeVenues = venues.filter(v => v.status === 'active');
+  const publishedVenues = venues.filter(v => v.status === 'published' || v.status === 'active');
   const draftVenues = venues.filter(v => v.status === 'draft');
-  const expiredVenues = venues.filter(v => v.status === 'expired');
+  const pendingVenues = venues.filter(v => v.status === 'pending');
+  const hiddenVenues = venues.filter(v => v.status === 'hidden');
 
   return (
     <div className="space-y-6">
@@ -59,9 +60,10 @@ export default async function VenuesPage() {
       <Tabs defaultValue="all" className="space-y-4">
         <TabsList>
           <TabsTrigger value="all">Všechny ({venues.length})</TabsTrigger>
-          <TabsTrigger value="active">Aktivní ({activeVenues.length})</TabsTrigger>
+          <TabsTrigger value="published">Zveřejněné ({publishedVenues.length})</TabsTrigger>
           <TabsTrigger value="draft">Koncepty ({draftVenues.length})</TabsTrigger>
-          <TabsTrigger value="expired">Expirované ({expiredVenues.length})</TabsTrigger>
+          <TabsTrigger value="pending">Čekající ({pendingVenues.length})</TabsTrigger>
+          <TabsTrigger value="hidden">Skryté ({hiddenVenues.length})</TabsTrigger>
         </TabsList>
 
         <TabsContent value="all">
@@ -72,10 +74,10 @@ export default async function VenuesPage() {
           </Card>
         </TabsContent>
 
-        <TabsContent value="active">
+        <TabsContent value="published">
           <Card>
             <CardContent className="pt-6">
-              <DataTable columns={columns} data={activeVenues as any} />
+              <DataTable columns={columns} data={publishedVenues as any} />
             </CardContent>
           </Card>
         </TabsContent>
@@ -88,10 +90,18 @@ export default async function VenuesPage() {
           </Card>
         </TabsContent>
 
-        <TabsContent value="expired">
+        <TabsContent value="pending">
           <Card>
             <CardContent className="pt-6">
-              <DataTable columns={columns} data={expiredVenues as any} />
+              <DataTable columns={columns} data={pendingVenues as any} />
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="hidden">
+          <Card>
+            <CardContent className="pt-6">
+              <DataTable columns={columns} data={hiddenVenues as any} />
             </CardContent>
           </Card>
         </TabsContent>

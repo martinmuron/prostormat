@@ -32,6 +32,27 @@ import {
   ArrowLeft
 } from "lucide-react"
 
+// Form input types (before validation)
+interface VenueFormInputs {
+  userName?: string
+  userEmail?: string
+  userPassword?: string
+  userPhone?: string
+  name: string
+  description: string
+  address: string
+  district: string
+  capacitySeated: string
+  capacityStanding: string
+  venueType: string
+  contactEmail: string
+  contactPhone: string
+  websiteUrl: string
+  instagramUrl?: string
+  videoUrl?: string
+  musicAfter10: boolean
+}
+
 // Create dynamic schema based on auth status
 const createVenueFormSchema = (isLoggedIn: boolean) => z.object({
   // Account fields - conditional validation
@@ -45,8 +66,8 @@ const createVenueFormSchema = (isLoggedIn: boolean) => z.object({
   description: z.string().min(10, "Popis musí mít alespoň 10 znaků"),
   address: z.string().min(5, "Adresa musí mít alespoň 5 znaků"),
   district: z.string().min(1, "Městská část je povinná"),
-  capacitySeated: z.string().min(1, "Kapacita sedící je povinná").transform((val) => parseInt(val, 10)).refine((val) => val > 0, "Kapacita musí být větší než 0"),
-  capacityStanding: z.string().min(1, "Kapacita stojící je povinná").transform((val) => parseInt(val, 10)).refine((val) => val > 0, "Kapacita musí být větší než 0"),
+  capacitySeated: z.string().min(1, "Kapacita sedící je povinná").refine((val) => parseInt(val, 10) > 0, "Kapacita musí být větší než 0"),
+  capacityStanding: z.string().min(1, "Kapacita stojící je povinná").refine((val) => parseInt(val, 10) > 0, "Kapacita musí být větší než 0"),
   venueType: z.string().min(1, "Typ prostoru je povinný"),
   contactEmail: z.string().email("Neplatný email"),
   contactPhone: z.string().min(1, "Kontaktní telefon je povinný"),
@@ -57,6 +78,30 @@ const createVenueFormSchema = (isLoggedIn: boolean) => z.object({
 })
 
 type VenueFormData = z.infer<ReturnType<typeof createVenueFormSchema>>
+
+// Payment data interface (processed form data with images and amenities)
+interface PaymentData {
+  userName?: string | null
+  userEmail?: string | null
+  userPassword?: string
+  userPhone?: string
+  userId?: string
+  name: string
+  description: string
+  address: string
+  district: string
+  capacitySeated: number
+  capacityStanding: number
+  venueType: string
+  contactEmail: string
+  contactPhone: string
+  websiteUrl: string
+  instagramUrl?: string
+  videoUrl?: string
+  musicAfter10: boolean
+  amenities: string[]
+  images: string[]
+}
 
 const AMENITIES_OPTIONS = [
   "WiFi",
@@ -95,7 +140,7 @@ export default function AddVenuePage() {
   const [images, setImages] = useState<File[]>([])
   const [imageUrls, setImageUrls] = useState<string[]>([])
   const [amenities, setAmenities] = useState<string[]>([])
-  const [formData, setFormData] = useState<VenueFormData | null>(null)
+  const [formData, setFormData] = useState<PaymentData | null>(null)
   const [paymentError, setPaymentError] = useState<string | null>(null)
   const [isLoggedIn, setIsLoggedIn] = useState(false)
 
@@ -105,7 +150,7 @@ export default function AddVenuePage() {
     formState: { errors },
     setValue,
     watch,
-  } = useForm<VenueFormData>({
+  } = useForm<VenueFormInputs>({
     resolver: zodResolver(createVenueFormSchema(isLoggedIn)),
     defaultValues: {
       musicAfter10: false,
@@ -121,7 +166,7 @@ export default function AddVenuePage() {
       // Pre-fill user data
       if (session.user.name) setValue('userName', session.user.name)
       if (session.user.email) setValue('userEmail', session.user.email)
-      if (session.user.phone) setValue('userPhone', session.user.phone)
+      // Phone is not available in session, will be handled in form data preparation
     }
   }, [session, status, setValue])
 
@@ -210,41 +255,44 @@ export default function AddVenuePage() {
     }
   }
 
-  const onSubmit = async (data: VenueFormData) => {
+  const onSubmit = async (data: VenueFormInputs) => {
     if (data.videoUrl && !isYouTubeUrlValid) {
       alert("Zadejte prosím platnou YouTube URL")
       return
     }
 
     setIsSubmitting(true)
-    
+
     try {
+      // Validate data
+      const validatedData = createVenueFormSchema(isLoggedIn).parse(data)
+
       // Upload images first
       const uploadedImageUrls = await uploadImages()
 
-      // Prepare data for payment step
+      // Prepare data for payment step with proper type conversion
       const submitData = {
         // Account data - use session data if logged in
-        userName: isLoggedIn ? session?.user?.name : data.userName,
-        userEmail: isLoggedIn ? session?.user?.email : data.userEmail,
-        userPassword: isLoggedIn ? undefined : data.userPassword,
-        userPhone: isLoggedIn ? session?.user?.phone : data.userPhone,
+        userName: isLoggedIn ? session?.user?.name : validatedData.userName,
+        userEmail: isLoggedIn ? session?.user?.email : validatedData.userEmail,
+        userPassword: isLoggedIn ? undefined : validatedData.userPassword,
+        userPhone: validatedData.userPhone, // Phone from form data
         userId: isLoggedIn ? session?.user?.id : undefined,
 
         // Venue data
-        name: data.name,
-        description: data.description,
-        address: data.address,
-        district: data.district,
-        capacitySeated: data.capacitySeated,
-        capacityStanding: data.capacityStanding,
-        venueType: data.venueType,
-        contactEmail: data.contactEmail,
-        contactPhone: data.contactPhone,
-        websiteUrl: data.websiteUrl,
-        instagramUrl: data.instagramUrl,
-        videoUrl: data.videoUrl,
-        musicAfter10: data.musicAfter10,
+        name: validatedData.name,
+        description: validatedData.description,
+        address: validatedData.address,
+        district: validatedData.district,
+        capacitySeated: parseInt(validatedData.capacitySeated, 10),
+        capacityStanding: parseInt(validatedData.capacityStanding, 10),
+        venueType: validatedData.venueType,
+        contactEmail: validatedData.contactEmail,
+        contactPhone: validatedData.contactPhone,
+        websiteUrl: validatedData.websiteUrl,
+        instagramUrl: validatedData.instagramUrl,
+        videoUrl: validatedData.videoUrl,
+        musicAfter10: validatedData.musicAfter10,
         amenities,
         images: uploadedImageUrls,
       }

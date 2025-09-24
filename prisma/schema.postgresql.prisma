@@ -243,3 +243,17 @@ model EventRequestFavorite {
 
   @@unique([userId, eventRequestId])
 }
+
+model PaymentIntent {
+  id                     String    @id @default(cuid())
+  stripePaymentIntentId  String    @unique
+  venueData              String    // JSON string of venue form data
+  userEmail              String
+  status                 String    @default("pending") // pending, completed, failed
+  venueId                String?   // Set after venue is created
+  paymentCompletedAt     DateTime?
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
+
+  @@map("prostormat_payment_intents")
+}

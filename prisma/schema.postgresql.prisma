@@ -76,6 +76,7 @@ model Venue {
   slug             String   @unique
   description      String?
   address          String
+  district         String?  // Prague district (Praha 1, Praha 2, etc.)
   capacitySeated   Int?
   capacityStanding Int?
   venueType        String?
@@ -83,11 +84,14 @@ model Venue {
   contactEmail     String?
   contactPhone     String?
   websiteUrl       String?
+  instagramUrl     String?  // Instagram URL
   images           String[]
   videoUrl         String?
-  status           String   @default("draft") // draft, active, expired
+  musicAfter10     Boolean? // Can play music after 22:00
+  status           String   @default("draft") // draft, active, expired, pending, published
   managerId        String
   subscriptionId   String?  // Stripe subscription ID
+  paymentDate      DateTime? // When the 12,000 CZK was paid
   expiresAt        DateTime?
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt

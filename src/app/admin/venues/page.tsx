@@ -171,13 +171,22 @@ export default function VenueManagementPage() {
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Správa prostorů
-          </h1>
-          <p className="text-gray-600">
-            Spravujte viditelnost a stav všech prostorů na platformě ({venues.length} celkem)
-          </p>
+        <div className="mb-8 flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              Správa prostorů
+            </h1>
+            <p className="text-gray-600">
+              Spravujte viditelnost a stav všech prostorů na platformě ({venues.length} celkem)
+            </p>
+          </div>
+          <Button
+            onClick={() => window.open('/admin/venues/manual-add', '_blank')}
+            className="flex items-center gap-2"
+          >
+            <Edit className="h-4 w-4" />
+            Přidat prostor manuálně
+          </Button>
         </div>
 
         {/* Filters */}

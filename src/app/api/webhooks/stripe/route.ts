@@ -72,14 +72,14 @@ async function handlePaymentSucceeded(paymentIntent: any) {
 
   try {
     // Update payment status in database
-    await prisma.$executeRaw`
-      UPDATE paymentIntent 
-      SET 
-        status = 'succeeded',
-        updated_at = NOW()
-      WHERE stripe_payment_intent_id = ${paymentIntent.id}
-      AND status = 'pending'
-    `;
+    await prisma.paymentIntent.update({
+      where: {
+        stripePaymentIntentId: paymentIntent.id,
+      },
+      data: {
+        status: 'succeeded',
+      },
+    });
 
     // TODO: Fix EmailFlowLog model - temporarily disabled for deployment
     // Log successful payment webhook
@@ -109,35 +109,30 @@ async function handlePaymentFailed(paymentIntent: any) {
 
   try {
     // Update payment status in database
-    await prisma.$executeRaw`
-      UPDATE paymentIntent 
-      SET 
-        status = 'failed',
-        updated_at = NOW()
-      WHERE stripe_payment_intent_id = ${paymentIntent.id}
-    `;
+    await prisma.paymentIntent.update({
+      where: {
+        stripePaymentIntentId: paymentIntent.id,
+      },
+      data: {
+        status: 'failed',
+      },
+    });
 
     // Get payment details to notify user
-    const paymentRecord = await prisma.$queryRaw<{
-      id: string;
-      venue_data: string;
-      user_email: string;
-    }[]>`
-      SELECT id, venue_data, user_email 
-      FROM paymentIntent 
-      WHERE stripe_payment_intent_id = ${paymentIntent.id}
-      LIMIT 1
-    `;
+    const paymentRecord = await prisma.paymentIntent.findUnique({
+      where: {
+        stripePaymentIntentId: paymentIntent.id,
+      },
+    });
 
-    if (paymentRecord && paymentRecord.length > 0) {
-      const payment = paymentRecord[0];
-      const venueData = JSON.parse(payment.venue_data);
+    if (paymentRecord) {
+      const venueData = JSON.parse(paymentRecord.venueData);
 
       // Send payment failed notification
       try {
         await resend.emails.send({
           from: 'Prostormat <noreply@prostormat.cz>',
-          to: payment.user_email,
+          to: paymentRecord.userEmail,
           subject: '❌ Platba se nezdařila - Prostormat',
           html: `
             <h2>Platba se nezdařila</h2>
@@ -189,13 +184,14 @@ async function handlePaymentCanceled(paymentIntent: any) {
 
   try {
     // Update payment status in database
-    await prisma.$executeRaw`
-      UPDATE paymentIntent 
-      SET 
-        status = 'canceled',
-        updated_at = NOW()
-      WHERE stripe_payment_intent_id = ${paymentIntent.id}
-    `;
+    await prisma.paymentIntent.update({
+      where: {
+        stripePaymentIntentId: paymentIntent.id,
+      },
+      data: {
+        status: 'canceled',
+      },
+    });
 
     console.log(`Payment ${paymentIntent.id} marked as canceled`);
   } catch (error) {

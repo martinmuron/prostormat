@@ -154,21 +154,16 @@ export async function GET() {
     // Get payment information for each venue
     const venuesWithPayments = await Promise.all(
       pendingVenues.map(async (venue) => {
-        const payment = await prisma.$queryRaw<{
-          amount: number;
-          currency: string;
-          payment_completed_at: Date;
-          stripe_payment_intent_id: string;
-        }[]>`
-          SELECT amount, currency, payment_completed_at, stripe_payment_intent_id
-          FROM paymentIntent 
-          WHERE venue_id = ${venue.id} AND status = 'completed'
-          LIMIT 1
-        `;
+        const payment = await prisma.paymentIntent.findFirst({
+          where: {
+            venueId: venue.id,
+            status: 'completed',
+          },
+        });
 
         return {
           ...venue,
-          payment: payment[0] || null,
+          payment: payment || null,
         };
       })
     );

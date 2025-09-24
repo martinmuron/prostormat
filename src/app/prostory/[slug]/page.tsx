@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button"
 import { db } from "@/lib/db"
 import { VENUE_TYPES } from "@/types"
 import type { VenueType } from "@/types"
-import { MapPin, Users, Phone, Mail, Globe, Heart } from "lucide-react"
+import { MapPin, Users, Phone, Mail, Globe, Heart, Instagram } from "lucide-react"
 
 async function getVenue(slug: string) {
   try {
@@ -176,13 +176,26 @@ export default async function VenueDetailPage({
                   {venue.websiteUrl && (
                     <div className="flex items-center gap-3">
                       <Globe className="h-5 w-5 text-gray-500" />
-                      <a 
+                      <a
                         href={venue.websiteUrl}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-body text-blue-600 hover:underline"
                       >
                         Webové stránky
+                      </a>
+                    </div>
+                  )}
+                  {venue.instagramUrl && (
+                    <div className="flex items-center gap-3">
+                      <Instagram className="h-5 w-5 text-gray-500" />
+                      <a
+                        href={venue.instagramUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-body text-blue-600 hover:underline"
+                      >
+                        Instagram
                       </a>
                     </div>
                   )}

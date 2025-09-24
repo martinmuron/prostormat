@@ -27,6 +27,7 @@ model Account {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
+  @@map("prostormat_accounts")
 }
 
 model Session {
@@ -35,6 +36,8 @@ model Session {
   userId       String
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("prostormat_sessions")
 }
 
 model User {
@@ -68,6 +71,7 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+  @@map("prostormat_verification_tokens")
 }
 
 model Venue {
@@ -76,6 +80,7 @@ model Venue {
   slug             String   @unique
   description      String?
   address          String
+  district         String?  // Prague district (Praha 1, Praha 2, etc.)
   capacitySeated   Int?
   capacityStanding Int?
   venueType        String?
@@ -83,12 +88,20 @@ model Venue {
   contactEmail     String?
   contactPhone     String?
   websiteUrl       String?
+  instagramUrl     String?  // Instagram URL
   images           String[]
   videoUrl         String?
-  status           String   @default("draft") // draft, active, expired
+  youtubeUrl       String?  // Existing field in database
+  musicAfter10     Boolean? // Can play music after 22:00
+  status           String   @default("draft") // draft, active, expired, pending
+  isRecommended    Boolean  @default(false) // Existing field
+  views            Int      @default(0) // Existing field
+  totalViews       Int      @default(0) // Existing field
+  lastViewedAt     DateTime? // Existing field
   managerId        String
   subscriptionId   String?  // Stripe subscription ID
   expiresAt        DateTime?
+  paymentDate      DateTime? // When the 12,000 CZK was paid
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 
@@ -120,6 +133,8 @@ model EventRequest {
 
   user User @relation(fields: [userId], references: [id])
   favorites EventRequestFavorite[]
+
+  @@map("prostormat_event_requests")
 }
 
 model VenueInquiry {
@@ -148,6 +163,8 @@ model Subscription {
   createdAt            DateTime @default(now())
 
   venue Venue @relation(fields: [venueId], references: [id])
+
+  @@map("prostormat_subscriptions")
 }
 
 model BlogPost {
@@ -242,4 +259,18 @@ model EventRequestFavorite {
   eventRequest     EventRequest     @relation(fields: [eventRequestId], references: [id], onDelete: Cascade)
 
   @@unique([userId, eventRequestId])
+}
+
+model PaymentIntent {
+  id                     String    @id @default(cuid())
+  stripePaymentIntentId  String    @unique
+  venueData              String    // JSON string of venue form data
+  userEmail              String
+  status                 String    @default("pending") // pending, completed, failed
+  venueId                String?   // Set after venue is created
+  paymentCompletedAt     DateTime?
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
+
+  @@map("prostormat_payment_intents")
 }

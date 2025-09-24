@@ -40,25 +40,14 @@ export async function POST(request: NextRequest) {
 
     // Store pending payment in database for tracking
     // We'll create the actual venue after successful payment
-    await prisma.$executeRaw`
-      INSERT INTO paymentIntent (
-        stripe_payment_intent_id, 
-        amount, 
-        currency, 
-        status, 
-        venue_data, 
-        user_email, 
-        created_at
-      ) VALUES (
-        ${paymentIntent.id},
-        ${VENUE_PAYMENT_CONFIG.amount},
-        ${VENUE_PAYMENT_CONFIG.currency},
-        'pending',
-        ${JSON.stringify(venueData)},
-        ${venueData.userEmail},
-        NOW()
-      )
-    `;
+    await prisma.paymentIntent.create({
+      data: {
+        stripePaymentIntentId: paymentIntent.id,
+        venueData: JSON.stringify(venueData),
+        userEmail: venueData.userEmail,
+        status: 'pending',
+      },
+    });
 
     return NextResponse.json({
       clientSecret: paymentIntent.client_secret,

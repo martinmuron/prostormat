@@ -35,28 +35,20 @@ export async function POST(request: NextRequest) {
     }
 
     // Get payment record from database
-    const paymentRecord = await prisma.$queryRaw<{
-      id: string;
-      venue_data: string;
-      user_email: string;
-      status: string;
-    }[]>`
-      SELECT id, venue_data, user_email, status 
-      FROM paymentIntent 
-      WHERE stripe_payment_intent_id = ${paymentIntentId}
-      LIMIT 1
-    `;
+    const paymentRecord = await prisma.paymentIntent.findUnique({
+      where: {
+        stripePaymentIntentId: paymentIntentId,
+      },
+    });
 
-    if (!paymentRecord || paymentRecord.length === 0) {
+    if (!paymentRecord) {
       return NextResponse.json(
         { error: 'Payment record not found' },
         { status: 404 }
       );
     }
 
-    const payment = paymentRecord[0];
-
-    if (payment.status === 'completed') {
+    if (paymentRecord.status === 'completed') {
       return NextResponse.json({
         message: 'Payment already processed',
         success: true,
@@ -64,52 +56,93 @@ export async function POST(request: NextRequest) {
     }
 
     // Parse venue data
-    const venueData = JSON.parse(payment.venue_data);
+    const venueData = JSON.parse(paymentRecord.venueData);
 
     // Create or update user account first
-    const hashedPassword = await bcrypt.hash(venueData.userPassword, 12);
     const normalizedName = typeof venueData.userName === 'string' ? venueData.userName.trim() : null;
     const normalizedPhone = typeof venueData.userPhone === 'string' ? venueData.userPhone.trim() : null;
 
-    const existingUser = await prisma.user.findUnique({
-      where: { email: venueData.userEmail },
-    });
-
     let userId: string;
 
-    if (existingUser) {
-      userId = existingUser.id;
-      const targetRole = existingUser.role === 'admin' ? existingUser.role : 'venue_manager';
-
-      const updatedPhone = normalizedPhone === null
-        ? existingUser.phone
-        : normalizedPhone.length > 0
-          ? normalizedPhone
-          : null;
-
-      await prisma.user.update({
-        where: { id: existingUser.id },
-        data: {
-          name: normalizedName && normalizedName.length > 0 ? normalizedName : existingUser.name,
-          phone: updatedPhone,
-          role: targetRole,
-          password: hashedPassword,
-        },
+    // Check if this is an existing user (logged in) or new user registration
+    if (venueData.userId) {
+      // User is logged in, use their existing account
+      const existingUserById = await prisma.user.findUnique({
+        where: { id: venueData.userId },
       });
+
+      if (!existingUserById) {
+        throw new Error('User account not found for provided userId');
+      }
+
+      userId = existingUserById.id;
+
+      const userUpdateData: Record<string, unknown> = {};
+
+      if (normalizedName && normalizedName.length > 0) {
+        userUpdateData.name = normalizedName;
+      }
+
+      if (typeof venueData.userPhone === 'string') {
+        userUpdateData.phone = normalizedPhone && normalizedPhone.length > 0 ? normalizedPhone : null;
+      }
+
+      if (existingUserById.role === 'user') {
+        userUpdateData.role = 'venue_manager'; // Upgrade basic users only
+      }
+
+      if (Object.keys(userUpdateData).length > 0) {
+        await prisma.user.update({
+          where: { id: userId },
+          data: userUpdateData,
+        });
+      }
     } else {
-      userId = nanoid();
+      // New user registration - need to hash password
+      if (!venueData.userPassword) {
+        throw new Error('Password is required for new user registration');
+      }
 
-      await prisma.user.create({
-        data: {
-          id: userId,
-          name: normalizedName && normalizedName.length > 0 ? normalizedName : null,
-          email: venueData.userEmail,
-          password: hashedPassword,
-          phone: normalizedPhone === null ? null : normalizedPhone.length > 0 ? normalizedPhone : null,
-          role: 'venue_manager',
-          createdAt: new Date(),
-        },
+      const hashedPassword = await bcrypt.hash(venueData.userPassword, 12);
+
+      const existingUser = await prisma.user.findUnique({
+        where: { email: venueData.userEmail },
       });
+
+      if (existingUser) {
+        userId = existingUser.id;
+        const targetRole = existingUser.role === 'admin' ? existingUser.role : 'venue_manager';
+
+        const updatedPhone = normalizedPhone === null
+          ? existingUser.phone
+          : normalizedPhone.length > 0
+            ? normalizedPhone
+            : null;
+
+        await prisma.user.update({
+          where: { id: existingUser.id },
+          data: {
+            name: normalizedName && normalizedName.length > 0 ? normalizedName : existingUser.name,
+            phone: updatedPhone,
+            role: targetRole,
+            password: hashedPassword,
+          },
+        });
+      } else {
+        userId = nanoid();
+
+        await prisma.user.create({
+          data: {
+            id: userId,
+            name: normalizedName && normalizedName.length > 0 ? normalizedName : null,
+            email: venueData.userEmail,
+            password: hashedPassword,
+            phone: normalizedPhone === null ? null : normalizedPhone.length > 0 ? normalizedPhone : null,
+            role: 'venue_manager',
+            createdAt: new Date(),
+          },
+        });
+      }
     }
 
     // Create venue (status: pending approval)
@@ -126,6 +159,7 @@ export async function POST(request: NextRequest) {
         slug: `${venueSlug}-${venueId.slice(0, 8)}`,
         description: venueData.description || null,
         address: venueData.address,
+        district: venueData.district || null,
         capacitySeated: venueData.capacitySeated || null,
         capacityStanding: venueData.capacityStanding || null,
         venueType: venueData.venueType || null,
@@ -133,25 +167,30 @@ export async function POST(request: NextRequest) {
         contactEmail: venueData.contactEmail || null,
         contactPhone: venueData.contactPhone || null,
         websiteUrl: venueData.websiteUrl || null,
+        instagramUrl: venueData.instagramUrl || null,
         images: venueData.images || [],
         videoUrl: venueData.videoUrl || null,
+        musicAfter10: venueData.musicAfter10 || false,
         status: 'pending', // Requires admin approval
         managerId: userId,
+        paymentDate: new Date(),
+        expiresAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000), // 1 year from now
         createdAt: new Date(),
         updatedAt: new Date(),
       },
     });
 
     // Update payment record
-    await prisma.$executeRaw`
-      UPDATE paymentIntent 
-      SET 
-        status = 'completed',
-        venue_id = ${venueId},
-        payment_completed_at = NOW(),
-        updated_at = NOW()
-      WHERE stripe_payment_intent_id = ${paymentIntentId}
-    `;
+    await prisma.paymentIntent.update({
+      where: {
+        stripePaymentIntentId: paymentIntentId,
+      },
+      data: {
+        status: 'completed',
+        venueId: venueId,
+        paymentCompletedAt: new Date(),
+      },
+    });
 
     // Send confirmation email to user
     try {

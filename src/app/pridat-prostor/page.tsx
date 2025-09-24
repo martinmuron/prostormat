@@ -1,7 +1,8 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
+import { useSession } from "next-auth/react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
@@ -31,31 +32,34 @@ import {
   ArrowLeft
 } from "lucide-react"
 
-const venueFormSchema = z.object({
-  // Account fields
-  userName: z.string().min(2, "Jméno musí mít alespoň 2 znaky"),
-  userEmail: z.string().email("Neplatný email"),
-  userPassword: z.string().min(6, "Heslo musí mít alespoň 6 znaků"),
-  userPhone: z.string().optional(),
-  
+// Create dynamic schema based on auth status
+const createVenueFormSchema = (isLoggedIn: boolean) => z.object({
+  // Account fields - conditional validation
+  userName: isLoggedIn ? z.string().optional() : z.string().min(2, "Jméno musí mít alespoň 2 znaky"),
+  userEmail: isLoggedIn ? z.string().optional() : z.string().email("Neplatný email"),
+  userPassword: isLoggedIn ? z.string().optional() : z.string().min(6, "Heslo musí mít alespoň 6 znaků"),
+  userPhone: isLoggedIn ? z.string().optional() : z.string().min(1, "Telefonní číslo je povinné"),
+
   // Venue fields
   name: z.string().min(2, "Název musí mít alespoň 2 znaky"),
-  description: z.string().optional(),
+  description: z.string().min(10, "Popis musí mít alespoň 10 znaků"),
   address: z.string().min(5, "Adresa musí mít alespoň 5 znaků"),
-  capacitySeated: z.string().optional(),
-  capacityStanding: z.string().optional(),
-  venueType: z.string().optional(),
-  contactEmail: z.string().email("Neplatný email").optional().or(z.literal("")),
-  contactPhone: z.string().optional(),
-  websiteUrl: z.string().optional(),
+  district: z.string().min(1, "Městská část je povinná"),
+  capacitySeated: z.string().min(1, "Kapacita sedící je povinná").transform((val) => parseInt(val, 10)).refine((val) => val > 0, "Kapacita musí být větší než 0"),
+  capacityStanding: z.string().min(1, "Kapacita stojící je povinná").transform((val) => parseInt(val, 10)).refine((val) => val > 0, "Kapacita musí být větší než 0"),
+  venueType: z.string().min(1, "Typ prostoru je povinný"),
+  contactEmail: z.string().email("Neplatný email"),
+  contactPhone: z.string().min(1, "Kontaktní telefon je povinný"),
+  websiteUrl: z.string().min(1, "Webové stránky jsou povinné"),
+  instagramUrl: z.string().optional(),
   videoUrl: z.string().optional(),
+  musicAfter10: z.boolean(),
 })
 
-type VenueFormData = z.infer<typeof venueFormSchema>
+type VenueFormData = z.infer<ReturnType<typeof createVenueFormSchema>>
 
 const AMENITIES_OPTIONS = [
   "WiFi",
-  "Parkování",
   "Klimatizace",
   "Multimediální vybavení",
   "Catering možnosti",
@@ -85,6 +89,7 @@ type FormStep = 'form' | 'payment' | 'success'
 
 export default function AddVenuePage() {
   const router = useRouter()
+  const { data: session, status } = useSession()
   const [currentStep, setCurrentStep] = useState<FormStep>('form')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [images, setImages] = useState<File[]>([])
@@ -92,6 +97,7 @@ export default function AddVenuePage() {
   const [amenities, setAmenities] = useState<string[]>([])
   const [formData, setFormData] = useState<VenueFormData | null>(null)
   const [paymentError, setPaymentError] = useState<string | null>(null)
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
 
   const {
     register,
@@ -100,10 +106,27 @@ export default function AddVenuePage() {
     setValue,
     watch,
   } = useForm<VenueFormData>({
-    resolver: zodResolver(venueFormSchema),
+    resolver: zodResolver(createVenueFormSchema(isLoggedIn)),
+    defaultValues: {
+      musicAfter10: false,
+    },
   })
 
+  // Check authentication status and pre-fill user data
+  useEffect(() => {
+    if (status === 'loading') return
+
+    if (session?.user) {
+      setIsLoggedIn(true)
+      // Pre-fill user data
+      if (session.user.name) setValue('userName', session.user.name)
+      if (session.user.email) setValue('userEmail', session.user.email)
+      if (session.user.phone) setValue('userPhone', session.user.phone)
+    }
+  }, [session, status, setValue])
+
   const videoUrl = watch("videoUrl")
+  const musicAfter10 = watch("musicAfter10")
   const isYouTubeUrlValid = isValidYouTubeUrl(videoUrl || "")
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -174,18 +197,16 @@ export default function AddVenuePage() {
     if (images.length === 0) return []
 
     try {
-      // Convert images to base64 for storage
-      // In production, you'd want to upload to a proper image service
-      const base64Images = await Promise.all(
-        images.map(file => convertImageToBase64(file))
-      )
-      return base64Images
+      // Generate temporary venue ID for image upload
+      const tempVenueId = `temp-${Date.now()}`
+
+      // Upload images to Supabase
+      const { uploadVenueImages } = await import('@/lib/supabase-storage')
+      const uploadedUrls = await uploadVenueImages(images, tempVenueId)
+      return uploadedUrls
     } catch (error) {
-      console.error('Error converting images:', error)
-      // Fallback to placeholder URLs
-      return images.map((_, index) => 
-        `https://images.unsplash.com/photo-${Date.now() + index}?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80`
-      )
+      console.error('Error uploading images:', error)
+      throw new Error('Nepodařilo se nahrát obrázky. Zkuste to prosím znovu.')
     }
   }
 
@@ -203,23 +224,27 @@ export default function AddVenuePage() {
 
       // Prepare data for payment step
       const submitData = {
-        // Account data
-        userName: data.userName,
-        userEmail: data.userEmail,
-        userPassword: data.userPassword,
-        userPhone: data.userPhone,
-        
+        // Account data - use session data if logged in
+        userName: isLoggedIn ? session?.user?.name : data.userName,
+        userEmail: isLoggedIn ? session?.user?.email : data.userEmail,
+        userPassword: isLoggedIn ? undefined : data.userPassword,
+        userPhone: isLoggedIn ? session?.user?.phone : data.userPhone,
+        userId: isLoggedIn ? session?.user?.id : undefined,
+
         // Venue data
         name: data.name,
         description: data.description,
         address: data.address,
-        capacitySeated: data.capacitySeated || undefined,
-        capacityStanding: data.capacityStanding || undefined,
+        district: data.district,
+        capacitySeated: data.capacitySeated,
+        capacityStanding: data.capacityStanding,
         venueType: data.venueType,
         contactEmail: data.contactEmail,
         contactPhone: data.contactPhone,
         websiteUrl: data.websiteUrl,
+        instagramUrl: data.instagramUrl,
         videoUrl: data.videoUrl,
+        musicAfter10: data.musicAfter10,
         amenities,
         images: uploadedImageUrls,
       }
@@ -364,7 +389,8 @@ export default function AddVenuePage() {
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 sm:space-y-8">
-          {/* Account Creation */}
+          {/* Account Creation - Only show if not logged in */}
+          {!isLoggedIn && (
           <Card>
             <CardHeader className="pb-4 sm:pb-6">
               <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
@@ -390,7 +416,7 @@ export default function AddVenuePage() {
 
                 <div>
                   <label className="block text-sm sm:text-callout font-medium text-black mb-2">
-                    Váš telefon
+                    Váš telefon *
                   </label>
                   <Input
                     type="tel"
@@ -398,6 +424,12 @@ export default function AddVenuePage() {
                     placeholder="+420 123 456 789"
                     className="h-11 sm:h-12"
                   />
+                  {errors.userPhone && (
+                    <p className="text-xs sm:text-caption text-red-600 mt-1">{errors.userPhone.message}</p>
+                  )}
+                  <p className="text-xs sm:text-caption text-gray-500 mt-1">
+                    Toto číslo není zobrazeno ve veřejném profilu - používáme ho pouze pro komunikaci s vámi
+                  </p>
                 </div>
               </div>
 
@@ -432,6 +464,34 @@ export default function AddVenuePage() {
               </div>
             </CardContent>
           </Card>
+          )}
+
+          {/* Logged in user info */}
+          {isLoggedIn && (
+            <Card>
+              <CardHeader className="pb-4 sm:pb-6">
+                <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
+                  <Users className="h-5 w-5 flex-shrink-0" />
+                  Přihlášený uživatel
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="pt-0">
+                <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                  <div className="flex items-start gap-2">
+                    <CheckCircle className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
+                    <div>
+                      <p className="text-sm font-medium text-green-900 mb-1">
+                        Jste přihlášeni jako: {session?.user?.name || session?.user?.email}
+                      </p>
+                      <p className="text-sm text-green-800">
+                        Prostor bude přiřazen k vašemu účtu. Nemusíte vyplňovat účtové údaje.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
           {/* Basic Information */}
           <Card>
@@ -458,7 +518,7 @@ export default function AddVenuePage() {
 
               <div>
                 <label className="block text-sm sm:text-callout font-medium text-black mb-2">
-                  Popis prostoru
+                  Popis prostoru *
                 </label>
                 <Textarea
                   {...register("description")}
@@ -466,6 +526,9 @@ export default function AddVenuePage() {
                   rows={4}
                   className="min-h-[88px] sm:min-h-[96px] resize-y"
                 />
+                {errors.description && (
+                  <p className="text-xs sm:text-caption text-red-600 mt-1">{errors.description.message}</p>
+                )}
                 <p className="text-xs sm:text-caption text-gray-500 mt-1">
                   Dobrý popis pomůže klientům lépe pochopit, zda je váš prostor vhodný pro jejich akci.
                 </p>
@@ -487,7 +550,28 @@ export default function AddVenuePage() {
 
               <div>
                 <label className="block text-sm sm:text-callout font-medium text-black mb-2">
-                  Typ prostoru
+                  Městská část *
+                </label>
+                <Select onValueChange={(value) => setValue("district", value)} defaultValue="">
+                  <SelectTrigger className="h-11 sm:h-12">
+                    <SelectValue placeholder="Vyberte městskou část" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {['Praha 1', 'Praha 2', 'Praha 3', 'Praha 4', 'Praha 5', 'Praha 6', 'Praha 7', 'Praha 8', 'Praha 9', 'Praha 10', 'Praha 11', 'Praha 12', 'Praha 13', 'Praha 14', 'Praha 15'].map((district) => (
+                      <SelectItem key={district} value={district}>
+                        {district}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {errors.district && (
+                  <p className="text-xs sm:text-caption text-red-600 mt-1">{errors.district.message}</p>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-sm sm:text-callout font-medium text-black mb-2">
+                  Typ prostoru *
                 </label>
                 <Select onValueChange={(value) => setValue("venueType", value)} defaultValue="">
                   <SelectTrigger className="h-11 sm:h-12">
@@ -501,6 +585,9 @@ export default function AddVenuePage() {
                     ))}
                   </SelectContent>
                 </Select>
+                {errors.venueType && (
+                  <p className="text-xs sm:text-caption text-red-600 mt-1">{errors.venueType.message}</p>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -517,7 +604,7 @@ export default function AddVenuePage() {
               <div className="space-y-4 sm:grid sm:grid-cols-2 sm:gap-4 sm:space-y-0">
                 <div>
                   <label className="block text-sm sm:text-callout font-medium text-black mb-2">
-                    Kapacita (sedící)
+                    Kapacita (sedící) *
                   </label>
                   <Input
                     type="number"
@@ -526,11 +613,14 @@ export default function AddVenuePage() {
                     min="1"
                     className="h-11 sm:h-12"
                   />
+                  {errors.capacitySeated && (
+                    <p className="text-xs sm:text-caption text-red-600 mt-1">{errors.capacitySeated.message}</p>
+                  )}
                 </div>
 
                 <div>
                   <label className="block text-sm sm:text-callout font-medium text-black mb-2">
-                    Kapacita (stojící)
+                    Kapacita (stojící) *
                   </label>
                   <Input
                     type="number"
@@ -539,6 +629,9 @@ export default function AddVenuePage() {
                     min="1"
                     className="h-11 sm:h-12"
                   />
+                  {errors.capacityStanding && (
+                    <p className="text-xs sm:text-caption text-red-600 mt-1">{errors.capacityStanding.message}</p>
+                  )}
                 </div>
               </div>
 
@@ -581,6 +674,47 @@ export default function AddVenuePage() {
             </CardContent>
           </Card>
 
+          {/* Music Hours */}
+          <Card>
+            <CardHeader className="pb-4 sm:pb-6">
+              <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
+                <Palette className="h-5 w-5 flex-shrink-0" />
+                Provozní omezení
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-0">
+              <div>
+                <label className="block text-sm sm:text-callout font-medium text-black mb-3">
+                  Může se u vás hrát hudba po 22:00? *
+                </label>
+                <div className="space-y-2">
+                  <label className="flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors hover:border-gray-300">
+                    <input
+                      type="radio"
+                      {...register("musicAfter10")}
+                      value="true"
+                      onChange={() => setValue("musicAfter10", true)}
+                      checked={musicAfter10 === true}
+                      className="w-4 h-4 text-black border-gray-300 focus:ring-black"
+                    />
+                    <span className="text-sm sm:text-callout">Ano, hudba je povolena i po 22:00</span>
+                  </label>
+                  <label className="flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors hover:border-gray-300">
+                    <input
+                      type="radio"
+                      {...register("musicAfter10")}
+                      value="false"
+                      onChange={() => setValue("musicAfter10", false)}
+                      checked={musicAfter10 === false}
+                      className="w-4 h-4 text-black border-gray-300 focus:ring-black"
+                    />
+                    <span className="text-sm sm:text-callout">Ne, hudba musí skončit do 22:00</span>
+                  </label>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
           {/* Contact Information */}
           <Card>
             <CardHeader className="pb-4 sm:pb-6">
@@ -593,7 +727,7 @@ export default function AddVenuePage() {
               <div className="space-y-4 sm:grid sm:grid-cols-2 sm:gap-4 sm:space-y-0">
                 <div>
                   <label className="block text-sm sm:text-callout font-medium text-black mb-2">
-                    E-mail
+                    E-mail *
                   </label>
                   <Input
                     type="email"
@@ -608,7 +742,7 @@ export default function AddVenuePage() {
 
                 <div>
                   <label className="block text-sm sm:text-callout font-medium text-black mb-2">
-                    Telefon
+                    Telefon *
                   </label>
                   <Input
                     type="tel"
@@ -616,12 +750,15 @@ export default function AddVenuePage() {
                     placeholder="+420 123 456 789"
                     className="h-11 sm:h-12"
                   />
+                  {errors.contactPhone && (
+                    <p className="text-xs sm:text-caption text-red-600 mt-1">{errors.contactPhone.message}</p>
+                  )}
                 </div>
               </div>
 
               <div>
                 <label className="block text-sm sm:text-callout font-medium text-black mb-2">
-                  Webové stránky
+                  Webové stránky *
                 </label>
                 <Input
                   type="url"
@@ -629,6 +766,24 @@ export default function AddVenuePage() {
                   placeholder="https://www.prostor.cz"
                   className="h-11 sm:h-12"
                 />
+                {errors.websiteUrl && (
+                  <p className="text-xs sm:text-caption text-red-600 mt-1">{errors.websiteUrl.message}</p>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-sm sm:text-callout font-medium text-black mb-2">
+                  Instagram
+                </label>
+                <Input
+                  type="url"
+                  {...register("instagramUrl")}
+                  placeholder="https://www.instagram.com/vasucet"
+                  className="h-11 sm:h-12"
+                />
+                <p className="text-xs sm:text-caption text-gray-500 mt-1">
+                  Instagram odkaz bude zobrazen ve veřejném profilu vašeho prostoru
+                </p>
               </div>
             </CardContent>
           </Card>

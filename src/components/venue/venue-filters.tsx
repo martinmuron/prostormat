@@ -27,6 +27,18 @@ export function VenueFilters({ initialValues }: VenueFiltersProps) {
     capacity: initialValues.capacity || '',
   })
 
+  const typeTooltip = filters.type && filters.type !== 'all'
+    ? VENUE_TYPES[filters.type as keyof typeof VENUE_TYPES] ?? filters.type
+    : 'Všechny typy'
+
+  const districtTooltip = filters.district && filters.district !== 'all'
+    ? filters.district
+    : 'Celá Praha'
+
+  const capacityTooltip = filters.capacity && filters.capacity !== 'all'
+    ? filters.capacity
+    : 'Libovolná kapacita'
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     
@@ -46,9 +58,9 @@ export function VenueFilters({ initialValues }: VenueFiltersProps) {
   return (
     <form onSubmit={handleSubmit}>
       <div className="rounded-3xl border border-black/10 bg-white/80 shadow-xl backdrop-blur-sm p-4 sm:p-6">
-        <div className="grid gap-3 md:gap-4 md:grid-cols-2 xl:grid-cols-5">
+        <div className="grid gap-3 md:gap-4 md:grid-cols-2 lg:grid-cols-5">
           {/* Search Bar */}
-          <div className="relative md:col-span-2 xl:col-span-2">
+          <div className="relative md:col-span-2 lg:col-span-2">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
             <Input
               value={filters.q}
@@ -59,78 +71,84 @@ export function VenueFilters({ initialValues }: VenueFiltersProps) {
           </div>
 
           {/* Venue Type Filter */}
-          <div className="md:col-span-1 xl:col-span-1">
-            <div className="relative h-full">
-              <div className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 bg-black text-white rounded-xl flex items-center justify-center">
-                <Building className="h-4 w-4" />
-              </div>
-              <Select
-                value={filters.type}
-                onValueChange={(value) => handleFilterChange('type', value)}
+          <div className="md:col-span-1 xl:col-span-1 flex items-center justify-center">
+            <Select
+              value={filters.type}
+              onValueChange={(value) => handleFilterChange('type', value)}
+            >
+              <SelectTrigger
+                className="h-12 w-12 rounded-2xl border border-gray-200 bg-white p-0 justify-center gap-0 transition-all duration-200 hover:border-black/70 focus:border-black [&>svg:last-child]:hidden"
+                aria-label={typeTooltip}
+                title={typeTooltip}
               >
-                <SelectTrigger className="h-12 pl-16 text-sm rounded-2xl border border-gray-200 bg-white focus:border-black transition-all duration-200 hover:border-black/70">
-                  <SelectValue placeholder="Všechny typy" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Všechny typy</SelectItem>
-                  {Object.entries(VENUE_TYPES).map(([key, label]) => (
-                    <SelectItem key={key} value={key}>
-                      {label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+                <SelectValue placeholder={typeTooltip} className="sr-only" />
+                <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-black text-white">
+                  <Building className="h-4 w-4" />
+                </span>
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Všechny typy</SelectItem>
+                {Object.entries(VENUE_TYPES).map(([key, label]) => (
+                  <SelectItem key={key} value={key}>
+                    {label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           {/* District Filter */}
-          <div className="md:col-span-1 xl:col-span-1">
-            <div className="relative h-full">
-              <div className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 bg-black text-white rounded-xl flex items-center justify-center">
-                <MapPin className="h-4 w-4" />
-              </div>
-              <Select
-                value={filters.district}
-                onValueChange={(value) => handleFilterChange('district', value)}
+          <div className="md:col-span-1 xl:col-span-1 flex items-center justify-center">
+            <Select
+              value={filters.district}
+              onValueChange={(value) => handleFilterChange('district', value)}
+            >
+              <SelectTrigger
+                className="h-12 w-12 rounded-2xl border border-gray-200 bg-white p-0 justify-center gap-0 transition-all duration-200 hover:border-black/70 focus:border-black [&>svg:last-child]:hidden"
+                aria-label={districtTooltip}
+                title={districtTooltip}
               >
-                <SelectTrigger className="h-12 pl-16 text-sm rounded-2xl border border-gray-200 bg-white focus:border-black transition-all duration-200 hover:border-black/70">
-                  <SelectValue placeholder="Celá Praha" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Celá Praha</SelectItem>
-                  {PRAGUE_DISTRICTS.map((district) => (
-                    <SelectItem key={district} value={district}>
-                      {district}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+                <SelectValue placeholder={districtTooltip} className="sr-only" />
+                <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-black text-white">
+                  <MapPin className="h-4 w-4" />
+                </span>
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Celá Praha</SelectItem>
+                {PRAGUE_DISTRICTS.map((district) => (
+                  <SelectItem key={district} value={district}>
+                    {district}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           {/* Capacity Filter */}
-          <div className="md:col-span-1 xl:col-span-1">
-            <div className="relative h-full">
-              <div className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 bg-black text-white rounded-xl flex items-center justify-center">
-                <Users className="h-4 w-4" />
-              </div>
-              <Select
-                value={filters.capacity}
-                onValueChange={(value) => handleFilterChange('capacity', value)}
+          <div className="md:col-span-1 xl:col-span-1 flex items-center justify-center">
+            <Select
+              value={filters.capacity}
+              onValueChange={(value) => handleFilterChange('capacity', value)}
+            >
+              <SelectTrigger
+                className="h-12 w-12 rounded-2xl border border-gray-200 bg-white p-0 justify-center gap-0 transition-all duration-200 hover:border-black/70 focus:border-black [&>svg:last-child]:hidden"
+                aria-label={capacityTooltip}
+                title={capacityTooltip}
               >
-                <SelectTrigger className="h-12 pl-16 text-sm rounded-2xl border border-gray-200 bg-white focus:border-black transition-all duration-200 hover:border-black/70">
-                  <SelectValue placeholder="Libovolná kapacita" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Libovolná kapacita</SelectItem>
-                  {CAPACITY_RANGES.map((range) => (
-                    <SelectItem key={range} value={range}>
-                      {range}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+                <SelectValue placeholder={capacityTooltip} className="sr-only" />
+                <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-black text-white">
+                  <Users className="h-4 w-4" />
+                </span>
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Libovolná kapacita</SelectItem>
+                {CAPACITY_RANGES.map((range) => (
+                  <SelectItem key={range} value={range}>
+                    {range}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="md:col-span-1 xl:col-span-1 flex items-stretch">

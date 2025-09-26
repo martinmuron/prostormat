@@ -46,10 +46,10 @@ export function VenueFilters({ initialValues }: VenueFiltersProps) {
 
   return (
     <form onSubmit={handleSubmit}>
-      <div className="rounded-3xl border border-black/10 bg-white/80 shadow-xl backdrop-blur-sm p-4 sm:p-6">
-        <div className="grid gap-3 md:gap-4 md:grid-cols-2 lg:grid-cols-5">
+      <div className="rounded-3xl border border-black/10 bg-white/80 shadow-xl backdrop-blur-sm p-4 sm:p-6 max-w-7xl mx-auto">
+        <div className="grid gap-2 md:gap-3 lg:grid-cols-6 xl:grid-cols-7">
           {/* Search Bar */}
-          <div className="relative md:col-span-2 lg:col-span-2">
+          <div className="relative lg:col-span-3 xl:col-span-3">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
             <Input
               value={filters.q}
@@ -60,7 +60,7 @@ export function VenueFilters({ initialValues }: VenueFiltersProps) {
           </div>
 
           {/* Venue Type Filter */}
-          <div className="md:col-span-1 lg:col-span-1">
+          <div className="lg:col-span-1 xl:col-span-1">
             <Select
               value={filters.type}
               onValueChange={(value) => handleFilterChange('type', value)}
@@ -81,7 +81,7 @@ export function VenueFilters({ initialValues }: VenueFiltersProps) {
           </div>
 
           {/* District Filter */}
-          <div className="md:col-span-1 lg:col-span-1">
+          <div className="lg:col-span-1 xl:col-span-1">
             <Select
               value={filters.district}
               onValueChange={(value) => handleFilterChange('district', value)}
@@ -102,7 +102,7 @@ export function VenueFilters({ initialValues }: VenueFiltersProps) {
           </div>
 
           {/* Capacity Filter */}
-          <div className="md:col-span-1 lg:col-span-1">
+          <div className="lg:col-span-1 xl:col-span-1">
             <Select
               value={filters.capacity}
               onValueChange={(value) => handleFilterChange('capacity', value)}
@@ -122,7 +122,7 @@ export function VenueFilters({ initialValues }: VenueFiltersProps) {
             </Select>
           </div>
 
-          <div className="md:col-span-1 xl:col-span-1 flex items-stretch">
+          <div className="lg:col-span-1 xl:col-span-2 flex items-stretch">
             <Button
               type="submit"
               className="w-full h-12 rounded-2xl font-semibold text-sm bg-black text-white hover:bg-gray-800 transition-all duration-200 flex items-center justify-center shadow-md"

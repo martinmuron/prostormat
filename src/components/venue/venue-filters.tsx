@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from "react"
+import { useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
@@ -27,9 +27,13 @@ export function VenueFilters({ initialValues }: VenueFiltersProps) {
     capacity: initialValues.capacity || '',
   })
 
+  const [isLocationSearchOpen, setIsLocationSearchOpen] = useState(false)
+  const [locationSearch, setLocationSearch] = useState('')
+  const locationInputRef = useRef<HTMLInputElement | null>(null)
+
   const typeTooltip = filters.type && filters.type !== 'all'
     ? VENUE_TYPES[filters.type as keyof typeof VENUE_TYPES] ?? filters.type
-    : 'Typ prostoru'
+    : 'Typ akce'
 
   const districtTooltip = filters.district && filters.district !== 'all'
     ? filters.district
@@ -48,12 +52,34 @@ export function VenueFilters({ initialValues }: VenueFiltersProps) {
       if (value && value !== 'all') params.set(key, value)
     })
 
+    if (locationSearch.trim()) {
+      params.set('location', locationSearch.trim())
+    }
+
     const paramsString = params.toString()
     router.push(paramsString ? `/prostory?${paramsString}` : '/prostory')
   }
 
   const handleFilterChange = (key: string, value: string) => {
     setFilters(prev => ({ ...prev, [key]: value }))
+  }
+
+  const toggleLocationSearch = () => {
+    setIsLocationSearchOpen((prev) => {
+      const next = !prev
+      if (!prev) {
+        requestAnimationFrame(() => {
+          locationInputRef.current?.focus()
+        })
+      }
+      return next
+    })
+  }
+
+  const closeLocationSearchIfEmpty = () => {
+    if (!locationSearch.trim()) {
+      setIsLocationSearchOpen(false)
+    }
   }
 
   return (
@@ -79,15 +105,12 @@ export function VenueFilters({ initialValues }: VenueFiltersProps) {
                 onValueChange={(value) => handleFilterChange('type', value)}
               >
                 <SelectTrigger
-                  className="h-12 w-12 rounded-full border border-gray-200 bg-white p-0 flex items-center justify-center transition-all duration-200 hover:border-black/70 focus:border-black [&>svg:last-child]:hidden"
+                  className="h-12 rounded-full border border-gray-200 bg-transparent px-4 flex items-center gap-2 transition-all duration-200 hover:border-black/70 focus:border-black"
                   aria-label={typeTooltip}
                   title={typeTooltip}
                 >
-                  <SelectValue className="sr-only" aria-hidden />
-                  <span className="sr-only">{typeTooltip}</span>
-                  <span className="flex h-9 w-9 items-center justify-center rounded-full bg-black text-white">
-                    <Building className="h-4 w-4" />
-                  </span>
+                  <Building className="h-4 w-4 text-black" />
+                  <SelectValue placeholder="Typ akce" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Všechny typy</SelectItem>
@@ -106,15 +129,13 @@ export function VenueFilters({ initialValues }: VenueFiltersProps) {
                 onValueChange={(value) => handleFilterChange('district', value)}
               >
                 <SelectTrigger
-                  className="h-12 w-12 rounded-full border border-gray-200 bg-white p-0 flex items-center justify-center transition-all duration-200 hover:border-black/70 focus:border-black [&>svg:last-child]:hidden"
+                  className="h-12 w-12 rounded-full border border-gray-200 bg-transparent p-0 flex items-center justify-center transition-all duration-200 hover:border-black/70 focus:border-black [&>svg:last-child]:hidden"
                   aria-label={districtTooltip}
                   title={districtTooltip}
                 >
                   <SelectValue className="sr-only" aria-hidden />
                   <span className="sr-only">{districtTooltip}</span>
-                  <span className="flex h-9 w-9 items-center justify-center rounded-full bg-black text-white">
-                    <MapPin className="h-4 w-4" />
-                  </span>
+                  <MapPin className="h-5 w-5 text-black" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Celá Praha</SelectItem>
@@ -133,15 +154,13 @@ export function VenueFilters({ initialValues }: VenueFiltersProps) {
                 onValueChange={(value) => handleFilterChange('capacity', value)}
               >
                 <SelectTrigger
-                  className="h-12 w-12 rounded-full border border-gray-200 bg-white p-0 flex items-center justify-center transition-all duration-200 hover:border-black/70 focus:border-black [&>svg:last-child]:hidden"
+                  className="h-12 w-12 rounded-full border border-gray-200 bg-transparent p-0 flex items-center justify-center transition-all duration-200 hover:border-black/70 focus:border-black [&>svg:last-child]:hidden"
                   aria-label={capacityTooltip}
                   title={capacityTooltip}
                 >
                   <SelectValue className="sr-only" aria-hidden />
                   <span className="sr-only">{capacityTooltip}</span>
-                  <span className="flex h-9 w-9 items-center justify-center rounded-full bg-black text-white">
-                    <Users className="h-4 w-4" />
-                  </span>
+                  <Users className="h-5 w-5 text-black" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Libovolná kapacita</SelectItem>
@@ -155,13 +174,45 @@ export function VenueFilters({ initialValues }: VenueFiltersProps) {
             </div>
           </div>
 
-          <div className="flex w-full items-stretch justify-start lg:w-auto lg:justify-end">
-            <Button
-              type="submit"
-              className="h-12 w-full rounded-2xl font-semibold text-sm bg-black text-white hover:bg-gray-800 transition-all duration-200 flex items-center justify-center shadow-md lg:w-auto lg:px-6"
+          {/* Expandable location search */}
+          <div className="flex items-center justify-end gap-3">
+            <div
+              className={`relative flex items-center transition-all duration-200 ${
+                isLocationSearchOpen ? 'w-48 lg:w-56' : 'w-12'
+              }`}
             >
-              Najít prostory
-            </Button>
+              <button
+                type="button"
+                onClick={toggleLocationSearch}
+                className="flex h-12 w-12 items-center justify-center rounded-full border border-gray-200 bg-transparent text-black transition-colors hover:border-black/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black"
+                aria-label={isLocationSearchOpen ? 'Zavřít vyhledávání lokality' : 'Otevřít vyhledávání lokality'}
+                aria-expanded={isLocationSearchOpen}
+              >
+                <Search className="h-5 w-5" />
+              </button>
+              <input
+                ref={locationInputRef}
+                value={locationSearch}
+                onChange={(event) => setLocationSearch(event.target.value)}
+                onBlur={closeLocationSearchIfEmpty}
+                className={`absolute right-0 h-12 rounded-full border border-gray-200 bg-white pl-10 pr-4 text-sm text-black shadow-sm transition-all duration-200 placeholder:text-gray-400 focus:border-black focus:outline-none focus:ring-2 focus:ring-black/20 ${
+                  isLocationSearchOpen ? 'opacity-100 w-full' : 'pointer-events-none opacity-0 w-0'
+                }`}
+                placeholder="Hledat lokalitu"
+              />
+              {isLocationSearchOpen && (
+                <Search className="pointer-events-none absolute left-3 h-4 w-4 text-gray-400" />
+              )}
+            </div>
+
+            <div className="flex w-full items-stretch justify-start lg:w-auto lg:justify-end">
+              <Button
+                type="submit"
+                className="h-12 w-full rounded-2xl font-semibold text-sm bg-black text-white hover:bg-gray-800 transition-all duration-200 flex items-center justify-center shadow-md lg:w-auto lg:px-6"
+              >
+                Najít prostory
+              </Button>
+            </div>
           </div>
         </div>
       </div>

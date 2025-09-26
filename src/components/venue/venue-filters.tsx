@@ -71,18 +71,19 @@ export function VenueFilters({ initialValues }: VenueFiltersProps) {
           </div>
 
           {/* Venue Type Filter */}
-          <div className="md:col-span-1 xl:col-span-1 flex items-center justify-center">
+          <div className="md:col-span-1 lg:col-span-1 flex items-center justify-center">
             <Select
               value={filters.type}
               onValueChange={(value) => handleFilterChange('type', value)}
             >
               <SelectTrigger
-                className="h-12 w-12 rounded-2xl border border-gray-200 bg-white p-0 justify-center gap-0 transition-all duration-200 hover:border-black/70 focus:border-black [&>svg:last-child]:hidden"
+                className="h-12 w-12 rounded-full border border-gray-200 bg-white p-0 flex items-center justify-center transition-all duration-200 hover:border-black/70 focus:border-black [&>svg:last-child]:hidden [&_[data-slot=select-value]]:hidden"
                 aria-label={typeTooltip}
                 title={typeTooltip}
               >
-                <SelectValue placeholder={typeTooltip} className="sr-only" />
-                <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-black text-white">
+                <SelectValue aria-hidden />
+                <span className="sr-only">{typeTooltip}</span>
+                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-black text-white">
                   <Building className="h-4 w-4" />
                 </span>
               </SelectTrigger>
@@ -98,18 +99,19 @@ export function VenueFilters({ initialValues }: VenueFiltersProps) {
           </div>
 
           {/* District Filter */}
-          <div className="md:col-span-1 xl:col-span-1 flex items-center justify-center">
+          <div className="md:col-span-1 lg:col-span-1 flex items-center justify-center">
             <Select
               value={filters.district}
               onValueChange={(value) => handleFilterChange('district', value)}
             >
               <SelectTrigger
-                className="h-12 w-12 rounded-2xl border border-gray-200 bg-white p-0 justify-center gap-0 transition-all duration-200 hover:border-black/70 focus:border-black [&>svg:last-child]:hidden"
+                className="h-12 w-12 rounded-full border border-gray-200 bg-white p-0 flex items-center justify-center transition-all duration-200 hover:border-black/70 focus:border-black [&>svg:last-child]:hidden [&_[data-slot=select-value]]:hidden"
                 aria-label={districtTooltip}
                 title={districtTooltip}
               >
-                <SelectValue placeholder={districtTooltip} className="sr-only" />
-                <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-black text-white">
+                <SelectValue aria-hidden />
+                <span className="sr-only">{districtTooltip}</span>
+                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-black text-white">
                   <MapPin className="h-4 w-4" />
                 </span>
               </SelectTrigger>
@@ -125,18 +127,19 @@ export function VenueFilters({ initialValues }: VenueFiltersProps) {
           </div>
 
           {/* Capacity Filter */}
-          <div className="md:col-span-1 xl:col-span-1 flex items-center justify-center">
+          <div className="md:col-span-1 lg:col-span-1 flex items-center justify-center">
             <Select
               value={filters.capacity}
               onValueChange={(value) => handleFilterChange('capacity', value)}
             >
               <SelectTrigger
-                className="h-12 w-12 rounded-2xl border border-gray-200 bg-white p-0 justify-center gap-0 transition-all duration-200 hover:border-black/70 focus:border-black [&>svg:last-child]:hidden"
+                className="h-12 w-12 rounded-full border border-gray-200 bg-white p-0 flex items-center justify-center transition-all duration-200 hover:border-black/70 focus:border-black [&>svg:last-child]:hidden [&_[data-slot=select-value]]:hidden"
                 aria-label={capacityTooltip}
                 title={capacityTooltip}
               >
-                <SelectValue placeholder={capacityTooltip} className="sr-only" />
-                <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-black text-white">
+                <SelectValue aria-hidden />
+                <span className="sr-only">{capacityTooltip}</span>
+                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-black text-white">
                   <Users className="h-4 w-4" />
                 </span>
               </SelectTrigger>

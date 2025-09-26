@@ -22,15 +22,39 @@ interface VenueData {
   nearestTransport?: string
   neighborhood?: string
   specialFeatures?: string
+  district?: string
+}
+
+function removeDiacritics(value: string): string {
+  return value
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^\x00-\x7F]/g, '')
+    .normalize('NFC')
 }
 
 function createSlug(name: string): string {
-  return name
+  return removeDiacritics(name)
     .toLowerCase()
     .replace(/[^a-z0-9\s-]/g, '')
     .replace(/\s+/g, '-')
     .replace(/-+/g, '-')
     .trim()
+}
+
+function normalizeEmail(value: string): string {
+  const cleaned = value.split(/[\/,;]/)[0]?.trim() ?? ''
+  return cleaned.toLowerCase()
+}
+
+async function readVenueFile(filePath: string): Promise<string> {
+  if (filePath.toLowerCase().endsWith('.docx')) {
+    const { default: mammoth } = await import('mammoth')
+    const result = await mammoth.extractRawText({ path: filePath })
+    return result.value
+  }
+
+  return readFileSync(filePath, 'utf-8')
 }
 
 function extractVenueInfo(content: string): VenueData {
@@ -86,13 +110,16 @@ function extractVenueInfo(content: string): VenueData {
   
   // Extract contact info
   const emailMatch = lines.find(line => line.startsWith('Email:'))
-  data.contactEmail = emailMatch ? emailMatch.replace('Email:', '').trim().split('/')[0].trim() : ''
+  data.contactEmail = emailMatch ? normalizeEmail(emailMatch.replace('Email:', '').trim()) : ''
   
   const phoneMatch = lines.find(line => line.startsWith('Phone:'))
   data.contactPhone = phoneMatch ? phoneMatch.replace('Phone:', '').trim() : ''
   
   const websiteMatch = lines.find(line => line.startsWith('Website:'))
   data.websiteUrl = websiteMatch ? websiteMatch.replace('Website:', '').trim() : undefined
+
+  const districtMatch = lines.find(line => line.startsWith('Prague district:'))
+  data.district = districtMatch ? districtMatch.replace('Prague district:', '').trim() : undefined
   
   // Extract amenities from the amenities line and description
   const amenitiesMatch = lines.find(line => line.startsWith('Amenities:'))
@@ -147,7 +174,7 @@ async function main() {
   console.log('Starting real venue import...')
   
   // Get the venue manager user
-  let venueManager = await prisma.prostormat_users.findFirst({
+  let venueManager = await prisma.user.findFirst({
     where: { role: 'venue_manager' }
   })
   
@@ -156,9 +183,8 @@ async function main() {
     const bcrypt = await import('bcryptjs')
     const hashedPassword = await bcrypt.hash('venues123', 12)
     
-    venueManager = await prisma.prostormat_users.create({
+    venueManager = await prisma.user.create({
       data: {
-        id: randomUUID(),
         email: 'venues@prostormat.cz',
         name: 'Venue Manager',
         password: hashedPassword,
@@ -171,16 +197,17 @@ async function main() {
   
   // Read all venue text files
   const prostoryDir = join(process.cwd(), 'prostory')
-  const textFiles = readdirSync(prostoryDir).filter(file => file.endsWith('.txt'))
-  
-  console.log(`Found ${textFiles.length} venue files to process`)
-  
-  let created = 0
+  const venueFiles = readdirSync(prostoryDir).filter(file => file.endsWith('.txt') || file.endsWith('.docx'))
+
+  console.log(`Found ${venueFiles.length} venue files to process`)
+
+  let synced = 0
   let skipped = 0
   
-  for (const file of textFiles) {
+  for (const file of venueFiles) {
     try {
-      const content = readFileSync(join(prostoryDir, file), 'utf-8')
+      const filePath = join(prostoryDir, file)
+      const content = await readVenueFile(filePath)
       const venueData = extractVenueInfo(content)
       
       if (!venueData.name || !venueData.address) {
@@ -189,27 +216,16 @@ async function main() {
         continue
       }
       
-      // Check if venue already exists
-      const existing = await prisma.prostormat_venues.findUnique({
-        where: { slug: venueData.slug }
-      })
-      
-      if (existing) {
-        console.log(`Skipping ${venueData.name} - already exists`)
-        skipped++
-        continue
-      }
-      
-      // Create venue
-      await prisma.prostormat_venues.create({
-        data: {
-          id: randomUUID(),
+      // Upsert venue so running the script multiple times keeps data in sync
+      await prisma.venue.upsert({
+        where: { slug: venueData.slug },
+        update: {
           name: venueData.name,
-          slug: venueData.slug,
           description: venueData.description,
           address: venueData.address,
-          capacitySeated: venueData.capacitySeated || null,
-          capacityStanding: venueData.capacityStanding || null,
+          district: venueData.district || null,
+          capacitySeated: venueData.capacitySeated ? parseInt(venueData.capacitySeated, 10) : null,
+          capacityStanding: venueData.capacityStanding ? parseInt(venueData.capacityStanding, 10) : null,
           venueType: venueData.venueType,
           amenities: venueData.amenities,
           contactEmail: venueData.contactEmail,
@@ -218,14 +234,34 @@ async function main() {
           images: venueData.images,
           status: 'active',
           managerId: venueManager.id,
-          expiresAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000), // 1 year
+          expiresAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
+          updatedAt: new Date(),
+        },
+        create: {
+          id: randomUUID(),
+          name: venueData.name,
+          slug: venueData.slug,
+          description: venueData.description,
+          address: venueData.address,
+          district: venueData.district || null,
+          capacitySeated: venueData.capacitySeated ? parseInt(venueData.capacitySeated, 10) : null,
+          capacityStanding: venueData.capacityStanding ? parseInt(venueData.capacityStanding, 10) : null,
+          venueType: venueData.venueType,
+          amenities: venueData.amenities,
+          contactEmail: venueData.contactEmail,
+          contactPhone: venueData.contactPhone,
+          websiteUrl: venueData.websiteUrl,
+          images: venueData.images,
+          status: 'active',
+          managerId: venueManager.id,
+          expiresAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
           createdAt: new Date(),
           updatedAt: new Date(),
         }
       })
-      
-      console.log(`✅ Created: ${venueData.name}`)
-      created++
+
+      console.log(`✅ Synced: ${venueData.name}`)
+      synced++
       
     } catch (error) {
       console.error(`Error processing ${file}:`, error)
@@ -234,7 +270,7 @@ async function main() {
   }
   
   console.log(`\n🎉 Import completed!`)
-  console.log(`   Created: ${created} venues`)
+  console.log(`   Synced: ${synced} venues`)
   console.log(`   Skipped: ${skipped} venues`)
 }
 

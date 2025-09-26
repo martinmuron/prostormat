@@ -27,17 +27,6 @@ export function VenueFilters({ initialValues }: VenueFiltersProps) {
     capacity: initialValues.capacity || '',
   })
 
-  const typeTooltip = filters.type && filters.type !== 'all'
-    ? VENUE_TYPES[filters.type as keyof typeof VENUE_TYPES] ?? filters.type
-    : 'Všechny typy'
-
-  const districtTooltip = filters.district && filters.district !== 'all'
-    ? filters.district
-    : 'Celá Praha'
-
-  const capacityTooltip = filters.capacity && filters.capacity !== 'all'
-    ? filters.capacity
-    : 'Libovolná kapacita'
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -71,21 +60,14 @@ export function VenueFilters({ initialValues }: VenueFiltersProps) {
           </div>
 
           {/* Venue Type Filter */}
-          <div className="md:col-span-1 lg:col-span-1 flex items-center justify-center">
+          <div className="md:col-span-1 lg:col-span-1">
             <Select
               value={filters.type}
               onValueChange={(value) => handleFilterChange('type', value)}
             >
-              <SelectTrigger
-                className="h-12 w-12 rounded-full border border-gray-200 bg-white p-0 flex items-center justify-center transition-all duration-200 hover:border-black/70 focus:border-black [&>svg:last-child]:hidden [&_[data-slot=select-value]]:hidden"
-                aria-label={typeTooltip}
-                title={typeTooltip}
-              >
-                <SelectValue aria-hidden />
-                <span className="sr-only">{typeTooltip}</span>
-                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-black text-white">
-                  <Building className="h-4 w-4" />
-                </span>
+              <SelectTrigger className="h-12 rounded-xl border border-gray-200 bg-white px-3 flex items-center gap-2 transition-all duration-200 hover:border-black/70 focus:border-black">
+                <Building className="h-4 w-4 text-black flex-shrink-0" />
+                <SelectValue placeholder="Typ prostoru" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Všechny typy</SelectItem>
@@ -99,21 +81,14 @@ export function VenueFilters({ initialValues }: VenueFiltersProps) {
           </div>
 
           {/* District Filter */}
-          <div className="md:col-span-1 lg:col-span-1 flex items-center justify-center">
+          <div className="md:col-span-1 lg:col-span-1">
             <Select
               value={filters.district}
               onValueChange={(value) => handleFilterChange('district', value)}
             >
-              <SelectTrigger
-                className="h-12 w-12 rounded-full border border-gray-200 bg-white p-0 flex items-center justify-center transition-all duration-200 hover:border-black/70 focus:border-black [&>svg:last-child]:hidden [&_[data-slot=select-value]]:hidden"
-                aria-label={districtTooltip}
-                title={districtTooltip}
-              >
-                <SelectValue aria-hidden />
-                <span className="sr-only">{districtTooltip}</span>
-                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-black text-white">
-                  <MapPin className="h-4 w-4" />
-                </span>
+              <SelectTrigger className="h-12 rounded-xl border border-gray-200 bg-white px-3 flex items-center gap-2 transition-all duration-200 hover:border-black/70 focus:border-black">
+                <MapPin className="h-4 w-4 text-black flex-shrink-0" />
+                <SelectValue placeholder="Lokalita" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Celá Praha</SelectItem>
@@ -127,21 +102,14 @@ export function VenueFilters({ initialValues }: VenueFiltersProps) {
           </div>
 
           {/* Capacity Filter */}
-          <div className="md:col-span-1 lg:col-span-1 flex items-center justify-center">
+          <div className="md:col-span-1 lg:col-span-1">
             <Select
               value={filters.capacity}
               onValueChange={(value) => handleFilterChange('capacity', value)}
             >
-              <SelectTrigger
-                className="h-12 w-12 rounded-full border border-gray-200 bg-white p-0 flex items-center justify-center transition-all duration-200 hover:border-black/70 focus:border-black [&>svg:last-child]:hidden [&_[data-slot=select-value]]:hidden"
-                aria-label={capacityTooltip}
-                title={capacityTooltip}
-              >
-                <SelectValue aria-hidden />
-                <span className="sr-only">{capacityTooltip}</span>
-                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-black text-white">
-                  <Users className="h-4 w-4" />
-                </span>
+              <SelectTrigger className="h-12 rounded-xl border border-gray-200 bg-white px-3 flex items-center gap-2 transition-all duration-200 hover:border-black/70 focus:border-black">
+                <Users className="h-4 w-4 text-black flex-shrink-0" />
+                <SelectValue placeholder="Kapacita" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Libovolná kapacita</SelectItem>

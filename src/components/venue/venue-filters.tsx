@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
@@ -26,8 +26,6 @@ export function VenueFilters({ initialValues }: VenueFiltersProps) {
     district: initialValues.district || '',
     capacity: initialValues.capacity || '',
   })
-  const [matchingCount, setMatchingCount] = useState<number | null>(null)
-  const [isCounting, setIsCounting] = useState(false)
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -45,87 +43,32 @@ export function VenueFilters({ initialValues }: VenueFiltersProps) {
     setFilters(prev => ({ ...prev, [key]: value }))
   }
 
-  useEffect(() => {
-    const controller = new AbortController()
-    const timeoutId = setTimeout(() => {
-      const params = new URLSearchParams()
-      Object.entries(filters).forEach(([key, value]) => {
-        if (value && value !== 'all') params.set(key, value)
-      })
-
-      const paramsString = params.toString()
-      const url = paramsString
-        ? `/api/venues/count?${paramsString}`
-        : '/api/venues/count'
-
-      setIsCounting(true)
-      fetch(url, {
-        signal: controller.signal,
-      })
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error('Failed to fetch count')
-          }
-          return response.json()
-        })
-        .then((data) => {
-          setMatchingCount(typeof data.count === 'number' ? data.count : null)
-        })
-        .catch((error) => {
-          if (error.name !== 'AbortError') {
-            console.error('Error fetching venue count:', error)
-            setMatchingCount(null)
-          }
-        })
-        .finally(() => {
-          setIsCounting(false)
-        })
-    }, 300)
-
-    return () => {
-      controller.abort()
-      clearTimeout(timeoutId)
-    }
-  }, [filters])
-
-  const getButtonLabel = () => {
-    if (isCounting) return 'Počítám…'
-    if (matchingCount === null) return 'Najít prostory'
-    if (matchingCount === 0) return 'Žádné prostory'
-    if (matchingCount === 1) return 'Najít 1 prostor'
-    if (matchingCount >= 2 && matchingCount <= 4) {
-      return `Najít ${matchingCount} prostory`
-    }
-    return `Najít ${matchingCount} prostorů`
-  }
-
   return (
     <form onSubmit={handleSubmit}>
-      <div className="flex flex-col lg:flex-row gap-4 lg:gap-6">
-        {/* Search Bar */}
-        <div className="relative flex-1 lg:flex-[2]">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-          <Input
-            value={filters.q}
-            onChange={(e) => handleFilterChange('q', e.target.value)}
-            className="pl-12 h-12 text-base rounded-xl border-2 border-black focus:border-gray-600 transition-all duration-200 hover:border-gray-600 hover:shadow-lg font-medium shadow-sm"
-            placeholder="Hledat prostory..."
-          />
-        </div>
+      <div className="rounded-3xl border border-black/10 bg-white/80 shadow-xl backdrop-blur-sm p-4 sm:p-6">
+        <div className="grid gap-3 md:gap-4 md:grid-cols-2 xl:grid-cols-5">
+          {/* Search Bar */}
+          <div className="relative md:col-span-2 xl:col-span-2">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+            <Input
+              value={filters.q}
+              onChange={(e) => handleFilterChange('q', e.target.value)}
+              className="pl-12 h-12 text-base rounded-2xl border border-gray-200 bg-white focus:border-black transition-all duration-200 hover:border-black/70 shadow-sm"
+              placeholder="Hledat prostory..."
+            />
+          </div>
 
-        {/* Filter Selects with colorful backgrounds */}
-        <div className="flex flex-col sm:flex-row gap-4 lg:gap-4 lg:flex-1">
-          {/* Venue Type Filter - Blue */}
-          <div className="flex-1">
-            <div className="relative">
-              <div className="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 bg-black rounded-lg flex items-center justify-center">
-                <Building className="h-4 w-4 text-white" />
+          {/* Venue Type Filter */}
+          <div className="md:col-span-1 xl:col-span-1">
+            <div className="relative h-full">
+              <div className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 bg-black text-white rounded-xl flex items-center justify-center">
+                <Building className="h-4 w-4" />
               </div>
-              <Select 
+              <Select
                 value={filters.type}
                 onValueChange={(value) => handleFilterChange('type', value)}
               >
-                <SelectTrigger className="h-12 pl-14 text-sm rounded-xl border-2 border-black bg-white focus:border-gray-600 transition-all duration-200">
+                <SelectTrigger className="h-12 pl-16 text-sm rounded-2xl border border-gray-200 bg-white focus:border-black transition-all duration-200 hover:border-black/70">
                   <SelectValue placeholder="Všechny typy" />
                 </SelectTrigger>
                 <SelectContent>
@@ -140,17 +83,17 @@ export function VenueFilters({ initialValues }: VenueFiltersProps) {
             </div>
           </div>
 
-          {/* District Filter - Purple */}
-          <div className="flex-1">
-            <div className="relative">
-              <div className="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 bg-black rounded-lg flex items-center justify-center">
-                <MapPin className="h-4 w-4 text-white" />
+          {/* District Filter */}
+          <div className="md:col-span-1 xl:col-span-1">
+            <div className="relative h-full">
+              <div className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 bg-black text-white rounded-xl flex items-center justify-center">
+                <MapPin className="h-4 w-4" />
               </div>
-              <Select 
+              <Select
                 value={filters.district}
                 onValueChange={(value) => handleFilterChange('district', value)}
               >
-                <SelectTrigger className="h-12 pl-14 text-sm rounded-xl border-2 border-black bg-white focus:border-gray-600 transition-all duration-200">
+                <SelectTrigger className="h-12 pl-16 text-sm rounded-2xl border border-gray-200 bg-white focus:border-black transition-all duration-200 hover:border-black/70">
                   <SelectValue placeholder="Celá Praha" />
                 </SelectTrigger>
                 <SelectContent>
@@ -165,17 +108,17 @@ export function VenueFilters({ initialValues }: VenueFiltersProps) {
             </div>
           </div>
 
-          {/* Capacity Filter - Green */}
-          <div className="flex-1">
-            <div className="relative">
-              <div className="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 bg-black rounded-lg flex items-center justify-center">
-                <Users className="h-4 w-4 text-white" />
+          {/* Capacity Filter */}
+          <div className="md:col-span-1 xl:col-span-1">
+            <div className="relative h-full">
+              <div className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 bg-black text-white rounded-xl flex items-center justify-center">
+                <Users className="h-4 w-4" />
               </div>
-              <Select 
+              <Select
                 value={filters.capacity}
                 onValueChange={(value) => handleFilterChange('capacity', value)}
               >
-                <SelectTrigger className="h-12 pl-14 text-sm rounded-xl border-2 border-black bg-white focus:border-gray-600 transition-all duration-200">
+                <SelectTrigger className="h-12 pl-16 text-sm rounded-2xl border border-gray-200 bg-white focus:border-black transition-all duration-200 hover:border-black/70">
                   <SelectValue placeholder="Libovolná kapacita" />
                 </SelectTrigger>
                 <SelectContent>
@@ -190,22 +133,13 @@ export function VenueFilters({ initialValues }: VenueFiltersProps) {
             </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
-            <Button 
-              type="submit" 
-              className="h-12 px-6 text-sm rounded-xl font-semibold bg-black text-white hover:bg-gray-800 transition-all duration-200 whitespace-nowrap"
+          <div className="md:col-span-1 xl:col-span-1 flex items-stretch">
+            <Button
+              type="submit"
+              className="w-full h-12 rounded-2xl font-semibold text-sm bg-black text-white hover:bg-gray-800 transition-all duration-200 flex items-center justify-center shadow-md"
             >
-              {getButtonLabel()}
+              Najít prostory
             </Button>
-            {!isCounting && matchingCount !== null && (
-              <span className="text-sm text-gray-600">
-                {matchingCount === 0
-                  ? 'Aktuálním filtrům neodpovídá žádný prostor'
-                  : matchingCount === 1
-                    ? '1 prostor odpovídá zvoleným filtrům'
-                    : `${matchingCount} prostorů odpovídá zvoleným filtrům`}
-              </span>
-            )}
           </div>
         </div>
       </div>

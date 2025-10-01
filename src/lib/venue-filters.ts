@@ -50,6 +50,7 @@ export function buildVenueWhereClause({
 }: FilterParams): Prisma.VenueWhereInput {
   const where: Prisma.VenueWhereInput = {
     status: { in: statuses },
+    parentId: null,
   }
 
   if (q && q.trim().length > 0) {

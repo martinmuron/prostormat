@@ -98,6 +98,7 @@ model Venue {
   views            Int      @default(0) // Existing field
   totalViews       Int      @default(0) // Existing field
   lastViewedAt     DateTime? // Existing field
+  parentId         String?
   managerId        String
   subscriptionId   String?  // Stripe subscription ID
   expiresAt        DateTime?
@@ -106,6 +107,8 @@ model Venue {
   updatedAt        DateTime @updatedAt
 
   manager      User           @relation(fields: [managerId], references: [id])
+  parent       Venue?         @relation("VenueHierarchy", fields: [parentId], references: [id])
+  subVenues    Venue[]        @relation("VenueHierarchy")
   inquiries    VenueInquiry[]
   subscription Subscription?
   broadcastLogs VenueBroadcastLog[]

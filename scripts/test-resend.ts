@@ -8,17 +8,38 @@ import { resolve } from 'path'
 config({ path: resolve(process.cwd(), '.env.local') })
 config({ path: resolve(process.cwd(), '.env') })
 
-import { resend, FROM_EMAIL, REPLY_TO_EMAIL } from '../src/lib/resend'
-import { 
-  generateVenueBroadcastEmail,
-  generatePasswordResetEmail,
-  generateWelcomeEmailForUser,
-  generateWelcomeEmailForLocationOwner,
-  generateContactFormThankYouEmail,
-  generateOrganizeEventThankYouEmail,
-  generateAddVenueThankYouEmail,
-  generateQuickRequestVenueNotificationEmail
-} from '../src/lib/email-templates'
+const resendModulePromise = import('../src/lib/resend')
+const emailTemplatesModulePromise = import('../src/lib/email-templates')
+
+let resendClient: typeof import('../src/lib/resend')['resend']
+let FROM_EMAIL: typeof import('../src/lib/resend')['FROM_EMAIL']
+let REPLY_TO_EMAIL: typeof import('../src/lib/resend')['REPLY_TO_EMAIL']
+
+let generateVenueBroadcastEmail: typeof import('../src/lib/email-templates')['generateVenueBroadcastEmail']
+let generatePasswordResetEmail: typeof import('../src/lib/email-templates')['generatePasswordResetEmail']
+let generateWelcomeEmailForUser: typeof import('../src/lib/email-templates')['generateWelcomeEmailForUser']
+let generateWelcomeEmailForLocationOwner: typeof import('../src/lib/email-templates')['generateWelcomeEmailForLocationOwner']
+let generateContactFormThankYouEmail: typeof import('../src/lib/email-templates')['generateContactFormThankYouEmail']
+let generateOrganizeEventThankYouEmail: typeof import('../src/lib/email-templates')['generateOrganizeEventThankYouEmail']
+let generateAddVenueThankYouEmail: typeof import('../src/lib/email-templates')['generateAddVenueThankYouEmail']
+let generateQuickRequestVenueNotificationEmail: typeof import('../src/lib/email-templates')['generateQuickRequestVenueNotificationEmail']
+
+async function loadEmailModules() {
+  const resendModule = await resendModulePromise
+  resendClient = resendModule.resend
+  FROM_EMAIL = resendModule.FROM_EMAIL
+  REPLY_TO_EMAIL = resendModule.REPLY_TO_EMAIL
+
+  const templatesModule = await emailTemplatesModulePromise
+  generateVenueBroadcastEmail = templatesModule.generateVenueBroadcastEmail
+  generatePasswordResetEmail = templatesModule.generatePasswordResetEmail
+  generateWelcomeEmailForUser = templatesModule.generateWelcomeEmailForUser
+  generateWelcomeEmailForLocationOwner = templatesModule.generateWelcomeEmailForLocationOwner
+  generateContactFormThankYouEmail = templatesModule.generateContactFormThankYouEmail
+  generateOrganizeEventThankYouEmail = templatesModule.generateOrganizeEventThankYouEmail
+  generateAddVenueThankYouEmail = templatesModule.generateAddVenueThankYouEmail
+  generateQuickRequestVenueNotificationEmail = templatesModule.generateQuickRequestVenueNotificationEmail
+}
 
 const TEST_EMAIL = 'mark.muron@gmail.com'
 
@@ -37,7 +58,7 @@ async function sendTestEmail(
   try {
     console.log(`🚀 Testing ${template}...`)
     
-    const result = await resend.emails.send({
+    const result = await resendClient.emails.send({
       from: FROM_EMAIL,
       to,
       subject: `[TEST] ${emailData.subject}`,
@@ -217,7 +238,7 @@ async function sendSimpleTestEmail() {
   console.log('📧 Sending simple test email...')
   
   try {
-    const result = await resend.emails.send({
+    const result = await resendClient.emails.send({
       from: FROM_EMAIL,
       to: TEST_EMAIL,
       subject: '[SIMPLE TEST] Prostormat Email System Test',
@@ -256,7 +277,9 @@ async function sendSimpleTestEmail() {
 async function main() {
   console.log('🚀 Prostormat Resend Email Testing Script')
   console.log('=========================================\n')
-  
+
+  await loadEmailModules()
+
   // Test configuration
   const configOk = await testResendConfiguration()
   if (!configOk) {

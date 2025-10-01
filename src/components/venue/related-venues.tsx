@@ -30,6 +30,7 @@ async function getRelatedVenues(currentVenueId: string, venueType: string | null
         AND: [
           { id: { not: currentVenueId } }, // Exclude current venue
           { status: { in: ["published", "active"] } }, // Only approved venues
+          { parentId: null },
           {
             OR: [
               // Same venue type

@@ -89,6 +89,7 @@ model Venue {
   videoUrl         String?
   musicAfter10     Boolean? // Can play music after 22:00
   status           String   @default("draft") // draft, active, expired, pending, published
+  parentId         String?
   managerId        String
   subscriptionId   String?  // Stripe subscription ID
   paymentDate      DateTime? // When the 12,000 CZK was paid
@@ -97,6 +98,8 @@ model Venue {
   updatedAt        DateTime @updatedAt
 
   manager      User           @relation(fields: [managerId], references: [id])
+  parent       Venue?         @relation("VenueHierarchy", fields: [parentId], references: [id])
+  subVenues    Venue[]        @relation("VenueHierarchy")
   inquiries    VenueInquiry[]
   subscription Subscription?
   broadcastLogs VenueBroadcastLog[]

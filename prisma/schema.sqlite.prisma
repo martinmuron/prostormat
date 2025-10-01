@@ -81,6 +81,7 @@ model Venue {
   images           String   // JSON string for SQLite
   videoUrl         String?
   status           String   @default("draft") // draft, active, expired
+  parentId         String?
   managerId        String
   subscriptionId   String?  // Stripe subscription ID
   expiresAt        DateTime?
@@ -88,6 +89,8 @@ model Venue {
   updatedAt        DateTime @updatedAt
 
   manager      User           @relation(fields: [managerId], references: [id])
+  parent       Venue?         @relation("VenueHierarchy", fields: [parentId], references: [id])
+  subVenues    Venue[]        @relation("VenueHierarchy")
   inquiries    VenueInquiry[]
   subscription Subscription?
   broadcastLogs VenueBroadcastLog[]

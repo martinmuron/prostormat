@@ -1,3 +1,4 @@
+import Link from "next/link"
 import { notFound } from "next/navigation"
 import { VenueGallery } from "@/components/venue/venue-gallery"
 import { VenueContactForm } from "@/components/forms/venue-contact-form"
@@ -17,7 +18,6 @@ async function getVenue(slug: string) {
   const venue = await db.venue.findUnique({
       where: {
         slug,
-        status: { in: ["published", "active"] },
       },
       include: {
         manager: {
@@ -26,12 +26,42 @@ async function getVenue(slug: string) {
             email: true,
             phone: true,
           }
+        },
+        parent: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+          }
+        },
+        subVenues: {
+          where: {
+            status: { in: ["published", "active", "hidden"] },
+          },
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+            address: true,
+            description: true,
+            capacitySeated: true,
+            capacityStanding: true,
+            images: true,
+            status: true,
+          },
+          orderBy: {
+            name: 'asc'
+          }
         }
       }
     })
-    
+
     if (!venue) return null
-    
+
+    if (!['published', 'active', 'hidden'].includes(venue.status)) {
+      return null
+    }
+
     // PostgreSQL returns arrays directly, no need to parse
     return venue
   } catch (error) {
@@ -83,6 +113,13 @@ export default async function VenueDetailPage({
             <div className="mt-8">
               <div className="flex items-start justify-between mb-6">
                 <div>
+                  {venue.parent && (
+                    <div className="text-sm text-blue-600 mb-2">
+                        <Link href={`/prostory/${venue.parent.slug}`} className="hover:underline">
+                          Součást: {venue.parent.name}
+                      </Link>
+                    </div>
+                  )}
                   <h1 className="text-title-1 text-black mb-2">{venue.name}</h1>
                   <div className="flex items-center gap-2 text-gray-600 mb-4">
                     <MapPin className="h-5 w-5" />
@@ -103,6 +140,58 @@ export default async function VenueDetailPage({
                   <p className="text-body text-gray-700 leading-relaxed">
                     {venue.description}
                   </p>
+                </div>
+              )}
+
+              {venue.subVenues && venue.subVenues.length > 0 && (
+                <div className="mb-10">
+                  <h2 className="text-title-3 text-black mb-4">Dostupné prostory</h2>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {venue.subVenues.map((subVenue) => {
+                      const capacity = Math.max(Number(subVenue.capacitySeated) || 0, Number(subVenue.capacityStanding) || 0)
+                      const image = Array.isArray(subVenue.images) && subVenue.images.length > 0 ? subVenue.images[0] : null
+
+                      return (
+                        <Link
+                          key={subVenue.id}
+                          href={`/prostory/${subVenue.slug}`}
+                          className="block border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg transition-shadow duration-300"
+                        >
+                          <div className="aspect-[4/3] bg-gray-100">
+                            {image ? (
+                              <img src={image} alt={subVenue.name} className="w-full h-full object-cover" />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center text-gray-400 text-sm">
+                                Bez fotografie
+                              </div>
+                            )}
+                          </div>
+                          <div className="p-4">
+                            <div className="flex items-center justify-between mb-2">
+                              <h3 className="text-lg font-semibold text-gray-900">{subVenue.name}</h3>
+                              {capacity > 0 && (
+                                <div className="flex items-center gap-1 text-gray-600 text-sm">
+                                  <Users className="h-4 w-4" />
+                                  <span>{capacity}</span>
+                                </div>
+                              )}
+                            </div>
+                            {subVenue.address && (
+                              <div className="flex items-center gap-2 text-sm text-gray-600 mb-3">
+                                <MapPin className="h-4 w-4" />
+                                <span>{subVenue.address}</span>
+                              </div>
+                            )}
+                            {subVenue.description && (
+                              <p className="text-sm text-gray-700 line-clamp-3">
+                                {subVenue.description}
+                              </p>
+                            )}
+                          </div>
+                        </Link>
+                      )
+                    })}
+                  </div>
                 </div>
               )}
 

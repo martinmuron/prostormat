@@ -13,13 +13,16 @@ const updateVenueSchema = z.object({
   contactEmail: z.union([z.string().email(), z.literal("")]).optional(),
   contactPhone: z.union([z.string(), z.literal("")]).optional(),
   websiteUrl: z.union([z.string().url(), z.literal("")]).optional(),
+  instagramUrl: z.union([z.string().url(), z.literal("")]).optional(),
   youtubeUrl: z.union([z.string().url(), z.literal("")]).optional(),
+  videoUrl: z.union([z.string().url(), z.literal("")]).optional(),
+  musicAfter10: z.boolean().optional(),
   capacitySeated: z.union([z.string(), z.number()]).optional(),
   capacityStanding: z.union([z.string(), z.number()]).optional(),
   amenities: z.array(z.string()).optional(),
   images: z.array(z.string()).optional(),
   status: z.enum(["draft", "pending", "published", "hidden", "active"]).optional(),
-  featured: z.boolean().optional(),
+  isRecommended: z.boolean().optional(),
   managerId: z.string().optional(), // Allow admin to assign managers
 })
 
@@ -85,21 +88,28 @@ export async function PATCH(
     if (typeof body.contactEmail !== "undefined") updateData.contactEmail = normalizeString(body.contactEmail)
     if (typeof body.contactPhone !== "undefined") updateData.contactPhone = normalizeString(body.contactPhone)
     if (typeof body.websiteUrl !== "undefined") updateData.websiteUrl = normalizeString(body.websiteUrl)
+    if (typeof body.instagramUrl !== "undefined") updateData.instagramUrl = normalizeString(body.instagramUrl)
     if (typeof body.youtubeUrl !== "undefined") {
       updateData.videoUrl = normalizeString(body.youtubeUrl)
+      updateData.youtubeUrl = normalizeString(body.youtubeUrl)
     }
+    if (typeof body.videoUrl !== "undefined") {
+      updateData.videoUrl = normalizeString(body.videoUrl)
+      updateData.youtubeUrl = normalizeString(body.videoUrl)
+    }
+    if (typeof body.musicAfter10 !== "undefined") updateData.musicAfter10 = body.musicAfter10
     if (typeof body.capacitySeated !== "undefined") updateData.capacitySeated = normalizeCapacity(body.capacitySeated)
     if (typeof body.capacityStanding !== "undefined") updateData.capacityStanding = normalizeCapacity(body.capacityStanding)
     if (typeof body.amenities !== "undefined") updateData.amenities = body.amenities ?? []
     if (typeof body.images !== "undefined") updateData.images = body.images ?? []
     if (typeof body.status !== "undefined") updateData.status = body.status
-    if (typeof body.featured !== "undefined") updateData.featured = body.featured
+    if (typeof body.isRecommended !== "undefined") updateData.isRecommended = body.isRecommended
     if (typeof body.managerId !== "undefined") updateData.managerId = body.managerId
 
-    // Only admins can change status, featured, or manager assignments
+    // Only admins can change status, isRecommended, or manager assignments
     if (session.user.role !== "admin") {
       delete updateData.status
-      delete updateData.featured
+      delete updateData.isRecommended
       delete updateData.managerId
     }
 

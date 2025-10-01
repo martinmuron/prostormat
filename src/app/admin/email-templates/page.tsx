@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
-import { EmailTemplatesManager } from "@/components/admin/email-templates-manager"
+import { NewEmailTemplatesManager } from "@/components/admin/new-email-templates-manager"
 
 export default async function EmailTemplatesPage() {
   const session = await getServerSession(authOptions)
@@ -18,11 +18,11 @@ export default async function EmailTemplatesPage() {
             Email šablony
           </h1>
           <p className="text-body text-gray-600">
-            Spravujte email šablony a odesílejte hromadné emaily uživatelům.
+            Upravujte email šablony a spravujte automatické odesílání emailů.
           </p>
         </div>
-        
-        <EmailTemplatesManager />
+
+        <NewEmailTemplatesManager />
       </div>
     </div>
   )

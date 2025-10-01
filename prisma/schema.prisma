@@ -274,3 +274,32 @@ model PaymentIntent {
 
   @@map("prostormat_payment_intents")
 }
+
+model EmailTemplate {
+  id          String   @id @default(cuid())
+  templateKey String   @unique // welcome_user, welcome_location_owner, etc.
+  name        String   // Display name
+  subject     String   // Email subject line
+  htmlContent String   // HTML email content
+  textContent String?  // Plain text fallback
+  variables   String[] // Array of variable placeholders like {{name}}, {{email}}
+  description String?  // What this template is used for
+  isActive    Boolean  @default(true) // Can be toggled on/off
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("prostormat_email_templates")
+}
+
+model EmailTrigger {
+  id           String   @id @default(cuid())
+  triggerKey   String   @unique // user_registration, venue_inquiry, etc.
+  name         String   // Display name
+  description  String?  // What triggers this email
+  templateKey  String   // Links to EmailTemplate.templateKey
+  isEnabled    Boolean  @default(false) // Toggle on/off
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("prostormat_email_triggers")
+}

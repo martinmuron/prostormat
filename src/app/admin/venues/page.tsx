@@ -332,13 +332,28 @@ export default function VenueManagementPage() {
                       {/* Quick Actions */}
                       <div className="flex flex-col gap-2">
                         <Button
+                          variant="default"
+                          size="sm"
+                          asChild
+                          className="w-full"
+                        >
+                          <a
+                            href={`/admin/venues/${venue.id}/edit`}
+                            className="flex items-center gap-1"
+                          >
+                            <Edit className="h-3 w-3" />
+                            Upravit
+                          </a>
+                        </Button>
+
+                        <Button
                           variant="outline"
                           size="sm"
                           asChild
                           className="w-full"
                         >
-                          <a 
-                            href={`/prostory/${venue.slug}`} 
+                          <a
+                            href={`/prostory/${venue.slug}`}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="flex items-center gap-1"
@@ -347,7 +362,7 @@ export default function VenueManagementPage() {
                             Zobrazit
                           </a>
                         </Button>
-                        
+
                         {venue.status === 'pending' && (
                           <Button
                             variant="outline"

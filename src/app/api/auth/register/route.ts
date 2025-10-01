@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import bcrypt from "bcryptjs"
 import { z } from "zod"
 import { db } from "@/lib/db"
+import { sendWelcomeEmail } from "@/lib/email-service"
 
 const registerSchema = z.object({
   name: z.string().min(2, "Jméno musí mít alespoň 2 znaky"),
@@ -50,6 +51,18 @@ export async function POST(request: Request) {
         role: true,
       },
     })
+
+    // Send welcome email (don't block registration if email fails)
+    try {
+      await sendWelcomeEmail({
+        name: user.name || user.email,
+        email: user.email,
+        role: user.role
+      })
+    } catch (emailError) {
+      console.error('Failed to send welcome email:', emailError)
+      // Continue anyway - registration was successful
+    }
 
     return NextResponse.json({
       success: true,

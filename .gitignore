@@ -144,3 +144,12 @@ vite.config.ts.timestamp-*
 # Prisma
 prisma/migrations/
 .vercel
+
+# Venue images (stored in Supabase, not in Git)
+Prostory/prostory_images/
+prostory/prostory_images/
+
+# Scraping progress and logs
+data/scraping-progress.json
+data/batches/
+/tmp/supabase-upload.log

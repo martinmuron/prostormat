@@ -70,6 +70,7 @@ const folderToSlugMap = {
   'ice-arena-katerinky': 'ice-arena-katerinky',
   'ice-arena-letnany': 'ice-arena-letnany',
   'kavarna-co-hleda-jmeno': 'kavarna-co-hleda-jmeno',
+  'kafkoff': 'kafkoff',
   'kino-pilotu': 'kino-pilotu',
   'klubovna-2-patro': '2-patro-take-klubovna-2-patro',
   'ku-club-bar': 'ku-club-bar',
@@ -116,7 +117,8 @@ const folderToSlugMap = {
   'turquoise-prague-restaurant': 'turquoise-prague-restaurant',
   'turquoise-prague-sal-v-muzeu': 'turquoise-prague-sal-v-muzeu',
   'turquoise-prague-zahrada': 'turquoise-prague-zahrada',
-  'the-monkey-bar-prague': 'monkey-bar-prague',
+  'the-monkey-bar-prague': 'the-monkey-bar-prague',
+  'the-monkey-bar-prague-1': 'the-monkey-bar-prague',
   'the-original-beer-experience-prague': 'pilsner-urquell-the-original-beer-experience',
   'the-pop-up': 'the-pop-up',
   'vzdelavaci-program-pro-skoly': 'dinosauria-vzdelavaci-program',
@@ -189,11 +191,13 @@ const folderToSlugMap = {
   'mozart-interactive-museum': 'mozart-interactive-museum',
   'jezero.ooo': 'jezero-ooo',
   'centrum-jason': 'centrum-jason',
-  'sal': 'centrum-jason-sal',
-  'cvicebna': 'centrum-jason-cvicebna',
-  'atelier': 'centrum-jason-atelier',
+  'sal': 'multifunkcni-sal-jason',
+  'cvicebna': 'cvicebna-jason',
+  'atelier': 'atelier-jason',
   'oaza-lahovicky': 'oaza-lahovicky',
   'vila-kajetanka': 'vila-kajetanka',
+  'vila-kajetanka-sal-roma': 'vila-kajetanka-sal-roma',
+  'vila-kajetanka-terasa': 'vila-kajetanka-terasa',
   'salonky': 'vila-kajetanka-salonky',
   'narodni-dum-na-vinohradech': 'narodni-dum-na-vinohradech',
   'majakovskeho-sal': 'narodni-dum-na-vinohradech-majakovskeho-sal',
@@ -206,7 +210,7 @@ const folderToSlugMap = {
   'konferencni-centrum-krocinova': 'konferencni-centrum-krocinova',
   'petrohradska-galerie': 'petrohradska-galerie',
   'petrohradska-kino': 'petrohradska-kino',
-  'zasedame_cz': 'zasedame',
+  'zasedame_cz': 'zasedame-cz',
   'zasedame_cz-velka-mistnost-pro-akce': 'zasedame-velka-mistnost-pro-akce',
   'fat-cat-bubbles-bar': 'fat-cat-bubbles-bar',
   'fat-cat-underground': 'fat-cat-underground',
@@ -247,7 +251,7 @@ const folderToSlugMap = {
   'zamek-decin': 'zamek-decin',
   'zamek-slavkov-austerlitz': 'zamek-slavkov-austerlitz',
   'zamecky-hotel-valtice': 'zamecky-hotel-valtice',
-  'boardroom': 'falkensteiner-hotel-prague-boardroom'
+  'boardroom': 'boardroom-falkensteiner'
 }
 
 const slugToFolderMap = Object.fromEntries(

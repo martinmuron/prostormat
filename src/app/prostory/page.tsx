@@ -1,9 +1,8 @@
 import { Suspense } from "react"
 import { VenueCard } from "@/components/venue/venue-card"
 import { VenueFilters } from "@/components/venue/venue-filters"
-import { Button } from "@/components/ui/button"
+import { InfiniteVenueList } from "@/components/venue/infinite-venue-list"
 import { db } from "@/lib/db"
-import { VENUE_TYPES, PRAGUE_DISTRICTS, CAPACITY_RANGES } from "@/types"
 import { buildVenueWhereClause } from "@/lib/venue-filters"
 
 interface SearchParams {
@@ -13,7 +12,9 @@ interface SearchParams {
   capacity?: string
 }
 
-async function getVenues(searchParams: SearchParams) {
+const VENUES_PER_PAGE = 20
+
+async function getInitialVenues(searchParams: SearchParams) {
   try {
     const where = buildVenueWhereClause({
       q: searchParams.q ?? null,
@@ -24,6 +25,7 @@ async function getVenues(searchParams: SearchParams) {
 
     const venues = await db.venue.findMany({
       where,
+      take: VENUES_PER_PAGE,
       orderBy: {
         createdAt: "desc",
       },
@@ -41,14 +43,20 @@ async function getVenues(searchParams: SearchParams) {
       }
     })
 
+    const totalCount = await db.venue.count({ where })
+
     // Ensure images is always an array
-    return venues.map(venue => ({
-      ...venue,
-      images: Array.isArray(venue.images) ? venue.images : []
-    }))
+    return {
+      venues: venues.map(venue => ({
+        ...venue,
+        images: Array.isArray(venue.images) ? venue.images : []
+      })),
+      totalCount,
+      hasMore: totalCount > VENUES_PER_PAGE
+    }
   } catch (error) {
     console.error("Error fetching prostormat_venues:", error)
-    return []
+    return { venues: [], totalCount: 0, hasMore: false }
   }
 }
 
@@ -73,8 +81,8 @@ function VenueGridSkeleton() {
   )
 }
 
-async function VenueGrid({ searchParams }: { searchParams: SearchParams }) {
-  const venues = await getVenues(searchParams)
+async function VenueContent({ searchParams }: { searchParams: SearchParams }) {
+  const { venues, totalCount, hasMore } = await getInitialVenues(searchParams)
 
   if (venues.length === 0) {
     return (
@@ -85,19 +93,21 @@ async function VenueGrid({ searchParams }: { searchParams: SearchParams }) {
         <p className="text-sm sm:text-body text-gray-600 mb-4 sm:mb-6">
           Zkuste upravit filtry nebo vyhledat jiné prostory.
         </p>
-        <Button asChild size="sm" className="sm:size-default rounded-xl bg-black text-white hover:bg-gray-800 transition-all duration-200 shadow-lg hover:shadow-xl">
-          <a href="/prostory">Zobrazit všechny prostory</a>
-        </Button>
       </div>
     )
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
-      {venues.map((venue: any) => (
-        <VenueCard key={venue.id} venue={venue} />
-      ))}
-    </div>
+    <>
+      <div className="mb-6 text-center text-sm text-gray-600">
+        Zobrazeno {venues.length} z {totalCount} prostor
+      </div>
+      <InfiniteVenueList
+        initialVenues={venues}
+        searchParams={searchParams}
+        hasMore={hasMore}
+      />
+    </>
   )
 }
 
@@ -109,7 +119,7 @@ export default async function VenuesPage({
   const resolvedSearchParams = await searchParams
   return (
     <div className="min-h-screen bg-white">
-      {/* Header - No longer sticky */}
+      {/* Header */}
       <div className="bg-white border-b border-black">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
           <div className="text-center mb-8">
@@ -117,7 +127,7 @@ export default async function VenuesPage({
               Event prostory v Praze
             </h1>
           </div>
-          
+
           {/* Search and Filters */}
           <div className="flex justify-center">
             <div className="w-full max-w-5xl">
@@ -126,11 +136,11 @@ export default async function VenuesPage({
           </div>
         </div>
       </div>
-      
+
       {/* Venue Grid */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
         <Suspense fallback={<VenueGridSkeleton />}>
-          <VenueGrid searchParams={resolvedSearchParams} />
+          <VenueContent searchParams={resolvedSearchParams} />
         </Suspense>
       </div>
     </div>

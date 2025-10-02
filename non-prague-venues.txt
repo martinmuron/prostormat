@@ -1,0 +1,15 @@
+NON-PRAGUE VENUES SUMMARY
+============================================================
+
+Total Non-Prague Venues Skipped: 261
+
+Breakdown by Location:
+
+  Unknown: 254 venues
+  Bratislava: 7 venues
+
+Categories:
+  - Bratislava, Slovakia: 7 venues
+  - Unknown/Other locations: 254 venues
+    (includes Czech cities outside Prague: Brno, Karlovy Vary,
+     Mladá Boleslav, Central Bohemia region, etc.)

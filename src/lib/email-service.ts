@@ -1,5 +1,5 @@
 import { db } from '@/lib/db'
-import { resend } from '@/lib/resend'
+import { FROM_EMAIL, REPLY_TO_EMAIL, resend } from '@/lib/resend'
 
 interface SendEmailFromTemplateParams {
   templateKey: string
@@ -58,12 +58,12 @@ export async function sendEmailFromTemplate({
 
     // Send email via Resend
     const result = await resend.emails.send({
-      from: 'Prostormat <noreply@prostormat.cz>',
+      from: FROM_EMAIL,
       to,
       subject,
       html: htmlContent,
       text: textContent || undefined,
-      reply_to: 'info@prostormat.cz'
+      replyTo: REPLY_TO_EMAIL
     })
 
     console.log(`Email sent successfully: ${templateKey} to ${to}`)

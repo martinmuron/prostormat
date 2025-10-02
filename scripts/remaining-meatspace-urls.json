@@ -1,0 +1,191 @@
+{
+  "description": "Remaining meatspace.cz URLs to scrape - organized by category",
+  "totalRemaining": 119,
+  "categories": {
+    "subLocations": {
+      "count": 23,
+      "urls": [
+        {
+          "parent": "narodni-dum-na-vinohradech",
+          "url": "https://www.meatspace.cz/prostory/narodni-dum-na-vinohradech/majakovskeho-sal/"
+        },
+        {
+          "parent": "narodni-dum-na-vinohradech",
+          "url": "https://www.meatspace.cz/prostory/narodni-dum-na-vinohradech/raisuv-sal/"
+        },
+        {
+          "parent": "narodni-dum-na-vinohradech",
+          "url": "https://www.meatspace.cz/prostory/narodni-dum-na-vinohradech/spolecensky-sal/"
+        },
+        {
+          "parent": "narodni-dum-na-vinohradech",
+          "url": "https://www.meatspace.cz/prostory/narodni-dum-na-vinohradech/salonky/"
+        },
+        {
+          "parent": "automaticke-mlyny",
+          "url": "https://www.meatspace.cz/prostory/automaticke-mlyny/amfiteatr/"
+        },
+        {
+          "parent": "automaticke-mlyny",
+          "url": "https://www.meatspace.cz/prostory/automaticke-mlyny/piazzetta/"
+        },
+        {
+          "parent": "automaticke-mlyny",
+          "url": "https://www.meatspace.cz/prostory/automaticke-mlyny/terasa/"
+        },
+        {
+          "parent": "vzlet",
+          "url": "https://www.meatspace.cz/prostory/vzlet/klubovna/"
+        },
+        {
+          "parent": "vzlet",
+          "url": "https://www.meatspace.cz/prostory/vzlet/male-foyer/"
+        },
+        {
+          "parent": "vzlet",
+          "url": "https://www.meatspace.cz/prostory/vzlet/velky-sal/"
+        },
+        {
+          "parent": "hub-na-poli",
+          "url": "https://www.meatspace.cz/prostory/hub-na-poli/industrial/"
+        },
+        {
+          "parent": "hub-na-poli",
+          "url": "https://www.meatspace.cz/prostory/hub-na-poli/pole-designu/"
+        },
+        {
+          "parent": "prague-city-golf-vinor",
+          "url": "https://www.meatspace.cz/prostory/prague-city-golf-vinor/multifunkcni-mistnost/"
+        },
+        {
+          "parent": "prague-city-golf-vinor",
+          "url": "https://www.meatspace.cz/prostory/prague-city-golf-vinor/lounge/"
+        },
+        {
+          "parent": "prague-city-golf-vinor",
+          "url": "https://www.meatspace.cz/prostory/prague-city-golf-vinor/restaurace-soul.ad/"
+        },
+        {
+          "parent": "prague-city-golf-vinor",
+          "url": "https://www.meatspace.cz/prostory/prague-city-golf-vinor/venkovni-prostory/"
+        },
+        {
+          "parent": "konferencni-centrum-krocinova",
+          "url": "https://www.meatspace.cz/prostory/konferencni-centrum-krocinova/jednaci-a-skolici-mistnost-a/"
+        },
+        {
+          "parent": "konferencni-centrum-krocinova",
+          "url": "https://www.meatspace.cz/prostory/konferencni-centrum-krocinova/jednaci-a-skolici-mistnost-b/"
+        },
+        {
+          "parent": "konferencni-centrum-krocinova",
+          "url": "https://www.meatspace.cz/prostory/konferencni-centrum-krocinova/konferencni-sal-a-foyer/"
+        },
+        {
+          "parent": "zasedame_cz",
+          "url": "https://www.meatspace.cz/prostory/zasedame_cz/zasedame_cz-velka-mistnost-pro-akce/"
+        },
+        {
+          "parent": "zasedame_cz",
+          "url": "https://www.meatspace.cz/prostory/zasedame_cz/zasedame_cz-velka-mistnost-pro-akce-1/"
+        },
+        {
+          "parent": "zasedame_cz",
+          "url": "https://www.meatspace.cz/prostory/zasedame_cz/stredni-mistnost-jungmannovo-namesti/"
+        },
+        {
+          "parent": "petrohradska-kolektiv",
+          "url": "https://www.meatspace.cz/prostory/petrohradska-kolektiv/petrohradska-kino/"
+        }
+      ]
+    },
+    "standaloneVenues": {
+      "count": 96,
+      "urls": [
+        "https://www.meatspace.cz/prostory/new-new-studio/",
+        "https://www.meatspace.cz/prostory/2-deci-vinohrady/",
+        "https://www.meatspace.cz/prostory/the-apartment/",
+        "https://www.meatspace.cz/prostory/le-terroir/",
+        "https://www.meatspace.cz/prostory/dog-in-dock-vinarstvi-a-eventove-centrum/",
+        "https://www.meatspace.cz/prostory/bar-behind-the-curtain/",
+        "https://www.meatspace.cz/prostory/dejavu-music-bar-prague/",
+        "https://www.meatspace.cz/prostory/bar-kobka-8/",
+        "https://www.meatspace.cz/prostory/orea-resort-panorama-moravsky-kras/",
+        "https://www.meatspace.cz/prostory/orea-hotel-angelo-praha/",
+        "https://www.meatspace.cz/prostory/orea-hotel-pyramida-praha/",
+        "https://www.meatspace.cz/prostory/port-lounge-bar-prague/",
+        "https://www.meatspace.cz/prostory/beltine-forest-hotel/",
+        "https://www.meatspace.cz/prostory/aqualand-inn/",
+        "https://www.meatspace.cz/prostory/kluziste-petra/",
+        "https://www.meatspace.cz/prostory/vila-tusculum/",
+        "https://www.meatspace.cz/prostory/cistirna-stodola/",
+        "https://www.meatspace.cz/prostory/venkovni-prostory-cistirny/",
+        "https://www.meatspace.cz/prostory/tempo-andel/",
+        "https://www.meatspace.cz/prostory/revir-karlin/",
+        "https://www.meatspace.cz/prostory/chata-na-seraku/",
+        "https://www.meatspace.cz/prostory/spot-gallery/",
+        "https://www.meatspace.cz/prostory/hotel-praded-thamm/",
+        "https://www.meatspace.cz/prostory/chaty-capak/",
+        "https://www.meatspace.cz/prostory/zazitkovy-vlak-kds/",
+        "https://www.meatspace.cz/prostory/dergi-lounge/",
+        "https://www.meatspace.cz/prostory/woowoo-studio/",
+        "https://www.meatspace.cz/prostory/bistro-na-chlebu/",
+        "https://www.meatspace.cz/prostory/rosmarino-kvetinovy-atelier/",
+        "https://www.meatspace.cz/prostory/vila-barrandov/",
+        "https://www.meatspace.cz/prostory/vila-zlaty-slavik-jevany/",
+        "https://www.meatspace.cz/prostory/prostor-mikovcova/",
+        "https://www.meatspace.cz/prostory/klubovna-2-patro/",
+        "https://www.meatspace.cz/prostory/malsovicka-arena/",
+        "https://www.meatspace.cz/prostory/everything/",
+        "https://www.meatspace.cz/prostory/hrad-strekov/",
+        "https://www.meatspace.cz/prostory/zamek-decin/",
+        "https://www.meatspace.cz/prostory/dum-kultury-litomerice/",
+        "https://www.meatspace.cz/prostory/zahrada-cech/",
+        "https://www.meatspace.cz/prostory/zamek-slavkov-austerlitz/",
+        "https://www.meatspace.cz/prostory/ibis-styles-relax-roznov-pod-radhostem/",
+        "https://www.meatspace.cz/prostory/hotel-skanzen/",
+        "https://www.meatspace.cz/prostory/hotel-tanecnica/",
+        "https://www.meatspace.cz/prostory/hotel-ricky/",
+        "https://www.meatspace.cz/prostory/hotel-pecr/",
+        "https://www.meatspace.cz/prostory/grund-resort/",
+        "https://www.meatspace.cz/prostory/sonnentor/",
+        "https://www.meatspace.cz/prostory/zamecky-hotel-valtice/",
+        "https://www.meatspace.cz/prostory/zasedacka/",
+        "https://www.meatspace.cz/prostory/q5-gallery/",
+        "https://www.meatspace.cz/prostory/kulturni-centrum-lovos/",
+        "https://www.meatspace.cz/prostory/a-la-petite-eiffel/",
+        "https://www.meatspace.cz/prostory/balbi-bar/",
+        "https://www.meatspace.cz/prostory/green-table/",
+        "https://www.meatspace.cz/prostory/foyer-cafe/",
+        "https://www.meatspace.cz/prostory/fantuv-sal/",
+        "https://www.meatspace.cz/prostory/meat-beer/",
+        "https://www.meatspace.cz/prostory/hotel-buchlov/",
+        "https://www.meatspace.cz/prostory/barley-pub-gallery/",
+        "https://www.meatspace.cz/prostory/centrum-horec/",
+        "https://www.meatspace.cz/prostory/garbe-holesovice/",
+        "https://www.meatspace.cz/prostory/hotel-chateau-de-frontiere-hranicni-zamecek/",
+        "https://www.meatspace.cz/prostory/kino-pilotu/",
+        "https://www.meatspace.cz/prostory/knizeci-cesta/",
+        "https://www.meatspace.cz/prostory/autentista-wine-champagne-bar/",
+        "https://www.meatspace.cz/prostory/hotel-petrovy-kameny/",
+        "https://www.meatspace.cz/prostory/narodni-kavarna/",
+        "https://www.meatspace.cz/prostory/hotel-medlov/",
+        "https://www.meatspace.cz/prostory/hotel-carol/",
+        "https://www.meatspace.cz/prostory/story-of-prague/",
+        "https://www.meatspace.cz/prostory/umelecka-zahrada-a-atelier-v-nuslich/",
+        "https://www.meatspace.cz/prostory/wellness-restaurant-u-fandy/",
+        "https://www.meatspace.cz/prostory/designovy-event-space/",
+        "https://www.meatspace.cz/prostory/odonata-salounova-vila/",
+        "https://www.meatspace.cz/prostory/v-mejte/",
+        "https://www.meatspace.cz/prostory/vevaspace/",
+        "https://www.meatspace.cz/prostory/chata-hradecanka/",
+        "https://www.meatspace.cz/prostory/permonium/",
+        "https://www.meatspace.cz/prostory/fat-cat-underground/",
+        "https://www.meatspace.cz/prostory/the-design/",
+        "https://www.meatspace.cz/prostory/crowd-cafe/",
+        "https://www.meatspace.cz/prostory/cosmedix/"
+      ]
+    }
+  },
+  "instructions": "To continue scraping, use the WebFetch tool with each URL and the standard prompt to extract venue information. Add the results to meatspace-venues-data.json following the existing structure."
+}

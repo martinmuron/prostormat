@@ -181,9 +181,8 @@ export function NewEmailTemplatesManager() {
                   <div className="flex items-center justify-between">
                     <CardTitle>Upravit šablonu</CardTitle>
                     <div className="flex items-center gap-2">
-                      <Label htmlFor="template-active">Aktivní</Label>
+                      <Label>Aktivní</Label>
                       <Switch
-                        id="template-active"
                         checked={editedTemplate.isActive}
                         onCheckedChange={(checked) =>
                           setEditedTemplate({ ...editedTemplate, isActive: checked })

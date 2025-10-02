@@ -402,7 +402,6 @@ export function AdminVenueEditForm({ venue }: AdminVenueEditFormProps) {
                       <div className="flex items-center gap-2">
                         <Music className="h-4 w-4 text-gray-400" />
                         <Switch
-                          id="musicAfter10"
                           checked={formData.musicAfter10}
                           onCheckedChange={(checked) => handleChange("musicAfter10", checked)}
                         />

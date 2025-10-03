@@ -60,6 +60,7 @@ model User {
   emailFlowLogs EmailFlowLog[]
   eventRequestFavorites EventRequestFavorite[]
   passwordResetTokens PasswordResetToken[]
+  venueClaims VenueClaim[]
   createdAt     DateTime  @default(now())
 
   @@map("prostormat_users")
@@ -94,6 +95,7 @@ model Venue {
   youtubeUrl       String?  // Existing field in database
   musicAfter10     Boolean? // Can play music after 22:00
   status           String   @default("draft") // draft, active, expired, pending
+  priority         Int?     // 1 = highest priority, null = no priority
   isRecommended    Boolean  @default(false) // Existing field
   views            Int      @default(0) // Existing field
   totalViews       Int      @default(0) // Existing field
@@ -112,8 +114,39 @@ model Venue {
   inquiries    VenueInquiry[]
   subscription Subscription?
   broadcastLogs VenueBroadcastLog[]
+  claims       VenueClaim[]
+  homepageSlot HomepageVenue?
 
   @@map("prostormat_venues")
+}
+
+model VenueClaim {
+  id              String   @id @default(cuid())
+  venueId         String
+  claimantId      String
+  status          String   @default("pending") // pending, approved, rejected
+  message         String?
+  submissionData  String?  // JSON snapshot of claim form
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  venue    Venue @relation(fields: [venueId], references: [id])
+  claimant User  @relation(fields: [claimantId], references: [id])
+  paymentIntent PaymentIntent? @relation("PaymentIntentClaim")
+
+  @@map("prostormat_venue_claims")
+}
+
+model HomepageVenue {
+  id        String   @id @default(cuid())
+  position  Int      @unique
+  venueId   String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  venue Venue @relation(fields: [venueId], references: [id])
+
+  @@map("prostormat_homepage_venues")
 }
 
 model EventRequest {
@@ -271,9 +304,12 @@ model PaymentIntent {
   userEmail              String
   status                 String    @default("pending") // pending, completed, failed
   venueId                String?   // Set after venue is created
+  venueClaimId           String?   @unique // Set when claim is submitted
   paymentCompletedAt     DateTime?
   createdAt              DateTime  @default(now())
   updatedAt              DateTime  @updatedAt
+
+  venueClaim VenueClaim? @relation("PaymentIntentClaim", fields: [venueClaimId], references: [id])
 
   @@map("prostormat_payment_intents")
 }

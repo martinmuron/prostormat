@@ -29,8 +29,8 @@ export function HeroSearch() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
             {/* Venue Type */}
             <div>
-              <label className="flex items-center text-sm font-medium text-black mb-2">
-                <span className="inline-flex items-center justify-center w-7 h-7 bg-blue-700 rounded-md mr-2">
+              <label className="flex items-center justify-center md:justify-start text-sm font-medium text-black mb-2 text-center md:text-left gap-2">
+                <span className="inline-flex items-center justify-center w-7 h-7 bg-blue-700 rounded-md">
                   <Calendar className="h-4 w-4 text-white" />
                 </span>
                 Typ prostoru
@@ -50,8 +50,8 @@ export function HeroSearch() {
 
             {/* Capacity */}
             <div>
-              <label className="flex items-center text-sm font-medium text-black mb-2">
-                <span className="inline-flex items-center justify-center w-7 h-7 bg-green-700 rounded-md mr-2">
+              <label className="flex items-center justify-center md:justify-start text-sm font-medium text-black mb-2 text-center md:text-left gap-2">
+                <span className="inline-flex items-center justify-center w-7 h-7 bg-green-700 rounded-md">
                   <Users className="h-4 w-4 text-white" />
                 </span>
                 Kapacita
@@ -71,8 +71,8 @@ export function HeroSearch() {
 
             {/* Location */}
             <div>
-              <label className="flex items-center text-sm font-medium text-black mb-2">
-                <span className="inline-flex items-center justify-center w-7 h-7 bg-amber-700 rounded-md mr-2">
+              <label className="flex items-center justify-center md:justify-start text-sm font-medium text-black mb-2 text-center md:text-left gap-2">
+                <span className="inline-flex items-center justify-center w-7 h-7 bg-amber-700 rounded-md">
                   <MapPin className="h-4 w-4 text-white" />
                 </span>
                 Lokalita

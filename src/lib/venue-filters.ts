@@ -6,6 +6,7 @@ type FilterParams = {
   district?: string | null
   capacity?: string | null
   statuses?: string[]
+  includeSubvenues?: boolean
 }
 
 const CAPACITY_CONDITIONS: Record<string, Prisma.VenueWhereInput> = {
@@ -47,10 +48,14 @@ export function buildVenueWhereClause({
   district,
   capacity,
   statuses = ['published', 'active'],
+  includeSubvenues = false,
 }: FilterParams): Prisma.VenueWhereInput {
   const where: Prisma.VenueWhereInput = {
     status: { in: statuses },
-    parentId: null,
+  }
+
+  if (!includeSubvenues) {
+    where.parentId = null
   }
 
   if (q && q.trim().length > 0) {

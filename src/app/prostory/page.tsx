@@ -1,9 +1,9 @@
 import { Suspense } from "react"
-import { VenueCard } from "@/components/venue/venue-card"
 import { VenueFilters } from "@/components/venue/venue-filters"
 import { InfiniteVenueList } from "@/components/venue/infinite-venue-list"
 import { db } from "@/lib/db"
 import { buildVenueWhereClause } from "@/lib/venue-filters"
+import { generateOrderSeed, sortVenuesByPriority } from "@/lib/venue-priority"
 
 interface SearchParams {
   q?: string
@@ -14,21 +14,18 @@ interface SearchParams {
 
 const VENUES_PER_PAGE = 20
 
-async function getInitialVenues(searchParams: SearchParams) {
+async function getInitialVenues(searchParams: SearchParams, orderSeed: number) {
   try {
     const where = buildVenueWhereClause({
       q: searchParams.q ?? null,
       type: searchParams.type ?? null,
       district: searchParams.district ?? null,
       capacity: searchParams.capacity ?? null,
+      includeSubvenues: true,
     })
 
     const venues = await db.venue.findMany({
       where,
-      take: VENUES_PER_PAGE,
-      orderBy: {
-        createdAt: "desc",
-      },
       select: {
         id: true,
         name: true,
@@ -40,14 +37,17 @@ async function getInitialVenues(searchParams: SearchParams) {
         venueType: true,
         images: true,
         status: true,
+        priority: true,
       }
     })
 
-    const totalCount = await db.venue.count({ where })
+    const orderedVenues = sortVenuesByPriority(venues, orderSeed)
+    const initialVenues = orderedVenues.slice(0, VENUES_PER_PAGE)
+    const totalCount = orderedVenues.length
 
     // Ensure images is always an array
     return {
-      venues: venues.map(venue => ({
+      venues: initialVenues.map(venue => ({
         ...venue,
         images: Array.isArray(venue.images) ? venue.images : []
       })),
@@ -81,8 +81,8 @@ function VenueGridSkeleton() {
   )
 }
 
-async function VenueContent({ searchParams }: { searchParams: SearchParams }) {
-  const { venues, totalCount, hasMore } = await getInitialVenues(searchParams)
+async function VenueContent({ searchParams, orderSeed }: { searchParams: SearchParams, orderSeed: number }) {
+  const { venues, totalCount, hasMore } = await getInitialVenues(searchParams, orderSeed)
 
   if (venues.length === 0) {
     return (
@@ -106,6 +106,7 @@ async function VenueContent({ searchParams }: { searchParams: SearchParams }) {
         initialVenues={venues}
         searchParams={searchParams}
         hasMore={hasMore}
+        orderSeed={orderSeed}
       />
     </>
   )
@@ -117,6 +118,7 @@ export default async function VenuesPage({
   searchParams: Promise<SearchParams>
 }) {
   const resolvedSearchParams = await searchParams
+  const orderSeed = generateOrderSeed()
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
@@ -140,7 +142,7 @@ export default async function VenuesPage({
       {/* Venue Grid */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
         <Suspense fallback={<VenueGridSkeleton />}>
-          <VenueContent searchParams={resolvedSearchParams} />
+          <VenueContent searchParams={resolvedSearchParams} orderSeed={orderSeed} />
         </Suspense>
       </div>
     </div>

@@ -145,6 +145,126 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    const now = new Date();
+    const submissionMode: 'new' | 'claim' = venueData.mode === 'claim' ? 'claim' : 'new';
+
+    if (submissionMode === 'claim') {
+      if (!venueData.existingVenueId) {
+        throw new Error('existingVenueId is required for claim submissions');
+      }
+
+      const existingVenue = await prisma.venue.findUnique({
+        where: { id: venueData.existingVenueId },
+        select: {
+          id: true,
+          name: true,
+          slug: true,
+        },
+      });
+
+      if (!existingVenue) {
+        throw new Error('Existing venue not found for claim submission');
+      }
+
+      const claimId = nanoid();
+      const { userPassword: _omittedPassword, ...safeSubmissionData } = venueData;
+
+      const claimRecord = await prisma.venueClaim.create({
+        data: {
+          id: claimId,
+          venueId: existingVenue.id,
+          claimantId: userId,
+          status: 'pending',
+          submissionData: JSON.stringify({
+            ...safeSubmissionData,
+            mode: submissionMode,
+            submittedAt: now.toISOString(),
+          }),
+        },
+      });
+
+      await prisma.paymentIntent.update({
+        where: {
+          stripePaymentIntentId: paymentIntentId,
+        },
+        data: {
+          status: 'completed',
+          venueId: existingVenue.id,
+          venueClaimId: claimRecord.id,
+          paymentCompletedAt: now,
+        },
+      });
+
+      // Notify user about claim submission
+      try {
+        await resend.emails.send({
+          from: 'Prostormat <noreply@prostormat.cz>',
+          to: venueData.userEmail,
+          subject: '✅ Platba přijata - žádost o převzetí čeká na schválení',
+          html: `
+            <h2>Děkujeme za platbu!</h2>
+            <p>Vaše žádost o převzetí listingu "<strong>${existingVenue.name}</strong>" byla úspěšně odeslána.</p>
+            <h3>Co bude následovat?</h3>
+            <ul>
+              <li>✅ Potvrdíme, že jste oprávněný správce tohoto prostoru</li>
+              <li>⏳ Administrátor žádost zkontroluje a přiřadí vám správu</li>
+              <li>📧 Po schválení obdržíte potvrzení emailem</li>
+              <li>🛠️ Poté budete moci listing upravovat a řídit rezervace</li>
+            </ul>
+            <p>Můžete se přihlásit na: <a href="https://prostormat.cz/prihlaseni">prostormat.cz/prihlaseni</a></p>
+            <p>Děkujeme za důvěru!<br>Tým Prostormat</p>
+          `,
+        });
+      } catch (emailError) {
+        console.error('Failed to send claim confirmation email:', emailError);
+      }
+
+      // Notify admin about claim request
+      try {
+        await resend.emails.send({
+          from: 'Prostormat <noreply@prostormat.cz>',
+          to: 'info@prostormat.cz',
+          subject: '🔔 Nová žádost o převzetí listingu',
+          html: `
+            <h2>Dorazila žádost o převzetí listingu</h2>
+            <p><strong>Listing:</strong> ${existingVenue.name}</p>
+            <p><strong>Žadatel:</strong> ${venueData.userName || 'Neuvedeno'} (${venueData.userEmail})</p>
+            <p><strong>Adresa:</strong> ${venueData.address}</p>
+            <p><strong>Platba:</strong> ✅ Přijata (12,000 CZK)</p>
+            <p>Žádost je k dispozici v administraci v detailu listingu.</p>
+          `,
+        });
+      } catch (emailError) {
+        console.error('Failed to send admin claim notification:', emailError);
+      }
+
+      // Log email activity
+      try {
+        await prisma.emailFlowLog.create({
+          data: {
+            id: nanoid(),
+            emailType: 'venue_claim_confirmation',
+            recipient: venueData.userEmail,
+            subject: 'Platba přijata - žádost o převzetí čeká na schválení',
+            status: 'sent',
+            recipientType: 'venue_owner',
+            sentBy: userId,
+            createdAt: now,
+          },
+        });
+      } catch (logError) {
+        console.error('Failed to log claim email activity:', logError);
+      }
+
+      return NextResponse.json({
+        message: 'Claim submitted and payment confirmed',
+        success: true,
+        venueId: existingVenue.id,
+        claimId: claimId,
+        userId,
+      });
+    }
+
     // Create venue (status: pending approval)
     const venueId = nanoid();
     const venueSlug = venueData.name
@@ -173,10 +293,10 @@ export async function POST(request: NextRequest) {
         musicAfter10: venueData.musicAfter10 || false,
         status: 'pending', // Requires admin approval
         managerId: userId,
-        paymentDate: new Date(),
-        expiresAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000), // 1 year from now
-        createdAt: new Date(),
-        updatedAt: new Date(),
+        paymentDate: now,
+        expiresAt: new Date(now.getTime() + 365 * 24 * 60 * 60 * 1000),
+        createdAt: now,
+        updatedAt: now,
       },
     });
 
@@ -188,7 +308,7 @@ export async function POST(request: NextRequest) {
       data: {
         status: 'completed',
         venueId: venueId,
-        paymentCompletedAt: new Date(),
+        paymentCompletedAt: now,
       },
     });
 
@@ -261,7 +381,7 @@ export async function POST(request: NextRequest) {
           status: 'sent',
           recipientType: 'venue_owner',
           sentBy: userId,
-          createdAt: new Date(),
+          createdAt: now,
         },
       });
     } catch (logError) {

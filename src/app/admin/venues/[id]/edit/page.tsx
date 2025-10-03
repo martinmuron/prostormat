@@ -33,7 +33,25 @@ async function getVenueData(venueId: string) {
           select: {
             inquiries: true,
           }
-        }
+        },
+        claims: {
+          where: {
+            status: 'pending',
+          },
+          orderBy: {
+            createdAt: 'asc',
+          },
+          include: {
+            claimant: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+                phone: true,
+              },
+            },
+          },
+        },
       }
     })
 

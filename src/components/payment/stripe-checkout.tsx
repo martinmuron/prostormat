@@ -26,6 +26,7 @@ function PaymentForm({ venueData, onPaymentSuccess, onPaymentError }: PaymentFor
   const [isProcessing, setIsProcessing] = useState(false);
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [paymentIntentId, setPaymentIntentId] = useState<string | null>(null);
+  const isClaimSubmission = venueData?.mode === 'claim';
 
   useEffect(() => {
     // Create payment intent when component mounts
@@ -151,19 +152,28 @@ function PaymentForm({ venueData, onPaymentSuccess, onPaymentError }: PaymentFor
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <CreditCard className="h-5 w-5" />
-          Dokončit platbu - 12,000 CZK
+          {isClaimSubmission ? 'Odeslat žádost o převzetí - 12,000 CZK' : 'Dokončit platbu - 12,000 CZK'}
         </CardTitle>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
             <h4 className="font-medium text-blue-900 mb-2">Co zahrnuje platba:</h4>
-            <ul className="text-sm text-blue-800 space-y-1">
-              <li>✅ Vytvoření účtu a profilu prostoru</li>
-              <li>✅ Zveřejnění na platformě po schválení</li>
-              <li>✅ Příjem rezervací od klientů</li>
-              <li>✅ Správa prostoru v administraci</li>
-            </ul>
+            {isClaimSubmission ? (
+              <ul className="text-sm text-blue-800 space-y-1">
+                <li>✅ Potvrzení vašeho nároku na existující listing</li>
+                <li>✅ Přístup ke správě po schválení administrátorem</li>
+                <li>✅ Možnost upravovat fotografie, popisy a kontakty</li>
+                <li>✅ Příjem rezervací přes Prostormat</li>
+              </ul>
+            ) : (
+              <ul className="text-sm text-blue-800 space-y-1">
+                <li>✅ Vytvoření účtu a profilu prostoru</li>
+                <li>✅ Zveřejnění na platformě po schválení</li>
+                <li>✅ Příjem rezervací od klientů</li>
+                <li>✅ Správa prostoru v administraci</li>
+              </ul>
+            )}
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -179,12 +189,16 @@ function PaymentForm({ venueData, onPaymentSuccess, onPaymentError }: PaymentFor
               </p>
             </div>
 
-            <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-              <h5 className="font-medium text-gray-900 mb-2">Souhrn platby:</h5>
-              <div className="flex justify-between text-sm">
-                <span>Přidání prostoru "{venueData.name}"</span>
-                <span className="font-medium">12,000 CZK</span>
-              </div>
+          <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+            <h5 className="font-medium text-gray-900 mb-2">Souhrn platby:</h5>
+            <div className="flex justify-between text-sm">
+              <span>
+                {isClaimSubmission
+                  ? `Žádost o převzetí "${venueData.name}"`
+                  : `Přidání prostoru "${venueData.name}"`}
+              </span>
+              <span className="font-medium">12,000 CZK</span>
+            </div>
               <div className="flex justify-between text-sm mt-1 pt-2 border-t border-gray-300">
                 <span className="font-medium">Celkem k úhradě:</span>
                 <span className="font-bold text-lg">12,000 CZK</span>
@@ -202,7 +216,9 @@ function PaymentForm({ venueData, onPaymentSuccess, onPaymentError }: PaymentFor
                   <span>Zpracování platby...</span>
                 </div>
               ) : (
-                'Zaplatit 12,000 CZK a vytvořit prostor'
+                isClaimSubmission
+                  ? 'Zaplatit 12,000 CZK a požádat o převzetí'
+                  : 'Zaplatit 12,000 CZK a vytvořit prostor'
               )}
             </Button>
           </form>

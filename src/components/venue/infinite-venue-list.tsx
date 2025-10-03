@@ -14,6 +14,7 @@ interface Venue {
   venueType: string | null
   images: string[]
   status: string
+  priority?: number | null
 }
 
 interface InfiniteVenueListProps {
@@ -25,12 +26,14 @@ interface InfiniteVenueListProps {
     capacity?: string
   }
   hasMore: boolean
+  orderSeed: number
 }
 
 export function InfiniteVenueList({
   initialVenues,
   searchParams,
   hasMore: initialHasMore,
+  orderSeed,
 }: InfiniteVenueListProps) {
   const [venues, setVenues] = useState<Venue[]>(initialVenues)
   const [page, setPage] = useState(1)
@@ -43,7 +46,7 @@ export function InfiniteVenueList({
     setVenues(initialVenues)
     setPage(1)
     setHasMore(initialHasMore)
-  }, [initialVenues, initialHasMore])
+  }, [initialVenues, initialHasMore, orderSeed])
 
   // Load more venues when user scrolls near the bottom
   useEffect(() => {
@@ -68,16 +71,21 @@ export function InfiniteVenueList({
         observer.unobserve(loadMoreRef.current)
       }
     }
-  }, [hasMore, loading, page])
+  }, [hasMore, loading, page, orderSeed])
 
   const loadMoreVenues = async () => {
     if (loading || !hasMore) return
 
     setLoading(true)
     try {
-      const params = new URLSearchParams({
-        page: String(page + 1),
-        ...searchParams,
+      const params = new URLSearchParams()
+      params.set('page', String(page + 1))
+      params.set('orderSeed', String(orderSeed))
+
+      Object.entries(searchParams).forEach(([key, value]) => {
+        if (typeof value === 'string' && value.length > 0) {
+          params.set(key, value)
+        }
       })
 
       const response = await fetch(`/api/venues/paginated?${params}`)

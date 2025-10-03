@@ -23,6 +23,7 @@ const updateVenueSchema = z.object({
   images: z.array(z.string()).optional(),
   status: z.enum(["draft", "pending", "published", "hidden", "active"]).optional(),
   isRecommended: z.boolean().optional(),
+  priority: z.number().int().min(1).max(3).nullable().optional(),
   managerId: z.string().optional(), // Allow admin to assign managers
 })
 
@@ -104,12 +105,14 @@ export async function PATCH(
     if (typeof body.images !== "undefined") updateData.images = body.images ?? []
     if (typeof body.status !== "undefined") updateData.status = body.status
     if (typeof body.isRecommended !== "undefined") updateData.isRecommended = body.isRecommended
+    if (typeof body.priority !== "undefined") updateData.priority = body.priority
     if (typeof body.managerId !== "undefined") updateData.managerId = body.managerId
 
     // Only admins can change status, isRecommended, or manager assignments
     if (session.user.role !== "admin") {
       delete updateData.status
       delete updateData.isRecommended
+      delete updateData.priority
       delete updateData.managerId
     }
 

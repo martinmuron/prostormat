@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
     const district = searchParams.get("district") || undefined
     const capacity = searchParams.get("capacity") || undefined
 
-    const where = buildVenueWhereClause({ q, type, district, capacity })
+    const where = buildVenueWhereClause({ q, type, district, capacity, includeSubvenues: true })
 
     const count = await db.venue.count({ where })
 

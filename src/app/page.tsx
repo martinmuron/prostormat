@@ -16,19 +16,61 @@ import { Search, Upload, MessageSquare, Euro, Users, MapPin, Calendar, ArrowRigh
 
 async function getFeaturedVenues() {
   try {
-    const venues = await db.venue.findMany({
-      where: {
-        status: { in: ["active", "draft"] },
+    const homepageVenues = await db.homepageVenue.findMany({
+      include: {
+        venue: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+            description: true,
+            address: true,
+            capacitySeated: true,
+            capacityStanding: true,
+            venueType: true,
+            images: true,
+            status: true,
+          },
+        },
       },
-      take: 6,
       orderBy: {
-        createdAt: "desc",
+        position: 'asc',
       },
     })
-    
-    
-    // PostgreSQL returns arrays directly, no need to parse
-    return venues
+
+    const selected: any[] = []
+    const seen = new Set<string>()
+
+    for (const entry of homepageVenues) {
+      const venue = entry.venue
+      if (!venue) continue
+      if (!['published', 'active'].includes(venue.status)) continue
+      if (seen.has(venue.id)) continue
+      seen.add(venue.id)
+      selected.push(venue)
+    }
+
+    if (selected.length < 12) {
+      const fallbackVenues = await db.venue.findMany({
+        where: {
+          status: { in: ['published', 'active'] },
+          id: { notIn: Array.from(seen) },
+        },
+        orderBy: {
+          createdAt: 'desc',
+        },
+        take: 12 - selected.length,
+      })
+
+      for (const venue of fallbackVenues) {
+        if (!seen.has(venue.id)) {
+          seen.add(venue.id)
+          selected.push(venue)
+        }
+      }
+    }
+
+    return selected.slice(0, 12)
   } catch (error) {
     console.error("Error fetching prostormat_venues:", error)
     return []
@@ -267,10 +309,10 @@ export default function HomePage() {
           <ScrollReveal>
             <div className="text-center mb-12">
               <h2 className="text-3xl sm:text-4xl font-bold text-black mb-4">
-                Nejnovější prostory
+                Vybrané prostory
               </h2>
               <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                Objevte nejnovější prostory přidané do naší platformy
+                Ručně vybrané prostory, které chceme aktuálně ukázat návštěvníkům
               </p>
             </div>
           </ScrollReveal>
@@ -278,7 +320,7 @@ export default function HomePage() {
           <ScrollReveal delay={200}>
             <Suspense fallback={
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {Array.from({ length: 6 }).map((_, i) => (
+                {Array.from({ length: 12 }).map((_, i) => (
                   <VenueCardSkeleton key={i} />
                 ))}
               </div>

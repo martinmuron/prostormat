@@ -1,0 +1,76 @@
+import { randomInt } from 'crypto'
+
+export type VenueWithPriority = {
+  priority: number | null
+}
+
+type Seed = number
+
+function mulberry32(seed: number): () => number {
+  let t = seed >>> 0
+  return () => {
+    t += 0x6D2B79F5
+    let r = Math.imul(t ^ (t >>> 15), t | 1)
+    r ^= r + Math.imul(r ^ (r >>> 7), r | 61)
+    return ((r ^ (r >>> 14)) >>> 0) / 4294967296
+  }
+}
+
+function shuffleWithSeed<T>(items: T[], seed: Seed): T[] {
+  const result = [...items]
+  const random = mulberry32(seed)
+
+  for (let i = result.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(random() * (i + 1))
+    ;[result[i], result[j]] = [result[j], result[i]]
+  }
+
+  return result
+}
+
+export function sortVenuesByPriority<T extends VenueWithPriority>(
+  venues: T[],
+  seed: Seed
+): T[] {
+  const safeSeed = seed >>> 0
+  const groupSeeds = [safeSeed + 1, safeSeed + 2, safeSeed + 3, safeSeed + 4]
+
+  const priorityGroups: Record<'p1' | 'p2' | 'p3' | 'none', T[]> = {
+    p1: [],
+    p2: [],
+    p3: [],
+    none: [],
+  }
+
+  for (const venue of venues) {
+    switch (venue.priority) {
+      case 1:
+        priorityGroups.p1.push(venue)
+        break
+      case 2:
+        priorityGroups.p2.push(venue)
+        break
+      case 3:
+        priorityGroups.p3.push(venue)
+        break
+      default:
+        priorityGroups.none.push(venue)
+    }
+  }
+
+  const ordered: T[] = []
+  ordered.push(...shuffleWithSeed(priorityGroups.p1, groupSeeds[0]))
+  ordered.push(...shuffleWithSeed(priorityGroups.p2, groupSeeds[1]))
+  ordered.push(...shuffleWithSeed(priorityGroups.p3, groupSeeds[2]))
+  ordered.push(...shuffleWithSeed(priorityGroups.none, groupSeeds[3]))
+
+  return ordered
+}
+
+export function generateOrderSeed(): number {
+  try {
+    return randomInt(0xffffffff)
+  } catch (error) {
+    return Math.floor(Math.random() * 0xffffffff)
+  }
+}

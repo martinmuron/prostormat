@@ -1,10 +1,11 @@
 "use client"
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import {
   Eye,
   EyeOff,
@@ -16,6 +17,8 @@ import {
   Filter,
   ExternalLink,
   Edit,
+  AlertCircle,
+  CheckCircle,
 } from 'lucide-react';
 
 interface Venue {
@@ -33,6 +36,16 @@ interface Venue {
   totalViews: number;
   createdAt: string;
   updatedAt: string;
+  priority?: number | null;
+  claims?: {
+    id: string;
+    status: string;
+    createdAt: string;
+    claimant?: {
+      name?: string | null;
+      email?: string | null;
+    } | null;
+  }[];
   prostormat_users: {
     name: string;
     email: string;
@@ -43,13 +56,23 @@ interface Venue {
 export default function VenueManagementPage() {
   const [venues, setVenues] = useState<Venue[]>([]);
   const [filteredVenues, setFilteredVenues] = useState<Venue[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState<string>('all');
-  const [updatingVenueId, setUpdatingVenueId] = useState<string | null>(null);
+const [loading, setLoading] = useState(true);
+const [searchTerm, setSearchTerm] = useState('');
+const [statusFilter, setStatusFilter] = useState<string>('all');
+const [updatingVenueId, setUpdatingVenueId] = useState<string | null>(null);
+const [updatingPriorityId, setUpdatingPriorityId] = useState<string | null>(null);
+  const HOMEPAGE_SLOT_COUNT = 12;
+  const [homepageSlots, setHomepageSlots] = useState<(string | null)[]>(() =>
+    Array.from({ length: HOMEPAGE_SLOT_COUNT }, () => null)
+  );
+  const [homepageLoading, setHomepageLoading] = useState(true);
+  const [homepageSaving, setHomepageSaving] = useState(false);
+  const [homepageError, setHomepageError] = useState<string | null>(null);
+  const [homepageSuccess, setHomepageSuccess] = useState<string | null>(null);
 
   useEffect(() => {
     fetchVenues();
+    fetchHomepageVenues();
   }, []);
 
   useEffect(() => {
@@ -88,6 +111,113 @@ export default function VenueManagementPage() {
     }
   };
 
+  const fetchHomepageVenues = async () => {
+    try {
+      setHomepageLoading(true);
+      setHomepageError(null);
+      const response = await fetch('/api/admin/homepage-venues');
+      const data = await response.json();
+
+      if (response.ok && Array.isArray(data.slots)) {
+        const nextSlots = data.slots
+          .sort((a: { position: number }, b: { position: number }) => a.position - b.position)
+          .map((slot: { venue?: { id: string } | null }) => slot.venue?.id ?? null);
+
+        setHomepageSlots(() => {
+          const filled = [...nextSlots];
+          while (filled.length < HOMEPAGE_SLOT_COUNT) {
+            filled.push(null);
+          }
+          return filled.slice(0, HOMEPAGE_SLOT_COUNT);
+        });
+      } else {
+        setHomepageError(data.error || 'Nepodařilo se načíst seznam pro homepage');
+      }
+    } catch (error) {
+      console.error('Error fetching homepage venues:', error);
+      setHomepageError('Nepodařilo se načíst seznam pro homepage');
+    } finally {
+      setHomepageLoading(false);
+    }
+  };
+
+  const handleHomepageSlotChange = (index: number, value: string) => {
+    setHomepageSlots((prev) => {
+      const next = [...prev];
+      next[index] = value === 'none' ? null : value;
+      return next;
+    });
+  };
+
+  const saveHomepageSlots = async () => {
+    setHomepageError(null);
+    setHomepageSuccess(null);
+
+    const missing = homepageSlots.some((id) => !id);
+    if (missing) {
+      setHomepageError('Vyplňte všech 12 pozic na homepage.');
+      return;
+    }
+
+    const ids = homepageSlots.filter((id): id is string => Boolean(id));
+    const duplicates = ids.filter((id, idx) => ids.indexOf(id) !== idx);
+    if (duplicates.length > 0) {
+      setHomepageError('Každý prostor může být na homepage pouze jednou.');
+      return;
+    }
+
+    setHomepageSaving(true);
+
+    try {
+      const response = await fetch('/api/admin/homepage-venues', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          slots: homepageSlots.map((venueId, index) => ({
+            position: index + 1,
+            venueId: venueId!,
+          })),
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setHomepageSuccess('Homepage byla úspěšně aktualizována.');
+      } else {
+        setHomepageError(data.error || 'Nepodařilo se uložit nastavení homepage.');
+      }
+    } catch (error) {
+      console.error('Error saving homepage venues:', error);
+      setHomepageError('Nepodařilo se uložit nastavení homepage.');
+    } finally {
+      setHomepageSaving(false);
+    }
+  };
+
+  const homepageSelectionCounts = homepageSlots.reduce<Record<string, number>>((acc, id) => {
+    if (id) {
+      acc[id] = (acc[id] || 0) + 1;
+    }
+    return acc;
+  }, {});
+
+  const orderedVenueOptions = useMemo(
+    () =>
+      [...venues].sort((a, b) => a.name.localeCompare(b.name, 'cs-CZ', { sensitivity: 'base' })),
+    [venues]
+  );
+
+  const venueNameMap = useMemo(() => {
+    const map = new Map<string, string>();
+    venues.forEach((venue) => {
+      map.set(venue.id, venue.name);
+    });
+    return map;
+  }, [venues]);
+
   const toggleVenueStatus = async (venueId: string, currentStatus: string) => {
     setUpdatingVenueId(venueId);
     
@@ -121,6 +251,37 @@ export default function VenueManagementPage() {
       alert('Došlo k chybě při změně stavu prostoru.');
     } finally {
       setUpdatingVenueId(null);
+    }
+  };
+
+  const updateVenuePriority = async (venueId: string, priority: number | null) => {
+    setUpdatingPriorityId(venueId);
+
+    try {
+      const response = await fetch('/api/admin/venues/update-priority', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ venueId, priority }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setVenues(prev => prev.map(venue =>
+          venue.id === venueId
+            ? { ...venue, priority: data.priority }
+            : venue
+        ));
+      } else {
+        alert(`Chyba při změně priority: ${data.error || data.message}`);
+      }
+    } catch (error) {
+      console.error('Error updating venue priority:', error);
+      alert('Došlo k chybě při změně priority prostoru.');
+    } finally {
+      setUpdatingPriorityId(null);
     }
   };
 
@@ -170,6 +331,98 @@ export default function VenueManagementPage() {
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="max-w-7xl mx-auto">
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle>Homepage prostory</CardTitle>
+            <p className="text-sm text-gray-600">
+              Vyberte 12 prostorů a jejich pořadí pro hlavní stránku. Sloty jsou zobrazovány od pozice #1 (vlevo nahoře) po #12.
+            </p>
+          </CardHeader>
+          <CardContent>
+            {homepageError && (
+              <div className="mb-4 flex items-start gap-2 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+                <AlertCircle className="h-4 w-4 mt-0.5" />
+                <span>{homepageError}</span>
+              </div>
+            )}
+            {homepageSuccess && (
+              <div className="mb-4 flex items-start gap-2 rounded-md border border-green-200 bg-green-50 px-3 py-2 text-sm text-green-700">
+                <CheckCircle className="h-4 w-4 mt-0.5" />
+                <span>{homepageSuccess}</span>
+              </div>
+            )}
+
+            {homepageLoading ? (
+              <div className="flex justify-center py-8 text-gray-600">
+                <div className="flex items-center gap-2">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <span>Načítám data…</span>
+                </div>
+              </div>
+            ) : (
+              <>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {homepageSlots.map((value, index) => {
+                    const position = index + 1
+                    const isDuplicate = value ? homepageSelectionCounts[value] > 1 : false
+                    const triggerClass = `w-full ${isDuplicate ? 'border-red-500 focus:ring-red-500' : ''}`
+
+                    return (
+                      <div key={position} className="flex items-start gap-3">
+                        <div className="mt-2 text-sm font-semibold text-gray-600 w-10">#{position}</div>
+                        <div className="flex-1">
+                          <Select
+                            value={value ?? 'none'}
+                            onValueChange={(selected) => handleHomepageSlotChange(index, selected)}
+                          >
+                            <SelectTrigger className={triggerClass}>
+                              <SelectValue placeholder="Vyberte prostor" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="none">Nevybráno</SelectItem>
+                              {orderedVenueOptions.map((option) => (
+                                <SelectItem key={option.id} value={option.id}>
+                                  {option.name}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          {value && !venueNameMap.has(value) && (
+                            <p className="mt-1 text-xs text-yellow-600">
+                              Tento prostor není v současném seznamu (možná skrytý), ale zůstane na homepage.
+                            </p>
+                          )}
+                          {isDuplicate && (
+                            <p className="mt-1 text-xs text-red-600">
+                              Tento prostor je již přiřazen na jiné pozici.
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+
+                <div className="mt-6 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                  <p className="text-xs text-gray-500">
+                    Pořadí se projeví okamžitě po uložení. Pro dosažení nejlepšího dojmu doporučujeme upravit fotografie a popisky vybraných prostor.
+                  </p>
+                  <Button onClick={saveHomepageSlots} disabled={homepageSaving} className="md:w-auto w-full">
+                    {homepageSaving ? (
+                      <span className="flex items-center gap-2">
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        Ukládám…
+                      </span>
+                    ) : (
+                      'Uložit homepage'
+                    )}
+                  </Button>
+                </div>
+              </>
+            )}
+          </CardContent>
+        </Card>
+
         {/* Header */}
         <div className="mb-8 flex items-center justify-between">
           <div>
@@ -263,6 +516,11 @@ export default function VenueManagementPage() {
                                 Doporučený
                               </Badge>
                             )}
+                            {(venue.claims?.length || 0) > 0 && (
+                              <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
+                                {venue.claims!.length === 1 ? '1 žádost o převzetí' : `${venue.claims!.length} žádosti o převzetí`}
+                              </Badge>
+                            )}
                           </div>
                           <div className="flex items-center gap-2 text-gray-600 mb-2">
                             <MapPin className="h-4 w-4" />
@@ -303,6 +561,18 @@ export default function VenueManagementPage() {
                             Vytvořeno {formatDate(venue.createdAt)}
                           </div>
                         </div>
+                        {(venue.claims?.length || 0) > 0 && (
+                          <div className="mt-2 rounded bg-purple-50 border border-purple-200 px-3 py-2 text-xs text-purple-800">
+                            <p className="font-medium">Čeká žádost o převzetí:</p>
+                            <ul className="mt-1 space-y-1">
+                              {venue.claims!.map((claim) => (
+                                <li key={claim.id}>
+                                  {claim.claimant?.name || 'Neuvedeno'} ({claim.claimant?.email || 'bez emailu'})
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
                       </div>
                     </div>
 
@@ -328,6 +598,36 @@ export default function VenueManagementPage() {
                           )}
                         </div>
                       )}
+
+                      <div className="flex flex-col gap-2 w-full">
+                        <label className="text-sm font-medium text-gray-700 text-center">Priorita</label>
+                        <Select
+                          value={typeof venue.priority === 'number' ? venue.priority.toString() : 'none'}
+                          onValueChange={(value) =>
+                            updateVenuePriority(
+                              venue.id,
+                              value === 'none' ? null : Number.parseInt(value, 10)
+                            )
+                          }
+                          disabled={updatingPriorityId === venue.id}
+                        >
+                          <SelectTrigger className="w-[140px]">
+                            <SelectValue placeholder="Bez priority" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="none">Bez priority</SelectItem>
+                            <SelectItem value="1">1 – vždy první</SelectItem>
+                            <SelectItem value="2">2 – po prioritě 1</SelectItem>
+                            <SelectItem value="3">3 – po prioritě 1 a 2</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        {updatingPriorityId === venue.id && (
+                          <div className="flex items-center justify-center gap-2 text-xs text-gray-500">
+                            <Loader2 className="h-3 w-3 animate-spin" />
+                            Ukládám…
+                          </div>
+                        )}
+                      </div>
 
                       {/* Quick Actions */}
                       <div className="flex flex-col gap-2">

@@ -24,6 +24,8 @@ import {
   ArrowLeft
 } from "lucide-react"
 
+const DEFAULT_MANAGER_EMAIL = "info@prostormat.cz"
+
 const manualVenueSchema = z.object({
   // User selection
   userId: z.string().min(1, "Vyberte uživatele"),
@@ -88,6 +90,7 @@ export default function ManualAddVenuePage() {
     formState: { errors },
     setValue,
     watch,
+    getValues,
   } = useForm<ManualVenueFormData>({
     resolver: zodResolver(manualVenueSchema),
     defaultValues: {
@@ -110,7 +113,18 @@ export default function ManualAddVenuePage() {
       const response = await fetch('/api/admin/users')
       if (response.ok) {
         const data = await response.json()
-        setUsers(data.users || [])
+        const fetchedUsers: User[] = data.users || []
+        setUsers(fetchedUsers)
+
+        if (!getValues('userId')) {
+          const defaultManager = fetchedUsers.find(
+            (user) => user.email.toLowerCase() === DEFAULT_MANAGER_EMAIL
+          )
+
+          if (defaultManager) {
+            setValue('userId', defaultManager.id, { shouldDirty: false })
+          }
+        }
       }
     } catch (error) {
       console.error('Error loading users:', error)
@@ -196,7 +210,10 @@ export default function ManualAddVenuePage() {
                 <label className="block text-sm sm:text-callout font-medium text-black mb-2">
                   Uživatel *
                 </label>
-                <Select onValueChange={(value) => setValue("userId", value)} defaultValue="">
+                <Select
+                  onValueChange={(value) => setValue("userId", value, { shouldDirty: true })}
+                  value={watch("userId") || undefined}
+                >
                   <SelectTrigger className="h-11 sm:h-12">
                     <SelectValue placeholder={loadingUsers ? "Načítání uživatelů..." : "Vyberte uživatele"} />
                   </SelectTrigger>

@@ -101,6 +101,11 @@ interface PaymentData {
   musicAfter10: boolean
   amenities: string[]
   images: string[]
+  mode: 'new' | 'claim'
+  existingVenueId?: string | null
+  existingVenueName?: string | null
+  existingVenueSlug?: string | null
+  existingManagerEmail?: string | null
 }
 
 const AMENITIES_OPTIONS = [
@@ -143,6 +148,18 @@ export default function AddVenuePage() {
   const [formData, setFormData] = useState<PaymentData | null>(null)
   const [paymentError, setPaymentError] = useState<string | null>(null)
   const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [submissionMode, setSubmissionMode] = useState<'new' | 'claim'>('new')
+  const [claimInfo, setClaimInfo] = useState<{
+    id: string
+    name: string
+    slug: string
+    status: string
+    manager?: {
+      id: string
+      name: string | null
+      email: string | null
+    }
+  } | null>(null)
 
   const {
     register,
@@ -267,6 +284,38 @@ export default function AddVenuePage() {
       // Validate data
       const validatedData = createVenueFormSchema(isLoggedIn).parse(data)
 
+      // Check if venue already exists to determine claim vs new listing
+      let mode: 'new' | 'claim' = 'new'
+      let existingVenueMatch: typeof claimInfo = null
+
+      try {
+        const response = await fetch('/api/venues/check-existing', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            name: validatedData.name,
+            address: validatedData.address,
+          }),
+        })
+
+        if (response.ok) {
+          const checkData = await response.json()
+          if (checkData.exists && checkData.venue) {
+            mode = 'claim'
+            existingVenueMatch = checkData.venue
+          }
+        } else {
+          console.warn('Failed to verify existing venues for claim flow')
+        }
+      } catch (checkError) {
+        console.error('Error checking for existing venue:', checkError)
+      }
+
+      setSubmissionMode(mode)
+      setClaimInfo(existingVenueMatch)
+
       // Upload images first
       const uploadedImageUrls = await uploadImages()
 
@@ -295,6 +344,11 @@ export default function AddVenuePage() {
         musicAfter10: validatedData.musicAfter10,
         amenities,
         images: uploadedImageUrls,
+        mode,
+        existingVenueId: existingVenueMatch?.id ?? null,
+        existingVenueName: existingVenueMatch?.name ?? null,
+        existingVenueSlug: existingVenueMatch?.slug ?? null,
+        existingManagerEmail: existingVenueMatch?.manager?.email ?? null,
       }
 
       // Store form data and move to payment step
@@ -324,26 +378,39 @@ export default function AddVenuePage() {
 
   // Success step
   if (currentStep === 'success') {
+    const isClaimSubmission = formData?.mode === 'claim'
     return (
       <div className="min-h-screen bg-white">
         <div className="max-w-2xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
           <div className="text-center">
             <CheckCircle className="h-16 w-16 text-green-600 mx-auto mb-6" />
             <h1 className="text-2xl sm:text-3xl font-bold text-black mb-4">
-              Platba úspěšně dokončena!
+              {isClaimSubmission ? 'Žádost o převzetí byla odeslána!' : 'Platba úspěšně dokončena!'}
             </h1>
             <p className="text-gray-600 mb-6">
-              Děkujeme za platbu. Váš prostor "{formData?.name}" byl přidán a čeká na schválení administrátorem.
+              {isClaimSubmission
+                ? `Děkujeme za platbu. Vaše žádost o převzetí listingu "${formData?.name}" čeká na potvrzení administrátorem.`
+                : `Děkujeme za platbu. Váš prostor "${formData?.name}" byl přidán a čeká na schválení administrátorem.`}
             </p>
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
               <h3 className="font-semibold text-blue-900 mb-2">Co se stane dále?</h3>
-              <ul className="text-sm text-blue-800 space-y-1 text-left">
-                <li>✅ Váš účet byl úspěšně vytvořen</li>
-                <li>⏳ Prostor nyní čeká na schválení</li>
-                <li>📧 Po schválení vám zašleme emailové oznámení</li>
-                <li>✏️ Po přihlášení můžete prostor ihned upravovat v administraci</li>
-                <li>🎯 Poté můžete začít přijímat rezervace</li>
-              </ul>
+              {isClaimSubmission ? (
+                <ul className="text-sm text-blue-800 space-y-1 text-left">
+                  <li>✅ Váš účet byl úspěšně vytvořen (nebo aktualizován)</li>
+                  <li>⏳ Tým Prostormat potvrdí, že jste oprávněný správce listingu</li>
+                  <li>📧 Po schválení vám odešleme potvrzení emailem</li>
+                  <li>🛠️ Následně získáte plnou správu existujícího profilu</li>
+                  <li>🎯 Poté můžete prostor upravovat a přijímat rezervace</li>
+                </ul>
+              ) : (
+                <ul className="text-sm text-blue-800 space-y-1 text-left">
+                  <li>✅ Váš účet byl úspěšně vytvořen</li>
+                  <li>⏳ Prostor nyní čeká na schválení</li>
+                  <li>📧 Po schválení vám zašleme emailové oznámení</li>
+                  <li>✏️ Po přihlášení můžete prostor ihned upravovat v administraci</li>
+                  <li>🎯 Poté můžete začít přijímat rezervace</li>
+                </ul>
+              )}
             </div>
             <div className="space-y-3">
               <Button
@@ -352,6 +419,15 @@ export default function AddVenuePage() {
               >
                 Přihlásit se do účtu
               </Button>
+              {isClaimSubmission && formData?.existingVenueSlug && (
+                <Button
+                  variant="secondary"
+                  onClick={() => router.push(`/prostory/${formData.existingVenueSlug}`)}
+                  className="w-full"
+                >
+                  Zobrazit existující listing
+                </Button>
+              )}
               <Button
                 variant="outline"
                 onClick={() => router.push('/')}
@@ -368,6 +444,7 @@ export default function AddVenuePage() {
 
   // Payment step
   if (currentStep === 'payment' && formData) {
+    const isClaimSubmission = formData.mode === 'claim'
     return (
       <div className="min-h-screen bg-white">
         <div className="max-w-2xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
@@ -383,9 +460,31 @@ export default function AddVenuePage() {
               Dokončit platbu
             </h1>
             <p className="text-gray-600">
-              Dokončete platbu 12,000 CZK pro přidání prostoru "{formData.name}" na platformu.
+              {isClaimSubmission
+                ? `Platba 12,000 CZK odešle žádost o převzetí listingu "${formData.name}".`
+                : `Dokončete platbu 12,000 CZK pro přidání prostoru "${formData.name}" na platformu.`}
             </p>
           </div>
+
+          {isClaimSubmission && (
+            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+              <div className="flex items-start gap-2">
+                <AlertCircle className="h-5 w-5 text-yellow-600 mt-0.5 flex-shrink-0" />
+                <div className="text-sm text-yellow-800 space-y-1">
+                  <p className="font-semibold">Našli jsme shodný prostor na Prostormatu.</p>
+                  <p>
+                    Po zaplacení vytvoříme žádost o převzetí listingu a náš tým ji zkontroluje.
+                    Jakmile bude schválena, získáte plnou správu existujícího profilu.
+                  </p>
+                  {formData.existingManagerEmail && (
+                    <p className="text-xs">
+                      Aktuální správce listingu: {formData.existingManagerEmail}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
 
           {paymentError && (
             <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
@@ -434,6 +533,21 @@ export default function AddVenuePage() {
               </div>
             </div>
           </div>
+          {claimInfo && submissionMode === 'claim' && (
+            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 sm:p-4 mt-4">
+              <div className="flex items-start gap-2">
+                <AlertCircle className="h-5 w-5 text-yellow-600 mt-0.5 flex-shrink-0" />
+                <div>
+                  <p className="text-sm sm:text-callout text-yellow-800 font-medium mb-1">
+                    Prostor "{claimInfo.name}" již na platformě máme.
+                  </p>
+                  <p className="text-sm text-yellow-700">
+                    Pokračováním odešlete žádost o převzetí existujícího listingu. Po schválení vám prostor přiřadíme k úpravám.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 sm:space-y-8">

@@ -22,16 +22,24 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const mode: 'new' | 'claim' = venueData?.mode === 'claim' ? 'claim' : 'new';
+    const existingVenueId = mode === 'claim' ? venueData?.existingVenueId ?? '' : '';
+
     // Create payment intent with Stripe
     const paymentIntent = await stripe.paymentIntents.create({
       amount: VENUE_PAYMENT_CONFIG.amount,
       currency: VENUE_PAYMENT_CONFIG.currency,
-      description: `${VENUE_PAYMENT_CONFIG.description} - ${venueData.name}`,
+      description:
+        mode === 'claim'
+          ? `Claim existing venue - ${venueData.name}`
+          : `${VENUE_PAYMENT_CONFIG.description} - ${venueData.name}`,
       metadata: {
         venueSubmission: 'true',
         venueName: venueData.name,
         userEmail: venueData.userEmail,
         submissionDate: new Date().toISOString(),
+        submissionMode: mode,
+        existingVenueId,
       },
       automatic_payment_methods: {
         enabled: true,

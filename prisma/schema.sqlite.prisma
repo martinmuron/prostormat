@@ -54,6 +54,7 @@ model User {
   venueInquiries VenueInquiry[]
   blogPosts     BlogPost[]
   venueBroadcasts VenueBroadcast[]
+  venueClaims   VenueClaim[]
   createdAt     DateTime  @default(now())
 }
 
@@ -81,6 +82,7 @@ model Venue {
   images           String   // JSON string for SQLite
   videoUrl         String?
   status           String   @default("draft") // draft, active, expired
+  priority         Int?
   parentId         String?
   managerId        String
   subscriptionId   String?  // Stripe subscription ID
@@ -94,6 +96,32 @@ model Venue {
   inquiries    VenueInquiry[]
   subscription Subscription?
   broadcastLogs VenueBroadcastLog[]
+  claims       VenueClaim[]
+  homepageSlot HomepageVenue?
+}
+
+model VenueClaim {
+  id             String   @id @default(cuid())
+  venueId        String
+  claimantId     String
+  status         String   @default("pending")
+  message        String?
+  submissionData String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  venue    Venue @relation(fields: [venueId], references: [id])
+  claimant User  @relation(fields: [claimantId], references: [id])
+}
+
+model HomepageVenue {
+  id        String   @id @default(cuid())
+  position  Int      @unique
+  venueId   String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  venue Venue @relation(fields: [venueId], references: [id])
 }
 
 model EventRequest {

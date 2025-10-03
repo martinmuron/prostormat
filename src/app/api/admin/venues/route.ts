@@ -21,6 +21,23 @@ export async function GET() {
             phone: true,
           },
         },
+        claims: {
+          where: {
+            status: 'pending',
+          },
+          select: {
+            id: true,
+            status: true,
+            createdAt: true,
+            claimant: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+              },
+            },
+          },
+        },
       },
       orderBy: { updatedAt: 'desc' },
     });

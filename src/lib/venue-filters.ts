@@ -5,7 +5,7 @@ type FilterParams = {
   type?: string | null
   district?: string | null
   capacity?: string | null
-  statuses?: string[]
+  statuses?: string[] | null
   includeSubvenues?: boolean
 }
 
@@ -47,15 +47,17 @@ export function buildVenueWhereClause({
   type,
   district,
   capacity,
-  statuses = ['published', 'active'],
+  statuses,
   includeSubvenues = false,
 }: FilterParams): Prisma.VenueWhereInput {
-  const where: Prisma.VenueWhereInput = {
-    status: { in: statuses },
-  }
+  const where: Prisma.VenueWhereInput = {}
 
   if (!includeSubvenues) {
     where.parentId = null
+  }
+
+  if (statuses && statuses.length > 0) {
+    where.status = { in: statuses }
   }
 
   if (q && q.trim().length > 0) {

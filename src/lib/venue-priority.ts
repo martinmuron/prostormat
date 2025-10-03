@@ -1,5 +1,3 @@
-import { randomInt } from 'crypto'
-
 export type VenueWithPriority = {
   priority: number | null
 }
@@ -68,9 +66,5 @@ export function sortVenuesByPriority<T extends VenueWithPriority>(
 }
 
 export function generateOrderSeed(): number {
-  try {
-    return randomInt(0xffffffff)
-  } catch (error) {
-    return Math.floor(Math.random() * 0xffffffff)
-  }
+  return Math.floor(Math.random() * 0xffffffff)
 }

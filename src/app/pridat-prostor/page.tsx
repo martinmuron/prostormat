@@ -12,6 +12,14 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { StripeCheckout } from "@/components/payment/stripe-checkout"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
 import { VENUE_TYPES } from "@/types"
 import { 
   Upload, 
@@ -160,6 +168,11 @@ export default function AddVenuePage() {
       email: string | null
     }
   } | null>(null)
+  const [showClaimDialog, setShowClaimDialog] = useState(false)
+  const [pendingSubmission, setPendingSubmission] = useState<{
+    validatedData: VenueFormData
+    existingVenueMatch: typeof claimInfo
+  } | null>(null)
 
   const {
     register,
@@ -240,21 +253,6 @@ export default function AddVenuePage() {
     )
   }
 
-  const convertImageToBase64 = (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader()
-      reader.onload = () => {
-        if (typeof reader.result === 'string') {
-          resolve(reader.result)
-        } else {
-          reject(new Error('Failed to convert image to base64'))
-        }
-      }
-      reader.onerror = reject
-      reader.readAsDataURL(file)
-    })
-  }
-
   const uploadImages = async (): Promise<string[]> => {
     if (images.length === 0) return []
 
@@ -272,63 +270,45 @@ export default function AddVenuePage() {
     }
   }
 
-  const onSubmit = async (data: VenueFormInputs) => {
-    if (data.videoUrl && !isYouTubeUrlValid) {
-      alert("Zadejte prosím platnou YouTube URL")
-      return
+  const checkExistingVenue = async (name: string, address: string) => {
+    try {
+      const response = await fetch('/api/venues/check-existing', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name, address }),
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        if (data.exists && data.venue) {
+          return { mode: 'claim' as const, existingVenueMatch: data.venue }
+        }
+      } else {
+        console.warn('Failed to verify existing venues for claim flow')
+      }
+    } catch (error) {
+      console.error('Error checking for existing venue:', error)
     }
 
-    setIsSubmitting(true)
+    return { mode: 'new' as const, existingVenueMatch: null }
+  }
 
+  const proceedToPayment = async (
+    validatedData: VenueFormData,
+    mode: 'new' | 'claim',
+    existingVenueMatch: typeof claimInfo
+  ) => {
     try {
-      // Validate data
-      const validatedData = createVenueFormSchema(isLoggedIn).parse(data)
-
-      // Check if venue already exists to determine claim vs new listing
-      let mode: 'new' | 'claim' = 'new'
-      let existingVenueMatch: typeof claimInfo = null
-
-      try {
-        const response = await fetch('/api/venues/check-existing', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            name: validatedData.name,
-            address: validatedData.address,
-          }),
-        })
-
-        if (response.ok) {
-          const checkData = await response.json()
-          if (checkData.exists && checkData.venue) {
-            mode = 'claim'
-            existingVenueMatch = checkData.venue
-          }
-        } else {
-          console.warn('Failed to verify existing venues for claim flow')
-        }
-      } catch (checkError) {
-        console.error('Error checking for existing venue:', checkError)
-      }
-
-      setSubmissionMode(mode)
-      setClaimInfo(existingVenueMatch)
-
-      // Upload images first
       const uploadedImageUrls = await uploadImages()
 
-      // Prepare data for payment step with proper type conversion
-      const submitData = {
-        // Account data - use session data if logged in
+      const submitData: PaymentData = {
         userName: isLoggedIn ? session?.user?.name : validatedData.userName,
         userEmail: isLoggedIn ? session?.user?.email : validatedData.userEmail,
         userPassword: isLoggedIn ? undefined : validatedData.userPassword,
-        userPhone: validatedData.userPhone, // Phone from form data
+        userPhone: validatedData.userPhone,
         userId: isLoggedIn ? session?.user?.id : undefined,
-
-        // Venue data
         name: validatedData.name,
         description: validatedData.description,
         address: validatedData.address,
@@ -351,14 +331,64 @@ export default function AddVenuePage() {
         existingManagerEmail: existingVenueMatch?.manager?.email ?? null,
       }
 
-      // Store form data and move to payment step
+      setSubmissionMode(mode)
+      setClaimInfo(existingVenueMatch)
       setFormData(submitData)
       setCurrentStep('payment')
-      
+    } catch (error) {
+      console.error('Error preparing venue data:', error)
+      alert('Došlo k chybě při přípravě dat. Zkuste to prosím znovu.')
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  const handleClaimCancel = () => {
+    setShowClaimDialog(false)
+    setPendingSubmission(null)
+    setSubmissionMode('new')
+    setClaimInfo(null)
+  }
+
+  const handleClaimConfirm = async () => {
+    if (!pendingSubmission) return
+
+    const { validatedData, existingVenueMatch } = pendingSubmission
+    setShowClaimDialog(false)
+    setPendingSubmission(null)
+    setIsSubmitting(true)
+    await proceedToPayment(validatedData, 'claim', existingVenueMatch)
+  }
+
+  const onSubmit = async (data: VenueFormInputs) => {
+    if (data.videoUrl && !isYouTubeUrlValid) {
+      alert("Zadejte prosím platnou YouTube URL")
+      return
+    }
+
+    setIsSubmitting(true)
+
+    try {
+      const validatedData = createVenueFormSchema(isLoggedIn).parse(data)
+
+      const { mode, existingVenueMatch } = await checkExistingVenue(
+        validatedData.name,
+        validatedData.address
+      )
+
+      if (mode === 'claim' && existingVenueMatch) {
+        setSubmissionMode('claim')
+        setClaimInfo(existingVenueMatch)
+        setPendingSubmission({ validatedData, existingVenueMatch })
+        setShowClaimDialog(true)
+        setIsSubmitting(false)
+        return
+      }
+
+      await proceedToPayment(validatedData, 'new', null)
     } catch (error) {
       console.error("Error preparing venue data:", error)
       alert("Došlo k chybě při přípravě dat. Zkuste to prosím znovu.")
-    } finally {
       setIsSubmitting(false)
     }
   }
@@ -551,6 +581,33 @@ export default function AddVenuePage() {
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 sm:space-y-8">
+          <Dialog open={showClaimDialog} onOpenChange={setShowClaimDialog}>
+            <DialogContent showCloseButton={false}>
+              <DialogHeader>
+                <DialogTitle>Prostor už na Prostormatu máme</DialogTitle>
+                <DialogDescription>
+                  Zdá se, že prostor „{claimInfo?.name}“ už existuje v našem katalogu. Pokud jste jeho
+                  správce, můžete požádat o převzetí listingu a pokračovat k platbě.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="rounded-lg border border-gray-200 bg-gray-50 p-4 text-sm text-gray-700">
+                <p className="font-medium text-gray-900">Co se stane po zaplacení?</p>
+                <ul className="mt-2 list-disc space-y-1 pl-4">
+                  <li>Žádost ověří náš tým a potvrdí, že jste oprávněný správce.</li>
+                  <li>Po schválení vám přiřadíme správu existujícího listingu.</li>
+                  <li>Následně můžete upravit fotografie, popis i kontaktní údaje.</li>
+                </ul>
+              </div>
+              <DialogFooter className="sm:justify-end">
+                <Button type="button" variant="outline" onClick={handleClaimCancel}>
+                  Upravit údaje
+                </Button>
+                <Button type="button" onClick={handleClaimConfirm} disabled={isSubmitting}>
+                  Pokračovat k platbě
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
           {/* Account Creation - Only show if not logged in */}
           {!isLoggedIn && (
           <Card>

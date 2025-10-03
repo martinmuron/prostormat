@@ -153,3 +153,4 @@ prostory/prostory_images/
 data/scraping-progress.json
 data/batches/
 /tmp/supabase-upload.log
+.env*.local

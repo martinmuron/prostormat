@@ -21,7 +21,7 @@ async function getInitialVenues(searchParams: SearchParams, orderSeed: number) {
       type: searchParams.type ?? null,
       district: searchParams.district ?? null,
       capacity: searchParams.capacity ?? null,
-      includeSubvenues: true,
+      includeSubvenues: false,
     })
 
     const venues = await db.venue.findMany({

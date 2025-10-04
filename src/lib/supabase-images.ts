@@ -5,8 +5,24 @@
  * using Supabase's built-in image transformation API.
  */
 
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const SUPABASE_STORAGE_BUCKET = 'venue-images';
+
+function resolveSupabaseUrl(): string | null {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
+  return url ? url.replace(/\/$/, '') : null;
+}
+
+function isAbsoluteUrl(value: string): boolean {
+  return /^https?:\/\//i.test(value);
+}
+
+function isLocalAsset(value: string): boolean {
+  return value.startsWith('/');
+}
+
+function normaliseStoragePath(imagePath: string): string {
+  return imagePath.replace(/^\/+/, '');
+}
 
 export type ImageSize = 'thumbnail' | 'medium' | 'full';
 
@@ -25,13 +41,11 @@ const IMAGE_SIZES: Record<ImageSize, ImageTransformOptions> = {
     width: 300,
     height: 200,
     quality: 75,
-    format: 'webp'
   },
   medium: {
     width: 800,
     height: 600,
     quality: 85,
-    format: 'webp'
   },
   full: {
     // No transformations - original image
@@ -42,7 +56,23 @@ const IMAGE_SIZES: Record<ImageSize, ImageTransformOptions> = {
  * Get the base storage URL for an image
  */
 export function getImageStorageUrl(imagePath: string): string {
-  return `${SUPABASE_URL}/storage/v1/object/public/${SUPABASE_STORAGE_BUCKET}/${imagePath}`;
+  if (!imagePath) {
+    return imagePath;
+  }
+
+  if (isAbsoluteUrl(imagePath) || isLocalAsset(imagePath)) {
+    return imagePath;
+  }
+
+  const supabaseUrl = resolveSupabaseUrl();
+
+  if (!supabaseUrl) {
+    console.warn('Supabase URL is not configured. Returning original image path.');
+    return imagePath;
+  }
+
+  const normalisedPath = normaliseStoragePath(imagePath);
+  return `${supabaseUrl}/storage/v1/object/public/${SUPABASE_STORAGE_BUCKET}/${normalisedPath}`;
 }
 
 /**
@@ -57,7 +87,14 @@ export function getImageRenderUrl(imagePath: string, options: ImageTransformOpti
   if (options.format) params.append('format', options.format);
 
   const queryString = params.toString();
-  const baseUrl = `${SUPABASE_URL}/storage/v1/render/image/public/${SUPABASE_STORAGE_BUCKET}/${imagePath}`;
+  const supabaseUrl = resolveSupabaseUrl();
+
+  if (!supabaseUrl) {
+    console.warn('Supabase URL is not configured. Falling back to direct storage URL.');
+    return getImageStorageUrl(imagePath);
+  }
+
+  const baseUrl = `${supabaseUrl}/storage/v1/render/image/public/${SUPABASE_STORAGE_BUCKET}/${normaliseStoragePath(imagePath)}`;
 
   return queryString ? `${baseUrl}?${queryString}` : baseUrl;
 }
@@ -80,6 +117,14 @@ export function getImageRenderUrl(imagePath: string, options: ImageTransformOpti
  * const fullUrl = getOptimizedImageUrl('kafkoff/image_1.jpg', 'full');
  */
 export function getOptimizedImageUrl(imagePath: string, size: ImageSize = 'medium'): string {
+  if (!imagePath) {
+    return '/images/placeholder-venue.jpg';
+  }
+
+  if (isAbsoluteUrl(imagePath) || isLocalAsset(imagePath)) {
+    return imagePath;
+  }
+
   const options = IMAGE_SIZES[size];
 
   // For full size, return direct storage URL (no transformations)

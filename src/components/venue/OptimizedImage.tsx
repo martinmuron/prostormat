@@ -69,11 +69,11 @@ export function OptimizedImage({
 }: OptimizedImageProps) {
   const [error, setError] = useState(false);
 
-  // Get optimized image URL based on size
-  const imageUrl = getOptimizedImageUrl(imagePath, size);
-
   // Fallback image
   const fallbackUrl = '/images/placeholder-venue.jpg';
+
+  // Get optimized image URL based on size
+  const imageUrl = getOptimizedImageUrl(imagePath, size) || fallbackUrl;
 
   if (error) {
     return (

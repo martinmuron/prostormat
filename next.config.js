@@ -17,6 +17,8 @@ if (supabaseUrl) {
 const nextConfig = {
   images: {
     domains: imageDomains,
+    loader: 'custom',
+    loaderFile: './src/lib/image-loader.js',
   },
 }
 

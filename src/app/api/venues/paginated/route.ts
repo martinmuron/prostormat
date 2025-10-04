@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
       type: type ?? null,
       district: district ?? null,
       capacity: capacity ?? null,
-      includeSubvenues: true,
+      includeSubvenues: false,
     })
 
     const venues = await db.venue.findMany({

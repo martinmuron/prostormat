@@ -1,9 +1,9 @@
 "use client"
 
 import { useState } from "react"
-import Image from "next/image"
 import { ChevronLeft, ChevronRight, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { OptimizedImage } from "@/components/venue/OptimizedImage"
 
 interface VenueGalleryProps {
   images: string[]
@@ -47,9 +47,10 @@ export function VenueGallery({ images, venueName }: VenueGalleryProps) {
 
         {/* Main Image */}
         <div className="aspect-[4/3] relative overflow-hidden rounded-2xl bg-gray-100 group">
-          <Image
-            src={images[currentIndex]}
+          <OptimizedImage
+            imagePath={images[currentIndex]}
             alt={`${venueName} - obrázek ${currentIndex + 1}`}
+            size="medium"
             fill
             className="object-cover cursor-pointer transition-transform duration-300 group-hover:scale-105"
             onClick={() => setIsFullscreen(true)}
@@ -112,9 +113,10 @@ export function VenueGallery({ images, venueName }: VenueGalleryProps) {
                   }`}
                   onClick={() => setCurrentIndex(index)}
                 >
-                  <Image
-                    src={image}
+                  <OptimizedImage
+                    imagePath={image}
                     alt={`${venueName} - náhled ${index + 1}`}
+                    size="thumbnail"
                     fill
                     className="object-cover"
                   />
@@ -148,9 +150,10 @@ export function VenueGallery({ images, venueName }: VenueGalleryProps) {
           </Button>
           
           <div className="relative max-w-7xl max-h-full mx-4">
-            <Image
-              src={images[currentIndex]}
+            <OptimizedImage
+              imagePath={images[currentIndex]}
               alt={`${venueName} - obrázek ${currentIndex + 1}`}
+              size="full"
               width={1200}
               height={800}
               className="object-contain max-h-[90vh]"

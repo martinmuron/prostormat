@@ -1,4 +1,3 @@
-import Image from "next/image"
 import Link from "next/link"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -6,6 +5,23 @@ import { Button } from "@/components/ui/button"
 import { VENUE_TYPES } from "@/types"
 import type { VenueType } from "@/types"
 import { Users } from "lucide-react"
+import { OptimizedImage } from "@/components/venue/OptimizedImage"
+
+function getPrimaryAddress(rawAddress?: string | null): string | null {
+  if (!rawAddress) {
+    return null
+  }
+
+  const cleaned = rawAddress
+    .replace(/\u00a0/g, ' ')
+    .split(/[\n\t]|\s{2,}/)
+    .map(part => part.trim())
+    .filter(Boolean)
+
+  const firstMeaningful = cleaned.find(part => /[\p{L}]/u.test(part))
+
+  return firstMeaningful ?? cleaned[0] ?? null
+}
 
 interface VenueCardProps {
   venue: {
@@ -25,14 +41,16 @@ export function VenueCard({ venue }: VenueCardProps) {
   const mainImage = venue.images[0] || "/images/placeholder-venue.jpg"
   const venueTypeLabel = venue.venueType ? VENUE_TYPES[venue.venueType as VenueType] || venue.venueType : null
   const totalCapacity = Math.max(venue.capacitySeated || 0, venue.capacityStanding || 0)
+  const displayAddress = getPrimaryAddress(venue.address)
 
   return (
     <Card className="overflow-hidden hover-lift transition-all duration-500 group border-2 border-black bg-white rounded-2xl h-full flex flex-col">
       <Link href={`/prostory/${venue.slug}`}>
         <div className="aspect-[4/3] relative overflow-hidden">
-          <Image
-            src={mainImage}
+          <OptimizedImage
+            imagePath={mainImage}
             alt={venue.name}
+            size="thumbnail"
             fill
             className="object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
           />
@@ -77,9 +95,11 @@ export function VenueCard({ venue }: VenueCardProps) {
                   </span>
                 )}
               </div>
-              <p className="text-sm sm:text-callout text-gray-600 font-medium">
-                {venue.address}
-              </p>
+              {displayAddress && (
+                <p className="text-sm sm:text-callout text-gray-600 font-medium">
+                  {displayAddress}
+                </p>
+              )}
             </div>
             
             <div className="min-h-[3rem] mb-4">

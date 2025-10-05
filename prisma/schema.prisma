@@ -244,6 +244,8 @@ model VenueBroadcast {
 
   user User @relation(fields: [userId], references: [id])
   logs VenueBroadcastLog[]
+
+  @@map("prostormat_venue_broadcasts")
 }
 
 model VenueBroadcastLog {
@@ -254,8 +256,21 @@ model VenueBroadcastLog {
   emailStatus   String   @default("sent") // sent, delivered, failed, pending, skipped
   emailError    String?  // Error message if email failed
 
+  // Resend tracking fields
+  resendEmailId     String?   @unique  // Resend's email ID for webhook matching
+  emailDeliveredAt  DateTime?          // When delivered to inbox
+  emailOpenedAt     DateTime?          // First time opened
+  emailClickedAt    DateTime?          // First time any link clicked
+  emailBouncedAt    DateTime?          // When bounced
+  bounceType        String?            // 'hard' or 'soft'
+  emailComplainedAt DateTime?          // When marked as spam
+  openCount         Int       @default(0)  // Number of times opened
+  clickCount        Int       @default(0)  // Number of times clicked
+
   broadcast VenueBroadcast @relation(fields: [broadcastId], references: [id])
   venue Venue @relation(fields: [venueId], references: [id])
+
+  @@map("prostormat_venue_broadcast_logs")
 }
 
 model EmailFlowLog {

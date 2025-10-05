@@ -124,10 +124,11 @@ export async function POST(request: NextRequest) {
           // Send email via Resend (only if API key is configured)
           let emailStatus = 'pending'
           let emailError = null
-          
+          let resendEmailId = null
+
           if (process.env.RESEND_API_KEY) {
             try {
-              await resend.emails.send({
+              const result = await resend.emails.send({
                 from: FROM_EMAIL,
                 to: venue.contactEmail,
                 replyTo: REPLY_TO_EMAIL,
@@ -135,8 +136,14 @@ export async function POST(request: NextRequest) {
                 html: emailTemplate.html,
                 text: emailTemplate.text,
               })
+
+              // Store the Resend email ID for webhook tracking
+              if (result.data?.id) {
+                resendEmailId = result.data.id
+              }
+
               emailStatus = 'sent'
-              console.log(`✅ Email sent to ${venue.name} (${venue.contactEmail})`)
+              console.log(`✅ Email sent to ${venue.name} (${venue.contactEmail}) - ID: ${resendEmailId}`)
             } catch (emailErr) {
               emailStatus = 'failed'
               emailError = emailErr instanceof Error ? emailErr.message : 'Unknown email error'
@@ -147,14 +154,15 @@ export async function POST(request: NextRequest) {
             console.log(`⚠️ Email skipped for ${venue.name} - RESEND_API_KEY not configured`)
           }
 
-          // Create broadcast log with email status
+          // Create broadcast log with email status and Resend email ID
           return await db.venueBroadcastLog.create({
             data: {
               id: randomUUID(),
               broadcastId: broadcast.id,
               venueId: venue.id,
               emailStatus,
-              emailError
+              emailError,
+              resendEmailId
             }
           })
         } catch (error) {

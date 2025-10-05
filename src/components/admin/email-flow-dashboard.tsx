@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Mail, CheckCircle, XCircle, Clock, RefreshCw, Users, Building } from "lucide-react"
+import { Mail, CheckCircle, XCircle, Clock, RefreshCw, Users, Building, MousePointerClick, Eye, AlertTriangle, ShieldAlert } from "lucide-react"
 
 interface EmailLog {
   id: string
@@ -29,6 +29,57 @@ interface EmailStats {
   }
 }
 
+interface BroadcastTrackingStats {
+  totalEmails: number
+  delivered: number
+  opened: number
+  clicked: number
+  bounced: number
+  complained: number
+  totalOpens: number
+  totalClicks: number
+  deliveryRate: number
+  openRate: number
+  clickRate: number
+  bounceRate: number
+  complaintRate: number
+}
+
+interface BroadcastSummary {
+  id: string
+  title: string
+  eventType: string
+  createdAt: string
+  sentBy: string
+  totalSent: number
+  delivered: number
+  opened: number
+  clicked: number
+  bounced: number
+  totalOpens: number
+  totalClicks: number
+  openRate: number
+  clickRate: number
+}
+
+interface BroadcastLog {
+  id: string
+  broadcastTitle: string
+  venueName: string
+  venueEmail: string
+  emailStatus: string
+  sentAt: string
+  deliveredAt: string | null
+  openedAt: string | null
+  clickedAt: string | null
+  bouncedAt: string | null
+  complainedAt: string | null
+  bounceType: string | null
+  openCount: number
+  clickCount: number
+  emailError: string | null
+}
+
 const EMAIL_TYPE_LABELS: Record<string, string> = {
   'welcome_user': 'Vítací email (uživatel)',
   'welcome_location_owner': 'Vítací email (majitel prostoru)',
@@ -49,6 +100,9 @@ const STATUS_LABELS: Record<string, string> = {
 export function EmailFlowDashboard() {
   const [emailLogs, setEmailLogs] = useState<EmailLog[]>([])
   const [stats, setStats] = useState<EmailStats[]>([])
+  const [broadcastStats, setBroadcastStats] = useState<BroadcastTrackingStats | null>(null)
+  const [broadcasts, setBroadcasts] = useState<BroadcastSummary[]>([])
+  const [broadcastLogs, setBroadcastLogs] = useState<BroadcastLog[]>([])
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
 
@@ -62,19 +116,37 @@ export function EmailFlowDashboard() {
       }
     } catch (error) {
       console.error('Error fetching email flow:', error)
-    } finally {
-      setLoading(false)
-      setRefreshing(false)
     }
   }
 
+  const fetchBroadcastTracking = async () => {
+    try {
+      const response = await fetch('/api/admin/broadcast-tracking')
+      if (response.ok) {
+        const data = await response.json()
+        setBroadcastStats(data.stats || null)
+        setBroadcasts(data.broadcasts || [])
+        setBroadcastLogs(data.recentLogs || [])
+      }
+    } catch (error) {
+      console.error('Error fetching broadcast tracking:', error)
+    }
+  }
+
+  const fetchAll = async () => {
+    setLoading(true)
+    await Promise.all([fetchEmailFlow(), fetchBroadcastTracking()])
+    setLoading(false)
+    setRefreshing(false)
+  }
+
   useEffect(() => {
-    fetchEmailFlow()
+    fetchAll()
   }, [])
 
   const handleRefresh = () => {
     setRefreshing(true)
-    fetchEmailFlow()
+    fetchAll()
   }
 
   const getStatusIcon = (status: string) => {
@@ -178,9 +250,9 @@ export function EmailFlowDashboard() {
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle>Email log</CardTitle>
-            <Button 
-              variant="outline" 
-              size="sm" 
+            <Button
+              variant="outline"
+              size="sm"
               onClick={handleRefresh}
               disabled={refreshing}
               className="flex items-center gap-2"
@@ -246,6 +318,150 @@ export function EmailFlowDashboard() {
           )}
         </CardContent>
       </Card>
+
+      {/* Broadcast Tracking Section */}
+      {broadcastStats && (
+        <>
+          <div className="border-t pt-8 mt-8">
+            <h2 className="text-title-2 text-black mb-6">📊 Broadcast Email Tracking (Resend)</h2>
+
+            {/* Broadcast Stats Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
+              <Card>
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-xs text-gray-500 mb-1">Doručeno</p>
+                      <p className="text-xl font-bold text-green-600">{broadcastStats.deliveryRate}%</p>
+                      <p className="text-xs text-gray-400">{broadcastStats.delivered}/{broadcastStats.totalEmails}</p>
+                    </div>
+                    <CheckCircle className="h-6 w-6 text-green-400" />
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-xs text-gray-500 mb-1">Open Rate</p>
+                      <p className="text-xl font-bold text-blue-600">{broadcastStats.openRate}%</p>
+                      <p className="text-xs text-gray-400">{broadcastStats.totalOpens} otevření</p>
+                    </div>
+                    <Eye className="h-6 w-6 text-blue-400" />
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-xs text-gray-500 mb-1">Click Rate</p>
+                      <p className="text-xl font-bold text-purple-600">{broadcastStats.clickRate}%</p>
+                      <p className="text-xs text-gray-400">{broadcastStats.totalClicks} kliknutí</p>
+                    </div>
+                    <MousePointerClick className="h-6 w-6 text-purple-400" />
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-xs text-gray-500 mb-1">Bounce Rate</p>
+                      <p className="text-xl font-bold text-orange-600">{broadcastStats.bounceRate}%</p>
+                      <p className="text-xs text-gray-400">{broadcastStats.bounced} bounced</p>
+                    </div>
+                    <AlertTriangle className="h-6 w-6 text-orange-400" />
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-xs text-gray-500 mb-1">Spam Rate</p>
+                      <p className="text-xl font-bold text-red-600">{broadcastStats.complaintRate}%</p>
+                      <p className="text-xs text-gray-400">{broadcastStats.complained} stížností</p>
+                    </div>
+                    <ShieldAlert className="h-6 w-6 text-red-400" />
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Recent Broadcasts Table */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Nedávné broadcasty</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {broadcasts.length === 0 ? (
+                  <div className="text-center py-8">
+                    <Mail className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                    <p className="text-gray-500">Zatím nebyly odeslány žádné broadcasty.</p>
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="border-b border-gray-200">
+                          <th className="text-left py-3 px-4 font-medium text-gray-700">Broadcast</th>
+                          <th className="text-left py-3 px-4 font-medium text-gray-700">Odesláno</th>
+                          <th className="text-left py-3 px-4 font-medium text-gray-700">Doručeno</th>
+                          <th className="text-left py-3 px-4 font-medium text-gray-700">Otevřeno</th>
+                          <th className="text-left py-3 px-4 font-medium text-gray-700">Kliknuto</th>
+                          <th className="text-left py-3 px-4 font-medium text-gray-700">Open Rate</th>
+                          <th className="text-left py-3 px-4 font-medium text-gray-700">Click Rate</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {broadcasts.map((broadcast) => (
+                          <tr key={broadcast.id} className="border-b border-gray-100 hover:bg-gray-50">
+                            <td className="py-3 px-4">
+                              <div className="max-w-xs">
+                                <p className="font-medium truncate">{broadcast.title}</p>
+                                <p className="text-xs text-gray-500">{broadcast.sentBy}</p>
+                              </div>
+                            </td>
+                            <td className="py-3 px-4">{broadcast.totalSent}</td>
+                            <td className="py-3 px-4 text-green-600">{broadcast.delivered}</td>
+                            <td className="py-3 px-4">
+                              <div className="flex items-center gap-1">
+                                <Eye className="h-3 w-3 text-blue-500" />
+                                {broadcast.opened} ({broadcast.totalOpens}×)
+                              </div>
+                            </td>
+                            <td className="py-3 px-4">
+                              <div className="flex items-center gap-1">
+                                <MousePointerClick className="h-3 w-3 text-purple-500" />
+                                {broadcast.clicked} ({broadcast.totalClicks}×)
+                              </div>
+                            </td>
+                            <td className="py-3 px-4">
+                              <Badge variant={broadcast.openRate >= 20 ? "default" : "secondary"}>
+                                {broadcast.openRate}%
+                              </Badge>
+                            </td>
+                            <td className="py-3 px-4">
+                              <Badge variant={broadcast.clickRate >= 10 ? "default" : "secondary"}>
+                                {broadcast.clickRate}%
+                              </Badge>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+        </>
+      )}
     </div>
   )
 }

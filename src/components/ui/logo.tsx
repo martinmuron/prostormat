@@ -1,4 +1,3 @@
-import Image from "next/image"
 import Link from "next/link"
 
 interface LogoProps {
@@ -26,18 +25,30 @@ export function Logo({
   className = "",
   href = "/"
 }: LogoProps) {
-  const logoSrc = variant === "white" ? "/images/logo-white.svg" : "/images/logo-black.svg"
   const { width, height } = sizeConfig[size]
-  
+  const fill = variant === "white" ? "#FFFFFF" : "#000000"
+
   const logoElement = (
-    <Image
-      src={logoSrc}
-      alt="Prostormat"
+    <svg
+      viewBox="0 0 800 200"
       width={width}
       height={height}
       className={`${sizeClasses[size]} ${className}`}
-      priority
-    />
+      role="img"
+      aria-label="Prostormat"
+    >
+      <text
+        x="400"
+        y="130"
+        fontFamily="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif"
+        fontSize="120"
+        fontWeight="700"
+        textAnchor="middle"
+        fill={fill}
+      >
+        prostormat.
+      </text>
+    </svg>
   )
 
   if (href) {

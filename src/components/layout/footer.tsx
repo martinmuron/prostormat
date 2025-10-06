@@ -38,8 +38,8 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/ceny" className="text-body text-gray-600 hover:text-black transition-colors">
-                  Ceny
+                <Link href="/cenik" className="text-body text-gray-600 hover:text-black transition-colors">
+                  Ceník
                 </Link>
               </li>
               <li>

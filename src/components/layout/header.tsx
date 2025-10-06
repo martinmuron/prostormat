@@ -66,8 +66,8 @@ export function Header() {
               </NavigationMenuItem>
               <NavigationMenuItem>
                 <NavigationMenuLink asChild>
-                  <Link href="/ceny" className="text-sm font-medium text-gray-600 hover:text-black transition-colors px-3 py-2 rounded-md">
-                    Ceny
+                  <Link href="/cenik" className="text-sm font-medium text-gray-600 hover:text-black transition-colors px-3 py-2 rounded-md">
+                    Ceník
                   </Link>
                 </NavigationMenuLink>
               </NavigationMenuItem>
@@ -187,11 +187,11 @@ export function Header() {
                     Blog
                   </Link>
                   <Link 
-                    href="/ceny" 
+                    href="/cenik" 
                     className="text-base font-medium text-gray-700 hover:text-black hover:bg-gray-50 transition-colors px-4 py-3 rounded-xl"
                     onClick={closeMobileMenu}
                   >
-                    Ceny
+                    Ceník
                   </Link>
                   <Link 
                     href="/faq" 

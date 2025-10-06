@@ -75,9 +75,12 @@ export const BUDGET_RANGES = [
 ] as const
 
 export const CAPACITY_RANGES = [
-  'Do 25 lidí',
-  '25 - 50 lidí',
-  '50 - 100 lidí',
-  '100 - 200 lidí',
-  'Nad 200 lidí'
+  'méně než 30',
+  '30',
+  '60',
+  '120',
+  '240',
+  '480',
+  'více jak 480',
+  'Ještě nevím'
 ] as const

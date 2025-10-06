@@ -10,35 +10,50 @@ type FilterParams = {
 }
 
 const CAPACITY_CONDITIONS: Record<string, Prisma.VenueWhereInput> = {
-  'Do 25 lidí': {
+  'méně než 30': {
     OR: [
-      { capacitySeated: { lte: 25 } },
-      { capacityStanding: { lte: 25 } },
+      { capacitySeated: { lt: 30 } },
+      { capacityStanding: { lt: 30 } },
     ],
   },
-  '25 - 50 lidí': {
+  '30': {
     OR: [
-      { capacitySeated: { gte: 25, lte: 50 } },
-      { capacityStanding: { gte: 25, lte: 50 } },
+      { capacitySeated: { gte: 30, lt: 60 } },
+      { capacityStanding: { gte: 30, lt: 60 } },
     ],
   },
-  '50 - 100 lidí': {
+  '60': {
     OR: [
-      { capacitySeated: { gte: 50, lte: 100 } },
-      { capacityStanding: { gte: 50, lte: 100 } },
+      { capacitySeated: { gte: 60, lt: 120 } },
+      { capacityStanding: { gte: 60, lt: 120 } },
     ],
   },
-  '100 - 200 lidí': {
+  '120': {
     OR: [
-      { capacitySeated: { gte: 100, lte: 200 } },
-      { capacityStanding: { gte: 100, lte: 200 } },
+      { capacitySeated: { gte: 120, lt: 240 } },
+      { capacityStanding: { gte: 120, lt: 240 } },
     ],
   },
-  'Nad 200 lidí': {
+  '240': {
     OR: [
-      { capacitySeated: { gte: 200 } },
-      { capacityStanding: { gte: 200 } },
+      { capacitySeated: { gte: 240, lt: 480 } },
+      { capacityStanding: { gte: 240, lt: 480 } },
     ],
+  },
+  '480': {
+    OR: [
+      { capacitySeated: { gte: 480, lt: 960 } },
+      { capacityStanding: { gte: 480, lt: 960 } },
+    ],
+  },
+  'více jak 480': {
+    OR: [
+      { capacitySeated: { gte: 480 } },
+      { capacityStanding: { gte: 480 } },
+    ],
+  },
+  'Ještě nevím': {
+    // No capacity filter - show all venues
   },
 }
 

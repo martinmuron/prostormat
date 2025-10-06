@@ -88,14 +88,19 @@ model Venue {
   instagramUrl     String?  // Instagram URL
   images           String[]
   videoUrl         String?
+  youtubeUrl       String?  // YouTube URL
   musicAfter10     Boolean? // Can play music after 22:00
   status           String   @default("draft") // draft, active, expired, pending, published
+  isRecommended    Boolean  @default(false) // Featured/recommended venue
   priority         Int?     // 1 = highest priority, null = no priority
   parentId         String?
   managerId        String
   subscriptionId   String?  // Stripe subscription ID
   paymentDate      DateTime? // When the 12,000 CZK was paid
   expiresAt        DateTime?
+  lastViewedAt     DateTime? // Last time venue was viewed
+  totalViews       Int      @default(0) // Total view count
+  views            Int      @default(0) // View count
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 
@@ -148,6 +153,8 @@ model EventRequest {
   eventType           String   // firemni-akce, teambuilding, svatba, soukroma-akce
   eventDate           DateTime?
   guestCount          Int?
+  guestCountStandingRange String?
+  guestCountSeatedRange   String?
   budgetRange         String?
   locationPreference  String?  // Praha 1, Praha 2, etc.
   requirements        String?
@@ -160,6 +167,8 @@ model EventRequest {
 
   user User @relation(fields: [userId], references: [id])
   favorites EventRequestFavorite[]
+
+  @@map("prostormat_event_requests")
 }
 
 model VenueInquiry {

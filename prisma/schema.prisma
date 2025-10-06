@@ -27,7 +27,6 @@ model Account {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
-  @@map("prostormat_accounts")
 }
 
 model Session {
@@ -36,8 +35,6 @@ model Session {
   userId       String
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@map("prostormat_sessions")
 }
 
 model User {
@@ -72,7 +69,6 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
-  @@map("prostormat_verification_tokens")
 }
 
 model Venue {
@@ -92,19 +88,19 @@ model Venue {
   instagramUrl     String?  // Instagram URL
   images           String[]
   videoUrl         String?
-  youtubeUrl       String?  // Existing field in database
+  youtubeUrl       String?  // YouTube URL
   musicAfter10     Boolean? // Can play music after 22:00
-  status           String   @default("draft") // draft, active, expired, pending
+  status           String   @default("draft") // draft, active, expired, pending, published
+  isRecommended    Boolean  @default(false) // Featured/recommended venue
   priority         Int?     // 1 = highest priority, null = no priority
-  isRecommended    Boolean  @default(false) // Existing field
-  views            Int      @default(0) // Existing field
-  totalViews       Int      @default(0) // Existing field
-  lastViewedAt     DateTime? // Existing field
   parentId         String?
   managerId        String
   subscriptionId   String?  // Stripe subscription ID
-  expiresAt        DateTime?
   paymentDate      DateTime? // When the 12,000 CZK was paid
+  expiresAt        DateTime?
+  lastViewedAt     DateTime? // Last time venue was viewed
+  totalViews       Int      @default(0) // Total view count
+  views            Int      @default(0) // View count
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 
@@ -121,14 +117,14 @@ model Venue {
 }
 
 model VenueClaim {
-  id              String   @id @default(cuid())
-  venueId         String
-  claimantId      String
-  status          String   @default("pending") // pending, approved, rejected
-  message         String?
-  submissionData  String?  // JSON snapshot of claim form
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id             String   @id @default(cuid())
+  venueId        String
+  claimantId     String
+  status         String   @default("pending")
+  message        String?
+  submissionData String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
   venue    Venue @relation(fields: [venueId], references: [id])
   claimant User  @relation(fields: [claimantId], references: [id])
@@ -157,6 +153,8 @@ model EventRequest {
   eventType           String   // firemni-akce, teambuilding, svatba, soukroma-akce
   eventDate           DateTime?
   guestCount          Int?
+  guestCountStandingRange String?
+  guestCountSeatedRange   String?
   budgetRange         String?
   locationPreference  String?  // Praha 1, Praha 2, etc.
   requirements        String?
@@ -199,8 +197,6 @@ model Subscription {
   createdAt            DateTime @default(now())
 
   venue Venue @relation(fields: [venueId], references: [id])
-
-  @@map("prostormat_subscriptions")
 }
 
 model BlogPost {
@@ -257,15 +253,15 @@ model VenueBroadcastLog {
   emailError    String?  // Error message if email failed
 
   // Resend tracking fields
-  resendEmailId     String?   @unique  // Resend's email ID for webhook matching
-  emailDeliveredAt  DateTime?          // When delivered to inbox
-  emailOpenedAt     DateTime?          // First time opened
-  emailClickedAt    DateTime?          // First time any link clicked
-  emailBouncedAt    DateTime?          // When bounced
-  bounceType        String?            // 'hard' or 'soft'
-  emailComplainedAt DateTime?          // When marked as spam
-  openCount         Int       @default(0)  // Number of times opened
-  clickCount        Int       @default(0)  // Number of times clicked
+  resendEmailId     String?   @unique
+  emailDeliveredAt  DateTime?
+  emailOpenedAt     DateTime?
+  emailClickedAt    DateTime?
+  emailBouncedAt    DateTime?
+  bounceType        String?
+  emailComplainedAt DateTime?
+  openCount         Int       @default(0)
+  clickCount        Int       @default(0)
 
   broadcast VenueBroadcast @relation(fields: [broadcastId], references: [id])
   venue Venue @relation(fields: [venueId], references: [id])
@@ -319,7 +315,7 @@ model PaymentIntent {
   userEmail              String
   status                 String    @default("pending") // pending, completed, failed
   venueId                String?   // Set after venue is created
-  venueClaimId           String?   @unique // Set when claim is submitted
+  venueClaimId           String?   @unique
   paymentCompletedAt     DateTime?
   createdAt              DateTime  @default(now())
   updatedAt              DateTime  @updatedAt

@@ -22,10 +22,10 @@ export function HeroSearch() {
   }
 
   return (
-    <div className="w-full max-w-4xl mx-auto px-4">
+    <div className="w-full max-w-4xl mx-auto px-4 sm:px-6">
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Unified Filter Box */}
-        <div className="bg-white/90 backdrop-blur rounded-2xl p-6 md:p-8 border-2 border-gray-200 shadow-lg w-full mx-auto animate-slide-up">
+        <div className="bg-white/90 backdrop-blur rounded-2xl p-4 sm:p-6 md:p-8 border-2 border-gray-200 shadow-lg w-full animate-slide-up">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end w-full">
             {/* Venue Type */}
             <div className="w-full">

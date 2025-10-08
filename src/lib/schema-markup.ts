@@ -13,7 +13,7 @@ interface VenueData {
   capacityStanding: number | null
   slug: string
   manager?: {
-    name: string
+    name: string | null
     email: string
     phone: string | null
   } | null

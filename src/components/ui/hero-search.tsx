@@ -36,7 +36,7 @@ export function HeroSearch() {
                 Typ prostoru
               </label>
               <Select value={selectedType} onValueChange={setSelectedType}>
-                <SelectTrigger className="w-full bg-white border-2 border-blue-700 text-black focus:border-black">
+                <SelectTrigger className="!w-full bg-white border-2 border-blue-700 text-black focus:border-black">
                   <SelectValue placeholder="Všechny typy" />
                 </SelectTrigger>
                 <SelectContent>
@@ -57,7 +57,7 @@ export function HeroSearch() {
                 Kapacita
               </label>
               <Select value={selectedCapacity} onValueChange={setSelectedCapacity}>
-                <SelectTrigger className="w-full bg-white border-2 border-green-700 text-black focus:border-black">
+                <SelectTrigger className="!w-full bg-white border-2 border-green-700 text-black focus:border-black">
                   <SelectValue placeholder="Libovolná kapacita" />
                 </SelectTrigger>
                 <SelectContent>
@@ -78,7 +78,7 @@ export function HeroSearch() {
                 Lokalita
               </label>
               <Select value={selectedDistrict} onValueChange={setSelectedDistrict}>
-                <SelectTrigger className="w-full bg-white border-2 border-amber-700 text-black focus:border-black">
+                <SelectTrigger className="!w-full bg-white border-2 border-amber-700 text-black focus:border-black">
                   <SelectValue placeholder="Celá Praha" />
                 </SelectTrigger>
                 <SelectContent>

@@ -242,13 +242,7 @@ async function categorizeAllVenues() {
 
     for (const venue of venues) {
       try {
-        // Skip if already has categories (unless you want to re-categorize)
-        if (venue.venueTypes && venue.venueTypes.length > 0) {
-          console.log(`⏭️  Skipping ${venue.name} - already categorized`)
-          skippedCount++
-          continue
-        }
-
+        // FORCE RE-CATEGORIZATION: Analyze ALL venues regardless of existing categories
         const result = analyzeVenue(venue)
         results.push(result)
 

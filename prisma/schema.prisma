@@ -80,7 +80,8 @@ model Venue {
   district         String?  // Prague district (Praha 1, Praha 2, etc.)
   capacitySeated   Int?
   capacityStanding Int?
-  venueType        String?
+  venueType        String?  // DEPRECATED - use venueTypes
+  venueTypes       String[] @default([]) // Multiple categories per venue
   amenities        String[]
   contactEmail     String?
   contactPhone     String?

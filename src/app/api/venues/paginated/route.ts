@@ -39,6 +39,7 @@ export async function GET(request: NextRequest) {
         capacitySeated: true,
         capacityStanding: true,
         venueType: true,
+        venueTypes: true,
         images: true,
         status: true,
         priority: true,

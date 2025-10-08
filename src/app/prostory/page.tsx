@@ -35,6 +35,7 @@ async function getInitialVenues(searchParams: SearchParams, orderSeed: number) {
         capacitySeated: true,
         capacityStanding: true,
         venueType: true,
+        venueTypes: true,
         images: true,
         status: true,
         priority: true,

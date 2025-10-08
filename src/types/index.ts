@@ -1,8 +1,10 @@
-export type VenueType = 
-  | 'restaurant' 
-  | 'rooftop' 
-  | 'gallery' 
-  | 'conference' 
+export type VenueType =
+  | 'restaurant'
+  | 'bar'
+  | 'cafe'
+  | 'rooftop'
+  | 'gallery'
+  | 'conference'
   | 'historical'
   | 'villa'
   | 'palace'
@@ -10,6 +12,10 @@ export type VenueType =
   | 'garden'
   | 'studio'
   | 'loft'
+  | 'club'
+  | 'theater'
+  | 'museum'
+  | 'winery'
   | 'other'
 
 export type EventType = 
@@ -28,6 +34,8 @@ export type SubscriptionStatus = 'active' | 'canceled' | 'past_due'
 
 export const VENUE_TYPES: Record<VenueType, string> = {
   restaurant: 'Restaurace',
+  bar: 'Bar',
+  cafe: 'Kavárna',
   rooftop: 'Střešní terasa',
   gallery: 'Galerie',
   conference: 'Konferenční centrum',
@@ -38,6 +46,10 @@ export const VENUE_TYPES: Record<VenueType, string> = {
   garden: 'Zahrada',
   studio: 'Studio',
   loft: 'Loft',
+  club: 'Klub',
+  theater: 'Divadlo',
+  museum: 'Muzeum',
+  winery: 'Vinařství',
   other: 'Jiné'
 }
 

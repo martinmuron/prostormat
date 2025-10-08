@@ -1,5 +1,6 @@
 import Link from "next/link"
 import { notFound } from "next/navigation"
+import type { Metadata } from "next"
 import { VenueGallery } from "@/components/venue/venue-gallery"
 import { VenueContactForm } from "@/components/forms/venue-contact-form"
 import { HeartButton } from "@/components/venue/heart-button"
@@ -12,6 +13,7 @@ import { db } from "@/lib/db"
 import { VENUE_TYPES } from "@/types"
 import type { VenueType } from "@/types"
 import { MapPin, Users, Instagram } from "lucide-react"
+import { generateVenueSchema, generateBreadcrumbSchema, schemaToJsonLd } from "@/lib/schema-markup"
 
 async function getVenue(slug: string) {
   try {
@@ -70,6 +72,75 @@ async function getVenue(slug: string) {
   }
 }
 
+// Generate dynamic metadata for SEO
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>
+}): Promise<Metadata> {
+  const { slug } = await params
+  const venue = await getVenue(slug)
+
+  if (!venue) {
+    return {
+      title: 'Prostor nenalezen - Prostormat',
+      description: 'Tento prostor nebyl nalezen. Vyberte si z našeho katalogu event prostorů v Praze.',
+    }
+  }
+
+  const capacity = Math.max(Number(venue.capacitySeated) || 0, Number(venue.capacityStanding) || 0)
+  const venueTypeLabel = venue.venueType ? VENUE_TYPES[venue.venueType as VenueType] || venue.venueType : 'Event prostor'
+
+  const description = venue.description
+    ? `${venue.description.substring(0, 155)}...`
+    : `${venue.name} - ${venueTypeLabel} v Praze. Kapacita: ${capacity} osob. Ideální pro firemní akce, svatby, konference a další události.`
+
+  const imageUrl = venue.images[0]
+    ? `https://hlwgpjdhhjaibkqcyjts.supabase.co/storage/v1/object/public/venue-images/${venue.images[0]}`
+    : 'https://prostormat.cz/og-image.jpg'
+
+  return {
+    title: `${venue.name} - Event prostor v Praze | Prostormat`,
+    description,
+    keywords: [
+      venue.name,
+      'event prostor Praha',
+      'prostor na akci',
+      venueTypeLabel,
+      'firemní akce',
+      'konference',
+      'svatba',
+      'teambuilding',
+      'pronájem prostoru',
+    ],
+    openGraph: {
+      title: `${venue.name} - Event prostor v Praze`,
+      description,
+      url: `https://prostormat.cz/prostory/${slug}`,
+      siteName: 'Prostormat',
+      images: [
+        {
+          url: imageUrl,
+          width: 1200,
+          height: 630,
+          alt: venue.name,
+        },
+      ],
+      locale: 'cs_CZ',
+      type: 'website',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${venue.name} - Event prostor v Praze`,
+      description,
+      images: [imageUrl],
+    },
+    alternates: {
+      canonical: `https://prostormat.cz/prostory/${slug}`,
+    },
+  }
+}
+
 export default async function VenueDetailPage({
   params,
 }: {
@@ -84,8 +155,37 @@ export default async function VenueDetailPage({
 
   const venueTypeLabel = venue.venueType ? VENUE_TYPES[venue.venueType as VenueType] || venue.venueType : null
 
+  // Generate schema markup for SEO
+  const venueSchema = generateVenueSchema({
+    name: venue.name,
+    description: venue.description,
+    address: venue.address,
+    images: venue.images,
+    venueType: venue.venueType,
+    capacitySeated: venue.capacitySeated,
+    capacityStanding: venue.capacityStanding,
+    slug: venue.slug,
+    manager: venue.manager,
+  })
+
+  const breadcrumbSchema = generateBreadcrumbSchema([
+    { name: 'Domů', url: 'https://prostormat.cz' },
+    { name: 'Prostory', url: 'https://prostormat.cz/prostory' },
+    { name: venue.name, url: `https://prostormat.cz/prostory/${venue.slug}` },
+  ])
+
   return (
     <div className="min-h-screen bg-white">
+      {/* Schema.org JSON-LD markup */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={schemaToJsonLd(venueSchema)}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={schemaToJsonLd(breadcrumbSchema)}
+      />
+
       <div className="max-w-7xl mx-auto px-6 py-12">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
           {/* Main Content */}

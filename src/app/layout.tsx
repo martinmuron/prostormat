@@ -6,10 +6,61 @@ import { SessionProvider } from "@/components/providers/session-provider"
 import { Header } from "@/components/layout/header"
 import { Footer } from "@/components/layout/footer"
 import GlobalClickSpark from "@/components/ui/click-spark"
+import { generateOrganizationSchema, generateWebSiteSchema, schemaToJsonLd } from "@/lib/schema-markup"
 
 export const metadata: Metadata = {
-  title: "Prostormat - Event prostory v Praze",
-  description: "Největší katalog event prostorů v Praze. Najděte perfektní prostor pro vaši akci.",
+  title: "Prostormat - Největší katalog event prostorů v Praze",
+  description: "Hledáte prostor na firemní akci, svatbu, konferenci nebo teambuilding? Prostormat je největší katalog event prostorů v Praze s 866+ lokacemi. Najděte perfektní prostor pro vaši akci.",
+  keywords: [
+    'firemní akce Praha',
+    'event prostory Praha',
+    'prostor na akci',
+    'hledám prostor',
+    'hledám lokaci na akci',
+    'organizace akce',
+    'svatební prostor Praha',
+    'konferenční místnost Praha',
+    'teambuilding prostor',
+    'pronájem prostoru',
+    'eventové prostory',
+    'Prostormat',
+  ],
+  openGraph: {
+    title: 'Prostormat - Největší katalog event prostorů v Praze',
+    description: 'Hledáte prostor na firemní akci, svatbu, konferenci nebo teambuilding? Najděte perfektní prostor z 866+ lokací v Praze.',
+    url: 'https://prostormat.cz',
+    siteName: 'Prostormat',
+    images: [
+      {
+        url: 'https://prostormat.cz/og-image.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'Prostormat - Event prostory v Praze',
+      },
+    ],
+    locale: 'cs_CZ',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Prostormat - Největší katalog event prostorů v Praze',
+    description: 'Hledáte prostor na firemní akci, svatbu, konferenci nebo teambuilding? Najděte perfektní prostor z 866+ lokací v Praze.',
+    images: ['https://prostormat.cz/og-image.jpg'],
+  },
+  alternates: {
+    canonical: 'https://prostormat.cz',
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
 }
 
 export default function RootLayout({
@@ -17,9 +68,22 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
+  const organizationSchema = generateOrganizationSchema()
+  const webSiteSchema = generateWebSiteSchema()
+
   return (
     <html lang="cs" suppressHydrationWarning>
       <head>
+        {/* Schema.org JSON-LD markup */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={schemaToJsonLd(organizationSchema)}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={schemaToJsonLd(webSiteSchema)}
+        />
+
         {/* Google Tag Manager */}
         <Script
           id="gtm-script"

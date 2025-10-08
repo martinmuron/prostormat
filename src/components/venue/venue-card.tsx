@@ -33,13 +33,21 @@ interface VenueCardProps {
     capacitySeated?: number | null
     capacityStanding?: number | null
     venueType?: string | null
+    venueTypes?: string[]
     images: string[]
   }
 }
 
 export function VenueCard({ venue }: VenueCardProps) {
   const mainImage = venue.images[0] || "/images/placeholder-venue.jpg"
-  const venueTypeLabel = venue.venueType ? VENUE_TYPES[venue.venueType as VenueType] || venue.venueType : null
+
+  // Support both single venueType (legacy) and venueTypes array
+  const categories = venue.venueTypes && venue.venueTypes.length > 0
+    ? venue.venueTypes
+    : venue.venueType
+      ? [venue.venueType]
+      : []
+
   const totalCapacity = Math.max(venue.capacitySeated || 0, venue.capacityStanding || 0)
   const displayAddress = getPrimaryAddress(venue.address)
 
@@ -57,11 +65,25 @@ export function VenueCard({ venue }: VenueCardProps) {
             className="object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-          {venueTypeLabel && (
-            <div className="absolute top-3 left-3 sm:top-4 sm:left-4">
-              <Badge variant="secondary" className="bg-black text-white border-black text-xs sm:text-sm font-semibold border-2">
-                {venueTypeLabel}
-              </Badge>
+          {categories.length > 0 && (
+            <div className="absolute top-3 left-3 sm:top-4 sm:left-4 flex flex-wrap gap-2 max-w-[80%]">
+              {categories.slice(0, 2).map((cat) => (
+                <Badge
+                  key={cat}
+                  variant="secondary"
+                  className="bg-black text-white border-black text-xs sm:text-sm font-semibold border-2"
+                >
+                  {VENUE_TYPES[cat as VenueType] || cat}
+                </Badge>
+              ))}
+              {categories.length > 2 && (
+                <Badge
+                  variant="secondary"
+                  className="bg-black text-white border-black text-xs sm:text-sm font-semibold border-2"
+                >
+                  +{categories.length - 2}
+                </Badge>
+              )}
             </div>
           )}
           {venue.images.length > 1 && (

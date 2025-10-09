@@ -13,20 +13,38 @@ export const dynamic = 'force-dynamic';
 
 async function getVenues() {
   try {
-    return await db.venue.findMany({
-      include: {
+    const venues = await db.venue.findMany({
+      select: {
+        id: true,
+        name: true,
+        status: true,
+        venueType: true,
+        address: true,
+        district: true,
+        contactEmail: true,
+        contactPhone: true,
+        isRecommended: true,
+        updatedAt: true,
         manager: {
-          select: { name: true, email: true, phone: true },
+          select: { id: true, name: true, email: true, phone: true },
         },
         _count: {
           select: { inquiries: true, broadcastLogs: true },
         },
       },
       orderBy: { updatedAt: 'desc' },
-    });
+    })
+
+    return venues.map(venue => ({
+      ...venue,
+      featured: venue.isRecommended,
+      subscriptionStatus: null,
+      expiresAt: null,
+      lastBilledAt: null,
+    }))
   } catch (error) {
-    console.error('Error fetching venues:', error);
-    return [];
+    console.error('Error fetching venues:', error)
+    return []
   }
 }
 

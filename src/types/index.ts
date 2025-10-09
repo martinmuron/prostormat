@@ -16,6 +16,13 @@ export type VenueType =
   | 'theater'
   | 'museum'
   | 'winery'
+  | 'event_space'
+  | 'chapel'
+  | 'boat'
+  | 'cinema'
+  | 'education'
+  | 'coworking'
+  | 'sports'
   | 'other'
 
 export type EventType = 
@@ -50,6 +57,13 @@ export const VENUE_TYPES: Record<VenueType, string> = {
   theater: 'Divadlo',
   museum: 'Muzeum',
   winery: 'Vinařství',
+  event_space: 'Eventový prostor',
+  chapel: 'Kaple',
+  boat: 'Loď',
+  cinema: 'Kino',
+  education: 'Vzdělávací centrum',
+  coworking: 'Coworking',
+  sports: 'Sportoviště',
   other: 'Jiné'
 }
 

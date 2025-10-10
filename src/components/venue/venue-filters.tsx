@@ -33,15 +33,15 @@ export function VenueFilters({ initialValues }: VenueFiltersProps) {
 
   const typeTooltip = filters.type && filters.type !== 'all'
     ? VENUE_TYPES[filters.type as keyof typeof VENUE_TYPES] ?? filters.type
-    : 'Typ akce'
+    : 'Vyber typ prostoru'
 
   const districtTooltip = filters.district && filters.district !== 'all'
     ? filters.district
-    : 'Lokalita'
+    : 'Kde to má být?'
 
   const capacityTooltip = filters.capacity && filters.capacity !== 'all'
     ? filters.capacity
-    : 'Kapacita'
+    : 'Kolik lidí přivedeš?'
 
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -110,7 +110,7 @@ export function VenueFilters({ initialValues }: VenueFiltersProps) {
                   title={typeTooltip}
                 >
                   <Building className="h-4 w-4 text-black" />
-                  <SelectValue placeholder="Typ akce" />
+                  <SelectValue placeholder="Vyber typ prostoru" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Všechny typy</SelectItem>
@@ -210,7 +210,7 @@ export function VenueFilters({ initialValues }: VenueFiltersProps) {
                 type="submit"
                 className="h-12 w-full rounded-2xl font-semibold text-sm bg-black text-white hover:bg-gray-800 transition-all duration-200 flex items-center justify-center shadow-md lg:w-auto lg:px-6"
               >
-                Najít prostory
+                Najít ideální místo
               </Button>
             </div>
           </div>

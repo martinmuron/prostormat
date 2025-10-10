@@ -1,0 +1,45 @@
+{
+  "totalVenues": 826,
+  "totalFolders": 821,
+  "missingImages": [
+    {
+      "slug": "hard-rock-cafe-praha_1.patro-lounge",
+      "name": "1.patro Lounge@Hard Rock Cafe Praha",
+      "status": "active",
+      "parentSlug": "hard-rock-cafe-praha",
+      "parentName": "Hard Rock Cafe Praha"
+    },
+    {
+      "slug": "hard-rock-cafe-praha_2.patro-mezzanine",
+      "name": "2. patro Mezzanine@Hard Rock Cafe Praha",
+      "status": "active",
+      "parentSlug": "hard-rock-cafe-praha",
+      "parentName": "Hard Rock Cafe Praha"
+    },
+    {
+      "slug": "prague-city-golf-vinor_restaurace-soul.ad",
+      "name": "Restaurace Soul.ad@Prague City Golf Vinoř",
+      "status": "active",
+      "parentSlug": "prague-city-golf-vinor",
+      "parentName": "Prague City Golf Vinoř"
+    },
+    {
+      "slug": "hard-rock-cafe-praha_1.patro-lounge-1.patro-atrium",
+      "name": "1.patro Lounge + 1.patro Atrium@Hard Rock Cafe Praha",
+      "status": "active",
+      "parentSlug": "hard-rock-cafe-praha",
+      "parentName": "Hard Rock Cafe Praha"
+    },
+    {
+      "slug": "hard-rock-cafe-praha_1.patro-suteren-romanske-sklepeni",
+      "name": "-1. patro@Hard Rock Cafe Praha",
+      "status": "active",
+      "parentSlug": "hard-rock-cafe-praha",
+      "parentName": "Hard Rock Cafe Praha"
+    }
+  ],
+  "mismatchedImagePaths": [],
+  "missingLocalFiles": [],
+  "unmatchedFolders": [],
+  "placeholderVenues": []
+}

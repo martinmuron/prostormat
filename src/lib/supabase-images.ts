@@ -38,14 +38,14 @@ export interface ImageTransformOptions {
  */
 const IMAGE_SIZES: Record<ImageSize, ImageTransformOptions> = {
   thumbnail: {
-    width: 300,
-    height: 200,
-    quality: 75,
+    width: 600,
+    height: 400,
+    quality: 85,
   },
   medium: {
-    width: 800,
-    height: 600,
-    quality: 85,
+    width: 1200,
+    height: 800,
+    quality: 90,
   },
   full: {
     // No transformations - original image

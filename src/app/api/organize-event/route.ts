@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { z } from "zod"
-import { resend, FROM_EMAIL, REPLY_TO_EMAIL } from "@/lib/resend"
-import { generateOrganizeEventThankYouEmail, generateOrganizeEventAdminNotification } from "@/lib/email-templates"
+import { sendEmailFromTemplate } from "@/lib/email-service"
 
 const organizeEventSchema = z.object({
   name: z.string().min(2, "Jméno je povinné"),
@@ -27,89 +26,40 @@ export async function POST(request: NextRequest) {
       }, { status: 400 })
     }
 
-    const eventDate = data.eventDate ? new Date(data.eventDate) : null
-
-    // Prepare emails
-    const thankYou = generateOrganizeEventThankYouEmail({
-      name: data.name,
-      eventType: data.eventType,
-      guestCount: data.guestCount,
-      eventDate,
-    })
-
-    const admin = generateOrganizeEventAdminNotification({
-      name: data.name,
-      email: data.email,
-      phone: data.phone,
-      company: data.company,
-      eventType: data.eventType,
-      eventDate,
-      guestCount: data.guestCount,
-      budgetRange: data.budgetRange,
-      locationPreference: data.locationPreference,
-      message: data.message,
-    })
-
     try {
-      // Send to user
-      await resend.emails.send({
-        from: FROM_EMAIL,
-        to: [data.email],
-        replyTo: REPLY_TO_EMAIL,
-        subject: thankYou.subject,
-        html: thankYou.html,
-        text: thankYou.text,
+      // Send thank you email to user
+      await sendEmailFromTemplate({
+        templateKey: 'organize_event_thank_you',
+        to: data.email,
+        variables: {
+          name: data.name,
+          eventType: data.eventType || '',
+          guestCount: data.guestCount?.toString() || '',
+          eventDate: data.eventDate ? new Date(data.eventDate).toLocaleDateString('cs-CZ') : ''
+        }
       })
 
-      // Send to admin
-      await resend.emails.send({
-        from: FROM_EMAIL,
-        to: ["info@prostormat.cz"],
-        replyTo: data.email,
-        subject: admin.subject,
-        html: admin.html,
-        text: admin.text,
+      // Send notification email to admin
+      await sendEmailFromTemplate({
+        templateKey: 'organize_event_admin',
+        to: 'info@prostormat.cz',
+        variables: {
+          name: data.name,
+          email: data.email,
+          phone: data.phone || '',
+          company: data.company || '',
+          eventType: data.eventType || '',
+          guestCount: data.guestCount?.toString() || '',
+          eventDate: data.eventDate ? new Date(data.eventDate).toLocaleDateString('cs-CZ') : 'Neuvedeno',
+          budgetRange: data.budgetRange || '',
+          locationPreference: data.locationPreference || '',
+          message: data.message || ''
+        }
       })
-
-      // Best-effort log to Email Flow (may require admin session; ignore failures)
-      try {
-        await fetch(`${process.env.NEXTAUTH_URL}/api/admin/email-flow`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            emailType: 'organize_event_thank_you',
-            recipient: data.email,
-            subject: thankYou.subject,
-            status: 'sent',
-            sentBy: 'system',
-            recipientType: 'organize_event_user'
-          })
-        })
-      } catch (logErr) {
-        console.error('Failed to log organize_event_thank_you:', logErr)
-      }
 
       return NextResponse.json({ success: true })
     } catch (emailErr) {
-      console.error('Resend error:', emailErr)
-
-      // Attempt to log failure too
-      try {
-        await fetch(`${process.env.NEXTAUTH_URL}/api/admin/email-flow`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            emailType: 'organize_event_thank_you',
-            recipient: data.email,
-            subject: thankYou.subject,
-            status: 'failed',
-            error: emailErr instanceof Error ? emailErr.message : 'Unknown error',
-            sentBy: 'system',
-            recipientType: 'organize_event_user'
-          })
-        })
-      } catch {}
-
+      console.error('Email sending error:', emailErr)
       return NextResponse.json({ error: "Chyba při odesílání emailu. Zkuste to prosím znovu." }, { status: 500 })
     }
   } catch (err) {

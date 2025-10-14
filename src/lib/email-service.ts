@@ -92,23 +92,15 @@ export async function isEmailTriggerEnabled(triggerKey: string): Promise<boolean
 
 /**
  * Send welcome email to new user
+ * Now uses database template - editable from admin dashboard!
  */
 export async function sendWelcomeEmail(user: { name: string; email: string; role: string }) {
-  const templateKey = user.role === 'venue_manager'
-    ? 'welcome_location_owner'
-    : 'welcome_user'
-
-  const triggerKey = user.role === 'venue_manager'
-    ? 'venue_manager_registration'
-    : 'user_registration'
-
   return sendEmailFromTemplate({
-    templateKey,
+    templateKey: 'welcome_user',
     to: user.email,
     variables: {
-      name: user.name || user.email,
-      email: user.email
+      name: user.name || user.email
     },
-    checkTrigger: triggerKey
+    checkTrigger: 'user_registration'
   })
 }

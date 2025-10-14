@@ -2,8 +2,7 @@ import { NextResponse } from "next/server"
 import { z } from "zod"
 import { db } from "@/lib/db"
 import crypto from "crypto"
-import { Resend } from "resend"
-import { generatePasswordResetEmail } from "@/lib/email-templates"
+import { sendEmailFromTemplate } from "@/lib/email-service"
 
 const schema = z.object({
   email: z.string().email(),
@@ -43,15 +42,13 @@ export async function POST(req: Request) {
 
     // Send email (best-effort)
     if (process.env.RESEND_API_KEY) {
-      const resend = new Resend(process.env.RESEND_API_KEY)
-      const emailData = generatePasswordResetEmail(resetUrl)
       try {
-        await resend.emails.send({
-          from: "Prostormat <no-reply@prostormat.cz>",
-          to: [email],
-          subject: emailData.subject,
-          html: emailData.html,
-          text: emailData.text,
+        await sendEmailFromTemplate({
+          templateKey: 'password_reset',
+          to: email,
+          variables: {
+            resetLink: resetUrl
+          }
         })
       } catch (e) {
         console.error("Failed to send reset email", e)

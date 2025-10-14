@@ -45,9 +45,21 @@ Prostormat is a platform for finding and managing event spaces in Czech Republic
 - **Prisma models map to prefixed tables** in production environment
 - **Always reference correct table names** when debugging or managing data
 
+**CRITICAL DATABASE CONNECTION**:
+- **ALWAYS use port 5432 (direct connection)** for production database operations
+- ❌ **DO NOT use port 6543 (pgbouncer)** - this is NOT the live database
+- ✅ Correct: `DATABASE_URL="postgres://username:PASSWORD@host.supabase.com:5432/postgres"`
+- ❌ Wrong: `DATABASE_URL="postgres://username:PASSWORD@host.supabase.com:6543/postgres"` (pgbouncer - not live)
+
+**Production Scripts Template**:
+```bash
+# ALWAYS use this connection string for production scripts (get from .env.local):
+DATABASE_URL="postgres://username:PASSWORD@host.supabase.com:5432/postgres" npx tsx scripts/your-script.ts
+```
+
 **Common Tables**:
 - `prostormat_venues` - Venue listings
-- `prostormat_users` - User accounts  
+- `prostormat_users` - User accounts
 - `prostormat_venue_inquiries` - Venue contact requests
 - `prostormat_venue_broadcasts` - Email broadcast campaigns
 - `prostormat_venue_broadcast_logs` - Email send tracking

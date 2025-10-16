@@ -51,7 +51,7 @@ export function VenueBilling({ venue }: VenueBillingProps) {
       billingAddress: venue.billingAddress || "",
       taxId: venue.taxId || "",
       vatId: venue.vatId || "",
-      subscriptionStatus: isSubscriptionStatus(venue.subscriptionStatus) ? venue.subscriptionStatus : "",
+      subscriptionStatus: isSubscriptionStatus(venue.subscriptionStatus) ? venue.subscriptionStatus : undefined,
       expiresAt: venue.expiresAt ? new Date(venue.expiresAt).toISOString().split('T')[0] : "",
     },
   })

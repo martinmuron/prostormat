@@ -98,6 +98,7 @@ async function getDashboardData(userId: string, userRole: string): Promise<Dashb
         include: {
           venue: {
             select: {
+              id: true,
               name: true,
               slug: true,
             }

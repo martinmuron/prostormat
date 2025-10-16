@@ -54,9 +54,9 @@ async function getVenue(id: string): Promise<VenueWithManager | null> {
 export default async function EditVenuePage({
   params,
 }: {
-  params: { id: string }
+  params: Promise<{ id: string }>
 }) {
-  const { id } = params
+  const { id } = await params
   const session = await getServerSession(authOptions)
   
   if (!session?.user || session.user.role !== "admin") {

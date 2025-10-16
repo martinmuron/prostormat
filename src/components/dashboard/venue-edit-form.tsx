@@ -32,8 +32,8 @@ type VenueInquirySummary = {
   name: string
   email: string
   phone?: string | null
-  message: string
-  eventDate?: string | null
+  message?: string | null
+  eventDate?: string | Date | null
   guestCount?: number | null
   createdAt: string | Date
 }
@@ -242,9 +242,9 @@ const statusLabels: Record<string, string> = {
                       </div>
                     </div>
                   ))}
-                  {venue.inquiries?.length > 3 && (
+                  {(venue.inquiries?.length ?? 0) > 3 && (
                     <p className="text-sm text-gray-500 text-center">
-                      +{venue.inquiries.length - 3} dalších
+                      +{(venue.inquiries?.length ?? 0) - 3} dalších
                     </p>
                   )}
                 </div>
@@ -473,7 +473,21 @@ const statusLabels: Record<string, string> = {
                   </TabsContent>
 
                   <TabsContent value="info" className="space-y-6 mt-0">
-                    <VenueInfo venue={venue} />
+                  <VenueInfo
+                    venue={{
+                      ...venue,
+                      createdAt: new Date(venue.createdAt).toISOString(),
+                      updatedAt: new Date(venue.updatedAt).toISOString(),
+                      inquiries: venue.inquiries?.map((inquiry) => ({
+                        ...inquiry,
+                        message: inquiry.message ?? '',
+                        createdAt: new Date(inquiry.createdAt).toISOString(),
+                        eventDate: inquiry.eventDate ? new Date(inquiry.eventDate).toISOString() : undefined,
+                        phone: inquiry.phone ?? undefined,
+                        guestCount: inquiry.guestCount ?? undefined,
+                      })),
+                    }}
+                  />
                   </TabsContent>
                 </div>
               </Tabs>

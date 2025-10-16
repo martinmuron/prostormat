@@ -4,6 +4,7 @@ import { z } from "zod"
 import { db } from "@/lib/db"
 import { authOptions } from "@/lib/auth"
 import { randomUUID } from "crypto"
+import { trackLokaceSubmit } from "@/lib/meta-conversions-api"
 
 const inquirySchema = z.object({
   venueId: z.string(),
@@ -49,6 +50,20 @@ export async function POST(request: Request) {
         message: validatedData.message,
       },
     })
+
+    // Track LokaceSubmit event in Meta (don't block on failure)
+    try {
+      const [firstName, ...lastNameParts] = validatedData.name.split(' ')
+      await trackLokaceSubmit({
+        email: validatedData.email,
+        phone: validatedData.phone,
+        firstName: firstName,
+        lastName: lastNameParts.join(' ') || undefined,
+      }, venue.name, request)
+    } catch (metaError) {
+      console.error('Failed to track Meta lokace submit event:', metaError)
+      // Continue anyway - inquiry was successful
+    }
 
     // TODO: Send email notification to venue manager
     // This would integrate with Resend or similar email service

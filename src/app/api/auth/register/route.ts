@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs"
 import { z } from "zod"
 import { db } from "@/lib/db"
 import { sendWelcomeEmail } from "@/lib/email-service"
+import { trackRegistration } from "@/lib/meta-conversions-api"
 
 const registerSchema = z.object({
   name: z.string().min(2, "Jméno musí mít alespoň 2 znaky"),
@@ -60,6 +61,20 @@ export async function POST(request: Request) {
       })
     } catch (emailError) {
       console.error('Failed to send welcome email:', emailError)
+      // Continue anyway - registration was successful
+    }
+
+    // Track registration event in Meta (don't block on failure)
+    try {
+      const [firstName, ...lastNameParts] = validatedData.name.split(' ')
+      await trackRegistration({
+        email: user.email,
+        phone: validatedData.phone,
+        firstName: firstName,
+        lastName: lastNameParts.join(' ') || undefined,
+      }, request)
+    } catch (metaError) {
+      console.error('Failed to track Meta registration event:', metaError)
       // Continue anyway - registration was successful
     }
 

@@ -226,7 +226,7 @@ export default async function UserProfilePage({
                       </div>
                       <p className="text-sm text-muted-foreground mb-2">{request.description}</p>
                       <div className="flex items-center justify-between text-xs text-muted-foreground">
-                        <span>Kapacita: {request.expectedGuests || request.guestCount || 'Neuvedeno'} hostů</span>
+                        <span>Kapacita: {request.guestCount ?? 'Neuvedeno'} hostů</span>
                         <span>Vytvořeno: {new Date(request.createdAt).toLocaleDateString('cs-CZ')}</span>
                       </div>
                     </div>
@@ -259,7 +259,7 @@ export default async function UserProfilePage({
                       </div>
                       <p className="text-sm text-muted-foreground mb-2">{inquiry.message}</p>
                       <div className="flex items-center justify-between text-xs text-muted-foreground">
-                        <span>Kapacita: {inquiry.expectedGuests || inquiry.guestCount || 'Neuvedeno'} hostů</span>
+                        <span>Kapacita: {inquiry.guestCount ?? 'Neuvedeno'} hostů</span>
                         <span>Odesláno: {new Date(inquiry.createdAt).toLocaleDateString('cs-CZ')}</span>
                       </div>
                     </div>
@@ -310,7 +310,7 @@ export default async function UserProfilePage({
                             <div>
                               <h4 className="font-medium">{venue.name}</h4>
                               <p className="text-sm text-muted-foreground">
-                                Stav předplatného: {venue.subscriptionStatus || 'Neuvedeno'}
+                                Stav předplatného: {venue.paid ? 'Aktivní' : 'Neuvedeno'}
                               </p>
                             </div>
                             <Button variant="outline" size="sm" asChild>

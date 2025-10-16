@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
 import { nanoid } from 'nanoid';
 import { resend } from '@/lib/resend';
+import { trackLocationRegistration, trackPayment } from '@/lib/meta-conversions-api';
 
 export async function POST(request: NextRequest) {
   try {
@@ -205,6 +206,32 @@ export async function POST(request: NextRequest) {
         },
       });
 
+      // Track LocationRegistration event in Meta (claim mode)
+      try {
+        const [firstName, ...lastNameParts] = (normalizedName || '').split(' ');
+        await trackLocationRegistration({
+          email: venueData.userEmail,
+          phone: normalizedPhone || undefined,
+          firstName: firstName || undefined,
+          lastName: lastNameParts.join(' ') || undefined,
+        }, existingVenue.name, request);
+      } catch (metaError) {
+        console.error('Failed to track Meta location registration event (claim):', metaError);
+      }
+
+      // Track Payment event in Meta (claim mode)
+      try {
+        const [firstName, ...lastNameParts] = (normalizedName || '').split(' ');
+        await trackPayment({
+          email: venueData.userEmail,
+          phone: normalizedPhone || undefined,
+          firstName: firstName || undefined,
+          lastName: lastNameParts.join(' ') || undefined,
+        }, paymentIntent.amount / 100, 'CZK', request);
+      } catch (metaError) {
+        console.error('Failed to track Meta payment event (claim):', metaError);
+      }
+
       // Notify user about claim submission
       try {
         await resend.emails.send({
@@ -322,6 +349,32 @@ export async function POST(request: NextRequest) {
         paymentCompletedAt: now,
       },
     });
+
+    // Track LocationRegistration event in Meta (new venue)
+    try {
+      const [firstName, ...lastNameParts] = (normalizedName || '').split(' ');
+      await trackLocationRegistration({
+        email: venueData.userEmail,
+        phone: normalizedPhone || undefined,
+        firstName: firstName || undefined,
+        lastName: lastNameParts.join(' ') || undefined,
+      }, venueData.name, request);
+    } catch (metaError) {
+      console.error('Failed to track Meta location registration event (new):', metaError);
+    }
+
+    // Track Payment event in Meta (new venue)
+    try {
+      const [firstName, ...lastNameParts] = (normalizedName || '').split(' ');
+      await trackPayment({
+        email: venueData.userEmail,
+        phone: normalizedPhone || undefined,
+        firstName: firstName || undefined,
+        lastName: lastNameParts.join(' ') || undefined,
+      }, paymentIntent.amount / 100, 'CZK', request);
+    } catch (metaError) {
+      console.error('Failed to track Meta payment event (new):', metaError);
+    }
 
     // Send confirmation email to user
     try {

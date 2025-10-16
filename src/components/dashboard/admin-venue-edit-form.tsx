@@ -37,7 +37,7 @@ type ClaimantInfo = {
 type VenueClaimSummary = {
   id: string
   status: string
-  createdAt: string
+  createdAt: string | Date
   claimant?: ClaimantInfo | null
 }
 
@@ -268,14 +268,14 @@ export function AdminVenueEditForm({ venue }: AdminVenueEditFormProps) {
     }
   }
 
-  const handleChange = <Field extends keyof AdminVenueFormState>(field: Field, value: AdminVenueFormState[Field]) => {
+  const handleChange = (field: keyof AdminVenueFormState, value: AdminVenueFormState[keyof AdminVenueFormState]) => {
     setFormData(prev => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }))
   }
 
-  const formatClaimTimestamp = (value: string) =>
+  const formatClaimTimestamp = (value: string | Date) =>
     new Date(value).toLocaleString('cs-CZ', {
       day: '2-digit',
       month: '2-digit',
@@ -675,7 +675,11 @@ export function AdminVenueEditForm({ venue }: AdminVenueEditFormProps) {
                                     type="button"
                                     variant="secondary"
                                     size="sm"
-                                    onClick={() => setManagerEmail(claim.claimant.email)}
+                                    onClick={() => {
+                                      if (claim.claimant?.email) {
+                                        setManagerEmail(claim.claimant.email)
+                                      }
+                                    }}
                                   >
                                     Použít email pro správce
                                   </Button>

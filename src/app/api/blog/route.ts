@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
 
     if (tag) {
       where.tags = {
-        has: tag
+        contains: `"${tag}"`
       }
     }
 

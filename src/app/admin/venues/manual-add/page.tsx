@@ -131,8 +131,6 @@ export default function ManualAddVenuePage() {
     void loadUsers()
   }, [loadUsers])
 
-  const musicAfter10 = watch("musicAfter10")
-
   const toggleAmenity = (amenity: string) => {
     setAmenities(prev =>
       prev.includes(amenity)

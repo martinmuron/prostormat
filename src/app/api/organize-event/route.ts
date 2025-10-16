@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { z } from "zod"
 import { sendEmailFromTemplate } from "@/lib/email-service"
+import { trackOrganizaceSubmit } from "@/lib/meta-conversions-api"
 
 const organizeEventSchema = z.object({
   name: z.string().min(2, "Jméno je povinné"),
@@ -56,6 +57,27 @@ export async function POST(request: NextRequest) {
           message: data.message || ''
         }
       })
+
+      // Track OrganizaceSubmit event in Meta (don't block on failure)
+      try {
+        const [firstName, ...lastNameParts] = data.name.split(' ')
+        await trackOrganizaceSubmit({
+          email: data.email,
+          phone: data.phone,
+          firstName: firstName,
+          lastName: lastNameParts.join(' ') || undefined,
+        }, {
+          eventType: data.eventType,
+          guestCount: data.guestCount,
+          eventDate: data.eventDate,
+          budgetRange: data.budgetRange,
+          locationPreference: data.locationPreference,
+          company: data.company,
+        }, request)
+      } catch (metaError) {
+        console.error('Failed to track Meta organizace submit event:', metaError)
+        // Continue anyway - form submission was successful
+      }
 
       return NextResponse.json({ success: true })
     } catch (emailErr) {

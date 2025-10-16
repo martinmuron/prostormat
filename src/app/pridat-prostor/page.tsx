@@ -110,6 +110,7 @@ interface PaymentData {
   existingVenueName?: string | null
   existingVenueSlug?: string | null
   existingManagerEmail?: string | null
+  [key: string]: unknown
 }
 
 const AMENITIES_OPTIONS = [

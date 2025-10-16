@@ -7,6 +7,7 @@ import { authOptions } from "@/lib/auth"
 import { randomUUID } from "crypto"
 import { resend } from "@/lib/resend"
 import { generateQuickRequestVenueNotificationEmail } from "@/lib/email-templates"
+import { trackBulkFormSubmit } from "@/lib/meta-conversions-api"
 
 const quickRequestSchema = z.object({
   eventType: z.string().min(1, "Event type is required"),
@@ -266,6 +267,25 @@ export async function POST(request: Request) {
     })
 
     await Promise.all(emailPromises)
+
+    // Track bulk form submission in Meta (don't block on failure)
+    try {
+      const [firstName, ...lastNameParts] = validatedData.contactName.split(' ')
+      await trackBulkFormSubmit({
+        email: validatedData.contactEmail,
+        phone: validatedData.contactPhone,
+        firstName: firstName,
+        lastName: lastNameParts.join(' ') || undefined,
+      }, {
+        eventType: validatedData.eventType,
+        guestCount: typeof validatedData.guestCount === 'number' ? validatedData.guestCount : Number(validatedData.guestCount) || undefined,
+        locationPreference: validatedData.locationPreference,
+        budgetRange: validatedData.budgetRange,
+      }, request)
+    } catch (metaError) {
+      console.error('Failed to track Meta bulk form submit event:', metaError)
+      // Continue anyway - request was successful
+    }
 
     return NextResponse.json({
       success: true,

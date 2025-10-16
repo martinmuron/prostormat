@@ -60,7 +60,7 @@ export default function AdminDebugPage() {
           {loading ? 'Loading...' : 'Force Reset Database'}
         </button>
 
-        {data && (
+        {data !== null && (
           <div className="bg-gray-100 p-4 rounded">
             <pre className="text-sm overflow-auto">
               {JSON.stringify(data, null, 2)}

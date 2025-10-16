@@ -153,7 +153,10 @@ async function BlogGrid() {
 
   const displayPosts =
     posts.length > 0
-      ? posts
+      ? posts.map((post) => ({
+          ...post,
+          publishedAt: (post.publishedAt ?? post.createdAt).toISOString(),
+        }))
       : fallbackBlogPosts.map((post) => ({
           id: post.id,
           title: post.title,

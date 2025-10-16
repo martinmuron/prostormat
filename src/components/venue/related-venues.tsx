@@ -1,4 +1,5 @@
 import Link from "next/link"
+import Image from "next/image"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { HeartButton } from "@/components/venue/heart-button"
@@ -99,12 +100,14 @@ export async function RelatedVenues({ currentVenueId, venueType, address, amenit
             <Card key={venue.id} className="group hover:shadow-lg transition-all duration-300">
               <div className="relative">
                 {/* Image */}
-                <div className="aspect-[4/3] bg-gray-200 rounded-t-lg overflow-hidden">
+                <div className="aspect-[4/3] bg-gray-200 rounded-t-lg overflow-hidden relative">
                   {venue.images.length > 0 ? (
-                    <img
+                    <Image
                       src={venue.images[0]}
                       alt={venue.name}
+                      fill
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 300px"
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-gray-400">

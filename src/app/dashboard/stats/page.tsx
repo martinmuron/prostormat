@@ -3,15 +3,12 @@ import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { 
-  Users, 
-  Building, 
-  Calendar, 
-  MessageSquare, 
-  TrendingUp,
-  Mail,
-  Eye,
-  Star
+import {
+  Users,
+  Building,
+  Calendar,
+  MessageSquare,
+  TrendingUp
 } from "lucide-react"
 
 async function getStats() {

@@ -235,7 +235,7 @@ export function AmenitiesManager({ selectedAmenities, onAmenitiesChange }: Ameni
               <div className="text-center py-4 text-gray-500">
                 <Plus className="h-8 w-8 mx-auto mb-2 text-gray-400" />
                 <p className="text-sm">Zatím žádné vlastní vybavení</p>
-                <p className="text-xs">Klikněte na "Přidat vlastní" pro přidání specifického vybavení</p>
+                <p className="text-xs">Klikněte na &quot;Přidat vlastní&quot; pro přidání specifického vybavení</p>
               </div>
             )
           )}

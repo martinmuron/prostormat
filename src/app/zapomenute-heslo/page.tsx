@@ -1,7 +1,6 @@
 "use client"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
@@ -29,7 +28,8 @@ export default function ForgotPasswordPage() {
         const data = await res.json()
         setError(data.error || "Došlo k chybě")
       }
-    } catch (e) {
+    } catch (error) {
+      console.error("Failed to request password reset:", error)
       setError("Došlo k chybě")
     } finally {
       setIsLoading(false)

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { stripe, isStripeConfigured } from '@/lib/stripe';
 import { prisma } from '@/lib/prisma';
 import { resend } from '@/lib/resend';
-import { nanoid } from 'nanoid';
+import type Stripe from 'stripe';
 
 export async function POST(request: NextRequest) {
   // Check if Stripe is configured
@@ -67,7 +67,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-async function handlePaymentSucceeded(paymentIntent: any) {
+async function handlePaymentSucceeded(paymentIntent: Stripe.PaymentIntent) {
   console.log('Payment succeeded:', paymentIntent.id);
 
   try {
@@ -104,7 +104,7 @@ async function handlePaymentSucceeded(paymentIntent: any) {
   }
 }
 
-async function handlePaymentFailed(paymentIntent: any) {
+async function handlePaymentFailed(paymentIntent: Stripe.PaymentIntent) {
   console.log('Payment failed:', paymentIntent.id);
 
   try {
@@ -179,7 +179,7 @@ async function handlePaymentFailed(paymentIntent: any) {
   }
 }
 
-async function handlePaymentCanceled(paymentIntent: any) {
+async function handlePaymentCanceled(paymentIntent: Stripe.PaymentIntent) {
   console.log('Payment canceled:', paymentIntent.id);
 
   try {

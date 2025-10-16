@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Mail, Users, Building, Send, Eye, Save, Plus, Bell } from "lucide-react"
+import { Mail, Users, Building, Send, Eye, Plus, Bell } from "lucide-react"
 import { generateWelcomeEmailForUser, generateWelcomeEmailForLocationOwner, generateContactFormThankYouEmail, generateAddVenueThankYouEmail, generateQuickRequestVenueNotificationEmail } from "@/lib/email-templates"
 
 interface EmailTemplate {
@@ -59,7 +59,6 @@ const predefinedTemplates: EmailTemplate[] = [
 
 export function EmailTemplatesManager() {
   const [activeTab, setActiveTab] = useState("templates")
-  const [selectedTemplate, setSelectedTemplate] = useState<EmailTemplate | null>(null)
   const [customEmail, setCustomEmail] = useState({
     subject: "",
     content: "",

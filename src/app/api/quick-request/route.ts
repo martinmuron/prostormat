@@ -2,8 +2,11 @@ import { NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
 import { z } from "zod"
 import { db } from "@/lib/db"
+import { Prisma } from "@prisma/client"
 import { authOptions } from "@/lib/auth"
 import { randomUUID } from "crypto"
+import { resend } from "@/lib/resend"
+import { generateQuickRequestVenueNotificationEmail } from "@/lib/email-templates"
 
 const quickRequestSchema = z.object({
   eventType: z.string().min(1, "Event type is required"),
@@ -17,6 +20,20 @@ const quickRequestSchema = z.object({
   contactEmail: z.string().email("Valid email is required"),
   contactPhone: z.string().optional(),
 })
+type QuickRequestData = z.infer<typeof quickRequestSchema>
+
+type VenueMatch = {
+  id: string
+  name: string
+  slug: string
+  contactEmail: string | null
+  capacityStanding: number | null
+  capacitySeated: number | null
+  manager: {
+    name: string | null
+    email: string | null
+  } | null
+}
 
 // Helper function to extract guest count range
 function parseGuestCount(guestCountRange: string): { min: number; max: number | null } {
@@ -35,42 +52,45 @@ async function findMatchingVenues(criteria: {
   guestCount: string
   locationPreference: string
   eventType: string
-}) {
-  const { min: minGuests, max: maxGuests } = parseGuestCount(criteria.guestCount)
-  
+}): Promise<VenueMatch[]> {
+  const { min: minGuests } = parseGuestCount(criteria.guestCount)
+
+  const where: Prisma.VenueWhereInput = {
+    status: 'active',
+    contactEmail: { not: null },
+  }
+
+  const andConditions: Prisma.VenueWhereInput[] = []
+
+  if (criteria.locationPreference) {
+    where.district = {
+      equals: criteria.locationPreference,
+      mode: 'insensitive',
+    }
+  }
+
+  if (minGuests > 0) {
+    andConditions.push({
+      OR: [
+        { capacityStanding: { gte: minGuests } },
+        { capacitySeated: { gte: minGuests } },
+      ],
+    })
+  }
+
+  if (andConditions.length > 0) {
+    where.AND = andConditions
+  }
+
   const venues = await db.venue.findMany({
-    where: {
-      status: "active",
-      AND: [
-        // Location matching - check if venue address contains the preferred location
-        {
-          address: {
-            contains: criteria.locationPreference,
-            mode: 'insensitive'
-          }
-        },
-        // Capacity matching - ensure venues have capacity information
-        {
-          OR: [
-            // Check standing capacity exists
-            {
-              AND: [
-                { capacityStanding: { not: null } },
-                { capacityStanding: { gt: 0 } }
-              ]
-            },
-            // Check seated capacity exists
-            {
-              AND: [
-                { capacitySeated: { not: null } },
-                { capacitySeated: { gt: 0 } }
-              ]
-            }
-          ]
-        }
-      ]
-    },
-    include: {
+    where,
+    select: {
+      id: true,
+      name: true,
+      slug: true,
+      contactEmail: true,
+      capacityStanding: true,
+      capacitySeated: true,
       manager: {
         select: {
           name: true,
@@ -80,19 +100,62 @@ async function findMatchingVenues(criteria: {
     }
   })
 
-  return venues
+  return venues.filter(venue => {
+    const standing = venue.capacityStanding ?? 0
+    const seated = venue.capacitySeated ?? 0
+    const totalCapacity = standing + seated
+    return totalCapacity >= minGuests
+  })
 }
 
-// Helper function to send email to venue (placeholder - you'll need to implement actual email sending)
-async function sendEmailToVenue(venue: any, requestData: any) {
-  // This is a placeholder - implement actual email sending logic
-  // You might use services like SendGrid, AWS SES, or Nodemailer
-  
-  console.log(`Sending email to venue ${venue.name} (${venue.manager.email})`)
-  console.log('Request data:', requestData)
-  
-  // For now, we'll just simulate success
-  return { success: true }
+// Helper function to send email to venue
+async function sendEmailToVenue(
+  venue: VenueMatch,
+  requestData: QuickRequestData & { broadcastId: string }
+) {
+  if (!venue.contactEmail) {
+    throw new Error(`Venue ${venue.name} has no contact email`)
+  }
+
+  // Parse guest count to get approximate number for email
+  const guestCountRange = requestData.guestCount
+  const guestCountApprox = guestCountRange ? parseInt(guestCountRange.split('-')[0], 10) : null
+  const eventDate = new Date(requestData.eventDate)
+
+  const emailContent = generateQuickRequestVenueNotificationEmail({
+    venueName: venue.name,
+    venueContactEmail: venue.contactEmail,
+    quickRequest: {
+      eventType: requestData.eventType,
+      eventDate,
+      guestCount: guestCountApprox ?? undefined,
+      budgetRange: requestData.budgetRange || undefined,
+      locationPreference: requestData.locationPreference,
+      additionalInfo: requestData.requirements || requestData.message || undefined,
+      contactName: requestData.contactName,
+      contactEmail: requestData.contactEmail,
+      contactPhone: requestData.contactPhone || undefined,
+    }
+  })
+
+  // Send email via Resend
+  const emailResult = await resend.emails.send({
+    from: 'Prostormat <noreply@prostormat.cz>',
+    to: venue.contactEmail,
+    replyTo: 'info@prostormat.cz',
+    subject: emailContent.subject,
+    html: emailContent.html,
+    text: emailContent.text,
+  })
+
+  if (!emailResult.data) {
+    throw new Error(`Failed to send email to ${venue.contactEmail}`)
+  }
+
+  return {
+    success: true,
+    resendEmailId: emailResult.data.id
+  }
 }
 
 export async function POST(request: Request) {
@@ -140,32 +203,63 @@ export async function POST(request: Request) {
     let successCount = 0
     const emailPromises = matchingVenues.map(async (venue) => {
       try {
-        await sendEmailToVenue(venue, {
+        const emailResult = await sendEmailToVenue(venue, {
           ...validatedData,
           broadcastId: broadcast.id,
         })
 
-        // Log the broadcast
+        // Log the broadcast in VenueBroadcastLog
         await db.venueBroadcastLog.create({
           data: {
             id: randomUUID(),
             broadcastId: broadcast.id,
             venueId: venue.id,
             emailStatus: "sent",
+            resendEmailId: emailResult.resendEmailId || null,
+          }
+        })
+
+        // Log in Email Flow system
+        await db.emailFlowLog.create({
+          data: {
+            id: randomUUID(),
+            emailType: 'quick_request_venue_notification',
+            recipient: venue.contactEmail || 'unknown',
+            subject: `Zákazník má zájem o váš prostor! - ${venue.name}`,
+            status: 'sent',
+            recipientType: 'venue_owner',
+            sentBy: session?.user?.id || 'anonymous',
           }
         })
 
         successCount++
       } catch (error) {
         console.error(`Failed to send email to venue ${venue.id}:`, error)
-        
-        // Log the failed attempt
+
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+
+        // Log the failed attempt in VenueBroadcastLog
         await db.venueBroadcastLog.create({
           data: {
             id: randomUUID(),
             broadcastId: broadcast.id,
             venueId: venue.id,
             emailStatus: "failed",
+            emailError: errorMessage,
+          }
+        })
+
+        // Log failure in Email Flow system
+        await db.emailFlowLog.create({
+          data: {
+            id: randomUUID(),
+            emailType: 'quick_request_venue_notification',
+            recipient: venue.contactEmail || 'unknown',
+            subject: `Zákazník má zájem o váš prostor! - ${venue.name}`,
+            status: 'failed',
+            error: errorMessage,
+            recipientType: 'venue_owner',
+            sentBy: session?.user?.id || 'anonymous',
           }
         })
       }

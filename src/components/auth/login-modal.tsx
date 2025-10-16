@@ -3,13 +3,11 @@
 import { useState } from "react"
 import { signIn } from "next-auth/react"
 import { useRouter } from "next/navigation"
-import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { LogIn, UserPlus, Mail, Lock, User, Eye, EyeOff } from "lucide-react"
 
 interface LoginModalProps {
@@ -62,6 +60,7 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
         router.refresh()
       }
     } catch (error) {
+      console.error("Login failed:", error)
       setLoginError("Došlo k chybě při přihlašování")
     } finally {
       setIsLoading(false)
@@ -112,6 +111,7 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
         setRegisterError(errorData.error || "Došlo k chybě při registraci")
       }
     } catch (error) {
+      console.error("Registration failed:", error)
       setRegisterError("Došlo k chybě při registraci")
     } finally {
       setIsLoading(false)

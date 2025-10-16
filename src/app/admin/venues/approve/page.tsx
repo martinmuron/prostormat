@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -265,10 +266,12 @@ export default function VenueApprovalPage() {
                           <h4 className="text-sm font-medium text-gray-700 mb-2">Fotografie ({venue.images.length})</h4>
                           <div className="grid grid-cols-4 gap-2">
                             {venue.images.slice(0, 4).map((image, index) => (
-                              <img
+                              <Image
                                 key={index}
                                 src={image}
                                 alt={`${venue.name} ${index + 1}`}
+                                width={200}
+                                height={120}
                                 className="w-full h-16 object-cover rounded border"
                               />
                             ))}

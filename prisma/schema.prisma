@@ -96,6 +96,7 @@ model Venue {
   priority         Int?     // 1 = highest priority, null = no priority
   parentId         String?
   managerId        String
+  paid             Boolean  @default(false) // Whether venue has paid subscription
   subscriptionId   String?  // Stripe subscription ID
   paymentDate      DateTime? // When the 12,000 CZK was paid
   expiresAt        DateTime?

@@ -2,13 +2,12 @@
 
 import { useState } from "react"
 import { Suspense } from "react"
-import { useRouter, useSearchParams } from "next/navigation"
+import { useSearchParams } from "next/navigation"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 
 function ResetPasswordForm() {
-  const router = useRouter()
   const searchParams = useSearchParams()
   const token = searchParams.get("token") || ""
 
@@ -38,7 +37,8 @@ function ResetPasswordForm() {
         const data = await res.json()
         setError(data.error || "Došlo k chybě")
       }
-    } catch (e) {
+    } catch (error) {
+      console.error("Failed to reset password:", error)
       setError("Došlo k chybě")
     } finally {
       setIsLoading(false)

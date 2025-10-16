@@ -2,12 +2,12 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import { useSession, signIn, signOut } from "next-auth/react"
+import { useSession, signOut } from "next-auth/react"
 import { Button } from "@/components/ui/button"
 import { Logo } from "@/components/ui/logo"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu"
-import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger } from "@/components/ui/navigation-menu"
+import { NavigationMenu, NavigationMenuItem, NavigationMenuLink, NavigationMenuList } from "@/components/ui/navigation-menu"
 import { Skeleton } from "@/components/ui/skeleton"
 import { User, Menu, LogOut, Plus } from "lucide-react"
 

@@ -55,6 +55,7 @@ export async function POST(request: NextRequest) {
       select: {
         id: true,
         name: true,
+        slug: true,
         contactEmail: true,
         managerId: true
       }
@@ -106,6 +107,8 @@ export async function POST(request: NextRequest) {
           const emailTemplate = generateVenueBroadcastEmail({
             venueName: venue.name,
             venueContactEmail: venue.contactEmail,
+            venueSlug: venue.slug,
+            broadcastId: broadcast.id,
             broadcast: {
               title,
               description,

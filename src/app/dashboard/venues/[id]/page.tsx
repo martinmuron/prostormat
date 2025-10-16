@@ -1,3 +1,4 @@
+import type { User, Venue } from "@prisma/client"
 import { notFound, redirect } from "next/navigation"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
@@ -13,7 +14,13 @@ import { VenueManager } from "@/components/venue/venue-manager"
 
 export const dynamic = 'force-dynamic';
 
-async function getVenue(id: string) {
+type VenueWithManager = Venue & {
+  manager: Pick<User, "id" | "name" | "email" | "phone"> | null
+  images: string[]
+  amenities: string[]
+}
+
+async function getVenue(id: string): Promise<VenueWithManager | null> {
   try {
     const venue = await db.venue.findUnique({
       where: { id },
@@ -47,9 +54,9 @@ async function getVenue(id: string) {
 export default async function EditVenuePage({
   params,
 }: {
-  params: Promise<{ id: string }>
+  params: { id: string }
 }) {
-  const { id } = await params
+  const { id } = params
   const session = await getServerSession(authOptions)
   
   if (!session?.user || session.user.role !== "admin") {
@@ -99,7 +106,7 @@ export default async function EditVenuePage({
               <CardTitle>Základní informace</CardTitle>
             </CardHeader>
             <CardContent>
-              <VenueForm venue={venue as any} />
+              <VenueForm venue={venue} />
             </CardContent>
           </Card>
         </TabsContent>

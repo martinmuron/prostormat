@@ -1,36 +1,39 @@
+import type { Prisma } from "@prisma/client"
 import { Suspense } from "react"
-
-// Force dynamic rendering to avoid caching issues
-export const revalidate = 0
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { VenueCard } from "@/components/venue/venue-card"
 import { ScrollReveal } from "@/components/ui/scroll-reveal"
 import { AnimatedBackground, FloatingShapes } from "@/components/ui/animated-background"
 import { HeroSearch } from "@/components/ui/hero-search"
 import { Skeleton } from "@/components/ui/skeleton"
 import { db } from "@/lib/db"
-import { VENUE_TYPES, PRAGUE_DISTRICTS, CAPACITY_RANGES } from "@/types"
-import { Search, Upload, MessageSquare, Euro, Users, MapPin, Calendar, ArrowRight, Zap, Clock } from "lucide-react"
+import { Upload, MessageSquare, Euro, ArrowRight, Zap, Clock } from "lucide-react"
+
+// Force dynamic rendering to avoid caching issues
+export const revalidate = 0
+
+const featuredVenueSelect = {
+  id: true,
+  name: true,
+  slug: true,
+  description: true,
+  address: true,
+  capacitySeated: true,
+  capacityStanding: true,
+  venueType: true,
+  images: true,
+  status: true,
+} satisfies Prisma.VenueSelect
+
+type FeaturedVenue = Prisma.VenueGetPayload<{ select: typeof featuredVenueSelect }>
 
 async function getFeaturedVenues() {
   try {
     const homepageVenues = await db.homepageVenue.findMany({
       include: {
         venue: {
-          select: {
-            id: true,
-            name: true,
-            slug: true,
-            description: true,
-            address: true,
-            capacitySeated: true,
-            capacityStanding: true,
-            venueType: true,
-            images: true,
-            status: true,
-          },
+          select: featuredVenueSelect,
         },
       },
       orderBy: {
@@ -38,7 +41,7 @@ async function getFeaturedVenues() {
       },
     })
 
-    const selected: any[] = []
+    const selected: FeaturedVenue[] = []
     const seen = new Set<string>()
 
     for (const entry of homepageVenues) {
@@ -60,6 +63,7 @@ async function getFeaturedVenues() {
           createdAt: 'desc',
         },
         take: 12 - selected.length,
+        select: featuredVenueSelect,
       })
 
       for (const venue of fallbackVenues) {
@@ -121,7 +125,7 @@ async function FeaturedVenues() {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-      {venues.map((venue: any) => (
+      {venues.map((venue) => (
         <VenueCard key={venue.id} venue={venue} />
       ))}
     </div>

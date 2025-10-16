@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Prisma } from '@prisma/client';
 import crypto from 'crypto';
 
 const prisma = new PrismaClient();
@@ -106,7 +106,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Update based on event type
-    const updateData: any = {};
+    const updateData: Prisma.VenueBroadcastLogUpdateInput = {};
     const eventDate = new Date(payload.created_at);
 
     switch (payload.type) {

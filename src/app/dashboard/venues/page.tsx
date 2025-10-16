@@ -2,12 +2,14 @@ import { redirect } from "next/navigation"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { db } from "@/lib/db"
+import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { PlusCircle } from "lucide-react"
 import { DataTable } from "./components/data-table"
 import { columns } from "./components/columns"
+import type { Venue as VenueRow } from "./components/columns"
 
 export const dynamic = 'force-dynamic';
 
@@ -35,13 +37,16 @@ async function getVenues() {
       orderBy: { updatedAt: 'desc' },
     })
 
-    return venues.map(venue => ({
+    const mapped: VenueRow[] = venues.map((venue) => ({
       ...venue,
+      status: venue.status as VenueRow['status'],
       featured: venue.isRecommended,
       subscriptionStatus: null,
       expiresAt: null,
       lastBilledAt: null,
     }))
+
+    return mapped
   } catch (error) {
     console.error('Error fetching venues:', error)
     return []
@@ -68,10 +73,10 @@ export default async function VenuesPage() {
           <p className="text-muted-foreground">Spravujte všechny prostory v systému</p>
         </div>
         <Button asChild>
-          <a href="/dashboard/venues/new">
+          <Link href="/dashboard/venues/new">
             <PlusCircle className="mr-2 h-4 w-4" />
             Přidat prostor
-          </a>
+          </Link>
         </Button>
       </div>
 
@@ -87,7 +92,7 @@ export default async function VenuesPage() {
         <TabsContent value="all">
           <Card>
             <CardContent className="pt-6">
-              <DataTable columns={columns} data={venues as any} />
+              <DataTable columns={columns} data={venues} />
             </CardContent>
           </Card>
         </TabsContent>
@@ -95,7 +100,7 @@ export default async function VenuesPage() {
         <TabsContent value="published">
           <Card>
             <CardContent className="pt-6">
-              <DataTable columns={columns} data={publishedVenues as any} />
+              <DataTable columns={columns} data={publishedVenues} />
             </CardContent>
           </Card>
         </TabsContent>
@@ -103,7 +108,7 @@ export default async function VenuesPage() {
         <TabsContent value="draft">
           <Card>
             <CardContent className="pt-6">
-              <DataTable columns={columns} data={draftVenues as any} />
+              <DataTable columns={columns} data={draftVenues} />
             </CardContent>
           </Card>
         </TabsContent>
@@ -111,7 +116,7 @@ export default async function VenuesPage() {
         <TabsContent value="pending">
           <Card>
             <CardContent className="pt-6">
-              <DataTable columns={columns} data={pendingVenues as any} />
+              <DataTable columns={columns} data={pendingVenues} />
             </CardContent>
           </Card>
         </TabsContent>
@@ -119,7 +124,7 @@ export default async function VenuesPage() {
         <TabsContent value="hidden">
           <Card>
             <CardContent className="pt-6">
-              <DataTable columns={columns} data={hiddenVenues as any} />
+              <DataTable columns={columns} data={hiddenVenues} />
             </CardContent>
           </Card>
         </TabsContent>

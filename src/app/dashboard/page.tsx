@@ -2,26 +2,31 @@ import { redirect } from "next/navigation"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { db } from "@/lib/db"
+import type { DashboardData, EventRequestSummary, VenueBroadcastSummary, VenueInquirySummary } from "@/types/dashboard"
 import { DashboardSidebar } from "@/components/dashboard/sidebar"
 import { UserDashboard } from "@/components/dashboard/user-dashboard"
 import { VenueManagerDashboard } from "@/components/dashboard/venue-manager-dashboard"
 import { AdminDashboard } from "@/components/dashboard/admin-dashboard"
 
-async function getDashboardData(userId: string, userRole: string) {
+async function getDashboardData(userId: string, userRole: string): Promise<DashboardData | null> {
   try {
-    const baseData = {
-      user: await db.user.findUnique({
-        where: { id: userId },
-        select: {
-          id: true,
-          name: true,
-          email: true,
-          role: true,
-          company: true,
-          phone: true,
-        }
-      })
+    const user = await db.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        company: true,
+        phone: true,
+      }
+    })
+
+    if (!user) {
+      return null
     }
+
+    const baseData = { user }
 
     if (userRole === "venue_manager") {
       const venues = await db.venue.findMany({
@@ -40,6 +45,7 @@ async function getDashboardData(userId: string, userRole: string) {
       })
 
       return {
+        kind: 'venue_manager',
         ...baseData,
         venues,
         stats: {
@@ -59,6 +65,7 @@ async function getDashboardData(userId: string, userRole: string) {
       ])
 
       return {
+        kind: 'admin',
         ...baseData,
         stats: {
           totalUsers: userCount,
@@ -70,22 +77,23 @@ async function getDashboardData(userId: string, userRole: string) {
     }
 
     // Regular user - handle each query separately with error handling
-    let eventRequests: any[] = []
-    let inquiries: any[] = []
-    let broadcasts: any[] = []
+    let eventRequests: EventRequestSummary[] = []
+    let venueInquiries: VenueInquirySummary[] = []
+    let broadcasts: VenueBroadcastSummary[] = []
     
     try {
-      eventRequests = await db.eventRequest.findMany({
+      const results = await db.eventRequest.findMany({
         where: { userId },
         orderBy: { createdAt: "desc" },
         take: 5,
       })
+      eventRequests = results
     } catch (error) {
       console.error("Error fetching event requests:", error)
     }
     
     try {
-      inquiries = await db.venueInquiry.findMany({
+      const results = await db.venueInquiry.findMany({
         where: { userId },
         include: {
           venue: {
@@ -98,12 +106,13 @@ async function getDashboardData(userId: string, userRole: string) {
         orderBy: { createdAt: "desc" },
         take: 5,
       })
+      venueInquiries = results
     } catch (error) {
       console.error("Error fetching venueInquiry:", error)
     }
     
     try {
-      broadcasts = await db.venueBroadcast.findMany({
+      const results = await db.venueBroadcast.findMany({
         where: { userId },
         include: {
           logs: {
@@ -122,19 +131,21 @@ async function getDashboardData(userId: string, userRole: string) {
         orderBy: { createdAt: "desc" },
         take: 5,
       })
+      broadcasts = results
     } catch (error) {
       console.error("Error fetching broadcasts:", error)
     }
 
     return {
+      kind: 'user',
       ...baseData,
       eventRequests,
-      inquiries,
+      venueInquiries,
       broadcasts,
       stats: {
         activeRequests: eventRequests.filter(r => r.status === "active").length,
         totalRequests: eventRequests.length,
-        totalInquiries: inquiries.length,
+        totalInquiries: venueInquiries.length,
         totalBroadcasts: broadcasts.length,
       }
     }
@@ -165,13 +176,14 @@ export default async function DashboardPage() {
   }
 
   const renderDashboard = () => {
-    switch (session.user.role) {
-      case "venue_manager":
-        return <VenueManagerDashboard data={data as any} />
-      case "admin":
-        return <AdminDashboard data={data as any} />
+    switch (data.kind) {
+      case 'venue_manager':
+        return <VenueManagerDashboard data={data} />
+      case 'admin':
+        return <AdminDashboard data={data} />
+      case 'user':
       default:
-        return <UserDashboard data={data as any} />
+        return <UserDashboard data={data} />
     }
   }
 

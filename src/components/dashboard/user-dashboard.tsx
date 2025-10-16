@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -9,26 +10,26 @@ import { EVENT_TYPES } from "@/types"
 import type { EventType } from "@/types"
 import { formatDate } from "@/lib/utils"
 import { Calendar, MessageSquare, Building, Plus, Send, Heart } from "lucide-react"
+import type { UserDashboardData } from "@/types/dashboard"
+
+interface FavoriteVenue {
+  id: string
+  name: string
+  slug: string
+  description?: string | null
+  images?: string[]
+  capacitySeated?: number | null
+  favoritedAt: string
+}
 
 interface UserDashboardProps {
-  data: {
-    user: any
-    eventRequests: any[]
-    prostormat_venue_inquiries: any[]
-    broadcasts: any[]
-    stats: {
-      activeRequests: number
-      totalRequests: number
-      totalInquiries: number
-      totalBroadcasts: number
-    }
-  }
+  data: UserDashboardData
 }
 
 export function UserDashboard({ data }: UserDashboardProps) {
-  const { user, eventRequests, prostormat_venue_inquiries, broadcasts, stats } = data
+  const { user, eventRequests, broadcasts, stats } = data
   const [activeTab, setActiveTab] = useState('overview')
-  const [favorites, setFavorites] = useState<any[]>([])
+  const [favorites, setFavorites] = useState<FavoriteVenue[]>([])
   const [loadingFavorites, setLoadingFavorites] = useState(false)
 
   const fetchFavorites = async () => {
@@ -36,11 +37,11 @@ export function UserDashboard({ data }: UserDashboardProps) {
     try {
       const response = await fetch('/api/user/favorites')
       if (response.ok) {
-        const data = await response.json()
-        setFavorites(data.favorites || [])
+        const payload = (await response.json()) as { favorites?: FavoriteVenue[] }
+        setFavorites(payload.favorites ?? [])
       }
     } catch (error) {
-      console.error('Error fetching prostormat_venue_favorites:', error)
+      console.error('Error fetching favorites:', error)
     } finally {
       setLoadingFavorites(false)
     }
@@ -149,7 +150,7 @@ export function UserDashboard({ data }: UserDashboardProps) {
               </div>
             ) : (
               <div className="space-y-4">
-                {eventRequests.slice(0, 3).map((request: any) => {
+                {eventRequests.slice(0, 3).map((request) => {
                   const eventTypeLabel = EVENT_TYPES[request.eventType as EventType] || request.eventType
                   return (
                     <div key={request.id} className="border border-gray-200 rounded-xl p-4">
@@ -202,7 +203,7 @@ export function UserDashboard({ data }: UserDashboardProps) {
               </div>
             ) : (
               <div className="space-y-4">
-                {broadcasts.slice(0, 3).map((broadcast: any) => {
+                {broadcasts.slice(0, 3).map((broadcast) => {
                   const eventTypeLabel = EVENT_TYPES[broadcast.eventType as EventType] || broadcast.eventType
                   return (
                     <div key={broadcast.id} className="border border-gray-200 rounded-xl p-4">
@@ -257,7 +258,7 @@ export function UserDashboard({ data }: UserDashboardProps) {
           </div>
         ) : (
           <div className="space-y-4">
-            {eventRequests.map((request: any) => {
+            {eventRequests.map((request) => {
               const eventTypeLabel = EVENT_TYPES[request.eventType as EventType] || request.eventType
               return (
                 <div key={request.id} className="border border-gray-200 rounded-xl p-6 hover:shadow-md transition-shadow">
@@ -323,7 +324,7 @@ export function UserDashboard({ data }: UserDashboardProps) {
           </div>
         ) : (
           <div className="space-y-4">
-            {broadcasts.map((broadcast: any) => {
+            {broadcasts.map((broadcast) => {
               const eventTypeLabel = EVENT_TYPES[broadcast.eventType as EventType] || broadcast.eventType
               return (
                 <div key={broadcast.id} className="border border-gray-200 rounded-xl p-6 hover:shadow-md transition-shadow">
@@ -343,7 +344,7 @@ export function UserDashboard({ data }: UserDashboardProps) {
                     <div className="mb-4 p-3 bg-gray-50 rounded-lg">
                       <p className="text-sm text-gray-600 mb-2">Odeslané prostory:</p>
                       <div className="flex flex-wrap gap-2">
-                        {broadcast.logs.slice(0, 5).map((log: any) => {
+                        {broadcast.logs.slice(0, 5).map((log) => {
                           const statusColor = {
                             'sent': 'bg-green-100 text-green-800 border-green-200',
                             'failed': 'bg-red-100 text-red-800 border-red-200',
@@ -380,7 +381,7 @@ export function UserDashboard({ data }: UserDashboardProps) {
                       <div className="mt-3 pt-2 border-t border-gray-200">
                         <div className="flex flex-wrap gap-3 text-xs text-gray-600">
                           {['sent', 'failed', 'pending', 'skipped'].map(status => {
-                            const count = broadcast.logs.filter((log: any) => log.emailStatus === status).length
+                            const count = broadcast.logs.filter((log) => log.emailStatus === status).length
                             if (count === 0) return null
                             
                             const statusLabels = {
@@ -417,6 +418,7 @@ export function UserDashboard({ data }: UserDashboardProps) {
       </CardContent>
     </Card>
   )
+
 
   const renderTabContent = () => {
     switch (activeTab) {
@@ -468,14 +470,16 @@ export function UserDashboard({ data }: UserDashboardProps) {
           </div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {favorites.map((venue: any) => (
+            {favorites.map((venue) => (
               <div key={venue.id} className="border border-gray-200 rounded-xl overflow-hidden hover:shadow-md transition-shadow">
                 <div className="aspect-video bg-gray-200 relative">
                   {venue.images && venue.images.length > 0 ? (
-                    <img 
-                      src={venue.images[0]} 
+                    <Image
+                      src={venue.images[0]}
                       alt={venue.name}
-                      className="w-full h-full object-cover"
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 768px) 100vw, 50vw"
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center">

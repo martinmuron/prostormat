@@ -1,9 +1,10 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 
 export default function AdminDebugPage() {
-  const [data, setData] = useState<any>(null)
+  const [data, setData] = useState<unknown>(null)
   const [loading, setLoading] = useState(false)
 
   const checkDatabase = async () => {
@@ -71,8 +72,8 @@ export default function AdminDebugPage() {
       <div className="mt-8">
         <h2 className="text-xl font-bold mb-2">Quick Links</h2>
         <div className="space-y-2">
-          <div><a href="/prostory" className="text-blue-500 underline">View Venues</a></div>
-          <div><a href="/prostory/restaurant-terasa" className="text-blue-500 underline">Test Venue Page</a></div>
+          <div><Link href="/prostory" className="text-blue-500 underline">View Venues</Link></div>
+          <div><Link href="/prostory/restaurant-terasa" className="text-blue-500 underline">Test Venue Page</Link></div>
         </div>
       </div>
     </div>

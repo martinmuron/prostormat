@@ -3,7 +3,8 @@ import { db } from "@/lib/db"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import { Calendar, User, ArrowLeft, Share2 } from "lucide-react"
+import Image from "next/image"
+import { Calendar, ArrowLeft, Share2 } from "lucide-react"
 
 // Placeholder blog posts for when database is empty
 const placeholderPosts = [
@@ -329,10 +330,13 @@ export default async function BlogPostPage({
           {/* Cover image */}
           {post.coverImage && (
             <div className="mb-8">
-              <img
+              <Image
                 src={post.coverImage}
                 alt={post.title}
+                width={1200}
+                height={600}
                 className="w-full h-auto rounded-lg shadow-lg"
+                priority
               />
             </div>
           )}

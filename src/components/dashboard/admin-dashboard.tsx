@@ -2,21 +2,14 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Users, Building, Calendar, MessageSquare, FileText, Mail } from "lucide-react"
+import type { AdminDashboardData } from "@/types/dashboard"
 
 interface AdminDashboardProps {
-  data: {
-    user: any
-    stats: {
-      totalUsers: number
-      totalVenues: number
-      totalEventRequests: number
-      totalInquiries: number
-    }
-  }
+  data: AdminDashboardData
 }
 
 export function AdminDashboard({ data }: AdminDashboardProps) {
-  const { user, stats } = data
+  const { stats } = data
 
   return (
     <div>

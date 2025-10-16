@@ -202,7 +202,7 @@ export default function EventRequestsPage() {
     }
 
     return filtered
-  }, [requests, filters])
+  }, [filters, requests, session?.user?.id])
 
   const clearFilters = () => {
     setFilters({

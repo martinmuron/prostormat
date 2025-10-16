@@ -68,6 +68,7 @@ export default function VenueBroadcastPage() {
         alert('Chyba při odesílání poptávky. Zkuste to prosím znovu.')
       }
     } catch (error) {
+      console.error('Failed to submit venue broadcast:', error)
       alert('Chyba při odesílání poptávky. Zkuste to prosím znovu.')
     } finally {
       setIsSubmitting(false)

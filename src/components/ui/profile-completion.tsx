@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo } from 'react';
+import { useMemo, type ComponentType } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -13,14 +13,14 @@ import {
   MapPin, 
   Users, 
   Phone, 
-  Mail, 
   Globe, 
-  FileText,
   Settings,
   Star,
   TrendingUp,
   Search
 } from 'lucide-react';
+
+type IconComponent = ComponentType<{ className?: string }>
 
 interface VenueData {
   name?: string;
@@ -46,7 +46,7 @@ interface CompletionItem {
   id: string;
   label: string;
   description: string;
-  icon: React.ComponentType<any>;
+  icon: IconComponent;
   completed: boolean;
   required: boolean;
   weight: number; // How much this contributes to completion percentage

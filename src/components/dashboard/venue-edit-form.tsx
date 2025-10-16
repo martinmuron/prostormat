@@ -18,25 +18,65 @@ import { VenuePreview } from "@/components/ui/venue-preview"
 import { formatDate } from "@/lib/utils"
 import { 
   Building, 
-  MapPin, 
-  Users, 
-  Mail, 
-  Phone, 
-  Globe, 
   Save, 
   Eye,
   MessageSquare,
-  Calendar,
   Settings,
   Camera,
-  Video,
   Star,
-  BarChart3,
   Monitor
 } from "lucide-react"
 
+type VenueInquirySummary = {
+  id: string
+  name: string
+  email: string
+  phone?: string | null
+  message: string
+  eventDate?: string | null
+  guestCount?: number | null
+  createdAt: string | Date
+}
+
+type EditableVenue = {
+  id: string
+  slug: string
+  name: string
+  description?: string | null
+  address?: string | null
+  capacitySeated?: number | null
+  capacityStanding?: number | null
+  venueType?: string | null
+  contactEmail?: string | null
+  contactPhone?: string | null
+  websiteUrl?: string | null
+  videoUrl?: string | null
+  images: string[]
+  amenities: string[]
+  status: string
+  inquiries?: VenueInquirySummary[]
+  createdAt: string | Date
+  updatedAt: string | Date
+}
+
 interface VenueEditFormProps {
-  venue: any
+  venue: EditableVenue
+}
+
+interface VenueFormState {
+  name: string
+  description: string
+  address: string
+  capacitySeated: string
+  capacityStanding: string
+  venueType: string
+  contactEmail: string
+  contactPhone: string
+  websiteUrl: string
+  youtubeUrl: string
+  images: string[]
+  amenities: string[]
+  status: string
 }
 
 export function VenueEditForm({ venue }: VenueEditFormProps) {
@@ -44,20 +84,20 @@ export function VenueEditForm({ venue }: VenueEditFormProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [isPreviewOpen, setIsPreviewOpen] = useState(false)
   const [activeTab, setActiveTab] = useState("basic")
-  const [formData, setFormData] = useState({
-    name: venue.name || "",
-    description: venue.description || "",
-    address: venue.address || "",
-    capacitySeated: venue.capacitySeated || "",
-    capacityStanding: venue.capacityStanding || "",
-    venueType: venue.venueType || "",
-    contactEmail: venue.contactEmail || "",
-    contactPhone: venue.contactPhone || "",
-    websiteUrl: venue.websiteUrl || "",
-    youtubeUrl: venue.videoUrl || "",
-    images: venue.images || [],
-    amenities: venue.amenities || [],
-    status: venue.status || "draft"
+  const [formData, setFormData] = useState<VenueFormState>({
+    name: venue.name ?? "",
+    description: venue.description ?? "",
+    address: venue.address ?? "",
+    capacitySeated: venue.capacitySeated ? String(venue.capacitySeated) : "",
+    capacityStanding: venue.capacityStanding ? String(venue.capacityStanding) : "",
+    venueType: venue.venueType ?? "",
+    contactEmail: venue.contactEmail ?? "",
+    contactPhone: venue.contactPhone ?? "",
+    websiteUrl: venue.websiteUrl ?? "",
+    youtubeUrl: venue.videoUrl ?? "",
+    images: Array.isArray(venue.images) ? venue.images : [],
+    amenities: Array.isArray(venue.amenities) ? venue.amenities : [],
+    status: venue.status ?? "draft"
   })
 
 const venueTypes = [
@@ -106,7 +146,7 @@ const statusLabels: Record<string, string> = {
     }
   }
 
-  const handleChange = (field: string, value: string | number | string[]) => {
+  const handleChange = <Field extends keyof VenueFormState>(field: Field, value: VenueFormState[Field]) => {
     setFormData(prev => ({
       ...prev,
       [field]: value
@@ -178,7 +218,7 @@ const statusLabels: Record<string, string> = {
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {venue.inquiries?.slice(0, 3).map((inquiry: any) => (
+                  {venue.inquiries?.slice(0, 3).map((inquiry) => (
                     <div key={inquiry.id} className="border border-gray-200 rounded-lg p-3">
                       <div className="flex items-start justify-between mb-2">
                         <h4 className="text-sm font-medium text-gray-900">{inquiry.name}</h4>

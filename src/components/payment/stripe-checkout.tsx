@@ -10,12 +10,23 @@ import {
 } from '@stripe/react-stripe-js';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { CreditCard, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
+import { CreditCard, Loader2 } from 'lucide-react';
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
+type VenuePaymentMode = 'new' | 'claim';
+
+interface VenuePaymentData {
+  name: string;
+  userName?: string | null;
+  userEmail?: string | null;
+  userPhone?: string | null;
+  mode?: VenuePaymentMode;
+  [key: string]: unknown;
+}
+
 interface PaymentFormProps {
-  venueData: any;
+  venueData: VenuePaymentData;
   onPaymentSuccess: () => void;
   onPaymentError: (error: string) => void;
 }
@@ -25,7 +36,6 @@ function PaymentForm({ venueData, onPaymentSuccess, onPaymentError }: PaymentFor
   const elements = useElements();
   const [isProcessing, setIsProcessing] = useState(false);
   const [clientSecret, setClientSecret] = useState<string | null>(null);
-  const [paymentIntentId, setPaymentIntentId] = useState<string | null>(null);
   const isClaimSubmission = venueData?.mode === 'claim';
 
   useEffect(() => {
@@ -44,7 +54,6 @@ function PaymentForm({ venueData, onPaymentSuccess, onPaymentError }: PaymentFor
         
         if (response.ok) {
           setClientSecret(data.clientSecret);
-          setPaymentIntentId(data.paymentIntentId);
         } else {
           throw new Error(data.error);
         }
@@ -78,9 +87,9 @@ function PaymentForm({ venueData, onPaymentSuccess, onPaymentError }: PaymentFor
       payment_method: {
         card,
         billing_details: {
-          name: venueData.userName,
-          email: venueData.userEmail,
-          phone: venueData.userPhone || undefined,
+          name: typeof venueData.userName === 'string' && venueData.userName.trim().length > 0 ? venueData.userName : venueData.name,
+          email: venueData.userEmail ?? undefined,
+          phone: venueData.userPhone ?? undefined,
         },
       },
     });
@@ -234,7 +243,7 @@ function PaymentForm({ venueData, onPaymentSuccess, onPaymentError }: PaymentFor
 }
 
 interface StripeCheckoutProps {
-  venueData: any;
+  venueData: VenuePaymentData;
   onPaymentSuccess: () => void;
   onPaymentError: (error: string) => void;
 }

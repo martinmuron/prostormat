@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { useSession } from "next-auth/react"
 import { Button } from "@/components/ui/button"
 import { Heart } from "lucide-react"
@@ -13,18 +13,16 @@ interface HeartButtonProps {
 
 export function HeartButton({ venueId, className = "", size = "icon" }: HeartButtonProps) {
   const { data: session } = useSession()
+  const userId = session?.user?.id ?? null
   const [isFavorited, setIsFavorited] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [showLoginOverlay, setShowLoginOverlay] = useState(false)
 
-  // Check if venue is favorited when component mounts
-  useEffect(() => {
-    if (session?.user?.id && venueId) {
-      checkFavoriteStatus()
+  const checkFavoriteStatus = useCallback(async () => {
+    if (!userId) {
+      return
     }
-  }, [session?.user?.id, venueId])
 
-  const checkFavoriteStatus = async () => {
     try {
       const response = await fetch(`/api/venues/${venueId}/favorite`)
       if (response.ok) {
@@ -37,7 +35,14 @@ export function HeartButton({ venueId, className = "", size = "icon" }: HeartBut
     } catch (error) {
       console.error('Error checking favorite status:', error)
     }
-  }
+  }, [venueId, userId])
+
+  // Check if venue is favorited when component mounts
+  useEffect(() => {
+    if (userId && venueId) {
+      void checkFavoriteStatus()
+    }
+  }, [checkFavoriteStatus, userId, venueId])
 
   const toggleFavorite = async () => {
     if (!session?.user?.id) {

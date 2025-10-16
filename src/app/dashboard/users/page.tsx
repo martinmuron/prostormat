@@ -2,6 +2,7 @@ import { redirect } from "next/navigation"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { db } from "@/lib/db"
+import type { Prisma } from "@prisma/client"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -13,10 +14,29 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { Mail, User, Building, Calendar } from "lucide-react"
+import { User, Building } from "lucide-react"
 import Link from "next/link"
 
-async function getUsers() {
+
+type DashboardUserSummary = Prisma.UserGetPayload<{
+  select: {
+    id: true
+    name: true
+    email: true
+    role: true
+    company: true
+    phone: true
+    createdAt: true
+    _count: {
+      select: {
+        venues: true
+        eventRequests: true
+        venueInquiries: true
+      }
+    }
+  }
+}>
+async function getUsers(): Promise<DashboardUserSummary[]> {
   try {
     const users = await db.user.findMany({
       select: {

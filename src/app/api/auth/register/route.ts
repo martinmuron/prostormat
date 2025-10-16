@@ -8,7 +8,6 @@ const registerSchema = z.object({
   name: z.string().min(2, "Jméno musí mít alespoň 2 znaky"),
   email: z.string().email("Neplatná e-mailová adresa"),
   password: z.string().min(6, "Heslo musí mít alespoň 6 znaků"),
-  role: z.enum(["user", "venue_manager"]),
   company: z.string().optional(),
   phone: z.string().optional(),
 })
@@ -33,14 +32,14 @@ export async function POST(request: Request) {
     // Hash password
     const hashedPassword = await bcrypt.hash(validatedData.password, 12)
 
-    // Create user
+    // Create user (all users are "user" role by default)
     const user = await db.user.create({
       data: {
         id: crypto.randomUUID(),
         name: validatedData.name,
         email: validatedData.email,
         password: hashedPassword,
-        role: validatedData.role,
+        role: "user", // All registrations are "user" role
         company: validatedData.company || null,
         phone: validatedData.phone || null,
       },

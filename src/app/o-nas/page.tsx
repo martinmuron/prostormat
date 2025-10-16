@@ -1,4 +1,3 @@
-import Image from 'next/image'
 import { CheckCircle, Users, Building, Sparkles } from 'lucide-react'
 
 export default function AboutUsPage() {

@@ -98,7 +98,7 @@ export function AnimatedBackground() {
       ctx.fillRect(0, 0, canvas.width, canvas.height)
 
       // Update and draw orbs
-      orbs.forEach((orb, index) => {
+      orbs.forEach((orb) => {
         // Move towards target with mouse influence
         const mouseDistance = Math.sqrt((mouseX - orb.x) ** 2 + (mouseY - orb.y) ** 2)
         const mouseInfluence = Math.max(0, (200 - mouseDistance) / 200) * 0.02

@@ -265,7 +265,7 @@ export async function POST(request: Request) {
 
     // Create test user
     const testPassword = await bcrypt.hash('12345', 12)
-    const testUser = await prisma.user.upsert({
+    await prisma.user.upsert({
       where: { email: 'test@test.com' },
       update: {},
       create: {

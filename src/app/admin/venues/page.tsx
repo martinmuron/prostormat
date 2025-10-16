@@ -11,7 +11,6 @@ import {
   EyeOff,
   MapPin,
   Users,
-  Calendar,
   Loader2,
   Search,
   Filter,
@@ -31,6 +30,7 @@ interface Venue {
   capacityStanding?: string;
   venueType?: string;
   status: string;
+  paid: boolean;
   isRecommended: boolean;
   views: number;
   totalViews: number;
@@ -61,6 +61,7 @@ const [searchTerm, setSearchTerm] = useState('');
 const [statusFilter, setStatusFilter] = useState<string>('all');
 const [updatingVenueId, setUpdatingVenueId] = useState<string | null>(null);
 const [updatingPriorityId, setUpdatingPriorityId] = useState<string | null>(null);
+const [updatingPaidId, setUpdatingPaidId] = useState<string | null>(null);
   const HOMEPAGE_SLOT_COUNT = 12;
   const [homepageSlots, setHomepageSlots] = useState<(string | null)[]>(() =>
     Array.from({ length: HOMEPAGE_SLOT_COUNT }, () => null)
@@ -282,6 +283,37 @@ const [updatingPriorityId, setUpdatingPriorityId] = useState<string | null>(null
       alert('Došlo k chybě při změně priority prostoru.');
     } finally {
       setUpdatingPriorityId(null);
+    }
+  };
+
+  const toggleVenuePaid = async (venueId: string, currentPaid: boolean) => {
+    setUpdatingPaidId(venueId);
+
+    try {
+      const response = await fetch('/api/admin/venues/toggle-paid', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ venueId, paid: !currentPaid }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setVenues(prev => prev.map(venue =>
+          venue.id === venueId
+            ? { ...venue, paid: data.paid }
+            : venue
+        ));
+      } else {
+        alert(`Chyba při změně platby: ${data.error || data.message}`);
+      }
+    } catch (error) {
+      console.error('Error updating venue paid status:', error);
+      alert('Došlo k chybě při změně stavu platby.');
+    } finally {
+      setUpdatingPaidId(null);
     }
   };
 
@@ -511,6 +543,16 @@ const [updatingPriorityId, setUpdatingPriorityId] = useState<string | null>(null
                             <h3 className="text-xl font-semibold text-gray-900">
                               {venue.name}
                             </h3>
+                            {venue.paid && (
+                              <Badge variant="default" className="bg-green-100 text-green-800 border-green-200">
+                                Zaplaceno
+                              </Badge>
+                            )}
+                            {!venue.paid && (
+                              <Badge variant="outline" className="bg-gray-100 text-gray-600 border-gray-300">
+                                Nezaplaceno
+                              </Badge>
+                            )}
                             {venue.isRecommended && (
                               <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">
                                 Doporučený
@@ -661,6 +703,31 @@ const [updatingPriorityId, setUpdatingPriorityId] = useState<string | null>(null
                             <ExternalLink className="h-3 w-3" />
                             Zobrazit
                           </a>
+                        </Button>
+
+                        <Button
+                          variant={venue.paid ? "outline" : "default"}
+                          size="sm"
+                          onClick={() => toggleVenuePaid(venue.id, venue.paid)}
+                          disabled={updatingPaidId === venue.id}
+                          className={`w-full ${venue.paid ? '' : 'bg-green-600 hover:bg-green-700'}`}
+                        >
+                          {updatingPaidId === venue.id ? (
+                            <span className="flex items-center gap-1">
+                              <Loader2 className="h-3 w-3 animate-spin" />
+                              Ukládám...
+                            </span>
+                          ) : venue.paid ? (
+                            <span className="flex items-center gap-1">
+                              <CheckCircle className="h-3 w-3" />
+                              Zrušit platbu
+                            </span>
+                          ) : (
+                            <span className="flex items-center gap-1">
+                              <CheckCircle className="h-3 w-3" />
+                              Označit jako zaplaceno
+                            </span>
+                          )}
                         </Button>
 
                         {venue.status === 'pending' && (

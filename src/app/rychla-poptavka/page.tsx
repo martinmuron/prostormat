@@ -2,7 +2,6 @@
 
 import { useState } from "react"
 import { useSession } from "next-auth/react"
-import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -10,11 +9,9 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Label } from "@/components/ui/label"
-import { Badge } from "@/components/ui/badge"
 import { LoginModal } from "@/components/auth/login-modal"
-import { EVENT_TYPES } from "@/types"
-import type { EventType } from "@/types"
-import { Calendar, Users, MapPin, Euro, Clock, Send, Zap, CheckCircle, LogIn } from "lucide-react"
+import { EVENT_TYPES, LOCATION_OPTIONS } from "@/types"
+import { Clock, Send, Zap, CheckCircle, LogIn } from "lucide-react"
 
 interface QuickRequestFormData {
   eventType: string
@@ -46,16 +43,8 @@ const BUDGET_RANGES = [
   { label: "Domluvíme se", value: "negotiable" },
 ]
 
-const LOCATIONS = [
-  "Praha 1", "Praha 2", "Praha 3", "Praha 4", "Praha 5",
-  "Praha 6", "Praha 7", "Praha 8", "Praha 9", "Praha 10",
-  "Brno", "Ostrava", "Plzeň", "České Budějovice",
-  "Hradec Králové", "Pardubice", "Zlín", "Karlovy Vary", "Liberec"
-]
-
 export default function QuickRequestPage() {
   const { data: session, status } = useSession()
-  const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
   const [sentToCount, setSentToCount] = useState(0)
@@ -356,7 +345,7 @@ export default function QuickRequestPage() {
                       <SelectValue placeholder="Vyberte lokalitu" />
                     </SelectTrigger>
                     <SelectContent>
-                      {LOCATIONS.map(location => (
+                      {LOCATION_OPTIONS.map(location => (
                         <SelectItem key={location} value={location}>{location}</SelectItem>
                       ))}
                     </SelectContent>

@@ -167,7 +167,8 @@ export async function POST(request: NextRequest) {
       }
 
       const claimId = nanoid();
-      const { userPassword: _omittedPassword, ...safeSubmissionData } = venueData;
+      const { userPassword, ...safeSubmissionData } = venueData
+      void userPassword
 
       const claimRecord = await prisma.venueClaim.create({
         data: {
@@ -180,6 +181,15 @@ export async function POST(request: NextRequest) {
             mode: submissionMode,
             submittedAt: now.toISOString(),
           }),
+        },
+      });
+
+      // Mark venue as paid after successful payment
+      await prisma.venue.update({
+        where: { id: existingVenue.id },
+        data: {
+          paid: true,
+          paymentDate: now,
         },
       });
 
@@ -292,6 +302,7 @@ export async function POST(request: NextRequest) {
         videoUrl: venueData.videoUrl || null,
         musicAfter10: venueData.musicAfter10 || false,
         status: 'pending', // Requires admin approval
+        paid: true, // Mark as paid after successful payment
         managerId: userId,
         paymentDate: now,
         expiresAt: new Date(now.getTime() + 365 * 24 * 60 * 60 * 1000),

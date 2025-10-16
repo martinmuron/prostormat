@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/lib/auth"
 import { db } from "@/lib/db"
+import { Prisma } from "@prisma/client"
 import { z } from "zod"
 
 const updateUserSchema = z.object({
@@ -66,7 +67,7 @@ export async function PATCH(
       return NextResponse.json({ error: "Invalid data", details: error.issues }, { status: 422 })
     }
 
-    if (error && typeof error === "object" && "code" in error && (error as any).code === "P2002") {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
       return NextResponse.json({ error: "Email is already in use" }, { status: 409 })
     }
 

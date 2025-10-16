@@ -4,21 +4,14 @@ import { useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { 
-  Eye, 
-  Heart, 
-  MessageSquare, 
-  TrendingUp, 
-  TrendingDown,
+import {
+  MessageSquare,
   Calendar,
   Clock,
   Users,
   Mail,
   Phone,
-  BarChart3,
-  Activity,
-  Star,
-  MapPin
+  Activity
 } from 'lucide-react';
 import { formatDate } from '@/lib/utils';
 

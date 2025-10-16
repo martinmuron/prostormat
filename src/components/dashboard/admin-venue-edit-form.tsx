@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { ImageManager } from "@/components/ui/image-manager"
@@ -15,19 +15,11 @@ import { AmenitiesManager } from "@/components/ui/amenities-manager"
 import { Switch } from "@/components/ui/switch"
 import { Label } from "@/components/ui/label"
 import {
-  Building,
-  MapPin,
-  Users,
-  Mail,
-  Phone,
-  Globe,
   Save,
   Eye,
   MessageSquare,
-  Calendar,
   Settings,
   Camera,
-  Video,
   Star,
   BarChart3,
   Monitor,
@@ -37,8 +29,81 @@ import {
   ArrowLeft
 } from "lucide-react"
 
+type ClaimantInfo = {
+  name?: string | null
+  email?: string | null
+}
+
+type VenueClaimSummary = {
+  id: string
+  status: string
+  createdAt: string
+  claimant?: ClaimantInfo | null
+}
+
+type VenueManagerInfo = {
+  id: string
+  name?: string | null
+  email?: string | null
+}
+
+interface AdminVenue {
+  id: string
+  slug: string
+  name: string
+  description?: string | null
+  address?: string | null
+  district?: string | null
+  capacitySeated?: number | null
+  capacityStanding?: number | null
+  venueType?: string | null
+  contactEmail?: string | null
+  contactPhone?: string | null
+  websiteUrl?: string | null
+  instagramUrl?: string | null
+  videoUrl?: string | null
+  youtubeUrl?: string | null
+  musicAfter10?: boolean | null
+  images: string[]
+  amenities: string[]
+  status: string
+  isRecommended?: boolean | null
+  priority?: number | null
+  managerId?: string | null
+  manager?: VenueManagerInfo | null
+  claims?: VenueClaimSummary[]
+  totalViews?: number | null
+  _count?: {
+    inquiries: number
+  }
+  createdAt: string | Date
+  updatedAt: string | Date
+}
+
+interface AdminVenueFormState {
+  name: string
+  description: string
+  address: string
+  district: string
+  capacitySeated: string
+  capacityStanding: string
+  venueType: string
+  contactEmail: string
+  contactPhone: string
+  websiteUrl: string
+  instagramUrl: string
+  youtubeUrl: string
+  musicAfter10: boolean
+  images: string[]
+  amenities: string[]
+  status: string
+  isRecommended: boolean
+  priority: number | null
+  managerId: string
+}
+
 interface AdminVenueEditFormProps {
-  venue: any
+  venue: AdminVenue
 }
 
 export function AdminVenueEditForm({ venue }: AdminVenueEditFormProps) {
@@ -49,28 +114,28 @@ export function AdminVenueEditForm({ venue }: AdminVenueEditFormProps) {
   const [errorMessage, setErrorMessage] = useState("")
   const [managerEmail, setManagerEmail] = useState(venue.manager?.email || "")
   const [managerPassword, setManagerPassword] = useState("")
-  const pendingClaims = Array.isArray(venue.claims) ? venue.claims : []
+  const pendingClaims = venue.claims ?? []
 
-  const [formData, setFormData] = useState({
-    name: venue.name || "",
-    description: venue.description || "",
-    address: venue.address || "",
-    district: venue.district || "",
-    capacitySeated: venue.capacitySeated?.toString() || "",
-    capacityStanding: venue.capacityStanding?.toString() || "",
-    venueType: venue.venueType || "",
-    contactEmail: venue.contactEmail || "",
-    contactPhone: venue.contactPhone || "",
-    websiteUrl: venue.websiteUrl || "",
-    instagramUrl: venue.instagramUrl || "",
-    youtubeUrl: venue.videoUrl || venue.youtubeUrl || "",
-    musicAfter10: venue.musicAfter10 || false,
-    images: venue.images || [],
-    amenities: venue.amenities || [],
-    status: venue.status || "draft",
-    isRecommended: venue.isRecommended || false,
+  const [formData, setFormData] = useState<AdminVenueFormState>({
+    name: venue.name ?? "",
+    description: venue.description ?? "",
+    address: venue.address ?? "",
+    district: venue.district ?? "",
+    capacitySeated: venue.capacitySeated?.toString() ?? "",
+    capacityStanding: venue.capacityStanding?.toString() ?? "",
+    venueType: venue.venueType ?? "",
+    contactEmail: venue.contactEmail ?? "",
+    contactPhone: venue.contactPhone ?? "",
+    websiteUrl: venue.websiteUrl ?? "",
+    instagramUrl: venue.instagramUrl ?? "",
+    youtubeUrl: venue.videoUrl ?? venue.youtubeUrl ?? "",
+    musicAfter10: !!venue.musicAfter10,
+    images: Array.isArray(venue.images) ? venue.images : [],
+    amenities: Array.isArray(venue.amenities) ? venue.amenities : [],
+    status: venue.status ?? "draft",
+    isRecommended: !!venue.isRecommended,
     priority: typeof venue.priority === "number" ? venue.priority : null,
-    managerId: venue.managerId || ""
+    managerId: venue.managerId ?? ""
   })
 
   const venueTypes = [
@@ -203,7 +268,7 @@ export function AdminVenueEditForm({ venue }: AdminVenueEditFormProps) {
     }
   }
 
-  const handleChange = (field: string, value: string | number | string[] | boolean | null) => {
+  const handleChange = <Field extends keyof AdminVenueFormState>(field: Field, value: AdminVenueFormState[Field]) => {
     setFormData(prev => ({
       ...prev,
       [field]: value
@@ -589,7 +654,7 @@ export function AdminVenueEditForm({ venue }: AdminVenueEditFormProps) {
                           Čekající žádosti o převzetí ({pendingClaims.length})
                         </h4>
                         <div className="space-y-3">
-                          {pendingClaims.map((claim: any) => (
+                          {pendingClaims.map((claim) => (
                             <div key={claim.id} className="bg-white rounded-lg border border-purple-100 p-3">
                               <div className="flex items-center justify-between">
                                 <div>

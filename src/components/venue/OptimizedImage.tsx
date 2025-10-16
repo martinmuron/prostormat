@@ -83,26 +83,40 @@ export function OptimizedImage({
     );
   }
 
-  const imageProps: any = {
-    src: error ? fallbackUrl : imageUrl,
+  const imageSrc = error ? fallbackUrl : imageUrl;
+
+  const baseProps = {
+    src: imageSrc,
     alt,
     className,
     priority,
     onError: () => setError(true),
     onClick,
-    // Enable Next.js Image optimization
     unoptimized: false,
-  };
+  } as const;
 
   if (fill) {
-    imageProps.fill = true;
-    imageProps.style = { objectFit: 'cover' };
-  } else if (width && height) {
-    imageProps.width = width;
-    imageProps.height = height;
+    return (
+      <Image
+        {...baseProps}
+        alt={alt}
+        fill
+        style={{ objectFit: 'cover' }}
+      />
+    );
   }
 
-  return <Image {...imageProps} />;
+  const resolvedWidth = width ?? 800;
+  const resolvedHeight = height ?? 600;
+
+  return (
+    <Image
+      {...baseProps}
+      alt={alt}
+      width={resolvedWidth}
+      height={resolvedHeight}
+    />
+  );
 }
 
 /**

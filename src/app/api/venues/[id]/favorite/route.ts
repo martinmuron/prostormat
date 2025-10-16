@@ -2,7 +2,6 @@ import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { db } from '@/lib/db'
-import { randomUUID } from 'crypto'
 
 interface RouteContext {
   params: Promise<{ id: string }>
@@ -65,8 +64,7 @@ export async function DELETE(request: Request, { params }: RouteContext) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const resolvedParams = await params
-    const venueId = resolvedParams.id
+    await params
 
     // TODO: Fix VenueFavorite model - temporarily disabled for deployment
     // Remove from favorites
@@ -91,8 +89,7 @@ export async function GET(request: Request, { params }: RouteContext) {
       return NextResponse.json({ isFavorited: false })
     }
 
-    const resolvedParams = await params
-    const venueId = resolvedParams.id
+    await params
 
     // TODO: Fix VenueFavorite model - temporarily disabled for deployment
     // const favorite = await db.venueFavorite.findUnique({

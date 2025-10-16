@@ -32,7 +32,7 @@ export default function OrganizeEventPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
 
-  const { register, handleSubmit, formState: { errors }, reset, setValue, watch } = useForm<FormValues>({
+  const { register, handleSubmit, formState: { errors }, reset, setValue } = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       guestCount: 30,

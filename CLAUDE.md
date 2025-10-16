@@ -106,16 +106,24 @@ The platform includes a comprehensive mailing system that automatically sends em
 - Email sent to each matching venue's contact email
 - All sends are logged in `VenueBroadcastLog` table
 
-#### 2. Quick Request Emails  
-**Trigger**: When a user submits a quick request form
-**Recipients**: Matching venue owners/managers  
+#### 2. Quick Request Emails
+**Trigger**: When a user submits a quick request form at `/rychla-poptavka`
+**Recipients**: Matching venue owners/managers (sent to `venue.contactEmail`)
+**Template**: `generateQuickRequestVenueNotificationEmail()` in `/src/lib/email-templates.ts`
 **API**: `/api/quick-request`
 
 **When emails are sent**:
 - User submits quick request form (rapid venue inquiry)
-- System matches venues based on criteria
-- Emails sent to matching venues
-- Sends are tracked in broadcast system
+- System finds venues matching: location preference + active status + has contactEmail
+- Email sent to each venue's `contactEmail` (NOT manager email)
+- Tracked in both `VenueBroadcastLog` and `EmailFlowLog` tables
+- Resend email ID stored for delivery tracking
+
+**Matching criteria**:
+- Venue status = "active"
+- Venue address contains location preference (case-insensitive)
+- Venue has contactEmail (not null)
+- Venue has capacity information (standing OR seated capacity > 0)
 
 ### Database Tables
 

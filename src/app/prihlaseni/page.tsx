@@ -1,12 +1,12 @@
 "use client"
 
 import { useState, Suspense } from "react"
-import { signIn, getSession } from "next-auth/react"
+import { signIn } from "next-auth/react"
 import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Logo } from "@/components/ui/logo"
 
 function SignInForm() {
@@ -42,6 +42,7 @@ function SignInForm() {
         router.push(callbackUrl)
       }
     } catch (error) {
+      console.error("Failed to sign in:", error)
       setError("Došlo k chybě při přihlašování")
     } finally {
       setIsLoading(false)
@@ -53,6 +54,7 @@ function SignInForm() {
     try {
       await signIn("google", { callbackUrl })
     } catch (error) {
+      console.error("Failed to sign in with Google:", error)
       setError("Došlo k chybě při přihlašování")
       setIsLoading(false)
     }
@@ -84,7 +86,7 @@ function SignInForm() {
                   <h3 className="text-sm sm:text-callout font-medium text-green-800">Účet úspěšně vytvořen!</h3>
                 </div>
                 <p className="text-xs sm:text-caption text-green-700 leading-relaxed">
-                  Váš účet a prostor "{decodeURIComponent(venue)}" byly úspěšně vytvořeny. 
+                  Váš účet a prostor &quot;{decodeURIComponent(venue)}&quot; byly úspěšně vytvořeny. 
                   Nyní se přihlaste a začněte spravovat svůj prostor.
                 </p>
               </div>

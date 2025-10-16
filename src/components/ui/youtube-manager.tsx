@@ -6,7 +6,6 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { 
   Video, 
-  Play, 
   X, 
   ExternalLink, 
   CheckCircle, 
@@ -95,7 +94,7 @@ export function YouTubeManager({ videoUrl, onVideoChange }: YouTubeManagerProps)
       };
       img.src = info.thumbnail;
 
-    } catch (err) {
+    } catch {
       setError('Chyba při ověřování videa.');
       setVideoInfo(null);
       setIsValidating(false);

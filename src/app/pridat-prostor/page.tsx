@@ -6,6 +6,7 @@ import { useSession } from "next-auth/react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -20,20 +21,15 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { VENUE_TYPES } from "@/types"
+import { VENUE_TYPES, LOCATION_OPTIONS } from "@/types"
 import { 
   Upload, 
   X, 
   MapPin, 
   Users, 
-  Euro, 
   Palette, 
   Phone, 
-  Mail, 
-  Globe, 
   Video,
-  Plus,
-  Minus,
   CheckCircle,
   AlertCircle,
   CreditCard,
@@ -569,7 +565,7 @@ export default function AddVenuePage() {
                 <AlertCircle className="h-5 w-5 text-yellow-600 mt-0.5 flex-shrink-0" />
                 <div>
                   <p className="text-sm sm:text-callout text-yellow-800 font-medium mb-1">
-                    Prostor "{claimInfo.name}" již na platformě máme.
+                    Prostor &quot;{claimInfo.name}&quot; již na platformě máme.
                   </p>
                   <p className="text-sm text-yellow-700">
                     Pokračováním odešlete žádost o převzetí existujícího listingu. Po schválení vám prostor přiřadíme k úpravám.
@@ -776,7 +772,7 @@ export default function AddVenuePage() {
                     <SelectValue placeholder="Vyberte městskou část" />
                   </SelectTrigger>
                   <SelectContent>
-                    {['Praha 1', 'Praha 2', 'Praha 3', 'Praha 4', 'Praha 5', 'Praha 6', 'Praha 7', 'Praha 8', 'Praha 9', 'Praha 10', 'Praha 11', 'Praha 12', 'Praha 13', 'Praha 14', 'Praha 15'].map((district) => (
+                    {LOCATION_OPTIONS.map((district) => (
                       <SelectItem key={district} value={district}>
                         {district}
                       </SelectItem>
@@ -1052,10 +1048,13 @@ export default function AddVenuePage() {
                     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
                       {imageUrls.map((url, index) => (
                         <div key={index} className="relative">
-                          <img
+                          <Image
                             src={url}
-                            alt={`Preview ${index + 1}`}
+                            alt={`Náhled obrázku ${index + 1}`}
+                            width={400}
+                            height={300}
                             className="w-full h-24 sm:h-32 object-cover rounded-lg border border-gray-200"
+                            unoptimized
                           />
                           <button
                             type="button"

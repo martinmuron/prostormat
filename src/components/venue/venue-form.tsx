@@ -9,22 +9,52 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { VENUE_TYPES } from "@/types"
 
-type VenueFormProps = {
-  venue: any
+type VenueStatusOption = 'draft' | 'pending' | 'published' | 'hidden' | 'active'
+
+interface VenueFormValues {
+  id: string
+  name?: string | null
+  description?: string | null
+  address?: string | null
+  district?: string | null
+  venueType?: string | null
+  contactEmail?: string | null
+  contactPhone?: string | null
+  status?: string | null
 }
+
+interface VenueFormState {
+  name: string
+  description: string
+  address: string
+  district: string
+  venueType: string
+  contactEmail: string
+  contactPhone: string
+  status: VenueStatusOption
+}
+
+type VenueFormProps = {
+  venue: VenueFormValues
+}
+
+const VENUE_STATUS_OPTIONS: VenueStatusOption[] = ['draft', 'pending', 'published', 'hidden', 'active']
+
+const normalizeStatus = (status: string | null | undefined): VenueStatusOption =>
+  VENUE_STATUS_OPTIONS.includes(status as VenueStatusOption) ? (status as VenueStatusOption) : 'draft'
 
 export function VenueForm({ venue }: VenueFormProps) {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
-  const [formData, setFormData] = useState({
-    name: venue.name || "",
-    description: venue.description || "",
-    address: venue.address || "",
-    district: venue.district || "",
-    venueType: venue.venueType || "",
-    contactEmail: venue.contactEmail || "",
-    contactPhone: venue.contactPhone || "",
-    status: venue.status || "draft",
+  const [formData, setFormData] = useState<VenueFormState>({
+    name: venue.name ?? "",
+    description: venue.description ?? "",
+    address: venue.address ?? "",
+    district: venue.district ?? "",
+    venueType: venue.venueType ?? "",
+    contactEmail: venue.contactEmail ?? "",
+    contactPhone: venue.contactPhone ?? "",
+    status: normalizeStatus(venue.status),
   })
 
   async function handleSubmit(e: React.FormEvent) {
@@ -48,7 +78,7 @@ export function VenueForm({ venue }: VenueFormProps) {
     }
   }
 
-  function handleChange(field: string, value: string) {
+  function handleChange<Field extends keyof VenueFormState>(field: Field, value: VenueFormState[Field]) {
     setFormData(prev => ({ ...prev, [field]: value }))
   }
 
@@ -122,7 +152,7 @@ export function VenueForm({ venue }: VenueFormProps) {
           <select
             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
             value={formData.status}
-            onChange={(e) => handleChange('status', e.target.value)}
+            onChange={(e) => handleChange('status', e.target.value as VenueStatusOption)}
           >
             <option value="draft">Koncept</option>
             <option value="pending">Čeká na schválení</option>

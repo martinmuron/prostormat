@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, useCallback } from 'react'
 import { VenueCard } from '@/components/venue/venue-card'
 
 interface Venue {
@@ -48,32 +48,7 @@ export function InfiniteVenueList({
     setHasMore(initialHasMore)
   }, [initialVenues, initialHasMore, orderSeed])
 
-  // Load more venues when user scrolls near the bottom
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const target = entries[0]
-        if (target.isIntersecting && hasMore && !loading) {
-          loadMoreVenues()
-        }
-      },
-      {
-        rootMargin: '200px', // Load 200px before reaching the bottom
-      }
-    )
-
-    if (loadMoreRef.current) {
-      observer.observe(loadMoreRef.current)
-    }
-
-    return () => {
-      if (loadMoreRef.current) {
-        observer.unobserve(loadMoreRef.current)
-      }
-    }
-  }, [hasMore, loading, page, orderSeed])
-
-  const loadMoreVenues = async () => {
+  const loadMoreVenues = useCallback(async () => {
     if (loading || !hasMore) return
 
     setLoading(true)
@@ -104,7 +79,34 @@ export function InfiniteVenueList({
     } finally {
       setLoading(false)
     }
-  }
+  }, [hasMore, loading, orderSeed, page, searchParams])
+
+  // Load more venues when user scrolls near the bottom
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const target = entries[0]
+        if (target.isIntersecting && hasMore && !loading) {
+          void loadMoreVenues()
+        }
+      },
+      {
+        rootMargin: '200px', // Load 200px before reaching the bottom
+      }
+    )
+
+    const node = loadMoreRef.current
+
+    if (node) {
+      observer.observe(node)
+    }
+
+    return () => {
+      if (node) {
+        observer.unobserve(node)
+      }
+    }
+  }, [hasMore, loadMoreVenues, loading])
 
   return (
     <>

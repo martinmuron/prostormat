@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import type { Metadata } from "next"
+import Image from "next/image"
 import { VenueGallery } from "@/components/venue/venue-gallery"
 import { VenueContactForm } from "@/components/forms/venue-contact-form"
 import { HeartButton } from "@/components/venue/heart-button"
@@ -8,7 +9,6 @@ import { GoogleVenueMap } from "@/components/maps/google-venue-map"
 import { RelatedVenues } from "@/components/venue/related-venues"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
 import { db } from "@/lib/db"
 import { VENUE_TYPES } from "@/types"
 import type { VenueType } from "@/types"
@@ -257,9 +257,15 @@ export default async function VenueDetailPage({
                           href={`/prostory/${subVenue.slug}`}
                           className="block border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg transition-shadow duration-300"
                         >
-                          <div className="aspect-[4/3] bg-gray-100">
+                          <div className="aspect-[4/3] bg-gray-100 relative">
                             {image ? (
-                              <img src={image} alt={subVenue.name} className="w-full h-full object-cover" />
+                              <Image
+                                src={image}
+                                alt={subVenue.name}
+                                fill
+                                sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
+                                className="object-cover"
+                              />
                             ) : (
                               <div className="w-full h-full flex items-center justify-center text-gray-400 text-sm">
                                 Bez fotografie

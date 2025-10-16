@@ -12,7 +12,7 @@ export async function uploadVenueImages(files: File[], venueId: string): Promise
     const filePath = `venue-images/${fileName}`
 
     try {
-      const { data, error } = await supabase.storage
+      const { error } = await supabase.storage
         .from('venues')
         .upload(filePath, file, {
           cacheControl: '3600',

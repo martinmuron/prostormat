@@ -1,18 +1,16 @@
 "use client"
 
 import { useState, useCallback, useRef } from 'react';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { 
   Upload, 
   X, 
-  Image as ImageIcon, 
   Star, 
   Move, 
   FileImage,
-  AlertCircle,
-  CheckCircle2
 } from 'lucide-react';
 
 interface ImageManagerProps {
@@ -294,10 +292,12 @@ export function ImageManager({
               >
                 <CardContent className="p-0">
                   <div className="aspect-square relative">
-                    <img
+                    <Image
                       src={image}
                       alt={`Obrázek ${index + 1}`}
+                      fill
                       className="w-full h-full object-cover"
+                      sizes="(max-width: 768px) 50vw, 200px"
                     />
                     
                     {/* Main Image Badge */}

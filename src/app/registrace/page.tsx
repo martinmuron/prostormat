@@ -6,7 +6,6 @@ import { signIn } from "next-auth/react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardContent } from "@/components/ui/card"
 import { Logo } from "@/components/ui/logo"
 
@@ -18,7 +17,6 @@ export default function RegisterPage() {
     email: "",
     password: "",
     confirmPassword: "",
-    role: "user",
     company: "",
     phone: "",
   })
@@ -52,7 +50,6 @@ export default function RegisterPage() {
           name: formData.name,
           email: formData.email,
           password: formData.password,
-          role: formData.role,
           company: formData.company || null,
           phone: formData.phone || null,
         }),
@@ -76,6 +73,7 @@ export default function RegisterPage() {
         setError(data.error || "Došlo k chybě při registraci")
       }
     } catch (error) {
+      console.error("Failed to register user:", error)
       setError("Došlo k chybě při registraci")
     } finally {
       setIsLoading(false)
@@ -87,6 +85,7 @@ export default function RegisterPage() {
     try {
       await signIn("google", { callbackUrl: "/dashboard" })
     } catch (error) {
+      console.error("Failed to initiate Google sign-up:", error)
       setError("Došlo k chybě při registraci")
       setIsLoading(false)
     }
@@ -142,35 +141,15 @@ export default function RegisterPage() {
 
               <div>
                 <label className="block text-callout font-medium text-black mb-2">
-                  Typ účtu *
+                  Společnost
                 </label>
-                <Select
-                  value={formData.role}
-                  onValueChange={(value) => setFormData(prev => ({ ...prev, role: value }))}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Vyberte typ účtu" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="user">Organizátor akcí</SelectItem>
-                    <SelectItem value="venue_manager">Provozovatel prostoru</SelectItem>
-                  </SelectContent>
-                </Select>
+                <Input
+                  type="text"
+                  value={formData.company}
+                  onChange={(e) => setFormData(prev => ({ ...prev, company: e.target.value }))}
+                  placeholder="Název společnosti"
+                />
               </div>
-
-              {formData.role === "user" && (
-                <div>
-                  <label className="block text-callout font-medium text-black mb-2">
-                    Společnost
-                  </label>
-                  <Input
-                    type="text"
-                    value={formData.company}
-                    onChange={(e) => setFormData(prev => ({ ...prev, company: e.target.value }))}
-                    placeholder="Název společnosti"
-                  />
-                </div>
-              )}
 
               <div>
                 <label className="block text-callout font-medium text-black mb-2">

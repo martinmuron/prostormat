@@ -46,8 +46,8 @@ export default function PrivacyPolicyPage() {
                 <div className="bg-white rounded-2xl shadow-2xl border border-gray-100 p-8 hover-lift">
                   <h2 className="text-2xl font-bold text-gray-900 mb-6">1. Úvodní informace</h2>
                   <p className="text-gray-700 mb-6">
-                    Tato zásada ochrany osobních údajů (dále jen "Zásada") informuje o tom, 
-                    jakým způsobem společnost ProstorMat s.r.o. (dále jen "Správce") zpracovává 
+                    Tato zásada ochrany osobních údajů (dále jen &quot;Zásada&quot;) informuje o tom, 
+                    jakým způsobem společnost ProstorMat s.r.o. (dále jen &quot;Správce&quot;) zpracovává 
                     osobní údaje uživatelů platformy ProstorMat v souladu s nařízením GDPR 
                     a zákonem o ochraně osobních údajů.
                   </p>

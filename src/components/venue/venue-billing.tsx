@@ -20,6 +20,14 @@ const billingSchema = z.object({
   expiresAt: z.string().optional(),
 })
 
+const SUBSCRIPTION_STATUSES = ["active", "past_due", "canceled", "unpaid"] as const
+
+type SubscriptionStatusOption = (typeof SUBSCRIPTION_STATUSES)[number]
+
+function isSubscriptionStatus(value: unknown): value is SubscriptionStatusOption {
+  return typeof value === "string" && SUBSCRIPTION_STATUSES.includes(value as SubscriptionStatusOption)
+}
+
 type VenueBillingProps = {
   venue: {
     id: string
@@ -43,7 +51,7 @@ export function VenueBilling({ venue }: VenueBillingProps) {
       billingAddress: venue.billingAddress || "",
       taxId: venue.taxId || "",
       vatId: venue.vatId || "",
-      subscriptionStatus: venue.subscriptionStatus as any || "",
+      subscriptionStatus: isSubscriptionStatus(venue.subscriptionStatus) ? venue.subscriptionStatus : "",
       expiresAt: venue.expiresAt ? new Date(venue.expiresAt).toISOString().split('T')[0] : "",
     },
   })

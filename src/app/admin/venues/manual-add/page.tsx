@@ -16,8 +16,6 @@ import {
   MapPin,
   Users,
   Phone,
-  Mail,
-  Globe,
   Calendar,
   CreditCard,
   User,
@@ -102,12 +100,7 @@ export default function ManualAddVenuePage() {
 
   const musicAfter10 = watch("musicAfter10")
 
-  // Load users when component mounts
-  React.useEffect(() => {
-    loadUsers()
-  }, [])
-
-  const loadUsers = async () => {
+  const loadUsers = React.useCallback(async () => {
     setLoadingUsers(true)
     try {
       const response = await fetch('/api/admin/users')
@@ -132,7 +125,13 @@ export default function ManualAddVenuePage() {
     } finally {
       setLoadingUsers(false)
     }
-  }
+  }, [getValues, setValue])
+
+  React.useEffect(() => {
+    void loadUsers()
+  }, [loadUsers])
+
+  const musicAfter10 = watch("musicAfter10")
 
   const toggleAmenity = (amenity: string) => {
     setAmenities(prev =>
@@ -166,7 +165,7 @@ export default function ManualAddVenuePage() {
         throw new Error(errorData.error || 'Nepodařilo se vytvořit prostor')
       }
 
-      const result = await response.json()
+      await response.json()
       toast.success('Prostor byl úspěšně vytvořen')
       router.push('/admin/venues')
     } catch (error) {

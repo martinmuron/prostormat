@@ -4,22 +4,27 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { formatDate } from "@/lib/utils"
 import { Building, MessageSquare, Eye, Plus, Calendar, Settings, CreditCard, Users, TrendingUp, Clock } from "lucide-react"
+import type { VenueManagerDashboardData } from "@/types/dashboard"
 
 interface VenueManagerDashboardProps {
-  data: {
-    user: any
-    venues?: any[]
-    stats: {
-      totalVenues: number
-      activeVenues: number
-      totalInquiries: number
-    }
-  }
+  data: VenueManagerDashboardData
 }
 
 export function VenueManagerDashboard({ data }: VenueManagerDashboardProps) {
-  const { user, venues: rawVenues = [], stats } = data
-  const venues = Array.isArray(rawVenues) ? rawVenues : []
+  const { user, venues, stats } = data
+
+  type VenueInquiryEntry = VenueManagerDashboardData['venues'][number]['inquiries'][number]
+
+  type RecentInquiry = VenueInquiryEntry & { venueName: string }
+
+  const recentInquiries: RecentInquiry[] = venues
+    .flatMap((venue) =>
+      (venue.inquiries ?? []).map((inquiry) => ({
+        ...inquiry,
+        venueName: venue.name ?? ''
+      }))
+    )
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
 
   const statusLabelMap: Record<string, { label: string; isActive: boolean }> = {
     published: { label: "Zveřejněno", isActive: true },
@@ -172,7 +177,7 @@ export function VenueManagerDashboard({ data }: VenueManagerDashboardProps) {
               </div>
             ) : (
               <div className="space-y-4">
-                {venues.slice(0, 3).map((venue: any) => {
+                {venues.slice(0, 3).map((venue) => {
                   const statusMeta = statusLabelMap[venue.status] || { label: venue.status, isActive: false }
                   const isActive = statusMeta.isActive
 
@@ -227,7 +232,7 @@ export function VenueManagerDashboard({ data }: VenueManagerDashboardProps) {
             <CardTitle className="text-gray-900">Nedávné dotazy</CardTitle>
           </CardHeader>
           <CardContent>
-            {venues.every(v => !v.inquiries?.length) ? (
+            {recentInquiries.length === 0 ? (
               <div className="text-center py-8">
                 <MessageSquare className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                 <p className="text-body text-gray-600">
@@ -236,42 +241,33 @@ export function VenueManagerDashboard({ data }: VenueManagerDashboardProps) {
               </div>
             ) : (
               <div className="space-y-4">
-                {venues
-                  .flatMap(venue => 
-                    (venue.inquiries || []).map((inquiry: any) => ({
-                      ...inquiry,
-                      venueName: venue.name
-                    }))
-                  )
-                  .sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-                  .slice(0, 5)
-                  .map((inquiry: any) => (
-                    <div key={inquiry.id} className="border border-gray-200 rounded-xl p-4 hover:shadow-md transition-shadow">
-                      <div className="flex items-start justify-between mb-2">
-                        <div>
-                          <h4 className="text-callout font-medium text-gray-900">{inquiry.name}</h4>
-                          <p className="text-caption text-gray-600">{inquiry.venueName}</p>
-                        </div>
-                        <Badge variant="secondary" className="bg-blue-100 text-blue-800 text-xs">
-                          Nový
-                        </Badge>
+                {recentInquiries.slice(0, 5).map((inquiry) => (
+                  <div key={inquiry.id} className="border border-gray-200 rounded-xl p-4 hover:shadow-md transition-shadow">
+                    <div className="flex items-start justify-between mb-2">
+                      <div>
+                        <h4 className="text-callout font-medium text-gray-900">{inquiry.name}</h4>
+                        <p className="text-caption text-gray-600">{inquiry.venueName}</p>
                       </div>
-                      <p className="text-caption text-gray-700 mb-3 line-clamp-2">
-                        {inquiry.message}
-                      </p>
-                      <div className="flex items-center justify-between">
-                        <p className="text-caption text-gray-500">
-                          {formatDate(new Date(inquiry.createdAt))}
-                        </p>
-                        <a 
-                          href={`mailto:${inquiry.email}`}
-                          className="text-caption bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition-colors"
-                        >
-                          Odpovědět
-                        </a>
-                      </div>
+                      <Badge variant="secondary" className="bg-blue-100 text-blue-800 text-xs">
+                        Nový
+                      </Badge>
                     </div>
-                  ))}
+                    <p className="text-caption text-gray-700 mb-3 line-clamp-2">
+                      {inquiry.message}
+                    </p>
+                    <div className="flex items-center justify-between">
+                      <p className="text-caption text-gray-500">
+                        {formatDate(new Date(inquiry.createdAt))}
+                      </p>
+                      <a 
+                        href={`mailto:${inquiry.email}`}
+                        className="text-caption bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition-colors"
+                      >
+                        Odpovědět
+                      </a>
+                    </div>
+                  </div>
+                ))}
                 <Link href="/dashboard/inquiries">
                   <Button variant="secondary" size="sm" className="w-full text-gray-700 border-gray-300 hover:bg-gray-50">
                     Zobrazit všechny dotazy

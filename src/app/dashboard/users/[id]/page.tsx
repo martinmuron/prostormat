@@ -2,6 +2,7 @@ import { notFound, redirect } from "next/navigation"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { db } from "@/lib/db"
+import type { DashboardUserDetail } from "@/types/dashboard"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -12,7 +13,7 @@ import { Badge } from "@/components/ui/badge"
 
 export const dynamic = 'force-dynamic';
 
-async function getUser(id: string) {
+async function getUser(id: string): Promise<DashboardUserDetail | null> {
   try {
     const user = await db.user.findUnique({
       where: { id },
@@ -225,7 +226,7 @@ export default async function UserProfilePage({
                       </div>
                       <p className="text-sm text-muted-foreground mb-2">{request.description}</p>
                       <div className="flex items-center justify-between text-xs text-muted-foreground">
-                        <span>Kapacita: {(request as any).expectedGuests || (request as any).guestCount || 'Neuvedeno'} hostů</span>
+                        <span>Kapacita: {request.expectedGuests || request.guestCount || 'Neuvedeno'} hostů</span>
                         <span>Vytvořeno: {new Date(request.createdAt).toLocaleDateString('cs-CZ')}</span>
                       </div>
                     </div>
@@ -258,7 +259,7 @@ export default async function UserProfilePage({
                       </div>
                       <p className="text-sm text-muted-foreground mb-2">{inquiry.message}</p>
                       <div className="flex items-center justify-between text-xs text-muted-foreground">
-                        <span>Kapacita: {(inquiry as any).expectedGuests || (inquiry as any).guestCount || 'Neuvedeno'} hostů</span>
+                        <span>Kapacita: {inquiry.expectedGuests || inquiry.guestCount || 'Neuvedeno'} hostů</span>
                         <span>Odesláno: {new Date(inquiry.createdAt).toLocaleDateString('cs-CZ')}</span>
                       </div>
                     </div>
@@ -309,7 +310,7 @@ export default async function UserProfilePage({
                             <div>
                               <h4 className="font-medium">{venue.name}</h4>
                               <p className="text-sm text-muted-foreground">
-                                Stav předplatného: {(venue as any).subscriptionStatus || 'Neuvedeno'}
+                                Stav předplatného: {venue.subscriptionStatus || 'Neuvedeno'}
                               </p>
                             </div>
                             <Button variant="outline" size="sm" asChild>

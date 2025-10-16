@@ -1,62 +1,72 @@
-import { Resend } from 'resend'
+import { Resend } from 'resend';
+import { generateVenueBroadcastEmail } from '../src/lib/email-templates';
 
-const apiKey = process.env.RESEND_API_KEY
+async function sendTestEmail() {
+  // Use API key directly
+  const apiKey = process.env.RESEND_API_KEY?.trim();
 
-console.log('🔑 Resend API Key:', apiKey ? `${apiKey.substring(0, 10)}...` : 'NOT FOUND')
+  if (!apiKey || apiKey === 'dummy-key') {
+    console.error('❌ RESEND_API_KEY not found or invalid');
+    console.log('Current value:', apiKey);
+    process.exit(1);
+  }
 
-if (!apiKey) {
-  console.error('❌ RESEND_API_KEY not found in environment')
-  process.exit(1)
-}
+  const resend = new Resend(apiKey);
 
-const resend = new Resend(apiKey)
+  console.log('🔄 Sending test inquiry email to mark.muron@gmail.com...\n');
 
-async function testResendDirect() {
-  console.log('\n📧 Sending direct test email via Resend...\n')
+  // Sample data for the email
+  const emailData = generateVenueBroadcastEmail({
+    venueName: 'Test Venue - Medusa Prague',
+    venueContactEmail: 'mark.muron@gmail.com',
+    venueSlug: 'medusa-prague',
+    broadcastId: 'test-broadcast-123',
+    broadcast: {
+      title: 'Firemní teambuilding pro 50 osob',
+      description: 'Hledáme prostor pro firemní teambuilding s možností hudby, cateringu a venkovního posezení. Prostor by měl být v centru Prahy s dobrou dostupností MHD.',
+      eventType: 'firemni-akce',
+      eventDate: new Date('2025-03-15'),
+      guestCount: 50,
+      budgetRange: '50,000 - 100,000 CZK',
+      locationPreference: 'Praha 1, Praha 2',
+      requirements: 'Možnost hudby po 22:00, catering, projektor',
+      contactName: 'Jan Novák',
+      contactEmail: 'jan.novak@example.com',
+      contactPhone: '+420 123 456 789',
+    },
+  });
 
   try {
     const result = await resend.emails.send({
       from: 'Prostormat <noreply@prostormat.cz>',
       to: 'mark.muron@gmail.com',
-      subject: '🧪 Test Email from Prostormat',
-      html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-          <h1 style="color: #1f2937;">Test Email from Prostormat</h1>
-          <p style="color: #4b5563; font-size: 16px;">
-            This is a test email sent directly via Resend API.
-          </p>
-          <p style="color: #4b5563; font-size: 16px;">
-            If you receive this, your Resend integration is working correctly! ✅
-          </p>
-          <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 20px 0;">
-          <p style="color: #6b7280; font-size: 14px;">
-            Sent from: Prostormat Email System
-          </p>
-        </div>
-      `,
-      text: 'Test email from Prostormat. If you receive this, your Resend integration is working!'
-    })
+      replyTo: 'info@prostormat.cz',
+      subject: emailData.subject + ' [TEST EMAIL]',
+      html: emailData.html,
+      text: emailData.text,
+    });
 
-    console.log('✅ Email sent successfully!')
-    console.log('📬 Email ID:', result.data?.id)
-    console.log('\nCheck your inbox at mark.muron@gmail.com')
-    console.log('Also check your spam/junk folder if not in inbox.')
-
-  } catch (error: any) {
-    console.error('❌ Failed to send email:')
-    console.error('Error:', error.message)
-    console.error('Details:', error)
-
-    if (error.message.includes('domain')) {
-      console.log('\n⚠️  Domain Issue Detected!')
-      console.log('You need to verify prostormat.cz in Resend:')
-      console.log('1. Go to https://resend.com/domains')
-      console.log('2. Add prostormat.cz and verify it')
-      console.log('3. Or use onboarding@resend.dev for testing')
-    }
+    console.log('✅ Test email sent successfully!');
+    console.log('📧 Email ID:', result.data?.id);
+    console.log('\n📝 Email details:');
+    console.log('   To: mark.muron@gmail.com');
+    console.log('   Subject:', emailData.subject + ' [TEST EMAIL]');
+    console.log('\n🔗 The email includes a "Zobrazit plné detaily" button');
+    console.log('   Button links to: https://prostormat.cz/poptavka/test-broadcast-123?venue=medusa-prague');
+    console.log('\n⚠️  Note: Contact information (Jan Novák, phone, email) is hidden in the email');
+    console.log('   Recipients must click the button to see contact details (if venue is paid)');
+  } catch (error) {
+    console.error('❌ Failed to send test email:', error);
+    throw error;
   }
 }
 
-testResendDirect()
-  .catch(console.error)
-  .finally(() => process.exit(0))
+sendTestEmail()
+  .then(() => {
+    console.log('\n✅ Test completed successfully');
+    process.exit(0);
+  })
+  .catch((error) => {
+    console.error('\n❌ Test failed:', error);
+    process.exit(1);
+  });

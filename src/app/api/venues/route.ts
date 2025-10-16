@@ -1,8 +1,6 @@
 import { NextResponse } from "next/server"
-import { getServerSession } from "next-auth"
 import { z } from "zod"
 import { db } from "@/lib/db"
-import { authOptions } from "@/lib/auth"
 import bcrypt from "bcryptjs"
 import { randomUUID } from "crypto"
 
@@ -58,7 +56,7 @@ export async function POST(request: Request) {
     const hashedPassword = await bcrypt.hash(validatedData.userPassword, 12)
 
     // Generate unique slug for venue
-    let baseSlug = generateSlug(validatedData.name)
+    const baseSlug = generateSlug(validatedData.name)
     let slug = baseSlug
     let counter = 1
 

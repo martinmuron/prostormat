@@ -4,6 +4,8 @@ import type { EventType } from '@/types'
 interface VenueBroadcastEmailData {
   venueName: string
   venueContactEmail: string
+  venueSlug: string
+  broadcastId: string
   broadcast: {
     title: string
     description: string
@@ -20,9 +22,10 @@ interface VenueBroadcastEmailData {
 }
 
 export function generateVenueBroadcastEmail(data: VenueBroadcastEmailData) {
-  const { venueName, broadcast } = data
+  const { venueName, venueSlug, broadcastId, broadcast } = data
   const eventTypeLabel = EVENT_TYPES[broadcast.eventType as EventType] || broadcast.eventType
-  
+  const viewDetailsUrl = `https://prostormat.cz/poptavka/${broadcastId}?venue=${venueSlug}`
+
   const subject = `Nová poptávka akce: ${broadcast.title}`
   
   const html = `
@@ -99,26 +102,13 @@ export function generateVenueBroadcastEmail(data: VenueBroadcastEmailData) {
                 </div>
                 ` : ''}
             </div>
-            
-            <h4 style="color: #212529; margin: 25px 0 10px 0;">Kontaktní údaje organizátora:</h4>
-            <div class="detail-row">
-                <span class="label">Jméno:</span> ${broadcast.contactName}
-            </div>
-            <div class="detail-row">
-                <span class="label">Email:</span> <a href="mailto:${broadcast.contactEmail}">${broadcast.contactEmail}</a>
-            </div>
-            ${broadcast.contactPhone ? `
-            <div class="detail-row">
-                <span class="label">Telefon:</span> <a href="tel:${broadcast.contactPhone}">${broadcast.contactPhone}</a>
-            </div>
-            ` : ''}
-            
+
             <p style="margin: 30px 0 20px 0;">
-                <strong>Máte zájem o tuto akci?</strong> Kontaktujte organizátora přímo na uvedených kontaktech nebo se přihlaste do systému Prostormat pro správu vašich poptávek.
+                <strong>Máte zájem o tuto akci?</strong> Klikněte na tlačítko níže pro zobrazení kontaktních údajů organizátora.
             </p>
-            
-            <a href="https://prostormat.cz/dashboard" class="cta-button">
-                Přihlásit se do Prostormatu
+
+            <a href="${viewDetailsUrl}" class="cta-button">
+                Zobrazit plné detaily
             </a>
         </div>
         
@@ -152,12 +142,8 @@ ${broadcast.budgetRange ? `- Rozpočet: ${broadcast.budgetRange}` : ''}
 ${broadcast.locationPreference ? `- Lokalita: ${broadcast.locationPreference}` : ''}
 ${broadcast.requirements ? `- Veřejné zakázky: ${broadcast.requirements}` : ''}
 
-Kontaktní údaje organizátora:
-- Jméno: ${broadcast.contactName}
-- Email: ${broadcast.contactEmail}
-${broadcast.contactPhone ? `- Telefon: ${broadcast.contactPhone}` : ''}
-
-Máte zájem o tuto akci? Kontaktujte organizátora přímo na uvedených kontaktech.
+Máte zájem o tuto akci? Zobrazit plné detaily (včetně kontaktních údajů):
+${viewDetailsUrl}
 
 --
 Prostormat - Platforma pro hledání event prostorů
@@ -788,33 +774,23 @@ export function generateAddVenueThankYouEmail(data: AddVenueThankYouData) {
                 <h3 style="margin: 0 0 15px 0; color: #0056b3;">🔄 Co bude následovat:</h3>
                 <ol style="margin: 0; padding-left: 20px;">
                     <li><strong>Kontrola prostoru</strong> - Náš tým zkontroluje všechny údaje (1-2 pracovní dny)</li>
-                    <li><strong>Schválení</strong> - Po schválení bude váš prostor zveřejněn na platformě</li>
-                    <li><strong>Začátek pronájmu</strong> - Můžete začít přijímat rezervace od klientů</li>
+                    <li><strong>Schválení</strong> - Po schválení bude váš prostor zveřejněn na platformě.</li>
                 </ol>
             </div>
-            
-            <p><strong>Co můžete dělat mezitím:</strong></p>
-            <ul>
-                <li>📱 <strong>Přihlásit se do dashboardu</strong> - Spravujte svůj profil a prostory</li>
-                <li>📊 <strong>Nastavit ceny</strong> - Upravte cenník podle svých představ</li>
-                <li>📅 <strong>Nastavit dostupnost</strong> - Určete, kdy je váš prostor k dispozici</li>
-                <li>📞 <strong>Přidat kontaktní údaje</strong> - Aby vás klienti mohli snadno kontaktovat</li>
-            </ul>
-            
+
             <div style="margin: 30px 0;">
                 <a href="https://prostormat.cz/dashboard" class="cta-button">
                     Přihlásit se do dashboardu
                 </a>
             </div>
-            
+
             <div class="contact-info">
                 <h3 style="margin: 0 0 15px 0; color: #856404;">🤝 Náš obchodní tým vás brzy kontaktuje</h3>
                 <p style="margin: 0; color: #856404;">Jeden z našich specialistů se vám ozve <strong>do 24 hodin</strong> pro dokončení procesu a zodpovězení všech otázek.</p>
             </div>
-            
+
             <p><strong>Máte otázky hned teď?</strong> Neváhejte nás kontaktovat:</p>
-            <p>📧 <a href="mailto:info@prostormat.cz" style="color: #000;">info@prostormat.cz</a><br>
-            📞 <a href="tel:+420775654639" style="color: #000;">+420 775 654 639</a></p>
+            <p>📧 <a href="mailto:info@prostormat.cz" style="color: #000;">info@prostormat.cz</a></p>
         </div>
         
         <div class="footer">
@@ -838,21 +814,15 @@ Děkujeme, že jste přidali ${venueName ? `"${venueName}"` : 'svůj prostor'} d
 
 CO BUDE NÁSLEDOVAT:
 1. Kontrola prostoru - Náš tým zkontroluje všechny údaje (1-2 pracovní dny)
-2. Schválení - Po schválení bude váš prostor zveřejněn na platformě  
-3. Začátek pronájmu - Můžete začít přijímat rezervace od klientů
+2. Schválení - Po schválení bude váš prostor zveřejněn na platformě.
 
-Co můžete dělat mezitím:
-- Přihlásit se do dashboardu: https://prostormat.cz/dashboard
-- Nastavit ceny a dostupnost
-- Přidat kontaktní údaje
-- Spravovat svůj profil
+Přihlásit se do dashboardu: https://prostormat.cz/dashboard
 
 NÁŠ OBCHODNÍ TÝM VÁS BRZY KONTAKTUJE:
 Jeden z našich specialistů se vám ozve do 24 hodin pro dokončení procesu a zodpovězení všech otázek.
 
 Máte otázky hned teď?
 Email: info@prostormat.cz
-Telefon: +420 775 654 639
 
 --
 Prostormat – Platforma pro pronájem event prostorů

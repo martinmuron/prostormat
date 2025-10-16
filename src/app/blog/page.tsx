@@ -4,7 +4,20 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { db } from "@/lib/db"
 import Link from "next/link"
-import { Calendar, User, ArrowRight } from "lucide-react"
+import Image from "next/image"
+import { Calendar, User } from "lucide-react"
+
+type BlogPostWithRelations = {
+  id: string
+  title: string
+  slug: string
+  excerpt?: string | null
+  coverImage?: string | null
+  tags?: string | null
+  publishedAt: string | Date
+  author?: { name: string | null; email: string | null } | null
+  prostormat_users?: { name: string | null; email: string | null } | null
+}
 
 async function getBlogPosts() {
   try {
@@ -32,7 +45,7 @@ async function getBlogPosts() {
   }
 }
 
-function BlogPostCard({ post }: { post: any }) {
+function BlogPostCard({ post }: { post: BlogPostWithRelations }) {
   const tags = post.tags ? JSON.parse(post.tags) : []
   
   return (
@@ -40,10 +53,12 @@ function BlogPostCard({ post }: { post: any }) {
       <Link href={`/blog/${post.slug}`}>
         {post.coverImage && (
           <div className="aspect-video relative overflow-hidden">
-            <img
+            <Image
               src={post.coverImage}
               alt={post.title}
+              fill
               className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-700 ease-out"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 400px"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             <div className="absolute top-3 right-3 sm:top-4 sm:right-4 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0">

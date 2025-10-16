@@ -89,7 +89,15 @@ export const PRAGUE_DISTRICTS = [
   'Praha 12',
   'Praha 13',
   'Praha 14',
-  'Praha 15'
+  'Praha 15',
+  'Praha 16'
+] as const
+
+export const LOCATION_OPTIONS = [
+  ...PRAGUE_DISTRICTS,
+  'Praha - západ',
+  'Praha - východ',
+  'Středočeský kraj'
 ] as const
 
 export const BUDGET_RANGES = [

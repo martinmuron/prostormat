@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { useSession } from "next-auth/react"
 import { Button } from "@/components/ui/button"
 import { Heart } from "lucide-react"
@@ -17,14 +17,7 @@ export function EventRequestHeartButton({ eventRequestId, className = "", size =
   const [isLoading, setIsLoading] = useState(false)
   const [showLoginOverlay, setShowLoginOverlay] = useState(false)
 
-  // Check if event request is favorited when component mounts
-  useEffect(() => {
-    if (session?.user?.id && eventRequestId) {
-      checkFavoriteStatus()
-    }
-  }, [session?.user?.id, eventRequestId])
-
-  const checkFavoriteStatus = async () => {
+  const checkFavoriteStatus = useCallback(async () => {
     try {
       const response = await fetch(`/api/event-requests/${eventRequestId}/favorite`)
       if (response.ok) {
@@ -37,7 +30,14 @@ export function EventRequestHeartButton({ eventRequestId, className = "", size =
     } catch (error) {
       console.error('Error checking favorite status:', error)
     }
-  }
+  }, [eventRequestId])
+
+  // Check if event request is favorited when component mounts
+  useEffect(() => {
+    if (session?.user?.id && eventRequestId) {
+      checkFavoriteStatus()
+    }
+  }, [checkFavoriteStatus, eventRequestId, session?.user?.id])
 
   const toggleFavorite = async () => {
     if (!session?.user?.id) {

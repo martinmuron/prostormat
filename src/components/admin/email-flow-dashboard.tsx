@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -62,24 +62,6 @@ interface BroadcastSummary {
   clickRate: number
 }
 
-interface BroadcastLog {
-  id: string
-  broadcastTitle: string
-  venueName: string
-  venueEmail: string
-  emailStatus: string
-  sentAt: string
-  deliveredAt: string | null
-  openedAt: string | null
-  clickedAt: string | null
-  bouncedAt: string | null
-  complainedAt: string | null
-  bounceType: string | null
-  openCount: number
-  clickCount: number
-  emailError: string | null
-}
-
 const EMAIL_TYPE_LABELS: Record<string, string> = {
   'welcome_user': 'Vítací email (uživatel)',
   'welcome_location_owner': 'Vítací email (majitel prostoru)',
@@ -102,11 +84,10 @@ export function EmailFlowDashboard() {
   const [stats, setStats] = useState<EmailStats[]>([])
   const [broadcastStats, setBroadcastStats] = useState<BroadcastTrackingStats | null>(null)
   const [broadcasts, setBroadcasts] = useState<BroadcastSummary[]>([])
-  const [broadcastLogs, setBroadcastLogs] = useState<BroadcastLog[]>([])
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
 
-  const fetchEmailFlow = async () => {
+  const fetchEmailFlow = useCallback(async () => {
     try {
       const response = await fetch('/api/admin/email-flow')
       if (response.ok) {
@@ -117,32 +98,31 @@ export function EmailFlowDashboard() {
     } catch (error) {
       console.error('Error fetching email flow:', error)
     }
-  }
+  }, [])
 
-  const fetchBroadcastTracking = async () => {
+  const fetchBroadcastTracking = useCallback(async () => {
     try {
       const response = await fetch('/api/admin/broadcast-tracking')
       if (response.ok) {
         const data = await response.json()
         setBroadcastStats(data.stats || null)
         setBroadcasts(data.broadcasts || [])
-        setBroadcastLogs(data.recentLogs || [])
       }
     } catch (error) {
       console.error('Error fetching broadcast tracking:', error)
     }
-  }
+  }, [])
 
-  const fetchAll = async () => {
+  const fetchAll = useCallback(async () => {
     setLoading(true)
     await Promise.all([fetchEmailFlow(), fetchBroadcastTracking()])
     setLoading(false)
     setRefreshing(false)
-  }
+  }, [fetchBroadcastTracking, fetchEmailFlow])
 
   useEffect(() => {
     fetchAll()
-  }, [])
+  }, [fetchAll])
 
   const handleRefresh = () => {
     setRefreshing(true)

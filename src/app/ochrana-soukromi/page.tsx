@@ -47,14 +47,14 @@ export default function PrivacyPolicyPage() {
                   <h2 className="text-2xl font-bold text-gray-900 mb-6">1. Úvodní informace</h2>
                   <p className="text-gray-700 mb-6">
                     Tato zásada ochrany osobních údajů (dále jen &quot;Zásada&quot;) informuje o tom, 
-                    jakým způsobem společnost ProstorMat s.r.o. (dále jen &quot;Správce&quot;) zpracovává 
+                    jakým způsobem společnost Future Developments s.r.o. (dále jen &quot;Správce&quot;) zpracovává 
                     osobní údaje uživatelů platformy ProstorMat v souladu s nařízením GDPR 
                     a zákonem o ochraně osobních údajů.
                   </p>
 
                   <h2 className="text-2xl font-bold text-gray-900 mb-6">2. Správce osobních údajů</h2>
                   <div className="bg-gray-50 rounded-xl p-6 mb-6">
-                    <p className="text-gray-700 mb-2"><strong>ProstorMat s.r.o.</strong></p>
+                    <p className="text-gray-700 mb-2"><strong>Future Developments s.r.o.</strong></p>
                     <p className="text-gray-700 mb-2">IČO: 12345678</p>
                     <p className="text-gray-700 mb-2">Adresa: Placeholder Address, 110 00 Praha 1</p>
                     <p className="text-gray-700 mb-2">Email: info@prostormat.cz</p>

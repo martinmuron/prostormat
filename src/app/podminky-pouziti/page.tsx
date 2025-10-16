@@ -47,7 +47,7 @@ export default function TermsOfUsePage() {
                   <h2 className="text-2xl font-bold text-gray-900 mb-6">1. Úvodní ustanovení</h2>
                   <p className="text-gray-700 mb-6">
                     Tyto podmínky použití (dále jen &quot;Podmínky&quot;) upravují používání webové platformy ProstorMat 
-                    (dále jen &quot;Platforma&quot;) provozované společností ProstorMat s.r.o. (dále jen &quot;Provozovatel&quot;). 
+                    (dále jen &quot;Platforma&quot;) provozované společností Future Developments s.r.o. (dále jen &quot;Provozovatel&quot;). 
                     Používáním Platformy vyjadřujete svůj souhlas s těmito Podmínkami.
                   </p>
 

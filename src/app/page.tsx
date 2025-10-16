@@ -31,10 +31,9 @@ type FeaturedVenue = Prisma.VenueGetPayload<{ select: typeof featuredVenueSelect
 async function getFeaturedVenues() {
   try {
     const homepageVenues = await db.homepageVenue.findMany({
-      include: {
-        venue: {
-          select: featuredVenueSelect,
-        },
+      select: {
+        venueId: true,
+        position: true,
       },
       orderBy: {
         position: 'asc',
@@ -44,13 +43,27 @@ async function getFeaturedVenues() {
     const selected: FeaturedVenue[] = []
     const seen = new Set<string>()
 
-    for (const entry of homepageVenues) {
-      const venue = entry.venue
-      if (!venue) continue
-      if (!['published', 'active'].includes(venue.status)) continue
-      if (seen.has(venue.id)) continue
-      seen.add(venue.id)
-      selected.push(venue)
+    if (homepageVenues.length) {
+      const homepageVenueIds = homepageVenues.map(({ venueId }) => venueId)
+      const homepageVenueRecords = await db.venue.findMany({
+        where: {
+          id: { in: homepageVenueIds },
+        },
+        select: featuredVenueSelect,
+      })
+
+      const homepageVenueMap = new Map(
+        homepageVenueRecords.map((venue) => [venue.id, venue]),
+      )
+
+      for (const entry of homepageVenues) {
+        const venue = homepageVenueMap.get(entry.venueId)
+        if (!venue) continue
+        if (!['published', 'active'].includes(venue.status)) continue
+        if (seen.has(venue.id)) continue
+        seen.add(venue.id)
+        selected.push(venue)
+      }
     }
 
     if (selected.length < 12) {

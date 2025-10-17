@@ -53,7 +53,7 @@ export const fallbackBlogPosts: FallbackBlogPost[] = [
       <h2>Závěr</h2>
       <p>Úspěch akce stojí na detailech. Srovnávejte prostory podle lokality, kapacity, technického zázemí i atmosféry. V databázi Prostormat snadno najdete prostory, které splní všechna klíčová kritéria.</p>
     `,
-    coverImage: "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=1200&h=600&fit=crop",
+    coverImage: "https://hlwgpjdhhjaibkqcyjts.supabase.co/storage/v1/object/public/venue-images/blog/nejcastejsi-chyby-pri-vyberu-eventoveho-prostoru.jpg",
     author: { name: "Prostormat tým", email: "info@prostormat.cz" },
     publishedAt: "2025-01-14T00:00:00.000Z",
     tags: JSON.stringify(["Eventy", "Tipy", "Výběr prostoru"]),
@@ -83,7 +83,7 @@ export const fallbackBlogPosts: FallbackBlogPost[] = [
       <h2>Výsledek</h2>
       <p>Hosté odcházeli plní emocí a zážitků. Tato svatba je důkazem, že i industriální prostory skrývají obrovský potenciál – stačí mít správnou vizi a tým, který ji pomůže naplnit.</p>
     `,
-    coverImage: "https://images.unsplash.com/photo-1520854221050-0f4caff449fb?w=1200&h=600&fit=crop",
+    coverImage: "https://hlwgpjdhhjaibkqcyjts.supabase.co/storage/v1/object/public/venue-images/blog/pribeh-svatby-v-individualni-hale.jpg",
     author: { name: "Prostormat tým", email: "info@prostormat.cz" },
     publishedAt: "2025-01-07T00:00:00.000Z",
     tags: JSON.stringify(["Svatby", "Inspirace", "Dekorace"]),
@@ -126,7 +126,7 @@ export const fallbackBlogPosts: FallbackBlogPost[] = [
       <h2>Závěr</h2>
       <p>Důkladná příprava je klíčem k úspěšné konferenci. V databázi Prostormat najdete prostory, které splní technické i logistické požadavky vaší akce.</p>
     `,
-    coverImage: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1200&h=600&fit=crop",
+    coverImage: "https://hlwgpjdhhjaibkqcyjts.supabase.co/storage/v1/object/public/venue-images/blog/checklist-pro-planovani-konference.jpg",
     author: { name: "Prostormat tým", email: "info@prostormat.cz" },
     publishedAt: "2024-12-17T00:00:00.000Z",
     tags: JSON.stringify(["Konference", "Checklist", "Event management"]),
@@ -159,7 +159,7 @@ export const fallbackBlogPosts: FallbackBlogPost[] = [
       <h2>Závěr</h2>
       <p>Nezapomenutelný večírek tvoří detaily. Prostor je tou největší kulisou – s Prostormat snadno najdete místo, které umožní vytvořit přesně takovou atmosféru, jakou si přejete.</p>
     `,
-    coverImage: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=1200&h=600&fit=crop",
+    coverImage: "https://hlwgpjdhhjaibkqcyjts.supabase.co/storage/v1/object/public/venue-images/blog/magie-vecirku-atmosfera-diky-prostoru.jpg",
     author: { name: "Prostormat tým", email: "info@prostormat.cz" },
     publishedAt: "2024-11-28T00:00:00.000Z",
     tags: JSON.stringify(["Večírky", "Atmosféra", "Design"]),

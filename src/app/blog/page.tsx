@@ -91,7 +91,7 @@ function BlogPostCard({ post, className }: { post: BlogPostWithRelations; classN
               <div className="flex items-center gap-4 text-xs uppercase tracking-wide text-gray-500 mb-5">
                 <div className="flex items-center gap-1">
                   <User className="w-4 h-4" />
-                  <span>{'prostormat_users' in post ? (post.prostormat_users?.name || post.prostormat_users?.email) : post.author?.name || 'Anonymous'}</span>
+                  <span>{(post as any).prostormat_users?.name || (post as any).prostormat_users?.email || post.author?.name || 'Anonymous'}</span>
                 </div>
                 <div className="flex items-center gap-1">
                   <Calendar className="w-4 h-4" />
@@ -205,7 +205,7 @@ async function BlogGrid() {
             <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500 mb-6">
               <span className="inline-flex items-center gap-2">
                 <User className="w-4 h-4" />
-                {'prostormat_users' in featuredPost ? (featuredPost.prostormat_users?.name || featuredPost.prostormat_users?.email) : featuredPost.author?.name || 'Prostormat tým'}
+                {(featuredPost as any).prostormat_users?.name || (featuredPost as any).prostormat_users?.email || featuredPost.author?.name || 'Prostormat tým'}
               </span>
               <span className="inline-flex items-center gap-2">
                 <Calendar className="w-4 h-4" />

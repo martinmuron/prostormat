@@ -91,7 +91,7 @@ function BlogPostCard({ post, className }: { post: BlogPostWithRelations; classN
               <div className="flex items-center gap-4 text-xs uppercase tracking-wide text-gray-500 mb-5">
                 <div className="flex items-center gap-1">
                   <User className="w-4 h-4" />
-                  <span>{(post as any).prostormat_users?.name || (post as any).prostormat_users?.email || post.author?.name || 'Anonymous'}</span>
+                  <span>{(post as unknown as { prostormat_users?: { name?: string | null; email?: string | null } | null }).prostormat_users?.name || (post as unknown as { prostormat_users?: { name?: string | null; email?: string | null } | null }).prostormat_users?.email || post.author?.name || 'Anonymous'}</span>
                 </div>
                 <div className="flex items-center gap-1">
                   <Calendar className="w-4 h-4" />
@@ -205,7 +205,7 @@ async function BlogGrid() {
             <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500 mb-6">
               <span className="inline-flex items-center gap-2">
                 <User className="w-4 h-4" />
-                {(featuredPost as any).prostormat_users?.name || (featuredPost as any).prostormat_users?.email || featuredPost.author?.name || 'Prostormat tým'}
+                {(featuredPost as unknown as { prostormat_users?: { name?: string | null; email?: string | null } | null }).prostormat_users?.name || (featuredPost as unknown as { prostormat_users?: { name?: string | null; email?: string | null } | null }).prostormat_users?.email || featuredPost.author?.name || 'Prostormat tým'}
               </span>
               <span className="inline-flex items-center gap-2">
                 <Calendar className="w-4 h-4" />

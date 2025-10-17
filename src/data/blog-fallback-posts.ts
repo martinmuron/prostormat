@@ -21,7 +21,7 @@ export const fallbackBlogPosts: FallbackBlogPost[] = [
     title: "Nejčastější chyby při výběru eventového prostoru a jak se jim vyhnout",
     slug: "nejcastejsi-chyby-pri-vyberu-eventoveho-prostoru",
     excerpt:
-      "Výběr správného prostoru rozhoduje o úspěchu celé akce. Podívejte se na nejčastější chyby, které pořadatelé dělají, a zjistěte, jak se jim vyhnout díky pečlivému plánování.",
+      "Vyhněte se nejčastějším chybám při výběru eventového prostoru. Přinášíme přehled z reálných akcí a tipy, jak správně posoudit lokalitu, kapacitu i technické zázemí.",
     content: `
       <h2>Úvod</h2>
       <p>Výběr eventového prostoru je jedním z nejdůležitějších rozhodnutí. Špatně zvolená lokalita, kapacita nebo technické zázemí dokáže pokazit i jinak perfektně připravenou akci. Připravili jsme přehled nejčastějších chyb, které pořadatelé dělají, a tipy, jak se jim vyhnout.</p>
@@ -66,7 +66,7 @@ export const fallbackBlogPosts: FallbackBlogPost[] = [
     title: "Příběh jedné svatby: Jak jsme proměnili industriální halu v romantický ráj",
     slug: "pribeh-svatby-v-individualni-hale",
     excerpt:
-      "Inspirujte se skutečným příběhem svatby, která proměnila drsnou industriální halu v romantický sen. Dekorace, catering i hudba šly ruku v ruce.",
+      "Jak se z chladné industriální haly stala romantická svatební scéna? Přinášíme inspiraci z realizace, která kombinuje moderní design, atmosféru a nezapomenutelný servis.",
     content: `
       <h2>Počáteční výzva</h2>
       <p>Hala na okraji Prahy působila syrově a prázdně. Pár si ale vysnil moderní svatbu s romantickým nádechem. Naším cílem bylo vytvořit atmosféru, která hosty překvapí a nadchne.</p>
@@ -96,7 +96,7 @@ export const fallbackBlogPosts: FallbackBlogPost[] = [
     title: "Na co nezapomenout při plánování konference – checklist pořadatele",
     slug: "checklist-pro-planovani-konference",
     excerpt:
-      "Organizace konference vyžaduje precizní přípravu. Přinášíme kompletní checklist, který vám pomůže mít vše pod kontrolou – od prostoru až po catering.",
+      "Plánujete konferenci v Praze? Tento checklist pokrývá prostor, techniku, registraci i catering a pomůže vám mít event profesionálně zorganizovaný od A do Z.",
     content: `
       <h2>Výběr prostoru</h2>
       <p>Konferenční sál musí nabídnout odpovídající kapacitu, technické vybavení a flexibilní uspořádání. Měl by také poskytnout zázemí pro workshopy, networking i přestávky.</p>
@@ -139,7 +139,7 @@ export const fallbackBlogPosts: FallbackBlogPost[] = [
     title: "Magie večírků: Jak vytvořit nezapomenutelnou atmosféru díky prostoru",
     slug: "magie-vecirku-atmosfera-diky-prostoru",
     excerpt:
-      "Atmosféra večírku se rodí v prostoru. Osvětlení, rozložení, hudba i dekorace hrají klíčovou roli. Inspirujte se, jak vytvořit večer, na který se nezapomíná.",
+      "Nezapomenutelný večírek nevzniká náhodou. Osvětlení, hudba, zóny i dekorace musí spolupracovat. Podívejte se, jak z prostoru vytěžit maximum a vytvořit wow efekt.",
     content: `
       <h2>Osvětlení jako základ atmosféry</h2>
       <p>Správně zvolené světlo dokáže prostor proměnit k nepoznání. Barevné LED diody dodají energii, teplé tóny zase vytvoří intimní prostředí. Vyplatí se pracovat i s projekcemi nebo mappingem.</p>

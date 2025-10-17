@@ -36,6 +36,7 @@ export async function GET(request: NextRequest) {
         slug: true,
         description: true,
         address: true,
+        district: true,
         capacitySeated: true,
         capacityStanding: true,
         venueType: true,

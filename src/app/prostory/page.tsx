@@ -32,6 +32,7 @@ async function getInitialVenues(searchParams: SearchParams, orderSeed: number) {
         slug: true,
         description: true,
         address: true,
+        district: true,
         capacitySeated: true,
         capacityStanding: true,
         venueType: true,

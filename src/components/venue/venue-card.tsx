@@ -30,6 +30,7 @@ interface VenueCardProps {
     slug: string
     description?: string | null
     address: string
+    district?: string | null
     capacitySeated?: number | null
     capacityStanding?: number | null
     venueType?: string | null
@@ -117,6 +118,11 @@ export function VenueCard({ venue }: VenueCardProps) {
                   </span>
                 )}
               </div>
+              {venue.district && (
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-600 mb-1">
+                  {venue.district}
+                </p>
+              )}
               {displayAddress && (
                 <p className="text-sm sm:text-callout text-gray-600 font-medium">
                   {displayAddress}

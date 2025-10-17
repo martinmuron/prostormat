@@ -19,6 +19,7 @@ const featuredVenueSelect = {
   slug: true,
   description: true,
   address: true,
+  district: true,
   capacitySeated: true,
   capacityStanding: true,
   venueType: true,

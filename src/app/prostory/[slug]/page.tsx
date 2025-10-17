@@ -221,10 +221,15 @@ export default async function VenueDetailPage({
                     </div>
                   )}
                   <h1 className="text-title-1 text-black mb-2">{venue.name}</h1>
-                  <div className="flex items-center gap-2 text-gray-600 mb-4">
+                  <div className="flex items-center gap-2 text-gray-600 mb-2">
                     <MapPin className="h-5 w-5" />
                     <span className="text-body">{venue.address}</span>
                   </div>
+                  {venue.district && (
+                    <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-blue-600 bg-blue-50 rounded-full px-3 py-1 mb-4">
+                      {venue.district}
+                    </span>
+                  )}
                   {venueTypeLabel && (
                     <Badge variant="secondary" className="mb-4">
                       {venueTypeLabel}

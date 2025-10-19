@@ -3,12 +3,11 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
-import { 
-  Home, 
-  Calendar, 
-  MessageSquare, 
-  Building, 
-  Settings, 
+import {
+  Home,
+  Calendar,
+  MessageSquare,
+  Building,
   Users,
   BarChart3,
   CreditCard
@@ -98,14 +97,7 @@ export function DashboardSidebar({ userRole }: DashboardSidebarProps) {
     ]
   }
 
-  const navigation = [
-    ...getUserNavigation(),
-    {
-      name: "Nastavení",
-      href: "/dashboard/settings",
-      icon: Settings,
-    },
-  ]
+  const navigation = getUserNavigation()
 
   return (
     <div className="fixed inset-y-0 left-0 w-64 bg-white border-r border-gray-200">

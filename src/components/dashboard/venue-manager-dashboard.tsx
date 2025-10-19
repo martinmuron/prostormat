@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { formatDate } from "@/lib/utils"
-import { Building, MessageSquare, Eye, Plus, Calendar, Settings, CreditCard, Users, TrendingUp, Clock } from "lucide-react"
+import { Building, MessageSquare, Eye, Plus, Calendar, Settings, CreditCard, TrendingUp, Clock } from "lucide-react"
 import type { VenueManagerDashboardData } from "@/types/dashboard"
 
 interface VenueManagerDashboardProps {
@@ -312,12 +312,6 @@ export function VenueManagerDashboard({ data }: VenueManagerDashboardProps) {
                 <Button className="w-full bg-gray-800 hover:bg-gray-900 text-white mb-3">
                   <Settings className="h-4 w-4 mr-2" />
                   Upravit profil
-                </Button>
-              </Link>
-              <Link href="/dashboard/settings">
-                <Button variant="secondary" className="w-full text-gray-700 border-gray-300 hover:bg-gray-50">
-                  <Users className="h-4 w-4 mr-2" />
-                  Nastavení účtu
                 </Button>
               </Link>
             </div>

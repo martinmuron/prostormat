@@ -4,6 +4,8 @@ import { authOptions } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { z } from "zod"
 
+const subscriptionStatuses = ["active", "past_due", "canceled", "unpaid"] as const
+
 const updateVenueSchema = z.object({
   name: z.string().min(2).optional(),
   description: z.string().optional().or(z.literal("")),
@@ -25,6 +27,15 @@ const updateVenueSchema = z.object({
   isRecommended: z.boolean().optional(),
   priority: z.number().int().min(1).max(3).nullable().optional(),
   managerId: z.string().optional(), // Allow admin to assign managers
+  billingEmail: z.union([z.string().email(), z.literal("")]).optional(),
+  billingName: z.string().optional().or(z.literal("")),
+  billingAddress: z.string().optional().or(z.literal("")),
+  taxId: z.string().optional().or(z.literal("")),
+  vatId: z.string().optional().or(z.literal("")),
+  subscriptionStatus: z.union([z.enum(subscriptionStatuses), z.literal(""), z.null()]).optional(),
+  expiresAt: z.union([z.string(), z.date(), z.null()]).optional(),
+  paid: z.boolean().optional(),
+  paymentDate: z.union([z.string(), z.date(), z.null()]).optional(),
 })
 
 export async function PATCH(
@@ -79,6 +90,20 @@ export async function PATCH(
       return null
     }
 
+    const normalizeDate = (value: unknown) => {
+      if (value === null || typeof value === "undefined") return null
+      if (value instanceof Date) {
+        return Number.isNaN(value.getTime()) ? null : value
+      }
+      if (typeof value === "string") {
+        const trimmed = value.trim()
+        if (!trimmed) return null
+        const date = new Date(trimmed)
+        return Number.isNaN(date.getTime()) ? null : date
+      }
+      return null
+    }
+
     const updateData: Record<string, unknown> = {}
 
     if (typeof body.name !== "undefined") updateData.name = body.name
@@ -107,6 +132,22 @@ export async function PATCH(
     if (typeof body.isRecommended !== "undefined") updateData.isRecommended = body.isRecommended
     if (typeof body.priority !== "undefined") updateData.priority = body.priority
     if (typeof body.managerId !== "undefined") updateData.managerId = body.managerId
+    if (typeof body.billingEmail !== "undefined") updateData.billingEmail = normalizeString(body.billingEmail)
+    if (typeof body.billingName !== "undefined") updateData.billingName = normalizeString(body.billingName)
+    if (typeof body.billingAddress !== "undefined") updateData.billingAddress = normalizeString(body.billingAddress)
+    if (typeof body.taxId !== "undefined") updateData.taxId = normalizeString(body.taxId)
+    if (typeof body.vatId !== "undefined") updateData.vatId = normalizeString(body.vatId)
+    if (typeof body.subscriptionStatus !== "undefined") {
+      if (typeof body.subscriptionStatus === "string") {
+        const status = body.subscriptionStatus.trim()
+        updateData.subscriptionStatus = status ? status : null
+      } else {
+        updateData.subscriptionStatus = body.subscriptionStatus
+      }
+    }
+    if (typeof body.paid !== "undefined") updateData.paid = body.paid
+    if (typeof body.paymentDate !== "undefined") updateData.paymentDate = normalizeDate(body.paymentDate)
+    if (typeof body.expiresAt !== "undefined") updateData.expiresAt = normalizeDate(body.expiresAt)
 
     // Only admins can change status, isRecommended, or manager assignments
     if (session.user.role !== "admin") {
@@ -114,6 +155,15 @@ export async function PATCH(
       delete updateData.isRecommended
       delete updateData.priority
       delete updateData.managerId
+      delete updateData.billingEmail
+      delete updateData.billingName
+      delete updateData.billingAddress
+      delete updateData.taxId
+      delete updateData.vatId
+      delete updateData.subscriptionStatus
+      delete updateData.paid
+      delete updateData.paymentDate
+      delete updateData.expiresAt
     }
 
     // If managerId is provided and user is admin, verify the manager exists

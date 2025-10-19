@@ -1,5 +1,6 @@
 "use client"
 
+import { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
@@ -7,8 +8,9 @@ import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
+import { Switch } from "@/components/ui/switch"
 
 const billingSchema = z.object({
   billingEmail: z.string().email("Zadejte platný e-mail").optional().or(z.literal('')),
@@ -16,8 +18,10 @@ const billingSchema = z.object({
   billingAddress: z.string().optional(),
   taxId: z.string().optional(),
   vatId: z.string().optional(),
-  subscriptionStatus: z.enum(["active", "past_due", "canceled", "unpaid"]).optional(),
+  subscriptionStatus: z.enum(["active", "past_due", "canceled", "unpaid"]).optional().or(z.literal("")),
   expiresAt: z.string().optional(),
+  paid: z.boolean().default(false),
+  paymentDate: z.string().optional(),
 })
 
 const SUBSCRIPTION_STATUSES = ["active", "past_due", "canceled", "unpaid"] as const
@@ -38,6 +42,8 @@ type VenueBillingProps = {
     vatId?: string | null
     subscriptionStatus?: string | null
     expiresAt?: Date | null
+    paid?: boolean | null
+    paymentDate?: Date | null
   }
 }
 
@@ -51,19 +57,73 @@ export function VenueBilling({ venue }: VenueBillingProps) {
       billingAddress: venue.billingAddress || "",
       taxId: venue.taxId || "",
       vatId: venue.vatId || "",
-      subscriptionStatus: isSubscriptionStatus(venue.subscriptionStatus) ? venue.subscriptionStatus : undefined,
+      subscriptionStatus: isSubscriptionStatus(venue.subscriptionStatus) ? venue.subscriptionStatus : "",
       expiresAt: venue.expiresAt ? new Date(venue.expiresAt).toISOString().split('T')[0] : "",
+      paid: Boolean(venue.paid),
+      paymentDate: venue.paymentDate ? new Date(venue.paymentDate).toISOString().split('T')[0] : "",
     },
   })
 
+  const paid = form.watch("paid")
+  const paymentDate = form.watch("paymentDate")
+
+  useEffect(() => {
+    const currentStatus = form.getValues("subscriptionStatus")
+    if (paid && !currentStatus) {
+      form.setValue("subscriptionStatus", "active", { shouldDirty: true })
+    }
+    if (!paid && currentStatus === "active") {
+      form.setValue("subscriptionStatus", "", { shouldDirty: true })
+    }
+  }, [paid, form])
+
+  useEffect(() => {
+    if (!paymentDate) {
+      return
+    }
+    const currentExpires = form.getValues("expiresAt")
+    if (currentExpires) {
+      return
+    }
+    const baseDate = new Date(paymentDate)
+    if (Number.isNaN(baseDate.getTime())) {
+      return
+    }
+    const plusYear = new Date(baseDate)
+    plusYear.setFullYear(plusYear.getFullYear() + 1)
+    form.setValue("expiresAt", plusYear.toISOString().split("T")[0], { shouldDirty: true })
+  }, [paymentDate, form])
+
   async function onSubmit(values: z.infer<typeof billingSchema>) {
+    const paymentDateValue = values.paymentDate ? new Date(values.paymentDate) : null
+    const expiresAtValue = values.expiresAt ? new Date(values.expiresAt) : null
+
+    if (values.paymentDate && Number.isNaN(paymentDateValue?.getTime())) {
+      toast.error("Datum zahájení předplatného není platné")
+      return
+    }
+
+    if (values.expiresAt && Number.isNaN(expiresAtValue?.getTime())) {
+      toast.error("Datum konce předplatného není platné")
+      return
+    }
+
     try {
+      const subscriptionStatus =
+        values.subscriptionStatus && values.subscriptionStatus.length > 0
+          ? values.subscriptionStatus
+          : values.paid
+            ? "active"
+            : null
+
       const response = await fetch(`/api/venues/${venue.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...values,
-          expiresAt: values.expiresAt ? new Date(values.expiresAt) : null,
+          subscriptionStatus,
+          expiresAt: expiresAtValue,
+          paymentDate: paymentDateValue,
         }),
       })
 
@@ -159,7 +219,8 @@ export function VenueBilling({ venue }: VenueBillingProps) {
                 <FormControl>
                   <select
                     className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                    {...field}
+                    value={field.value ?? ""}
+                    onChange={(event) => field.onChange(event.target.value)}
                   >
                     <option value="">Vyberte stav</option>
                     <option value="active">Aktivní</option>
@@ -188,7 +249,67 @@ export function VenueBilling({ venue }: VenueBillingProps) {
           />
         </div>
 
-        <div className="flex justify-end">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <FormField
+            control={form.control}
+            name="paid"
+            render={({ field }) => (
+              <FormItem className="flex flex-col space-y-2">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <FormLabel>Předplatné uhrazeno</FormLabel>
+                    <FormDescription>
+                      Označte, pokud má prostor aktivní roční členství.
+                    </FormDescription>
+                  </div>
+                  <FormControl>
+                    <Switch
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                </div>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="paymentDate"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Datum zahájení</FormLabel>
+                <FormControl>
+                  <Input type="date" {...field} />
+                </FormControl>
+                <FormDescription>
+                  Kdy klient zaplatil předplatné (offline nebo online).
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="expiresAt"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Platné do</FormLabel>
+                <FormControl>
+                  <Input type="date" {...field} />
+                </FormControl>
+                <FormDescription>
+                  Pokud není vyplněno, doplníme rok od data zahájení.
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
+        <div className="flex justify-end pt-4">
           <Button type="submit">Uložit změny</Button>
         </div>
       </form>

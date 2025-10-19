@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { formatDate } from "@/lib/utils"
-import { Building, MessageSquare, Eye, Plus, Calendar, Settings, CreditCard, TrendingUp } from "lucide-react"
+import { Building, MessageSquare, Eye, Plus, Calendar, Settings, CreditCard } from "lucide-react"
 import type { VenueManagerDashboardData } from "@/types/dashboard"
 
 interface VenueManagerDashboardProps {
@@ -479,7 +479,7 @@ export function VenueManagerDashboard({ data }: VenueManagerDashboardProps) {
           <CardTitle className="text-gray-900">Rychlé akce</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <Link href="/pridat-prostor">
               <Button variant="secondary" className="w-full justify-start text-gray-700 border-gray-300 hover:bg-gray-50 h-12">
                 <Plus className="h-4 w-4 mr-2" />
@@ -490,18 +490,6 @@ export function VenueManagerDashboard({ data }: VenueManagerDashboardProps) {
               <Button variant="secondary" className="w-full justify-start text-gray-700 border-gray-300 hover:bg-gray-50 h-12">
                 <Calendar className="h-4 w-4 mr-2" />
                 Veřejné zakázky
-              </Button>
-            </Link>
-            <Link href="/dashboard/analytics">
-              <Button variant="secondary" className="w-full justify-start text-gray-700 border-gray-300 hover:bg-gray-50 h-12">
-                <TrendingUp className="h-4 w-4 mr-2" />
-                Statistiky
-              </Button>
-            </Link>
-            <Link href="/dashboard/subscription">
-              <Button variant="secondary" className="w-full justify-start text-gray-700 border-gray-300 hover:bg-gray-50 h-12">
-                <CreditCard className="h-4 w-4 mr-2" />
-                Fakturace
               </Button>
             </Link>
           </div>

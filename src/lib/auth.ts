@@ -54,6 +54,25 @@ export const authOptions: NextAuthOptions = {
           return null
         }
 
+        if (user.role === "venue_manager") {
+          const now = new Date()
+          const hasActiveSubscription = await db.venue.findFirst({
+            where: {
+              managerId: user.id,
+              paid: true,
+              OR: [
+                { expiresAt: null },
+                { expiresAt: { gt: now } }
+              ]
+            },
+            select: { id: true }
+          })
+
+          if (!hasActiveSubscription) {
+            return null
+          }
+        }
+
         return {
           id: user.id,
           email: user.email,

@@ -3,7 +3,6 @@ import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { db } from "@/lib/db"
 import type { DashboardData, EventRequestSummary, VenueBroadcastSummary, VenueInquirySummary } from "@/types/dashboard"
-import { DashboardSidebar } from "@/components/dashboard/sidebar"
 import { UserDashboard } from "@/components/dashboard/user-dashboard"
 import { VenueManagerDashboard } from "@/components/dashboard/venue-manager-dashboard"
 import { AdminDashboard } from "@/components/dashboard/admin-dashboard"
@@ -167,11 +166,11 @@ export default async function DashboardPage() {
 
   if (!data) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-title-2 text-black mb-4">Chyba při načítání</h1>
-          <p className="text-body text-gray-600">Došlo k chybě při načítání vašeho dashboardu.</p>
-        </div>
+      <div className="rounded-2xl bg-white p-10 shadow-sm">
+        <h1 className="text-title-2 text-black mb-2 text-center">Chyba při načítání</h1>
+        <p className="text-body text-gray-600 text-center">
+          Došlo k chybě při načítání vašeho dashboardu. Zkuste to prosím znovu později.
+        </p>
       </div>
     )
   }
@@ -188,14 +187,5 @@ export default async function DashboardPage() {
     }
   }
 
-  return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="flex">
-        <DashboardSidebar userRole={session.user.role} />
-        <main className="flex-1 ml-64 p-8">
-          {renderDashboard()}
-        </main>
-      </div>
-    </div>
-  )
+  return renderDashboard()
 }

@@ -52,19 +52,17 @@ export default async function VenueEditPage({ params }: VenueEditPageProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-        <div className="mb-8">
-          <h1 className="text-title-1 text-gray-900 mb-2">
-            Upravit prostor: {venue.name}
-          </h1>
-          <p className="text-body text-gray-600">
-            Upravte informace o vašem prostoru a spravujte jeho nastavení
-          </p>
-        </div>
-
-        <VenueEditForm venue={venue} />
+    <div className="mx-auto max-w-4xl space-y-8">
+      <div>
+        <h1 className="text-title-1 text-gray-900 mb-2">
+          Upravit prostor: {venue.name}
+        </h1>
+        <p className="text-body text-gray-600">
+          Upravte informace o vašem prostoru a spravujte jeho nastavení
+        </p>
       </div>
+
+      <VenueEditForm venue={venue} />
     </div>
   )
 }

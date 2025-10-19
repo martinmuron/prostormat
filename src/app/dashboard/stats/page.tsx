@@ -18,7 +18,7 @@ async function getStats() {
       totalVenues,
       totalEventRequests,
       totalInquiries,
-      activeVenues,
+      publishedVenues,
       recentUsers,
       recentVenues,
       recentRequests
@@ -27,7 +27,7 @@ async function getStats() {
       db.venue.count(),
       db.eventRequest.count(),
       db.venueInquiry.count(),
-      db.venue.count({ where: { status: "active" } }),
+      db.venue.count({ where: { status: "published" } }),
       db.user.count({
         where: {
           createdAt: {
@@ -78,7 +78,7 @@ async function getStats() {
         totalVenues,
         totalEventRequests,
         totalInquiries,
-        activeVenues,
+        publishedVenues,
         recentUsers,
         recentVenues,
         recentRequests
@@ -142,7 +142,7 @@ export default async function StatsPage() {
           <CardContent>
             <div className="text-2xl font-bold">{stats.overview.totalVenues}</div>
             <p className="text-xs text-muted-foreground">
-              {stats.overview.activeVenues} aktivních
+              {stats.overview.publishedVenues} zveřejněných
             </p>
           </CardContent>
         </Card>

@@ -39,7 +39,8 @@ async function getDashboardData(userId: string, userRole: string): Promise<Dashb
             select: {
               inquiries: true,
             }
-          }
+          },
+          subscription: true,
         }
       })
 

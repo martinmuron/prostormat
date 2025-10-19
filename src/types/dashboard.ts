@@ -20,6 +20,7 @@ export type VenueManagerVenue = Prisma.VenueGetPayload<{
     _count: {
       select: { inquiries: true }
     }
+    subscription: true
   }
 }>
 

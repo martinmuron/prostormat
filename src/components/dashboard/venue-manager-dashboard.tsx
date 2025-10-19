@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { formatDate } from "@/lib/utils"
-import { Building, MessageSquare, Eye, Plus, Calendar, Settings, CreditCard, TrendingUp, Clock } from "lucide-react"
+import { Building, MessageSquare, Eye, Plus, Calendar, Settings, CreditCard, TrendingUp } from "lucide-react"
 import type { VenueManagerDashboardData } from "@/types/dashboard"
 
 interface VenueManagerDashboardProps {
@@ -34,16 +34,124 @@ export function VenueManagerDashboard({ data }: VenueManagerDashboardProps) {
     hidden: { label: "Skryto", isActive: false },
   }
 
-  // Mock subscription data - replace with real data
-  const subscriptionData = {
-    plan: "Premium",
-    status: "active",
-    daysLeft: 23,
-    totalDays: 30,
-    nextBillingDate: new Date(Date.now() + 23 * 24 * 60 * 60 * 1000)
+  type SubscriptionDetail = {
+    venueId: string
+    venueName: string
+    status: string
+    renewalDate: Date | null
   }
 
-  const progressPercentage = ((subscriptionData.totalDays - subscriptionData.daysLeft) / subscriptionData.totalDays) * 100
+  const now = new Date()
+
+  const subscriptionDetails: SubscriptionDetail[] = venues
+    .map((venue) => {
+      const hasSubscription = Boolean(venue.subscription || venue.subscriptionId || venue.paid)
+
+      if (!hasSubscription) {
+        return null
+      }
+
+      const renewalSource = venue.subscription?.currentPeriodEnd ?? venue.expiresAt ?? null
+
+      return {
+        venueId: venue.id,
+        venueName: venue.name ?? "Neznámý prostor",
+        status: venue.subscription?.status ?? (venue.paid ? "active" : "inactive"),
+        renewalDate: renewalSource ? new Date(renewalSource) : null,
+      }
+    })
+    .filter((detail): detail is SubscriptionDetail => detail !== null)
+
+  const activeSubscriptions = subscriptionDetails.filter((detail) => {
+    if (detail.status === "active") {
+      return true
+    }
+
+    if (detail.status === "inactive" && detail.renewalDate) {
+      return detail.renewalDate.getTime() >= now.getTime()
+    }
+
+    if (detail.status === "inactive" && !detail.renewalDate) {
+      return true
+    }
+
+    return false
+  })
+
+  const pastDueSubscriptions = subscriptionDetails.filter((detail) => detail.status === "past_due")
+
+  const nextRenewalDate = subscriptionDetails.reduce<Date | null>((earliest, detail) => {
+    if (!detail.renewalDate) {
+      return earliest
+    }
+
+    if (!earliest || detail.renewalDate.getTime() < earliest.getTime()) {
+      return detail.renewalDate
+    }
+
+    return earliest
+  }, null)
+
+  const daysUntilNextRenewal = nextRenewalDate
+    ? Math.max(0, Math.ceil((nextRenewalDate.getTime() - now.getTime()) / (24 * 60 * 60 * 1000)))
+    : null
+
+  const subscriptionStatus = (() => {
+    if (activeSubscriptions.length > 0) {
+      return "active"
+    }
+
+    if (pastDueSubscriptions.length > 0) {
+      return "past_due"
+    }
+
+    if (subscriptionDetails.length > 0) {
+      return "inactive"
+    }
+
+    return "none"
+  })()
+
+  const subscriptionStatusLabel = (() => {
+    switch (subscriptionStatus) {
+      case "active":
+        return "Aktivní"
+      case "past_due":
+        return "Po splatnosti"
+      case "inactive":
+        return "Neaktivní"
+      default:
+        return "Žádné předplatné"
+    }
+  })()
+
+  const subscriptionBadgeClass = (() => {
+    switch (subscriptionStatus) {
+      case "active":
+        return "bg-green-100 text-green-800"
+      case "past_due":
+        return "bg-red-100 text-red-800"
+      case "inactive":
+        return "bg-yellow-100 text-yellow-800"
+      default:
+        return "bg-gray-100 text-gray-800"
+    }
+  })()
+
+  const formatSubscriptionStatus = (status: string) => {
+    switch (status) {
+      case "active":
+        return "Aktivní"
+      case "past_due":
+        return "Po splatnosti"
+      case "canceled":
+        return "Zrušeno"
+      case "inactive":
+        return "Neaktivní"
+      default:
+        return status
+    }
+  }
 
   return (
     <div>
@@ -98,10 +206,10 @@ export function VenueManagerDashboard({ data }: VenueManagerDashboardProps) {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-caption text-gray-500 mb-1">Předplatné</p>
-                <p className="text-title-2 text-gray-900">{subscriptionData.daysLeft} dní</p>
+                <p className="text-caption text-gray-500 mb-1">Aktivní předplatné</p>
+                <p className="text-title-2 text-gray-900">{activeSubscriptions.length}</p>
               </div>
-              <Clock className="h-8 w-8 text-orange-500" />
+              <CreditCard className="h-8 w-8 text-orange-500" />
             </div>
           </CardContent>
         </Card>
@@ -115,38 +223,84 @@ export function VenueManagerDashboard({ data }: VenueManagerDashboardProps) {
               <CreditCard className="h-5 w-5 mr-2 text-blue-600" />
               Stav předplatného
             </CardTitle>
-            <Badge variant="default" className="bg-green-100 text-green-800">
-              {subscriptionData.status === "active" ? "Aktivní" : "Neaktivní"}
+            <Badge variant="default" className={subscriptionBadgeClass}>
+              {subscriptionStatusLabel}
             </Badge>
           </div>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div>
-              <p className="text-sm text-gray-600 mb-2">Aktuální plán</p>
-              <p className="text-lg font-semibold text-gray-900">{subscriptionData.plan}</p>
-            </div>
-            <div>
-              <p className="text-sm text-gray-600 mb-2">Zbývající doba</p>
-              <div className="flex items-center space-x-3">
-                <div className="flex-1 bg-gray-200 rounded-full h-2">
-                  <div 
-                    className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-                    style={{ width: `${progressPercentage}%` }}
-                  ></div>
-                </div>
-                <span className="text-sm font-medium text-gray-900">{subscriptionData.daysLeft} dní</span>
-              </div>
-            </div>
-            <div className="flex items-end justify-end">
+          {subscriptionDetails.length === 0 ? (
+            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+              <p className="text-sm text-gray-700">
+                Momentálně nemáte žádné prostory s aktivním předplatným.
+              </p>
               <Link href="/dashboard/subscription">
                 <Button className="bg-blue-600 hover:bg-blue-700 text-white">
                   <Settings className="h-4 w-4 mr-2" />
-                  Spravovat předplatné
+                  Aktivovat předplatné
                 </Button>
               </Link>
             </div>
-          </div>
+          ) : (
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+              <div>
+                <p className="text-sm text-gray-600 mb-2">Prostory s předplatným</p>
+                <p className="text-2xl font-semibold text-gray-900">
+                  {subscriptionDetails.length}
+                </p>
+                <p className="text-sm text-gray-500">
+                  Aktivních: {activeSubscriptions.length}
+                </p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-600 mb-2">Nejbližší obnovení</p>
+                {nextRenewalDate ? (
+                  <div>
+                    <p className="text-lg font-semibold text-gray-900">
+                      {formatDate(nextRenewalDate)}
+                    </p>
+                    {daysUntilNextRenewal !== null && (
+                      <p className="text-sm text-gray-500">
+                        za {daysUntilNextRenewal} dní
+                      </p>
+                    )}
+                  </div>
+                ) : (
+                  <p className="text-sm text-gray-500">
+                    Zatím nemáme datum další platby
+                  </p>
+                )}
+              </div>
+              <div className="space-y-3">
+                <p className="text-sm text-gray-600">Přehled prostorů</p>
+                <div className="space-y-2">
+                  {subscriptionDetails.slice(0, 3).map((detail) => (
+                    <div
+                      key={detail.venueId}
+                      className="flex items-center justify-between text-sm text-gray-700"
+                    >
+                      <span>{detail.venueName}</span>
+                      <span className="text-gray-500">
+                        {formatSubscriptionStatus(detail.status)}
+                        {detail.renewalDate ? ` · ${formatDate(detail.renewalDate)}` : ""}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+                {subscriptionDetails.length > 3 && (
+                  <p className="text-xs text-gray-500">
+                    +{subscriptionDetails.length - 3} dalších prostorů s předplatným
+                  </p>
+                )}
+                <Link href="/dashboard/subscription">
+                  <Button className="bg-blue-600 hover:bg-blue-700 text-white w-full">
+                    <Settings className="h-4 w-4 mr-2" />
+                    Spravovat předplatné
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
 

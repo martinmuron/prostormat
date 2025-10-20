@@ -11,7 +11,6 @@ import {
   getFacetedRowModel,
   getFacetedUniqueValues,
   getFilteredRowModel,
-  getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table"
@@ -25,7 +24,6 @@ import {
   TableRow,
 } from "@/components/ui/table"
 
-import { DataTablePagination } from "./data-table-pagination"
 import { DataTableToolbar } from "./data-table-toolbar"
 
 interface DataTableProps<TData, TValue> {
@@ -41,6 +39,9 @@ export function DataTable<TData, TValue>({
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [sorting, setSorting] = React.useState<SortingState>([])
+  const [visibleCount, setVisibleCount] = React.useState(25)
+  const sentinelRef = React.useRef<HTMLDivElement | null>(null)
+  const BATCH_SIZE = 25
 
   const table = useReactTable({
     data,
@@ -58,11 +59,40 @@ export function DataTable<TData, TValue>({
     onColumnVisibilityChange: setColumnVisibility,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFacetedRowModel: getFacetedRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
   })
+
+  const rows = table.getRowModel().rows
+  const visibleRows = React.useMemo(() => rows.slice(0, visibleCount), [rows, visibleCount])
+
+  React.useEffect(() => {
+    const node = sentinelRef.current
+    if (!node) return
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          setVisibleCount((current) => {
+            if (current >= rows.length) {
+              return current
+            }
+            return Math.min(rows.length, current + BATCH_SIZE)
+          })
+        }
+      },
+      { rootMargin: "200px" }
+    )
+
+    observer.observe(node)
+
+    return () => observer.disconnect()
+  }, [rows.length])
+
+  React.useEffect(() => {
+    setVisibleCount((current) => Math.min(rows.length, Math.max(BATCH_SIZE, current)))
+  }, [rows.length])
 
   return (
     <div className="space-y-4">
@@ -88,8 +118,8 @@ export function DataTable<TData, TValue>({
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
+            {visibleRows.length ? (
+              visibleRows.map((row) => (
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
@@ -118,7 +148,7 @@ export function DataTable<TData, TValue>({
           </TableBody>
         </Table>
       </div>
-      <DataTablePagination table={table} />
+      <div ref={sentinelRef} />
     </div>
   )
 }

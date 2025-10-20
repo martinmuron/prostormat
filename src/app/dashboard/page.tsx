@@ -57,9 +57,28 @@ async function getDashboardData(userId: string, userRole: string): Promise<Dashb
     }
 
     if (userRole === "admin") {
-      const [userCount, venueCount, requestCount, inquiryCount] = await Promise.all([
+      const now = new Date()
+      const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+
+      const [userCount, paidVenueCount, paidVenuesLast30, requestCount, inquiryCount] = await Promise.all([
         db.user.count(),
-        db.venue.count(),
+        db.venue.count({
+          where: {
+            paid: true,
+            OR: [
+              { expiresAt: null },
+              { expiresAt: { gt: now } }
+            ]
+          }
+        }),
+        db.venue.count({
+          where: {
+            paid: true,
+            paymentDate: {
+              gte: thirtyDaysAgo
+            }
+          }
+        }),
         db.eventRequest.count(),
         db.venueInquiry.count(),
       ])
@@ -69,7 +88,8 @@ async function getDashboardData(userId: string, userRole: string): Promise<Dashb
         ...baseData,
         stats: {
           totalUsers: userCount,
-          totalVenues: venueCount,
+          totalPaidVenues: paidVenueCount,
+          newPaidVenues30: paidVenuesLast30,
           totalEventRequests: requestCount,
           totalInquiries: inquiryCount,
         }

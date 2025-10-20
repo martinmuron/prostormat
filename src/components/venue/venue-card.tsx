@@ -18,9 +18,15 @@ function getPrimaryAddress(rawAddress?: string | null): string | null {
     .map(part => part.trim())
     .filter(Boolean)
 
-  const firstMeaningful = cleaned.find(part => /[\p{L}]/u.test(part))
+  const stripPostalCode = (value: string) => value.replace(/\b\d{3}\s?\d{2}\b/g, "").replace(/\s{2,}/g, " ").trim()
 
-  return firstMeaningful ?? cleaned[0] ?? null
+  const normalized = cleaned
+    .map(stripPostalCode)
+    .filter(Boolean)
+
+  const firstMeaningful = normalized.find(part => /[\p{L}]/u.test(part))
+
+  return firstMeaningful ?? normalized[0] ?? null
 }
 
 interface VenueCardProps {

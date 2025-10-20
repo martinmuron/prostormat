@@ -13,39 +13,55 @@ import {
 
 async function getStats() {
   try {
+    const now = new Date()
+    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+
     const [
       totalUsers,
-      totalVenues,
+      totalPaidVenues,
       totalEventRequests,
       totalInquiries,
-      publishedVenues,
+      activePaidVenues,
       recentUsers,
-      recentVenues,
+      recentPaidVenues,
       recentRequests
     ] = await Promise.all([
       db.user.count(),
-      db.venue.count(),
+      db.venue.count({
+        where: {
+          paid: true
+        }
+      }),
       db.eventRequest.count(),
       db.venueInquiry.count(),
-      db.venue.count({ where: { status: "published" } }),
+      db.venue.count({
+        where: {
+          paid: true,
+          OR: [
+            { expiresAt: null },
+            { expiresAt: { gt: now } }
+          ]
+        }
+      }),
       db.user.count({
         where: {
           createdAt: {
-            gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) // Last 30 days
+            gte: thirtyDaysAgo
           }
         }
       }),
       db.venue.count({
         where: {
-          createdAt: {
-            gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) // Last 30 days
+          paid: true,
+          paymentDate: {
+            gte: thirtyDaysAgo
           }
         }
       }),
       db.eventRequest.count({
         where: {
           createdAt: {
-            gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) // Last 30 days
+            gte: thirtyDaysAgo
           }
         }
       })
@@ -75,12 +91,12 @@ async function getStats() {
     return {
       overview: {
         totalUsers,
-        totalVenues,
+        totalPaidVenues,
         totalEventRequests,
         totalInquiries,
-        publishedVenues,
+        activePaidVenues,
         recentUsers,
-        recentVenues,
+        recentPaidVenues,
         recentRequests
       },
       usersByRole,
@@ -136,13 +152,13 @@ export default async function StatsPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Celkem prostorů</CardTitle>
+            <CardTitle className="text-sm font-medium">Placené prostory</CardTitle>
             <Building className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.overview.totalVenues}</div>
+            <div className="text-2xl font-bold">{stats.overview.totalPaidVenues}</div>
             <p className="text-xs text-muted-foreground">
-              {stats.overview.publishedVenues} zveřejněných
+              {stats.overview.activePaidVenues} aktivních členství
             </p>
           </CardContent>
         </Card>
@@ -190,12 +206,12 @@ export default async function StatsPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Nové prostory (30 dní)</CardTitle>
+            <CardTitle className="text-sm font-medium">Nové placené prostory (30 dní)</CardTitle>
             <TrendingUp className="h-4 w-4 text-blue-600" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-blue-600">
-              +{stats.overview.recentVenues}
+              +{stats.overview.recentPaidVenues}
             </div>
           </CardContent>
         </Card>

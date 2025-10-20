@@ -1,9 +1,12 @@
+import Link from "next/link"
 import { Suspense } from "react"
+import { Button } from "@/components/ui/button"
 import { VenueFilters } from "@/components/venue/venue-filters"
 import { InfiniteVenueList } from "@/components/venue/infinite-venue-list"
 import { db } from "@/lib/db"
 import { buildVenueWhereClause } from "@/lib/venue-filters"
 import { generateOrderSeed, sortVenuesByPriority } from "@/lib/venue-priority"
+import { PageHero } from "@/components/layout/page-hero"
 
 interface SearchParams {
   q?: string
@@ -121,18 +124,31 @@ export default async function VenuesPage({
 }) {
   const resolvedSearchParams = await searchParams
   const orderSeed = generateOrderSeed()
+
+  const hero = (
+    <PageHero
+      eyebrow="Výběr prostorů"
+      title="Event prostory v Praze"
+      subtitle="Procházejte ověřené prostory pro firemní akce, večírky i soukromé oslavy. Filtrujte podle typu, lokality a kapacity."
+      variant="plain"
+      className="bg-gradient-to-br from-blue-50 via-white to-indigo-50"
+      tone="blue"
+      size="md"
+      containerClassName="max-w-6xl mx-auto"
+      actions={
+        <Link href="/pridat-prostor">
+          <Button variant="outline" className="border-black text-black hover:bg-black hover:text-white rounded-xl">
+            Přidat prostor
+          </Button>
+        </Link>
+      }
+    />
+  )
   return (
     <div className="min-h-screen bg-white">
-      {/* Header */}
-      <div className="bg-white border-b border-black">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
-          <div className="text-center mb-8">
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl text-black mb-6 sm:mb-8 font-semibold tracking-tight">
-              Event prostory v Praze
-            </h1>
-          </div>
-
-          {/* Search and Filters */}
+      {hero}
+      <div className="bg-white border-b border-gray-200">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 pb-10">
           <div className="flex justify-center">
             <div className="w-full max-w-5xl">
               <VenueFilters initialValues={resolvedSearchParams} />

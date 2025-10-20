@@ -47,9 +47,11 @@ type VenueBillingProps = {
   }
 }
 
+type BillingFormValues = z.input<typeof billingSchema>
+
 export function VenueBilling({ venue }: VenueBillingProps) {
   const router = useRouter()
-  const form = useForm<z.infer<typeof billingSchema>>({
+  const form = useForm<BillingFormValues>({
     resolver: zodResolver(billingSchema),
     defaultValues: {
       billingEmail: venue.billingEmail || "",
@@ -94,7 +96,7 @@ export function VenueBilling({ venue }: VenueBillingProps) {
     form.setValue("expiresAt", plusYear.toISOString().split("T")[0], { shouldDirty: true })
   }, [paymentDate, form])
 
-  async function onSubmit(values: z.infer<typeof billingSchema>) {
+  async function onSubmit(values: BillingFormValues) {
     const paymentDateValue = values.paymentDate ? new Date(values.paymentDate) : null
     const expiresAtValue = values.expiresAt ? new Date(values.expiresAt) : null
 

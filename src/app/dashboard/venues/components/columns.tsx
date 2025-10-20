@@ -52,49 +52,19 @@ export const columns: ColumnDef<Venue>[] = [
     header: "Název",
     cell: ({ row }) => {
       const isFeatured = row.original.featured
-      return (
-        <div className="flex items-center space-x-2">
-          {isFeatured && <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />}
-          <span className="font-medium">{row.getValue("name")}</span>
-        </div>
-      )
-    },
-  },
-  {
-    accessorKey: "venueType",
-    header: "Typ",
-    cell: ({ row }) => {
-      const type = row.getValue("venueType")
-      return type ? <span className="capitalize">{String(type)}</span> : <span className="text-muted-foreground">Neuvedeno</span>
-    },
-  },
-  {
-    accessorKey: "address",
-    header: "Adresa",
-    cell: ({ row }) => {
-      const address = row.getValue("address")
       const district = row.original.district
       return (
-        <div className="space-y-1">
-          <div>{String(address)}</div>
-          {district && <div className="text-sm text-muted-foreground">{district}</div>}
+        <div className="flex flex-col">
+          <div className="flex items-center space-x-2">
+            {isFeatured && <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />}
+            <span className="font-medium">{row.original.name}</span>
+          </div>
+          {district && (
+            <span className="text-xs text-muted-foreground mt-1">
+              {district}
+            </span>
+          )}
         </div>
-      )
-    },
-  },
-  {
-    accessorKey: "contactEmail",
-    header: "Kontaktní e-mail",
-    cell: ({ row }) => {
-      const email = row.original.contactEmail
-      return email ? (
-        <div className="text-sm">
-          <a href={`mailto:${email}`} className="text-blue-600 hover:underline">
-            {email}
-          </a>
-        </div>
-      ) : (
-        <span className="text-muted-foreground text-sm">Neuvedeno</span>
       )
     },
   },
@@ -132,23 +102,6 @@ export const columns: ColumnDef<Venue>[] = [
         <Badge className={`${statusInfo.color} hover:${statusInfo.color} capitalize`}>
           {statusInfo.label}
         </Badge>
-      )
-    },
-  },
-  {
-    accessorKey: "_count",
-    header: "Statistiky",
-    cell: ({ row }) => {
-      const stats = row.original._count
-      return (
-        <div className="flex space-x-2">
-          <Badge variant="outline" className="text-xs">
-            {stats.inquiries} dotazů
-          </Badge>
-          <Badge variant="outline" className="text-xs">
-            {stats.broadcastLogs} rozesílek
-          </Badge>
-        </div>
       )
     },
   },

@@ -73,7 +73,8 @@ export interface AdminDashboardData extends DashboardBaseData {
   kind: 'admin'
   stats: {
     totalUsers: number
-    totalVenues: number
+    totalPaidVenues: number
+    newPaidVenues30: number
     totalEventRequests: number
     totalInquiries: number
   }

@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label"
 import { LoginModal } from "@/components/auth/login-modal"
 import { EVENT_TYPES, LOCATION_OPTIONS } from "@/types"
 import { Clock, Send, Zap, CheckCircle, LogIn } from "lucide-react"
+import { PageHero } from "@/components/layout/page-hero"
 
 interface QuickRequestFormData {
   eventType: string
@@ -130,6 +131,23 @@ export default function QuickRequestPage() {
     }
   }
 
+  const hero = (
+    <PageHero
+      eyebrow="Automatické oslovování"
+      title={
+        <>
+          Rychlá poptávka
+        </>
+      }
+      subtitle="Jedním formulářem oslovíte desítky relevantních prostorů. Zadejte preferované parametry a my poptávku rozešleme za vás."
+      variant="plain"
+      className="bg-gradient-to-br from-emerald-50 via-white to-teal-50"
+      tone="emerald"
+      size="md"
+      containerClassName="max-w-4xl mx-auto"
+    />
+  )
+
   if (status === "loading") {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
@@ -175,39 +193,27 @@ export default function QuickRequestPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Header */}
-      <div className="bg-white border-b border-black">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
-          <div className="text-center mb-8">
-            <div className="flex items-center justify-center gap-2 mb-4">
-              <Zap className="h-8 w-8 text-yellow-500" />
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl text-black font-semibold tracking-tight">Rychlá poptávka</h1>
+      {hero}
+      <div className="bg-white border-b border-emerald-200/50">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 pb-10">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="flex items-center gap-2 justify-center sm:justify-start">
+              <div className="w-8 h-8 bg-emerald-100 rounded-full flex items-center justify-center">
+                <Zap className="h-4 w-4 text-emerald-600" />
+              </div>
+              <span className="text-sm text-gray-700">Rychlé odeslání</span>
             </div>
-            <p className="text-sm sm:text-body text-gray-600 mb-6 sm:mb-8 max-w-2xl mx-auto px-2 sm:px-0">
-              Vyplňte formulář a my automaticky ošleme vaši poptávku všem prostorům, 
-              které odpovídají vašim požadavkům. Ušetříte čas a získáte více nabídek!
-            </p>
-            
-            {/* Features */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-              <div className="flex items-center gap-2 justify-center sm:justify-start">
-                <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                  <Zap className="h-4 w-4 text-green-600" />
-                </div>
-                <span className="text-sm text-gray-700">Rychlé odeslání</span>
+            <div className="flex items-center gap-2 justify-center sm:justify-start">
+              <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                <Send className="h-4 w-4 text-blue-600" />
               </div>
-              <div className="flex items-center gap-2 justify-center sm:justify-start">
-                <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                  <Send className="h-4 w-4 text-blue-600" />
-                </div>
-                <span className="text-sm text-gray-700">Více nabídek najednou</span>
+              <span className="text-sm text-gray-700">Více nabídek najednou</span>
+            </div>
+            <div className="flex items-center gap-2 justify-center sm:justify-start">
+              <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center">
+                <Clock className="h-4 w-4 text-orange-600" />
               </div>
-              <div className="flex items-center gap-2 justify-center sm:justify-start">
-                <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
-                  <Clock className="h-4 w-4 text-purple-600" />
-                </div>
-                <span className="text-sm text-gray-700">Odpověď do 48h</span>
-              </div>
+              <span className="text-sm text-gray-700">Odpověď do 48h</span>
             </div>
           </div>
         </div>

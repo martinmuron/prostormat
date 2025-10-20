@@ -15,6 +15,17 @@ import type { VenueType } from "@/types"
 import { MapPin, Users, Instagram } from "lucide-react"
 import { generateVenueSchema, generateBreadcrumbSchema, schemaToJsonLd } from "@/lib/schema-markup"
 
+export const revalidate = 0
+
+function formatDisplayAddress(address?: string | null) {
+  if (!address) return ""
+  return address
+    .replace(/\b\d{3}\s?\d{2}\b/g, "")
+    .replace(/\s{2,}/g, " ")
+    .replace(/,\s*,/g, ", ")
+    .trim()
+}
+
 async function getVenue(slug: string) {
   try {
   const venue = await db.venue.findUnique({
@@ -155,6 +166,8 @@ export default async function VenueDetailPage({
 
   const venueTypeLabel = venue.venueType ? VENUE_TYPES[venue.venueType as VenueType] || venue.venueType : null
 
+  const displayAddress = formatDisplayAddress(venue.address)
+
   // Generate schema markup for SEO
   const venueSchema = generateVenueSchema({
     name: venue.name,
@@ -223,7 +236,7 @@ export default async function VenueDetailPage({
                   <h1 className="text-title-1 text-black mb-2">{venue.name}</h1>
                   <div className="flex items-center gap-2 text-gray-600 mb-2">
                     <MapPin className="h-5 w-5" />
-                    <span className="text-body">{venue.address}</span>
+                    <span className="text-body">{displayAddress}</span>
                   </div>
                   {venue.district && (
                     <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-blue-600 bg-blue-50 rounded-full px-3 py-1 mb-4">
@@ -396,7 +409,9 @@ export default async function VenueDetailPage({
           currentVenueId={venue.id}
           venueType={venue.venueType}
           address={venue.address}
+          district={venue.district}
           amenities={venue.amenities}
+          maxCapacity={Math.max(Number(venue.capacitySeated) || 0, Number(venue.capacityStanding) || 0)}
         />
       </div>
     </div>

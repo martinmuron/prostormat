@@ -131,7 +131,7 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="w-[calc(100vw-2rem)] max-w-md sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="text-center text-xl font-bold">
             Přihlášení nebo registrace

@@ -49,6 +49,7 @@ async function getFeaturedVenues() {
       const homepageVenueRecords = await db.venue.findMany({
         where: {
           id: { in: homepageVenueIds },
+          parentId: null,
         },
         select: featuredVenueSelect,
       })
@@ -67,16 +68,19 @@ async function getFeaturedVenues() {
       }
     }
 
-    if (selected.length < 12) {
+    const desiredCount = 6
+
+    if (selected.length < desiredCount) {
       const fallbackVenues = await db.venue.findMany({
         where: {
           status: { in: ['published', 'active'] },
           id: { notIn: Array.from(seen) },
+          parentId: null,
         },
         orderBy: {
           createdAt: 'desc',
         },
-        take: 12 - selected.length,
+        take: desiredCount - selected.length,
         select: featuredVenueSelect,
       })
 
@@ -88,7 +92,7 @@ async function getFeaturedVenues() {
       }
     }
 
-    return selected.slice(0, 12)
+    return selected.slice(0, desiredCount)
   } catch (error) {
     console.error("Error fetching prostormat_venues:", error)
     return []

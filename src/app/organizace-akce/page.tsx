@@ -11,7 +11,8 @@ import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { EVENT_TYPES, PRAGUE_DISTRICTS, BUDGET_RANGES } from '@/types'
-import { CheckCircle, ClipboardList, Clock, Sparkles } from 'lucide-react'
+import { CheckCircle, ClipboardList, Clock } from 'lucide-react'
+import { PageHero } from '@/components/layout/page-hero'
 
 const formSchema = z.object({
   name: z.string().min(2, 'Zadejte vaše jméno'),
@@ -63,6 +64,19 @@ export default function OrganizeEventPage() {
     }
   }
 
+  const hero = (
+    <PageHero
+      eyebrow="Full-service"
+      title="Organizaci zajistíme za vás"
+      subtitle="Nemáte čas hledat prostory ani koordinovat dodavatele? Zadejte nám parametry a náš tým celý event připraví na klíč."
+      variant="plain"
+      className="bg-gradient-to-br from-amber-50 via-white to-orange-50"
+      tone="amber"
+      size="md"
+      containerClassName="max-w-5xl mx-auto"
+    />
+  )
+
   if (isSuccess) {
     return (
       <div className="min-h-screen bg-white">
@@ -80,24 +94,13 @@ export default function OrganizeEventPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Header */}
-      <div className="bg-white border-b border-black">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10 sm:py-16">
-          <div className="text-center max-w-3xl mx-auto">
-            <div className="flex items-center justify-center gap-2 mb-4">
-              <Sparkles className="h-8 w-8 text-purple-600" />
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl text-black font-semibold tracking-tight">Organizaci zajistíme za vás</h1>
-            </div>
-            <p className="text-sm sm:text-body text-gray-600 mb-6 sm:mb-8">
-              Nechcete hledat prostory? Nemáte čas organizovat akci? Chcete lepší podmínky? Postaráme se o všechno – od prostoru přes catering až po techniku.
-            </p>
-            <div className="mx-auto max-w-xl bg-amber-50 border border-amber-200 rounded-xl p-4 text-amber-900">
-              <strong>Vzhledem k vysoké poptávce</strong> aktuálně přijímáme pouze akce pro <strong>30+ osob</strong>.
-            </div>
-          </div>
+      {hero}
+      <div className="px-4 sm:px-6">
+        <div className="mx-auto max-w-xl bg-amber-50 border border-amber-200 rounded-xl p-4 text-amber-900 shadow-sm">
+          <strong>Vzhledem k vysoké poptávce</strong> aktuálně přijímáme pouze akce pro <strong>30+ osob</strong>.
         </div>
       </div>
-
+      
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10 sm:py-16 grid grid-cols-1 lg:grid-cols-2 gap-10">
         {/* Left: Benefits */}
         <div className="space-y-6">

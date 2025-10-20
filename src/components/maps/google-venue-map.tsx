@@ -5,8 +5,12 @@ interface GoogleVenueMapProps {
 }
 
 export function GoogleVenueMap({ address, venueName, className = "" }: GoogleVenueMapProps) {
+  const baseAddress = address?.trim() || "Praha, Česká republika"
+  const hasCountry = /čes|czech|slovak|germany|austria/i.test(baseAddress)
+  const mapAddress = hasCountry ? baseAddress : `${baseAddress}, Česká republika`
+
   // Encode the address for URL - using the basic Google Maps embed without API key
-  const encodedAddress = encodeURIComponent(address)
+  const encodedAddress = encodeURIComponent(mapAddress)
   
   // Google Maps Embed URL (basic version that doesn't require API key)
   const mapUrl = `https://www.google.com/maps?q=${encodedAddress}&output=embed&z=16`

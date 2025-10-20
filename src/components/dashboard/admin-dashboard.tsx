@@ -1,7 +1,7 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Users, Building, Calendar, MessageSquare, FileText, Mail } from "lucide-react"
+import { Users, Building, Calendar, MessageSquare } from "lucide-react"
 import type { AdminDashboardData } from "@/types/dashboard"
 
 interface AdminDashboardProps {
@@ -40,8 +40,11 @@ export function AdminDashboard({ data }: AdminDashboardProps) {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-caption text-gray-500 mb-1">Celkem prostorů</p>
-                <p className="text-title-2 text-black">{stats.totalVenues}</p>
+                <p className="text-caption text-gray-500 mb-1">Placené prostory</p>
+                <p className="text-title-2 text-black">{stats.totalPaidVenues}</p>
+                <p className="text-caption text-gray-500 mt-1">
+                  +{stats.newPaidVenues30} za posledních 30 dní
+                </p>
               </div>
               <Building className="h-8 w-8 text-gray-400" />
             </div>
@@ -146,58 +149,6 @@ export function AdminDashboard({ data }: AdminDashboardProps) {
         </Card>
       </div>
 
-      {/* Quick Actions */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Rychlé akce</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
-            <Link href="/dashboard/users">
-              <Button variant="secondary" className="w-full justify-start">
-                <Users className="h-4 w-4 mr-2" />
-                Uživatelé
-              </Button>
-            </Link>
-            <Link href="/dashboard/venues">
-              <Button variant="secondary" className="w-full justify-start">
-                <Building className="h-4 w-4 mr-2" />
-                Prostory
-              </Button>
-            </Link>
-            <Link href="/admin/blog">
-              <Button variant="secondary" className="w-full justify-start">
-                <FileText className="h-4 w-4 mr-2" />
-                Blog
-              </Button>
-            </Link>
-            <Link href="/verejne-zakazky">
-              <Button variant="secondary" className="w-full justify-start">
-                <Calendar className="h-4 w-4 mr-2" />
-                Veřejné zakázky
-              </Button>
-            </Link>
-            <Link href="/dashboard/stats">
-              <Button variant="secondary" className="w-full justify-start">
-                <MessageSquare className="h-4 w-4 mr-2" />
-                Statistiky
-              </Button>
-            </Link>
-            <Link href="/admin/email-flow">
-              <Button variant="secondary" className="w-full justify-start">
-                <Mail className="h-4 w-4 mr-2" />
-                Email Flow
-              </Button>
-            </Link>
-            <Link href="/admin/email-templates">
-              <Button variant="secondary" className="w-full justify-start">
-                <Mail className="h-4 w-4 mr-2" />
-                Email šablony
-              </Button>
-            </Link>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   )
 }

@@ -13,6 +13,7 @@ import type { EventType } from "@/types"
 import { formatDate } from "@/lib/utils"
 import { EventRequestHeartButton } from "@/components/event-request/heart-button"
 import { Calendar, Users, MapPin, Euro, Mail, Phone, User, Filter, Search, Clock, X, LogIn } from "lucide-react"
+import { PageHero } from "@/components/layout/page-hero"
 
 // Force dynamic rendering to avoid caching issues
 export const dynamic = 'force-dynamic'
@@ -220,18 +221,31 @@ export default function EventRequestsPage() {
                           filters.search !== "" ||
                           filters.prostormat_venue_favorites !== "all"
 
+  const hero = (
+    <PageHero
+      eyebrow="Poptávky"
+      title="Veřejné zakázky"
+      subtitle="Aktuální poptávky na event prostory. Kontaktujte organizátory přímo prostřednictvím uvedených kontaktních údajů."
+      variant="plain"
+      className="bg-gradient-to-br from-rose-50 via-white to-pink-50"
+      actions={
+        <Link href="/verejne-zakazky/novy">
+          <Button size="lg" className="bg-black text-white hover:bg-gray-800 min-w-[200px] rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl">
+            Přidat poptávku
+          </Button>
+        </Link>
+      }
+      tone="rose"
+      size="md"
+      containerClassName="max-w-5xl mx-auto"
+    />
+  )
+
   if (status === "loading" || loading) {
     return (
       <div className="min-h-screen bg-white">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
-          <div className="text-center mb-8 sm:mb-12">
-            <h1 className="text-2xl sm:text-title-1 text-black mb-4">Veřejné zakázky</h1>
-            <p className="text-sm sm:text-body text-gray-600 mb-6 sm:mb-8 max-w-2xl mx-auto px-2 sm:px-0">
-              Aktuální poptávky na event prostory. Kontaktujte organizátory přímo 
-              prostřednictvím uvedených kontaktních údajů.
-            </p>
-          </div>
-          
+        {hero}
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 pb-12">
           <div className="space-y-6">
             {Array.from({ length: 3 }).map((_, i) => (
               <EventRequestSkeleton key={i} />
@@ -244,25 +258,7 @@ export default function EventRequestsPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Header */}
-      <div className="bg-white border-b border-black">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
-          <div className="text-center mb-8">
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl text-black mb-6 sm:mb-8 font-semibold tracking-tight">
-              Veřejné zakázky
-            </h1>
-            <p className="text-sm sm:text-body text-gray-600 mb-6 sm:mb-8 max-w-2xl mx-auto px-2 sm:px-0">
-              Aktuální poptávky na event prostory. Kontaktujte organizátory přímo 
-              prostřednictvím uvedených kontaktních údajů.
-            </p>
-            <Link href="/verejne-zakazky/novy">
-              <Button size="lg" className="bg-black text-white hover:bg-gray-800 w-full sm:w-auto rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl">
-                Přidat poptávku
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </div>
+      {hero}
       
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
 

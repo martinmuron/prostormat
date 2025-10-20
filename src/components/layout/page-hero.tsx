@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils"
 type PageHeroVariant = "default" | "soft" | "plain"
 type PageHeroAlign = "center" | "left"
 type PageHeroSize = "lg" | "md"
+type PageHeroTone = "blue" | "rose" | "emerald" | "amber"
 
 interface PageHeroProps {
   eyebrow?: ReactNode
@@ -15,6 +16,7 @@ interface PageHeroProps {
   align?: PageHeroAlign
   variant?: PageHeroVariant
   size?: PageHeroSize
+  tone?: PageHeroTone
   className?: string
   containerClassName?: string
 }
@@ -38,6 +40,7 @@ export function PageHero({
   align = "center",
   variant = "default",
   size = "lg",
+  tone = "blue",
   className,
   containerClassName,
 }: PageHeroProps) {
@@ -53,7 +56,7 @@ export function PageHero({
         className,
       )}
     >
-      <BackgroundDecor />
+      <BackgroundDecor tone={tone} />
 
       <div className={cn("relative z-10 px-4 sm:px-6", containerClassName)}>
         <div className={cn("max-w-4xl mx-auto flex flex-col gap-6", contentAlignment)}>
@@ -84,21 +87,145 @@ export function PageHero({
   )
 }
 
-function BackgroundDecor() {
+type ToneConfig = {
+  radialTop: string
+  radialBottom: string
+  grid: string
+  blobs: Array<
+    {
+      className: string
+      backgroundColor?: string
+      backgroundImage?: string
+    }
+  >
+}
+
+const toneConfigs: Record<PageHeroTone, ToneConfig> = {
+  blue: {
+    radialTop: "rgba(59,130,246,0.12)",
+    radialBottom: "rgba(124,58,237,0.08)",
+    grid: "rgba(99,102,241,0.08)",
+    blobs: [
+      {
+        className: "absolute -top-16 left-10 h-48 w-48 rounded-full blur-3xl animate-float-slow",
+        backgroundColor: "rgba(191,219,254,0.5)",
+      },
+      {
+        className: "absolute top-1/4 right-1/4 h-40 w-40 rounded-full blur-3xl animate-float-medium",
+        backgroundColor: "rgba(199,210,254,0.5)",
+      },
+      {
+        className: "absolute bottom-0 left-1/3 h-52 w-52 rounded-full blur-3xl animate-float-fast",
+        backgroundColor: "rgba(221,214,254,0.4)",
+      },
+      {
+        className: "absolute bottom-12 right-12 h-36 w-36 rounded-3xl blur-2xl animate-float-slow",
+        backgroundImage: "linear-gradient(to bottom right, rgba(191,219,254,0.6), rgba(255,255,255,0.4), rgba(165,180,252,0.4))",
+      },
+    ],
+  },
+  rose: {
+    radialTop: "rgba(244,114,182,0.12)",
+    radialBottom: "rgba(236,72,153,0.08)",
+    grid: "rgba(244,114,182,0.08)",
+    blobs: [
+      {
+        className: "absolute -top-16 left-10 h-48 w-48 rounded-full blur-3xl animate-float-slow",
+        backgroundColor: "rgba(251,207,232,0.55)",
+      },
+      {
+        className: "absolute top-1/4 right-1/4 h-40 w-40 rounded-full blur-3xl animate-float-medium",
+        backgroundColor: "rgba(244,114,182,0.3)",
+      },
+      {
+        className: "absolute bottom-0 left-1/3 h-52 w-52 rounded-full blur-3xl animate-float-fast",
+        backgroundColor: "rgba(251,191,207,0.4)",
+      },
+      {
+        className: "absolute bottom-12 right-12 h-36 w-36 rounded-3xl blur-2xl animate-float-slow",
+        backgroundImage: "linear-gradient(to bottom right, rgba(244,114,182,0.3), rgba(255,255,255,0.4), rgba(249,168,212,0.45))",
+      },
+    ],
+  },
+  emerald: {
+    radialTop: "rgba(16,185,129,0.12)",
+    radialBottom: "rgba(5,150,105,0.08)",
+    grid: "rgba(16,185,129,0.08)",
+    blobs: [
+      {
+        className: "absolute -top-16 left-10 h-48 w-48 rounded-full blur-3xl animate-float-slow",
+        backgroundColor: "rgba(187,247,208,0.55)",
+      },
+      {
+        className: "absolute top-1/4 right-1/4 h-40 w-40 rounded-full blur-3xl animate-float-medium",
+        backgroundColor: "rgba(110,231,183,0.4)",
+      },
+      {
+        className: "absolute bottom-0 left-1/3 h-52 w-52 rounded-full blur-3xl animate-float-fast",
+        backgroundColor: "rgba(167,243,208,0.45)",
+      },
+      {
+        className: "absolute bottom-12 right-12 h-36 w-36 rounded-3xl blur-2xl animate-float-slow",
+        backgroundImage: "linear-gradient(to bottom right, rgba(16,185,129,0.25), rgba(255,255,255,0.4), rgba(52,211,153,0.35))",
+      },
+    ],
+  },
+  amber: {
+    radialTop: "rgba(251,191,36,0.12)",
+    radialBottom: "rgba(245,158,11,0.08)",
+    grid: "rgba(251,191,36,0.08)",
+    blobs: [
+      {
+        className: "absolute -top-16 left-10 h-48 w-48 rounded-full blur-3xl animate-float-slow",
+        backgroundColor: "rgba(254,243,199,0.6)",
+      },
+      {
+        className: "absolute top-1/4 right-1/4 h-40 w-40 rounded-full blur-3xl animate-float-medium",
+        backgroundColor: "rgba(253,224,71,0.35)",
+      },
+      {
+        className: "absolute bottom-0 left-1/3 h-52 w-52 rounded-full blur-3xl animate-float-fast",
+        backgroundColor: "rgba(254,240,138,0.45)",
+      },
+      {
+        className: "absolute bottom-12 right-12 h-36 w-36 rounded-3xl blur-2xl animate-float-slow",
+        backgroundImage: "linear-gradient(to bottom right, rgba(251,191,36,0.28), rgba(255,255,255,0.4), rgba(251,146,60,0.32))",
+      },
+    ],
+  },
+}
+
+function BackgroundDecor({ tone }: { tone: PageHeroTone }) {
+  const config = toneConfigs[tone]
+
   return (
     <div className="pointer-events-none absolute inset-0 -z-10">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(59,130,246,0.12),transparent_55%)]" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom,_rgba(124,58,237,0.08),transparent_55%)]" />
-      <div className="absolute inset-0 opacity-60" style={{
-        backgroundImage:
-          "linear-gradient(rgba(99,102,241,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(99,102,241,0.08) 1px, transparent 1px)",
-        backgroundSize: "48px 48px",
-      }} />
+      <div
+        className="absolute inset-0"
+        style={{ background: `radial-gradient(circle at top, ${config.radialTop}, transparent 55%)` }}
+      />
+      <div
+        className="absolute inset-0"
+        style={{ background: `radial-gradient(circle at bottom, ${config.radialBottom}, transparent 55%)` }}
+      />
+      <div
+        className="absolute inset-0 opacity-60"
+        style={{
+          backgroundImage: `linear-gradient(${config.grid} 1px, transparent 1px), linear-gradient(90deg, ${config.grid} 1px, transparent 1px)`,
+          backgroundSize: "48px 48px",
+        }}
+      />
 
-      <div className="absolute -top-16 left-10 h-48 w-48 rounded-full bg-blue-100/50 blur-3xl animate-float-slow" />
-      <div className="absolute top-1/4 right-1/4 h-40 w-40 rounded-full bg-indigo-100/50 blur-3xl animate-float-medium" />
-      <div className="absolute bottom-0 left-1/3 h-52 w-52 rounded-full bg-purple-100/40 blur-3xl animate-float-fast" />
-      <div className="absolute bottom-12 right-12 h-36 w-36 rounded-3xl bg-gradient-to-br from-blue-200/60 via-white/40 to-indigo-300/40 blur-2xl animate-float-slow" />
+      {config.blobs.map((blob, index) => (
+        <div
+          key={index}
+          className={blob.className}
+          style={{
+            backgroundColor: blob.backgroundColor,
+            backgroundImage: blob.backgroundImage,
+          }}
+        />
+      ))}
     </div>
   )
 }

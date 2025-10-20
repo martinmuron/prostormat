@@ -84,6 +84,14 @@ export default function RootLayout({
           dangerouslySetInnerHTML={schemaToJsonLd(webSiteSchema)}
         />
 
+        <Script
+          id="Cookiebot"
+          src="https://consent.cookiebot.com/uc.js"
+          data-cbid="02642a3d-68e1-4dfd-9e04-eba8ad218312"
+          data-blockingmode="auto"
+          strategy="beforeInteractive"
+        />
+
         {/* Google Tag Manager */}
         <Script
           id="gtm-script"

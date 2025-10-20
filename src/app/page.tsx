@@ -157,7 +157,7 @@ export default function HomePage() {
       <AnimatedBackground />
       
       {/* Hero Section */}
-      <section className="relative py-20 sm:py-28 lg:py-36 px-4 sm:px-6 bg-white">
+      <section className="relative py-20 sm:py-28 lg:py-36 px-4 sm:px-6 bg-gradient-to-br from-rose-50 via-white to-pink-50">
         <FloatingShapes />
         <div className="max-w-5xl mx-auto text-center relative z-20">
           <div className="animate-slide-up">

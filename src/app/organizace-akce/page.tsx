@@ -70,7 +70,7 @@ export default function OrganizeEventPage() {
       title="Organizaci zajistíme za vás"
       subtitle="Nemáte čas hledat prostory ani koordinovat dodavatele? Zadejte nám parametry a náš tým celý event připraví na klíč."
       variant="plain"
-      className="bg-gradient-to-br from-amber-50 via-white to-orange-50"
+      className="bg-gradient-to-br from-amber-50 via-white to-orange-50 !pb-8"
       tone="amber"
       size="md"
       containerClassName="max-w-5xl mx-auto"
@@ -95,12 +95,12 @@ export default function OrganizeEventPage() {
   return (
     <div className="min-h-screen bg-white">
       {hero}
-      <div className="px-4 sm:px-6">
-        <div className="mx-auto max-w-xl bg-amber-50 border border-amber-200 rounded-xl p-4 text-amber-900 shadow-sm">
+      <div className="px-4 sm:px-6 py-6 bg-white border-b border-amber-200/50">
+        <div className="mx-auto max-w-xl bg-amber-50 border border-amber-200 rounded-xl p-4 text-center text-sm text-amber-900 shadow-sm">
           <strong>Vzhledem k vysoké poptávce</strong> aktuálně přijímáme pouze akce pro <strong>30+ osob</strong>.
         </div>
       </div>
-      
+
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10 sm:py-16 grid grid-cols-1 lg:grid-cols-2 gap-10">
         {/* Left: Benefits */}
         <div className="space-y-6">

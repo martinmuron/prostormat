@@ -68,7 +68,7 @@ async function getFeaturedVenues() {
       }
     }
 
-    const desiredCount = 6
+    const desiredCount = 9
 
     if (selected.length < desiredCount) {
       const fallbackVenues = await db.venue.findMany({
@@ -143,8 +143,12 @@ async function FeaturedVenues() {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-      {venues.map((venue) => (
-        <VenueCard key={venue.id} venue={venue} />
+      {venues.map((venue, index) => (
+        <VenueCard
+          key={venue.id}
+          venue={venue}
+          priority={index < 3}
+        />
       ))}
     </div>
   )
@@ -342,7 +346,7 @@ export default function HomePage() {
           <ScrollReveal delay={200}>
             <Suspense fallback={
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {Array.from({ length: 12 }).map((_, i) => (
+                {Array.from({ length: 9 }).map((_, i) => (
                   <VenueCardSkeleton key={i} />
                 ))}
               </div>

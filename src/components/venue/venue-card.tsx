@@ -43,9 +43,10 @@ interface VenueCardProps {
     venueTypes?: string[]
     images: string[]
   }
+  priority?: boolean
 }
 
-export function VenueCard({ venue }: VenueCardProps) {
+export function VenueCard({ venue, priority = false }: VenueCardProps) {
   const mainImage = venue.images[0] || "/images/placeholder-venue.jpg"
 
   // Support both single venueType (legacy) and venueTypes array
@@ -67,6 +68,7 @@ export function VenueCard({ venue }: VenueCardProps) {
             alt={venue.name}
             size="thumbnail"
             fill
+            priority={priority}
             className="object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Mail, Phone, MapPin, Clock } from 'lucide-react'
+import { Mail, Phone } from 'lucide-react'
 import { ScrollReveal } from "@/components/ui/scroll-reveal"
 import { PageHero } from "@/components/layout/page-hero"
 import { Button } from "@/components/ui/button"
@@ -100,96 +100,63 @@ export default function ContactPage() {
 
       {/* Contact Content */}
       <section className="py-16 px-4 sm:px-6 bg-white relative">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid md:grid-cols-2 gap-10">
-            {/* Contact Info */}
-            <ScrollReveal>
-              <div className="space-y-8">
-                <div>
-                  <h2 className="text-title-1 text-black mb-6 font-bold">
-                    Spojte se s námi
-                  </h2>
-                  <p className="text-body text-gray-600 max-w-2xl mx-auto text-lg font-medium">
-                    Jsme zde pro vás každý pracovní den. Neváhejte nás kontaktovat 
-                    s jakýmkoli dotazem ohledně našich služeb.
-                  </p>
+        <div className="max-w-4xl mx-auto">
+          <ScrollReveal>
+            <div className="space-y-8 mb-12">
+              <div className="text-center">
+                <h2 className="text-title-1 text-black mb-6 font-bold">
+                  Spojte se s námi
+                </h2>
+                <p className="text-body text-gray-600 max-w-2xl mx-auto text-lg font-medium">
+                  Jsme zde pro vás každý pracovní den. Neváhejte nás kontaktovat
+                  s jakýmkoli dotazem ohledně našich služeb.
+                </p>
+              </div>
+
+              <div className="grid sm:grid-cols-2 gap-6 max-w-2xl mx-auto">
+                {/* Email */}
+                <div className="flex items-start space-x-4 group">
+                  <div className="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-all duration-300">
+                    <Mail className="h-8 w-8 text-blue-600" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-gray-900">Email</h3>
+                    <p className="text-gray-600 mb-2">Napište nám na</p>
+                    <a
+                      href="mailto:info@prostormat.cz"
+                      className="text-blue-600 hover:text-blue-700 font-medium text-lg"
+                    >
+                      info@prostormat.cz
+                    </a>
+                  </div>
                 </div>
 
-                <div className="space-y-6">
-                  {/* Email */}
-                  <div className="flex items-start space-x-4 group">
-                    <div className="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-all duration-300">
-                      <Mail className="h-8 w-8 text-blue-600" />
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-bold text-gray-900">Email</h3>
-                      <p className="text-gray-600 mb-2">Napište nám na</p>
-                      <a 
-                        href="mailto:info@prostormat.cz"
-                        className="text-blue-600 hover:text-blue-700 font-medium text-lg"
-                      >
-                        info@prostormat.cz
-                      </a>
-                    </div>
+                {/* Phone */}
+                <div className="flex items-start space-x-4 group">
+                  <div className="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-all duration-300">
+                    <Phone className="h-8 w-8 text-green-600" />
                   </div>
-
-                  {/* Phone */}
-                  <div className="flex items-start space-x-4 group">
-                    <div className="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-all duration-300">
-                      <Phone className="h-8 w-8 text-green-600" />
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-bold text-gray-900">Telefon</h3>
-                      <p className="text-gray-600 mb-2">Zavolejte nám na</p>
-                      <a 
-                        href="tel:+420775654639"
-                        className="text-blue-600 hover:text-blue-700 font-medium text-lg"
-                      >
-                        +420 775 654 639
-                      </a>
-                    </div>
-                  </div>
-
-                  {/* Address */}
-                  <div className="flex items-start space-x-4 group">
-                    <div className="w-16 h-16 bg-purple-100 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-all duration-300">
-                      <MapPin className="h-8 w-8 text-purple-600" />
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-bold text-gray-900">Adresa</h3>
-                      <p className="text-gray-600 mb-2">Navštivte nás na adrese</p>
-                      <p className="text-gray-900 text-lg leading-relaxed">
-                        Placeholder Address 123<br />
-                        110 00 Praha 1<br />
-                        Česká republika
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Hours */}
-                  <div className="flex items-start space-x-4 group">
-                    <div className="w-16 h-16 bg-amber-100 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-all duration-300">
-                      <Clock className="h-8 w-8 text-amber-600" />
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-bold text-gray-900">Otevírací doba</h3>
-                      <p className="text-gray-600 mb-2">Jsme dostupní</p>
-                      <p className="text-gray-900 text-lg leading-relaxed">
-                        Pondělí - Pátek: 9:00 - 18:00<br />
-                        Víkendy: Pouze e-mailem
-                      </p>
-                    </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-gray-900">Telefon</h3>
+                    <p className="text-gray-600 mb-2">Zavolejte nám na</p>
+                    <a
+                      href="tel:+420775654639"
+                      className="text-blue-600 hover:text-blue-700 font-medium text-lg"
+                    >
+                      +420 775 654 639
+                    </a>
                   </div>
                 </div>
               </div>
-            </ScrollReveal>
+            </div>
+          </ScrollReveal>
 
-            {/* Contact Form */}
-            <ScrollReveal delay={200}>
-              <div className="bg-white rounded-2xl shadow-2xl border border-gray-200 p-8 hover-lift">
-                <h2 className="text-2xl font-bold text-gray-900 mb-6">
-                  Napište nám zprávu
-                </h2>
+          {/* Contact Form */}
+          <ScrollReveal delay={200}>
+            <div className="bg-white rounded-2xl shadow-2xl border border-gray-200 p-8 hover-lift">
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">
+                Napište nám zprávu
+              </h2>
                 
                 {/* Status Message */}
                 {submitStatus.type && (
@@ -286,7 +253,6 @@ export default function ContactPage() {
                 </form>
               </div>
             </ScrollReveal>
-          </div>
         </div>
       </section>
 

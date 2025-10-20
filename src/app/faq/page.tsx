@@ -12,12 +12,12 @@ interface FAQItem {
 
 const faqData: FAQItem[] = [
   {
-    question: "Jak funguje ProstorMat?",
-    answer: "ProstorMat je platforma, která spojuje organizátory akcí s majiteli prostor. Můžete si prohlédnout dostupné prostory, odeslat poptávku a přímo komunikovat s majiteli prostor."
+    question: "Jak funguje Prostormat?",
+    answer: "Prostormat je platforma, která spojuje organizátory akcí s majiteli prostor. Můžete si prohlédnout dostupné prostory, odeslat poptávku a přímo komunikovat s majiteli prostor."
   },
   {
     question: "Je registrace zdarma?",
-    answer: "Ano, registrace na ProstorMat je zcela zdarma pro organizátory akcí. Poplatky platí pouze majitelé prostor za prémiové funkce."
+    answer: "Ano, registrace na Prostormat je zcela zdarma pro organizátory akcí. Poplatky platí pouze majitelé prostor za prémiové funkce."
   },
   {
     question: "Jak mohu přidat svůj prostor?",
@@ -33,7 +33,7 @@ const faqData: FAQItem[] = [
   },
   {
     question: "Jsou nějaké skryté poplatky?",
-    answer: "Ne, ProstorMat neúčtuje žádné skryté poplatky. Všechny náklady jsou transparentní a dohodnete si je přímo s majitelem prostoru."
+    answer: "Ne, Prostormat neúčtuje žádné skryté poplatky. Všechny náklady jsou transparentní a dohodnete si je přímo s majitelem prostoru."
   },
   {
     question: "Mohu zrušit svou poptávku?",
@@ -69,7 +69,7 @@ export default function FAQPage() {
       <PageHero
         eyebrow="FAQ"
         title="Často kladené otázky"
-        subtitle="Najděte odpovědi na nejčastější otázky o ProstorMat."
+        subtitle="Najděte odpovědi na nejčastější otázky o Prostormat."
       />
 
       {/* FAQ Content */}
@@ -81,7 +81,7 @@ export default function FAQPage() {
                 Nejčastější dotazy
               </h2>
               <p className="text-body text-gray-600 max-w-2xl mx-auto text-lg font-medium">
-                Vše co potřebujete vědět o využívání ProstorMat
+                Vše co potřebujete vědět o využívání Prostormat
               </p>
             </div>
           </ScrollReveal>

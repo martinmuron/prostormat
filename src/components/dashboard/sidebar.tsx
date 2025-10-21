@@ -125,16 +125,7 @@ export function DashboardSidebar({ userRole, initialCollapsed = false }: Dashboa
         collapsed ? "w-16" : "w-64"
       )}
     >
-      <div className="flex items-center justify-between border-b border-gray-200 px-3 py-4">
-        <Link
-          href="/"
-          className={cn(
-            "font-bold uppercase tracking-wide text-black transition-opacity",
-            collapsed ? "text-sm" : "text-title-3"
-          )}
-        >
-          {collapsed ? "P" : "Prostormat"}
-        </Link>
+      <div className="flex items-center justify-end border-b border-gray-200 px-3 py-4">
         <button
           type="button"
           onClick={() => setCollapsed((prev) => !prev)}

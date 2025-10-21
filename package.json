@@ -21,6 +21,7 @@
     "db:setup:local": "cp prisma/schema.sqlite.prisma prisma/schema.prisma && prisma db push --force-reset && npm run db:seed"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.67.0",
     "@auth/prisma-adapter": "^2.10.0",
     "@googlemaps/google-maps-services-js": "^3.4.2",
     "@hookform/resolvers": "^5.1.1",

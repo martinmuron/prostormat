@@ -120,7 +120,7 @@ export const columns: ColumnDef<Venue>[] = [
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Akce</DropdownMenuLabel>
-            <Link href={`/dashboard/venues/${venue.id}`}>
+            <Link href={`/admin/venues/${venue.id}/edit`}>
               <DropdownMenuItem className="cursor-pointer">
                 <Edit className="mr-2 h-4 w-4" />
                 Upravit

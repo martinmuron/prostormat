@@ -11,19 +11,17 @@ export default async function EmailTemplatesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-8">
-          <h1 className="text-title-1 text-black mb-2">
-            Email šablony
-          </h1>
-          <p className="text-body text-gray-600">
-            Upravujte email šablony a spravujte automatické odesílání emailů.
-          </p>
-        </div>
-
-        <NewEmailTemplatesManager />
+    <div className="space-y-8">
+      <div>
+        <h1 className="text-title-1 text-black mb-2">
+          Email nastavení
+        </h1>
+        <p className="text-body text-gray-600">
+          Spravujte texty emailů a automatické spouštěče, které se posílají uživatelům i majitelům prostorů.
+        </p>
       </div>
+
+      <NewEmailTemplatesManager />
     </div>
   )
 }

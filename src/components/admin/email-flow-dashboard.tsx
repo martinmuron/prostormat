@@ -96,7 +96,7 @@ export function EmailFlowDashboard() {
         setStats(data.stats || [])
       }
     } catch (error) {
-      console.error('Error fetching email flow:', error)
+      console.error('Error fetching email statistics:', error)
     }
   }, [])
 
@@ -162,7 +162,7 @@ export function EmailFlowDashboard() {
       <div className="flex items-center justify-center py-8">
         <div className="text-center">
           <RefreshCw className="h-8 w-8 animate-spin mx-auto mb-4" />
-          <p>Načítání email flow...</p>
+          <p>Načítání emailových statistik...</p>
         </div>
       </div>
     )

@@ -175,7 +175,7 @@ export function EmailTemplatesManager() {
     <div className="space-y-6">
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="templates">Email šablony</TabsTrigger>
+          <TabsTrigger value="templates">Email nastavení</TabsTrigger>
           <TabsTrigger value="custom">Vlastní email</TabsTrigger>
         </TabsList>
 

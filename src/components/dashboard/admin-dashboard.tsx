@@ -122,28 +122,28 @@ export function AdminDashboard({ data }: AdminDashboardProps) {
 
         <Card>
           <CardHeader>
-            <CardTitle>Email Flow</CardTitle>
+            <CardTitle>Email statistiky</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-body text-gray-600 mb-4">
               Sledujte všechny automatické emaily odeslané přes Resend.
             </p>
             <Link href="/admin/email-flow">
-              <Button>Zobrazit Email Flow</Button>
+              <Button>Zobrazit statistiky</Button>
             </Link>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitle>Email šablony</CardTitle>
+            <CardTitle>Email nastavení</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-body text-gray-600 mb-4">
-              Spravujte vítací emaily a odesílejte hromadné emaily uživatelům.
+              Spravujte vítací emaily, texty zpráv i automatické spouštěče.
             </p>
             <Link href="/admin/email-templates">
-              <Button>Spravovat šablony</Button>
+              <Button>Upravit emaily</Button>
             </Link>
           </CardContent>
         </Card>

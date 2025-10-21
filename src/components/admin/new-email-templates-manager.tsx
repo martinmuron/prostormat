@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Switch } from "@/components/ui/switch"
 import { Badge } from "@/components/ui/badge"
-import { Eye, Save, Power, AlertCircle, Check } from "lucide-react"
+import { Eye, Save, Power, AlertCircle, Check, AlertTriangle } from "lucide-react"
 
 interface EmailTemplate {
   id: string
@@ -35,19 +35,17 @@ interface EmailTrigger {
 export function NewEmailTemplatesManager() {
   const [templates, setTemplates] = useState<EmailTemplate[]>([])
   const [triggers, setTriggers] = useState<EmailTrigger[]>([])
-  const [selectedTemplate, setSelectedTemplate] = useState<EmailTemplate | null>(null)
+  const [selectedTemplateKey, setSelectedTemplateKey] = useState<string | null>(null)
+  const selectedTemplateKeyRef = useRef<string | null>(null)
   const [editedTemplate, setEditedTemplate] = useState<EmailTemplate | null>(null)
   const [previewHtml, setPreviewHtml] = useState<string>("")
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [successMessage, setSuccessMessage] = useState("")
+  const [usingFallbackData, setUsingFallbackData] = useState(false)
   const [activeTab, setActiveTab] = useState("templates")
 
-  useEffect(() => {
-    fetchData()
-  }, [])
-
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       setLoading(true)
       const [templatesRes, triggersRes] = await Promise.all([
@@ -58,18 +56,48 @@ export function NewEmailTemplatesManager() {
       if (templatesRes.ok && triggersRes.ok) {
         const templatesData = await templatesRes.json()
         const triggersData = await triggersRes.json()
-        setTemplates(templatesData.templates)
-        setTriggers(triggersData.triggers)
+        const templateList: EmailTemplate[] = templatesData.templates ?? []
+        const triggerList: EmailTrigger[] = triggersData.triggers ?? []
+
+        setTemplates(templateList)
+        setTriggers(triggerList)
+        setUsingFallbackData(Boolean(templatesData.fallback || triggersData.fallback))
+
+        if (templateList.length > 0) {
+          const previousKey = selectedTemplateKeyRef.current
+          const keyToUse = previousKey ?? templateList[0].templateKey
+          const nextTemplate =
+            templateList.find((template) => template.templateKey === keyToUse) ?? templateList[0]
+          setSelectedTemplateKey(nextTemplate.templateKey)
+          selectedTemplateKeyRef.current = nextTemplate.templateKey
+          setEditedTemplate({ ...nextTemplate })
+          setPreviewHtml(nextTemplate.htmlContent)
+        } else {
+          setSelectedTemplateKey(null)
+          selectedTemplateKeyRef.current = null
+          setEditedTemplate(null)
+          setPreviewHtml("")
+        }
+      } else {
+        setUsingFallbackData(false)
+        setTemplates([])
+        setTriggers([])
       }
     } catch (error) {
       console.error('Error fetching data:', error)
+      setUsingFallbackData(false)
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
+
+  useEffect(() => {
+    void fetchData()
+  }, [fetchData])
 
   const handleSelectTemplate = (template: EmailTemplate) => {
-    setSelectedTemplate(template)
+    setSelectedTemplateKey(template.templateKey)
+    selectedTemplateKeyRef.current = template.templateKey
     setEditedTemplate({ ...template })
     setPreviewHtml(template.htmlContent)
   }
@@ -103,7 +131,10 @@ export function NewEmailTemplatesManager() {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          id: trigger.id,
+          triggerKey: trigger.triggerKey,
+          name: trigger.name,
+          description: trigger.description,
+          templateKey: trigger.templateKey,
           isEnabled: !trigger.isEnabled
         })
       })
@@ -131,9 +162,21 @@ export function NewEmailTemplatesManager() {
         </div>
       )}
 
+      {usingFallbackData && (
+        <div className="bg-amber-50 border border-amber-200 text-amber-800 px-4 py-3 rounded flex items-start gap-3">
+          <AlertTriangle className="h-5 w-5 mt-0.5 flex-shrink-0" />
+          <div className="text-sm">
+            <p className="font-medium">Nepodařilo se načíst data z databáze.</p>
+            <p className="mt-1">
+              Zobrazují se výchozí texty uložené v aplikaci. Zkontrolujte prosím připojení k databázi a migrace, aby se změny mohly ukládat.
+            </p>
+          </div>
+        </div>
+      )}
+
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="templates">Email šablony</TabsTrigger>
+          <TabsTrigger value="templates">Email nastavení</TabsTrigger>
           <TabsTrigger value="triggers">Automatické spouštěče</TabsTrigger>
         </TabsList>
 
@@ -147,29 +190,35 @@ export function NewEmailTemplatesManager() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
-                  {templates.map((template) => (
-                    <button
-                      key={template.id}
-                      onClick={() => handleSelectTemplate(template)}
-                      className={`w-full text-left px-4 py-3 rounded-lg border transition-colors ${
-                        selectedTemplate?.id === template.id
-                          ? 'bg-blue-50 border-blue-300'
-                          : 'bg-white border-gray-200 hover:bg-gray-50'
-                      }`}
-                    >
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <p className="font-medium text-sm">{template.name}</p>
-                          <p className="text-xs text-gray-500 mt-1">{template.description}</p>
+                  {templates.length === 0 ? (
+                    <div className="text-sm text-gray-500">
+                      Žádné šablony nejsou k dispozici.
+                    </div>
+                  ) : (
+                    templates.map((template) => (
+                      <button
+                        key={template.templateKey}
+                        onClick={() => handleSelectTemplate(template)}
+                        className={`w-full text-left px-4 py-3 rounded-lg border transition-colors ${
+                          selectedTemplateKey === template.templateKey
+                            ? 'bg-blue-50 border-blue-300'
+                            : 'bg-white border-gray-200 hover:bg-gray-50'
+                        }`}
+                      >
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <p className="font-medium text-sm">{template.name}</p>
+                            <p className="text-xs text-gray-500 mt-1">{template.description}</p>
+                          </div>
+                          {template.isActive ? (
+                            <Badge className="bg-green-100 text-green-800 text-xs">Aktivní</Badge>
+                          ) : (
+                            <Badge variant="secondary" className="text-xs">Neaktivní</Badge>
+                          )}
                         </div>
-                        {template.isActive ? (
-                          <Badge className="bg-green-100 text-green-800 text-xs">Aktivní</Badge>
-                        ) : (
-                          <Badge variant="secondary" className="text-xs">Neaktivní</Badge>
-                        )}
-                      </div>
-                    </button>
-                  ))}
+                      </button>
+                    ))
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -270,42 +319,48 @@ export function NewEmailTemplatesManager() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {triggers.map((trigger) => {
-                  const linkedTemplate = templates.find(t => t.templateKey === trigger.templateKey)
-                  return (
-                    <div
-                      key={trigger.id}
-                      className="flex items-start justify-between p-4 border rounded-lg"
-                    >
-                      <div className="flex-1">
-                        <div className="flex items-center gap-3">
-                          <h3 className="font-medium">{trigger.name}</h3>
-                          {trigger.isEnabled ? (
-                            <Badge className="bg-green-100 text-green-800">
-                              <Power className="h-3 w-3 mr-1" />
-                              Zapnuto
-                            </Badge>
-                          ) : (
-                            <Badge variant="secondary">
-                              <Power className="h-3 w-3 mr-1" />
-                              Vypnuto
-                            </Badge>
+                {triggers.length === 0 ? (
+                  <div className="text-sm text-gray-500">
+                    Žádné spouštěče nejsou definované.
+                  </div>
+                ) : (
+                  triggers.map((trigger) => {
+                    const linkedTemplate = templates.find(t => t.templateKey === trigger.templateKey)
+                    return (
+                      <div
+                        key={trigger.triggerKey}
+                        className="flex items-start justify-between p-4 border rounded-lg"
+                      >
+                        <div className="flex-1">
+                          <div className="flex items-center gap-3">
+                            <h3 className="font-medium">{trigger.name}</h3>
+                            {trigger.isEnabled ? (
+                              <Badge className="bg-green-100 text-green-800">
+                                <Power className="h-3 w-3 mr-1" />
+                                Zapnuto
+                              </Badge>
+                            ) : (
+                              <Badge variant="secondary">
+                                <Power className="h-3 w-3 mr-1" />
+                                Vypnuto
+                              </Badge>
+                            )}
+                          </div>
+                          <p className="text-sm text-gray-600 mt-1">{trigger.description}</p>
+                          {linkedTemplate && (
+                            <p className="text-xs text-gray-500 mt-2">
+                              Šablona: {linkedTemplate.name}
+                            </p>
                           )}
                         </div>
-                        <p className="text-sm text-gray-600 mt-1">{trigger.description}</p>
-                        {linkedTemplate && (
-                          <p className="text-xs text-gray-500 mt-2">
-                            Šablona: {linkedTemplate.name}
-                          </p>
-                        )}
+                        <Switch
+                          checked={trigger.isEnabled}
+                          onCheckedChange={() => handleToggleTrigger(trigger)}
+                        />
                       </div>
-                      <Switch
-                        checked={trigger.isEnabled}
-                        onCheckedChange={() => handleToggleTrigger(trigger)}
-                      />
-                    </div>
-                  )
-                })}
+                    )
+                  })
+                )}
               </div>
             </CardContent>
           </Card>

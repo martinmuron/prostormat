@@ -2,6 +2,8 @@ import { NextResponse } from "next/server"
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/lib/auth"
 import { db } from "@/lib/db"
+import { emailTriggerDefinitions } from "@/data/email-template-definitions"
+import { ensureEmailDataSeeded } from "@/lib/email-admin"
 
 export async function GET() {
   try {
@@ -10,6 +12,8 @@ export async function GET() {
       return new NextResponse("Unauthorized", { status: 401 })
     }
 
+    await ensureEmailDataSeeded()
+
     const triggers = await db.emailTrigger.findMany({
       orderBy: { createdAt: 'asc' }
     })
@@ -17,7 +21,13 @@ export async function GET() {
     return NextResponse.json({ triggers })
   } catch (error) {
     console.error("Error fetching email triggers:", error)
-    return new NextResponse("Internal server error", { status: 500 })
+    const fallbackTriggers = emailTriggerDefinitions.map((trigger) => ({
+      ...trigger,
+      id: trigger.triggerKey,
+      createdAt: null,
+      updatedAt: null,
+    }))
+    return NextResponse.json({ triggers: fallbackTriggers, fallback: true })
   }
 }
 
@@ -29,18 +39,34 @@ export async function PATCH(request: Request) {
     }
 
     const body = await request.json()
-    const { id, isEnabled } = body
+    const {
+      triggerKey,
+      isEnabled,
+      name,
+      description,
+      templateKey,
+    } = body
 
-    if (!id) {
-      return new NextResponse("Trigger ID is required", { status: 400 })
+    if (!triggerKey) {
+      return new NextResponse("Trigger key is required", { status: 400 })
     }
 
-    const trigger = await db.emailTrigger.update({
-      where: { id },
-      data: {
+    const trigger = await db.emailTrigger.upsert({
+      where: { triggerKey },
+      update: {
         isEnabled,
-        updatedAt: new Date()
-      }
+        name,
+        description,
+        templateKey,
+        updatedAt: new Date(),
+      },
+      create: {
+        triggerKey,
+        isEnabled,
+        name: name ?? triggerKey,
+        description,
+        templateKey: templateKey ?? triggerKey,
+      },
     })
 
     return NextResponse.json({ trigger })

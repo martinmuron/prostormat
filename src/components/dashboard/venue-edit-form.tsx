@@ -16,6 +16,7 @@ import { ProfileCompletion } from "@/components/ui/profile-completion"
 import { VenueInfo } from "@/components/ui/venue-info"
 import { VenuePreview } from "@/components/ui/venue-preview"
 import { formatDate } from "@/lib/utils"
+import { Switch } from "@/components/ui/switch"
 import { 
   Building, 
   Save, 
@@ -24,7 +25,9 @@ import {
   Settings,
   Camera,
   Star,
-  Monitor
+  Monitor,
+  Music,
+  Instagram
 } from "lucide-react"
 
 type VenueInquirySummary = {
@@ -44,16 +47,20 @@ type EditableVenue = {
   name: string
   description?: string | null
   address?: string | null
+  district?: string | null
   capacitySeated?: number | null
   capacityStanding?: number | null
   venueType?: string | null
   contactEmail?: string | null
   contactPhone?: string | null
   websiteUrl?: string | null
+  instagramUrl?: string | null
   videoUrl?: string | null
+  youtubeUrl?: string | null
   images: string[]
   amenities: string[]
   status: string
+  musicAfter10?: boolean | null
   inquiries?: VenueInquirySummary[]
   createdAt: string | Date
   updatedAt: string | Date
@@ -67,16 +74,19 @@ interface VenueFormState {
   name: string
   description: string
   address: string
+  district: string
   capacitySeated: string
   capacityStanding: string
   venueType: string
   contactEmail: string
   contactPhone: string
   websiteUrl: string
+  instagramUrl: string
   youtubeUrl: string
   images: string[]
   amenities: string[]
   status: string
+  musicAfter10: boolean
 }
 
 export function VenueEditForm({ venue }: VenueEditFormProps) {
@@ -88,16 +98,19 @@ export function VenueEditForm({ venue }: VenueEditFormProps) {
     name: venue.name ?? "",
     description: venue.description ?? "",
     address: venue.address ?? "",
+    district: venue.district ?? "",
     capacitySeated: venue.capacitySeated ? String(venue.capacitySeated) : "",
     capacityStanding: venue.capacityStanding ? String(venue.capacityStanding) : "",
     venueType: venue.venueType ?? "",
     contactEmail: venue.contactEmail ?? "",
     contactPhone: venue.contactPhone ?? "",
     websiteUrl: venue.websiteUrl ?? "",
+    instagramUrl: venue.instagramUrl ?? "",
     youtubeUrl: venue.videoUrl ?? "",
     images: Array.isArray(venue.images) ? venue.images : [],
     amenities: Array.isArray(venue.amenities) ? venue.amenities : [],
-    status: venue.status ?? "draft"
+    status: venue.status ?? "draft",
+    musicAfter10: !!venue.musicAfter10
   })
 
 const venueTypes = [
@@ -257,7 +270,7 @@ const statusLabels: Record<string, string> = {
         <div className="lg:col-span-2">
           <Card className="bg-white">
             <CardContent className="p-0">
-              <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                 <TabsList className="grid w-full grid-cols-4 rounded-none border-b bg-gray-50">
                   <TabsTrigger value="basic" className="flex items-center gap-2">
                     <Settings className="h-4 w-4" />
@@ -319,6 +332,18 @@ const statusLabels: Record<string, string> = {
                             onChange={(e) => handleChange("address", e.target.value)}
                             placeholder="Ulice a číslo, město, PSČ"
                             required
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Městská část / Okres
+                          </label>
+                          <Input
+                            type="text"
+                            value={formData.district}
+                            onChange={(e) => handleChange("district", e.target.value)}
+                            placeholder="Praha 1, Brno-střed..."
                           />
                         </div>
 
@@ -414,6 +439,21 @@ const statusLabels: Record<string, string> = {
                             placeholder="https://www.prostor.cz"
                           />
                         </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Instagram
+                          </label>
+                          <div className="flex gap-2">
+                            <Instagram className="h-5 w-5 text-gray-400 mt-2" />
+                            <Input
+                              type="url"
+                              value={formData.instagramUrl}
+                              onChange={(e) => handleChange("instagramUrl", e.target.value)}
+                              placeholder="https://instagram.com/vasprostor"
+                            />
+                          </div>
+                        </div>
                       </div>
 
                       {/* Status */}
@@ -470,6 +510,24 @@ const statusLabels: Record<string, string> = {
                       selectedAmenities={formData.amenities}
                       onAmenitiesChange={(amenities) => handleChange("amenities", amenities)}
                     />
+
+                    <div className="border-t pt-6">
+                      <div className="flex items-center justify-between">
+                        <div className="space-y-0.5">
+                          <p className="text-sm font-medium text-gray-900">Hudba po 22:00</p>
+                          <p className="text-xs text-gray-500">
+                            Dejte hostům vědět, zda lze hrát hlasitou hudbu i po 22. hodině.
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Music className="h-4 w-4 text-gray-400" />
+                          <Switch
+                            checked={formData.musicAfter10}
+                            onCheckedChange={(checked) => handleChange("musicAfter10", checked)}
+                          />
+                        </div>
+                      </div>
+                    </div>
                   </TabsContent>
 
                   <TabsContent value="info" className="space-y-6 mt-0">

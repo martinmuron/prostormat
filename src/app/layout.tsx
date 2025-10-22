@@ -47,6 +47,13 @@ export const metadata: Metadata = {
     description: 'Hledáte prostor na firemní akci, svatbu, konferenci nebo teambuilding? Najděte perfektní prostor z 866+ lokací v Praze.',
     images: ['https://prostormat.cz/og-image.jpg'],
   },
+  icons: {
+    icon: [
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+      { url: '/favicon-32x32.svg', sizes: '32x32', type: 'image/svg+xml' },
+    ],
+    apple: '/favicon-32x32.svg',
+  },
   alternates: {
     canonical: 'https://prostormat.cz',
   },

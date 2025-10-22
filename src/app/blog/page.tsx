@@ -1,6 +1,7 @@
 import { Suspense } from "react"
 import Link from "next/link"
 import Image from "next/image"
+import type { Metadata } from "next"
 import { Calendar, ChevronRight, User } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -44,6 +45,20 @@ async function getBlogPosts() {
     console.error("Error fetching blog posts:", error)
     return []
   }
+}
+
+export const metadata: Metadata = {
+  title: "Blog o firemních akcích a event marketingu | Prostormat",
+  description: "Tipy na prostory, inspirace pro firemní akce, svatby a teambuildingy v Praze. Čerstvé novinky a know-how od týmu Prostormat.",
+  alternates: {
+    canonical: "https://prostormat.cz/blog",
+  },
+  openGraph: {
+    title: "Blog Prostormat | Firemní akce a event marketing",
+    description: "Inspirace a praktické rady pro organizaci firemních akcí, svateb a teambuildingů v Praze.",
+    url: "https://prostormat.cz/blog",
+    type: "website",
+  },
 }
 
 function formatExcerpt(excerpt?: string | null) {
@@ -266,13 +281,3 @@ export default function BlogPage() {
     </div>
   )
 }
-
-export const metadata = {
-  title: "Blog - Prostormat",
-  description: "Tipy, trendy a inspirace pro vaše akce. Objevte nejlepší prostory a získejte rady pro organizaci nezapomenutelných událostí.",
-  openGraph: {
-    title: "Blog - Prostormat",
-    description: "Tipy, trendy a inspirace pro vaše akce. Objevte nejlepší prostory a získejte rady pro organizaci nezapomenutelných událostí.",
-    type: "website"
-  }
-} 

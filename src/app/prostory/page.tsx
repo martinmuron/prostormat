@@ -1,6 +1,6 @@
 import Link from "next/link"
 import { Suspense } from "react"
-import { Button } from "@/components/ui/button"
+import type { Metadata } from "next"
 import { VenueFilters } from "@/components/venue/venue-filters"
 import { InfiniteVenueList } from "@/components/venue/infinite-venue-list"
 import { db } from "@/lib/db"
@@ -13,11 +13,43 @@ interface SearchParams {
   type?: string
   district?: string
   capacity?: string
+  page?: string
 }
 
 const VENUES_PER_PAGE = 20
 
-async function getInitialVenues(searchParams: SearchParams, orderSeed: number) {
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>
+}): Promise<Metadata> {
+  const resolved = await searchParams
+  const rawPage = Array.isArray(resolved.page) ? resolved.page[0] : resolved.page
+  const page = Math.max(1, Number.parseInt(rawPage ?? "1", 10) || 1)
+
+  const baseTitle = "Event prostory v Praze pro firemní akce | Prostormat"
+  const title = page > 1 ? `${baseTitle} – Stránka ${page}` : baseTitle
+
+  const canonicalBase = "https://prostormat.cz/prostory"
+  const canonical = page > 1 ? `${canonicalBase}?page=${page}` : canonicalBase
+
+  const description = "Prohlédněte si ověřené prostory v Praze pro firemní akce, teambuildingy, večírky i svatby. Filtrovat můžete podle typu, kapacity i lokality."
+
+  return {
+    title,
+    description,
+    alternates: {
+      canonical,
+    },
+    openGraph: {
+      title,
+      description,
+      url: canonical,
+    },
+  }
+}
+
+async function getInitialVenues(searchParams: SearchParams, orderSeed: number, pageNumber: number) {
   try {
     const where = buildVenueWhereClause({
       q: searchParams.q ?? null,
@@ -47,7 +79,8 @@ async function getInitialVenues(searchParams: SearchParams, orderSeed: number) {
     })
 
     const orderedVenues = sortVenuesByPriority(venues, orderSeed)
-    const initialVenues = orderedVenues.slice(0, VENUES_PER_PAGE)
+    const offset = (pageNumber - 1) * VENUES_PER_PAGE
+    const initialVenues = orderedVenues.slice(offset, offset + VENUES_PER_PAGE)
     const totalCount = orderedVenues.length
 
     // Ensure images is always an array
@@ -57,7 +90,7 @@ async function getInitialVenues(searchParams: SearchParams, orderSeed: number) {
         images: Array.isArray(venue.images) ? venue.images : []
       })),
       totalCount,
-      hasMore: totalCount > VENUES_PER_PAGE
+      hasMore: totalCount > offset + initialVenues.length
     }
   } catch (error) {
     console.error("Error fetching prostormat_venues:", error)
@@ -86,8 +119,8 @@ function VenueGridSkeleton() {
   )
 }
 
-async function VenueContent({ searchParams, orderSeed }: { searchParams: SearchParams, orderSeed: number }) {
-  const { venues, totalCount, hasMore } = await getInitialVenues(searchParams, orderSeed)
+async function VenueContent({ searchParams, orderSeed, currentPage }: { searchParams: SearchParams, orderSeed: number, currentPage: number }) {
+  const { venues, totalCount, hasMore } = await getInitialVenues(searchParams, orderSeed, currentPage)
 
   if (venues.length === 0) {
     return (
@@ -112,8 +145,69 @@ async function VenueContent({ searchParams, orderSeed }: { searchParams: SearchP
         searchParams={searchParams}
         hasMore={hasMore}
         orderSeed={orderSeed}
+        initialPage={currentPage}
+      />
+      <PaginationLinks
+        currentPage={currentPage}
+        totalCount={totalCount}
+        searchParams={searchParams}
       />
     </>
+  )
+}
+
+function PaginationLinks({
+  currentPage,
+  totalCount,
+  searchParams,
+}: {
+  currentPage: number
+  totalCount: number
+  searchParams: SearchParams
+}) {
+  const totalPages = Math.max(1, Math.ceil(totalCount / VENUES_PER_PAGE))
+  const hasNext = currentPage < totalPages
+  const hasPrevious = currentPage > 1
+
+  if (!hasPrevious && !hasNext) {
+    return null
+  }
+
+  const createHref = (page: number) => {
+    const params = new URLSearchParams()
+    Object.entries(searchParams).forEach(([key, value]) => {
+      if (!value || key === "page") return
+      params.set(key, value)
+    })
+    if (page > 1) {
+      params.set("page", String(page))
+    }
+    const query = params.toString()
+    return query ? `/prostory?${query}` : "/prostory"
+  }
+
+  return (
+    <nav className="mt-10 flex flex-wrap items-center justify-center gap-4 text-sm text-gray-600" aria-label="Stránkování výsledků">
+      {hasPrevious && (
+        <Link
+          href={createHref(currentPage - 1)}
+          className="rounded-xl border border-gray-300 px-4 py-2 transition hover:border-black hover:text-black"
+        >
+          ← Předchozí
+        </Link>
+      )}
+      <span className="rounded-xl border border-dashed border-gray-200 px-4 py-2">
+        Stránka {currentPage} z {totalPages}
+      </span>
+      {hasNext && (
+        <Link
+          href={createHref(currentPage + 1)}
+          className="rounded-xl border border-gray-300 px-4 py-2 transition hover:border-black hover:text-black"
+        >
+          Další →
+        </Link>
+      )}
+    </nav>
   )
 }
 
@@ -124,6 +218,7 @@ export default async function VenuesPage({
 }) {
   const resolvedSearchParams = await searchParams
   const orderSeed = generateOrderSeed()
+  const currentPage = Math.max(1, Number.parseInt(resolvedSearchParams.page ?? "1", 10) || 1)
 
   const hero = (
     <PageHero
@@ -131,36 +226,24 @@ export default async function VenuesPage({
       title="Event prostory v Praze"
       subtitle="Procházejte ověřené prostory pro firemní akce, večírky i soukromé oslavy. Filtrujte podle typu, lokality a kapacity."
       variant="plain"
-      className="bg-gradient-to-br from-blue-50 via-white to-indigo-50"
+      className="bg-gradient-to-br from-blue-50 via-white to-indigo-50 pb-16"
       tone="blue"
       size="md"
       containerClassName="max-w-6xl mx-auto"
-      actions={
-        <Link href="/pridat-prostor">
-          <Button variant="outline" className="border-black text-black hover:bg-black hover:text-white rounded-xl">
-            Přidat prostor
-          </Button>
-        </Link>
-      }
-    />
+    >
+      <div className="relative mx-auto w-full max-w-5xl">
+        <VenueFilters initialValues={resolvedSearchParams} />
+      </div>
+    </PageHero>
   )
   return (
     <div className="min-h-screen bg-white">
       {hero}
-      <div className="bg-white border-b border-gray-200">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 pb-10">
-          <div className="flex justify-center">
-            <div className="w-full max-w-5xl">
-              <VenueFilters initialValues={resolvedSearchParams} />
-            </div>
-          </div>
-        </div>
-      </div>
 
       {/* Venue Grid */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-12 sm:pt-16 pb-8 sm:pb-12">
         <Suspense fallback={<VenueGridSkeleton />}>
-          <VenueContent searchParams={resolvedSearchParams} orderSeed={orderSeed} />
+          <VenueContent searchParams={resolvedSearchParams} orderSeed={orderSeed} currentPage={currentPage} />
         </Suspense>
       </div>
     </div>

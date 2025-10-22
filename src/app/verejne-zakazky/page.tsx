@@ -12,7 +12,7 @@ import { EVENT_TYPES } from "@/types"
 import type { EventType } from "@/types"
 import { formatDate } from "@/lib/utils"
 import { EventRequestHeartButton } from "@/components/event-request/heart-button"
-import { Calendar, Users, MapPin, Euro, Mail, Phone, User, Filter, Search, Clock, X, LogIn } from "lucide-react"
+import { Calendar, Users, MapPin, Euro, Mail, Phone, User, Search, Clock, X, LogIn } from "lucide-react"
 import { PageHero } from "@/components/layout/page-hero"
 
 // Force dynamic rendering to avoid caching issues
@@ -38,7 +38,7 @@ interface EventRequest {
   favorites?: Array<{ userId: string }>
 }
 
-const GUEST_COUNT_RANGES = [
+const GUEST_COUNTS = [
   { label: "Všechny", value: "all" },
   { label: "1-25 osob", value: "1-25" },
   { label: "26-50 osob", value: "26-50" },
@@ -52,11 +52,6 @@ const DATE_RANGES = [
   { label: "Posledních 7 dní", value: "7days" },
   { label: "Posledních 30 dní", value: "30days" },
   { label: "Nejnovější", value: "recent" },
-]
-
-const FAVORITE_FILTERS = [
-  { label: "Všechny poptávky", value: "all" },
-  { label: "Pouze oblíbené", value: "favorites" },
 ]
 
 const LOCATIONS = [
@@ -227,7 +222,7 @@ export default function EventRequestsPage() {
       title="Veřejné zakázky"
       subtitle="Aktuální poptávky na event prostory. Kontaktujte organizátory přímo prostřednictvím uvedených kontaktních údajů."
       variant="plain"
-      className="bg-gradient-to-br from-rose-50 via-white to-pink-50"
+      className="bg-gradient-to-br from-rose-50 via-white to-pink-50 pb-16"
       actions={
         <Link href="/verejne-zakazky/novy">
           <Button size="lg" className="bg-black text-white hover:bg-gray-800 min-w-[200px] rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl">
@@ -238,14 +233,107 @@ export default function EventRequestsPage() {
       tone="rose"
       size="md"
       containerClassName="max-w-5xl mx-auto"
-    />
+    >
+      <div className="relative mx-auto w-full max-w-5xl">
+        <div className="rounded-2xl border-2 border-rose-200 bg-white/95 shadow-xl backdrop-blur-sm p-6 sm:p-8">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900">Najděte správnou poptávku</h3>
+              <p className="text-sm text-gray-600">Filtrované podle lokality, kapacity i termínu.</p>
+            </div>
+            {hasActiveFilters && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={clearFilters}
+                className="rounded-xl border-rose-200 text-rose-600 hover:border-rose-400 hover:text-rose-700"
+              >
+                <X className="h-4 w-4 mr-2" />
+                Vymazat filtry
+              </Button>
+            )}
+          </div>
+
+          <div className={`mt-6 grid grid-cols-1 gap-4 md:grid-cols-2 ${session ? 'lg:grid-cols-5' : 'lg:grid-cols-4'}`}>
+            <div className="col-span-1 md:col-span-2 lg:col-span-2">
+              <div className="relative">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Input
+                  placeholder="Hledat v poptávkách..."
+                  value={filters.search}
+                  onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
+                  className="h-12 rounded-2xl border-2 border-rose-200 bg-white pl-12 text-sm font-medium text-gray-900 shadow-sm focus-visible:ring-0 focus-visible:border-rose-400"
+                />
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <span className="text-xs font-semibold uppercase tracking-[0.2em] text-rose-500">Lokalita</span>
+              <Select value={filters.location} onValueChange={(value) => setFilters(prev => ({ ...prev, location: value }))}>
+                <SelectTrigger className="h-12 rounded-2xl border-2 border-rose-200 bg-white text-left text-sm font-medium text-gray-900 focus:border-rose-400">
+                  <SelectValue placeholder="Vyberte lokalitu" />
+                </SelectTrigger>
+                <SelectContent>
+                  {LOCATIONS.map(location => (
+                    <SelectItem key={location} value={location}>{location}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <span className="text-xs font-semibold uppercase tracking-[0.2em] text-rose-500">Počet hostů</span>
+              <Select value={filters.guestCount} onValueChange={(value) => setFilters(prev => ({ ...prev, guestCount: value }))}>
+                <SelectTrigger className="h-12 rounded-2xl border-2 border-rose-200 bg-white text-left text-sm font-medium text-gray-900 focus:border-rose-400">
+                  <SelectValue placeholder="Počet hostů" />
+                </SelectTrigger>
+                <SelectContent>
+                  {GUEST_COUNTS.map(count => (
+                    <SelectItem key={count.value} value={count.value}>{count.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <span className="text-xs font-semibold uppercase tracking-[0.2em] text-rose-500">Termín</span>
+              <Select value={filters.dateRange} onValueChange={(value) => setFilters(prev => ({ ...prev, dateRange: value }))}>
+                <SelectTrigger className="h-12 rounded-2xl border-2 border-rose-200 bg-white text-left text-sm font-medium text-gray-900 focus:border-rose-400">
+                  <SelectValue placeholder="Termín" />
+                </SelectTrigger>
+                <SelectContent>
+                  {DATE_RANGES.map(range => (
+                    <SelectItem key={range.value} value={range.value}>{range.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {session && (
+              <div className="flex flex-col gap-2">
+                <span className="text-xs font-semibold uppercase tracking-[0.2em] text-rose-500">Moje favority</span>
+                <Select value={filters.prostormat_venue_favorites} onValueChange={(value) => setFilters(prev => ({ ...prev, prostormat_venue_favorites: value }))}>
+                  <SelectTrigger className="h-12 rounded-2xl border-2 border-rose-200 bg-white text-left text-sm font-medium text-gray-900 focus:border-rose-400">
+                    <SelectValue placeholder="Filtrovat favority" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Všechny poptávky</SelectItem>
+                    <SelectItem value="favorites">Jen moje favority</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </PageHero>
   )
 
   if (status === "loading" || loading) {
     return (
       <div className="min-h-screen bg-white">
         {hero}
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 pb-12">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-12 sm:pt-16 pb-12">
           <div className="space-y-6">
             {Array.from({ length: 3 }).map((_, i) => (
               <EventRequestSkeleton key={i} />
@@ -260,154 +348,13 @@ export default function EventRequestsPage() {
     <div className="min-h-screen bg-white">
       {hero}
       
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-12 sm:pt-16 pb-8 sm:pb-12">
 
-        {/* Filters */}
-        <Card className="mb-8">
-          <CardContent className="p-6">
-            <div className="flex items-center gap-3 mb-6">
-              <Filter className="h-5 w-5 text-gray-600" />
-              <h3 className="text-lg font-semibold text-gray-900">Filtry</h3>
-              {hasActiveFilters && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={clearFilters}
-                  className="ml-auto text-gray-600 hover:text-gray-900"
-                >
-                  <X className="h-4 w-4 mr-2" />
-                  Vymazat filtry
-                </Button>
-              )}
-            </div>
-            
-            <div className={`grid grid-cols-1 md:grid-cols-2 gap-4 ${session ? 'lg:grid-cols-5' : 'lg:grid-cols-4'}`}>
-              {/* Search */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Hledat v požadavcích
-                </label>
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                  <Input
-                    placeholder="Název, popis, kontakt..."
-                    value={filters.search}
-                    onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
-                    className="pl-10"
-                  />
-                </div>
-              </div>
-
-              {/* Location Filter */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Lokalita
-                </label>
-                <Select value={filters.location} onValueChange={(value) => setFilters(prev => ({ ...prev, location: value }))}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Vyberte lokalitu" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {LOCATIONS.map(location => (
-                      <SelectItem key={location} value={location}>{location}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Guest Count Filter */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Počet hostů
-                </label>
-                <Select value={filters.guestCount} onValueChange={(value) => setFilters(prev => ({ ...prev, guestCount: value }))}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Vyberte počet" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {GUEST_COUNT_RANGES.map(range => (
-                      <SelectItem key={range.value} value={range.value}>{range.label}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Date Range Filter */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Datum přidání
-                </label>
-                <Select value={filters.dateRange} onValueChange={(value) => setFilters(prev => ({ ...prev, dateRange: value }))}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Vyberte období" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {DATE_RANGES.map(range => (
-                      <SelectItem key={range.value} value={range.value}>{range.label}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Favorites Filter - Only show for authenticated users */}
-              {session && (
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Oblíbené
-                  </label>
-                  <Select value={filters.prostormat_venue_favorites} onValueChange={(value) => setFilters(prev => ({ ...prev, prostormat_venue_favorites: value }))}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Filtrovat oblíbené" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {FAVORITE_FILTERS.map(filter => (
-                        <SelectItem key={filter.value} value={filter.value}>{filter.label}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Results Count */}
-        <div className="flex justify-between items-center mb-6">
-          <p className="text-sm text-gray-600">
-            Zobrazeno {filteredRequests.length} z {requests.length} požadavků
-          </p>
-          {hasActiveFilters && (
-            <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
-              Aktivní filtry
-            </Badge>
-          )}
-        </div>
-
-        {/* Event Requests List */}
-        {filteredRequests.length === 0 ? (
-          <div className="text-center py-12">
-            <h3 className="text-title-3 text-black mb-4">
-              {requests.length === 0 ? "Žádné aktivní poptávky" : "Žádné výsledky"}
-            </h3>
-            <p className="text-body text-gray-600 mb-6 px-4">
-              {requests.length === 0 
-                ? "Momentálně nejsou k dispozici žádné poptávky na akce."
-                : "Zkuste upravit filtry pro zobrazení více výsledků."
-              }
-            </p>
-            {requests.length === 0 ? (
-              <Link href="/verejne-zakazky/novy">
-                <Button className="bg-black text-white hover:bg-gray-800 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl">Přidat první poptávku</Button>
-              </Link>
-            ) : (
-              <Button onClick={clearFilters} variant="outline">
-                Vymazat filtry
-              </Button>
-            )}
-          </div>
-        ) : (
-          <div className="space-y-6">
-            {filteredRequests.map((request: EventRequest) => {
+        <div className="space-y-6">
+          {filteredRequests.length === 0 ? (
+            <EmptyState hasActiveFilters={hasActiveFilters} clearFilters={clearFilters} />
+          ) : (
+            filteredRequests.map((request: EventRequest) => {
               const eventTypeLabel = EVENT_TYPES[request.eventType as EventType] || request.eventType
               
               return (
@@ -547,10 +494,37 @@ export default function EventRequestsPage() {
                   </CardContent>
                 </Card>
               )
-            })}
-          </div>
-        )}
+            })
+          )}
+        </div>
       </div>
     </div>
+  )
+}
+
+function EmptyState({ hasActiveFilters, clearFilters }: { hasActiveFilters: boolean; clearFilters: () => void }) {
+  return (
+    <Card className="border-2 border-rose-100 bg-rose-50/40">
+      <CardContent className="p-8 text-center space-y-4">
+        <h3 className="text-xl font-semibold text-gray-900">Žádné poptávky zatím neodpovídají</h3>
+        <p className="text-sm text-gray-600 max-w-md mx-auto">
+          Zkuste upravit filtry nebo se vraťte později – nové poptávky přidáváme průběžně během týdne.
+        </p>
+        {hasActiveFilters && (
+          <Button
+            variant="outline"
+            onClick={clearFilters}
+            className="rounded-xl border-rose-200 text-rose-600 hover:border-rose-400 hover:text-rose-700"
+          >
+            Resetovat filtry
+          </Button>
+        )}
+        <Link href="/verejne-zakazky/novy" className="inline-block">
+          <Button className="rounded-xl bg-rose-600 text-white hover:bg-rose-700">
+            Přidat novou poptávku
+          </Button>
+        </Link>
+      </CardContent>
+    </Card>
   )
 }

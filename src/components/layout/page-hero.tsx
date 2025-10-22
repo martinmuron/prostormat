@@ -19,6 +19,7 @@ interface PageHeroProps {
   tone?: PageHeroTone
   className?: string
   containerClassName?: string
+  children?: ReactNode
 }
 
 const variantStyles: Record<PageHeroVariant, string> = {
@@ -43,6 +44,7 @@ export function PageHero({
   tone = "blue",
   className,
   containerClassName,
+  children,
 }: PageHeroProps) {
   const contentAlignment = align === "left" ? "items-start text-left" : "items-center text-center"
   const actionsAlignment = align === "left" ? "justify-start" : "justify-center"
@@ -82,6 +84,12 @@ export function PageHero({
             </div>
           ) : null}
         </div>
+
+        {children ? (
+          <div className="mt-8 sm:mt-10">
+            {children}
+          </div>
+        ) : null}
       </div>
     </section>
   )

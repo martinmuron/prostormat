@@ -14,6 +14,8 @@ import { VENUE_TYPES } from "@/types"
 import type { VenueType } from "@/types"
 import { MapPin, Users, Instagram } from "lucide-react"
 import { generateVenueSchema, generateBreadcrumbSchema, schemaToJsonLd } from "@/lib/schema-markup"
+import { buildVenueMetaDescription, buildVenueKeywords, absoluteUrl } from "@/lib/seo"
+import { getOptimizedImageUrl } from "@/lib/supabase-images"
 
 export const revalidate = 0
 
@@ -102,40 +104,46 @@ export async function generateMetadata({
   const capacity = Math.max(Number(venue.capacitySeated) || 0, Number(venue.capacityStanding) || 0)
   const venueTypeLabel = venue.venueType ? VENUE_TYPES[venue.venueType as VenueType] || venue.venueType : 'Event prostor'
 
-  const description = venue.description
-    ? `${venue.description.substring(0, 155)}...`
-    : `${venue.name} - ${venueTypeLabel} v Praze. Kapacita: ${capacity} osob. Ideální pro firemní akce, svatby, konference a další události.`
+  const description = buildVenueMetaDescription({
+    name: venue.name,
+    rawDescription: venue.description,
+    venueTypeLabel,
+    district: venue.district,
+    address: venue.address,
+    capacity,
+  })
 
-  const imageUrl = venue.images[0]
-    ? `https://hlwgpjdhhjaibkqcyjts.supabase.co/storage/v1/object/public/venue-images/${venue.images[0]}`
-    : 'https://prostormat.cz/og-image.jpg'
+  const imageCandidates = Array.isArray(venue.images) ? venue.images : []
+  const ogImageUrls = imageCandidates
+    .slice(0, 4)
+    .map((imagePath) => getOptimizedImageUrl(imagePath, "medium"))
+    .filter((url) => Boolean(url)) as string[]
+
+  const normalizedOgImages = (ogImageUrls.length > 0 ? ogImageUrls : [absoluteUrl("/og-image.jpg")])
+    .map((url) => absoluteUrl(url))
+
+  const keywords = buildVenueKeywords({
+    name: venue.name,
+    venueTypeLabel,
+    district: venue.district,
+  })
 
   return {
     title: `${venue.name} - Event prostor v Praze | Prostormat`,
     description,
-    keywords: [
-      venue.name,
-      'event prostor Praha',
-      'prostor na akci',
-      venueTypeLabel,
-      'firemní akce',
-      'konference',
-      'svatba',
-      'teambuilding',
-      'pronájem prostoru',
-    ],
+    keywords,
     openGraph: {
       title: `${venue.name} - Event prostor v Praze`,
       description,
       url: `https://prostormat.cz/prostory/${slug}`,
       siteName: 'Prostormat',
       images: [
-        {
-          url: imageUrl,
+        ...normalizedOgImages.map((url) => ({
+          url,
           width: 1200,
           height: 630,
           alt: venue.name,
-        },
+        })),
       ],
       locale: 'cs_CZ',
       type: 'website',
@@ -144,7 +152,7 @@ export async function generateMetadata({
       card: 'summary_large_image',
       title: `${venue.name} - Event prostor v Praze`,
       description,
-      images: [imageUrl],
+      images: [normalizedOgImages[0]],
     },
     alternates: {
       canonical: `https://prostormat.cz/prostory/${slug}`,
@@ -179,6 +187,8 @@ export default async function VenueDetailPage({
     capacityStanding: venue.capacityStanding,
     slug: venue.slug,
     manager: venue.manager,
+    district: venue.district,
+    instagramUrl: venue.instagramUrl ?? undefined,
   })
 
   const breadcrumbSchema = generateBreadcrumbSchema([

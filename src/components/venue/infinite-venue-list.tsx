@@ -24,9 +24,11 @@ interface InfiniteVenueListProps {
     type?: string
     district?: string
     capacity?: string
+    page?: string
   }
   hasMore: boolean
   orderSeed: number
+  initialPage: number
 }
 
 export function InfiniteVenueList({
@@ -34,9 +36,10 @@ export function InfiniteVenueList({
   searchParams,
   hasMore: initialHasMore,
   orderSeed,
+  initialPage,
 }: InfiniteVenueListProps) {
   const [venues, setVenues] = useState<Venue[]>(initialVenues)
-  const [page, setPage] = useState(1)
+  const [page, setPage] = useState(initialPage)
   const [hasMore, setHasMore] = useState(initialHasMore)
   const [loading, setLoading] = useState(false)
   const loadMoreRef = useRef<HTMLDivElement>(null)
@@ -44,9 +47,9 @@ export function InfiniteVenueList({
   // Reset when search params change
   useEffect(() => {
     setVenues(initialVenues)
-    setPage(1)
+    setPage(initialPage)
     setHasMore(initialHasMore)
-  }, [initialVenues, initialHasMore, orderSeed])
+  }, [initialVenues, initialHasMore, initialPage, orderSeed])
 
   const loadMoreVenues = useCallback(async () => {
     if (loading || !hasMore) return
@@ -58,6 +61,7 @@ export function InfiniteVenueList({
       params.set('orderSeed', String(orderSeed))
 
       Object.entries(searchParams).forEach(([key, value]) => {
+        if (key === 'page') return
         if (typeof value === 'string' && value.length > 0) {
           params.set(key, value)
         }

@@ -3,6 +3,9 @@
  * Improves SEO by providing rich snippets to search engines
  */
 
+import { getOptimizedImageUrl } from '@/lib/supabase-images'
+import { absoluteUrl, SITE_URL } from '@/lib/seo'
+
 interface VenueData {
   name: string
   description: string | null
@@ -12,6 +15,8 @@ interface VenueData {
   capacitySeated: number | null
   capacityStanding: number | null
   slug: string
+  district?: string | null
+  instagramUrl?: string
   manager?: {
     name: string | null
     email: string
@@ -24,10 +29,15 @@ interface VenueData {
  * https://schema.org/LocalBusiness
  */
 export function generateVenueSchema(venue: VenueData) {
-  const baseUrl = 'https://prostormat.cz'
-  const imageUrl = venue.images[0]
-    ? `https://hlwgpjdhhjaibkqcyjts.supabase.co/storage/v1/object/public/venue-images/${venue.images[0]}`
-    : `${baseUrl}/images/default-venue.jpg`
+  const baseUrl = SITE_URL
+  const imageUrls = (Array.isArray(venue.images) ? venue.images : [])
+    .slice(0, 5)
+    .map((imagePath) => getOptimizedImageUrl(imagePath, 'medium'))
+    .filter((url) => Boolean(url)) as string[]
+
+  const images = imageUrls.length > 0
+    ? imageUrls
+    : [absoluteUrl('/images/placeholder-venue.jpg')]
 
   const capacity = Math.max(
     venue.capacitySeated || 0,
@@ -40,14 +50,15 @@ export function generateVenueSchema(venue: VenueData) {
     name: venue.name,
     description: venue.description || `Event prostor ${venue.name} v Praze`,
     url: `${baseUrl}/prostory/${venue.slug}`,
-    image: imageUrl,
+    image: images,
     address: {
       '@type': 'PostalAddress',
-      addressLocality: 'Praha',
+      addressLocality: venue.district || 'Praha',
       addressCountry: 'CZ',
       streetAddress: venue.address,
     },
     maximumAttendeeCapacity: capacity > 0 ? capacity : undefined,
+    sameAs: venue.instagramUrl ? [venue.instagramUrl] : undefined,
   }
 
   // Add aggregateRating if we have reviews in the future
@@ -61,15 +72,15 @@ export function generateVenueSchema(venue: VenueData) {
  * https://schema.org/Organization
  */
 export function generateOrganizationSchema() {
-  const baseUrl = 'https://prostormat.cz'
+  const baseUrl = SITE_URL
 
   return {
     '@context': 'https://schema.org',
     '@type': 'Organization',
     name: 'Prostormat',
     url: baseUrl,
-    logo: `${baseUrl}/logo.png`,
-    description: 'Největší katalog event prostorů v Praze. Najděte perfektní prostor pro vaši firení akci, svatbu, teambuilding nebo konferenci.',
+    logo: absoluteUrl('/images/logo-black.svg'),
+    description: 'Největší katalog event prostorů v Praze. Najděte perfektní prostor pro vaši firemní akci, svatbu, teambuilding nebo konferenci.',
     address: {
       '@type': 'PostalAddress',
       addressLocality: 'Praha',
@@ -111,7 +122,7 @@ export function generateBreadcrumbSchema(items: Array<{ name: string; url: strin
  * https://schema.org/WebSite
  */
 export function generateWebSiteSchema() {
-  const baseUrl = 'https://prostormat.cz'
+  const baseUrl = SITE_URL
 
   return {
     '@context': 'https://schema.org',

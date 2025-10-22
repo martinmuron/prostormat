@@ -60,120 +60,115 @@ export function VenueFilters({ initialValues }: VenueFiltersProps) {
 
   return (
     <form onSubmit={handleSubmit}>
-      <div className="w-full max-w-5xl mx-auto rounded-2xl border-2 border-gray-200 bg-white/90 shadow-lg backdrop-blur p-4 sm:p-6 md:p-8">
-        <div className="flex flex-col gap-5">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <p className="text-sm font-medium text-gray-600">
-              {isSearchMode ? "Hledejte podle názvu nebo lokace" : "Vyberte typ, kapacitu a lokaci prostoru"}
-            </p>
-            <Button
+      <div className="w-full max-w-7xl mx-auto rounded-2xl border-2 border-gray-200 bg-white/90 shadow-lg backdrop-blur p-4 sm:p-6 md:p-8">
+        {isSearchMode ? (
+          <div className="flex items-center gap-4">
+            <button
               type="button"
               onClick={toggleSearchMode}
-              variant={isSearchMode ? "default" : "outline"}
-              className={`h-10 rounded-xl px-4 transition-all ${isSearchMode ? "bg-blue-600 hover:bg-blue-700 text-white" : "border-gray-300 text-gray-700 hover:border-gray-400"}`}
+              className="inline-flex items-center justify-center w-12 h-12 bg-gray-700 rounded-full flex-shrink-0 hover:bg-gray-800 transition-colors"
             >
-              <Search className="mr-2 h-4 w-4" />
-              {isSearchMode ? "Zobrazit filtry" : "Hledat prostory"}
+              <Search className="h-5 w-5 text-white" />
+            </button>
+            <div className="relative flex-1">
+              <Input
+                value={filters.q}
+                onChange={(e) => handleFilterChange("q", e.target.value)}
+                className="h-12 rounded-2xl border-2 border-gray-700 bg-white text-base shadow-sm transition-all focus:border-black"
+                placeholder="Například: Praha, Karlín, loft..."
+              />
+            </div>
+            <Button
+              type="submit"
+              className="h-12 rounded-xl bg-blue-600 px-8 text-base font-semibold text-white shadow-md transition-all hover:bg-blue-700 flex-shrink-0"
+            >
+              Najít ideální místo
             </Button>
           </div>
+        ) : (
+          <div className="flex items-center gap-4">
+            <button
+              type="button"
+              onClick={toggleSearchMode}
+              className="inline-flex items-center justify-center w-12 h-12 bg-gray-700 rounded-full flex-shrink-0 hover:bg-gray-800 transition-colors"
+            >
+              <Search className="h-5 w-5 text-white" />
+            </button>
 
-          {isSearchMode ? (
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-              <div className="relative flex-1">
-                <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
-                <Input
-                  value={filters.q}
-                  onChange={(e) => handleFilterChange("q", e.target.value)}
-                  className="h-12 rounded-2xl border-2 border-blue-600 bg-white pl-12 text-base shadow-sm transition-all focus:border-black"
-                  placeholder="Například: Praha, Karlín, loft..."
-                />
-              </div>
-              <Button
-                type="submit"
-                className="h-12 rounded-xl bg-blue-600 px-6 text-white shadow-md transition-all hover:bg-blue-700"
+            <div className="flex w-full items-center gap-3">
+              <span className="inline-flex items-center justify-center w-7 h-7 bg-blue-700 rounded-md flex-shrink-0">
+                <Calendar className="h-4 w-4 text-white" />
+              </span>
+              <Select
+                value={filters.type || undefined}
+                onValueChange={(value) => handleFilterChange("type", value)}
               >
-                Najít ideální místo
-              </Button>
+                <SelectTrigger className="!w-full h-12 rounded-2xl border-2 border-blue-700 bg-white text-base text-black focus:border-black">
+                  <SelectValue placeholder="Vyber typ prostoru" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Všechny typy</SelectItem>
+                  {Object.entries(VENUE_TYPES).map(([key, label]) => (
+                    <SelectItem key={key} value={key}>
+                      {label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
-          ) : (
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
-              <div className="flex w-full items-center gap-3">
-                <span className="inline-flex items-center justify-center w-7 h-7 bg-blue-700 rounded-md flex-shrink-0">
-                  <Calendar className="h-4 w-4 text-white" />
-                </span>
-                <Select
-                  value={filters.type || "all"}
-                  onValueChange={(value) => handleFilterChange("type", value)}
-                >
-                  <SelectTrigger className="!w-full h-12 rounded-2xl border-2 border-blue-700 bg-white text-base text-black focus:border-black">
-                    <SelectValue placeholder="Vyber typ prostoru" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Všechny typy</SelectItem>
-                    {Object.entries(VENUE_TYPES).map(([key, label]) => (
-                      <SelectItem key={key} value={key}>
-                        {label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
 
-              <div className="flex w-full items-center gap-3">
-                <span className="inline-flex items-center justify-center w-7 h-7 bg-green-700 rounded-md flex-shrink-0">
-                  <Users className="h-4 w-4 text-white" />
-                </span>
-                <Select
-                  value={filters.capacity || "all"}
-                  onValueChange={(value) => handleFilterChange("capacity", value)}
-                >
-                  <SelectTrigger className="!w-full h-12 rounded-2xl border-2 border-green-700 bg-white text-base text-black focus:border-black">
-                    <SelectValue placeholder="Kolik lidí přivedeš?" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Libovolná kapacita</SelectItem>
-                    {CAPACITY_RANGES.map((range) => (
-                      <SelectItem key={range} value={range}>
-                        {range}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="flex w-full items-center gap-3">
-                <span className="inline-flex items-center justify-center w-7 h-7 bg-amber-700 rounded-md flex-shrink-0">
-                  <MapPin className="h-4 w-4 text-white" />
-                </span>
-                <Select
-                  value={filters.district || "all"}
-                  onValueChange={(value) => handleFilterChange("district", value)}
-                >
-                  <SelectTrigger className="!w-full h-12 rounded-2xl border-2 border-amber-700 bg-white text-base text-black focus:border-black">
-                    <SelectValue placeholder="Kde to má být?" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Celá Praha</SelectItem>
-                    {PRAGUE_DISTRICTS.map((district) => (
-                      <SelectItem key={district} value={district}>
-                        {district}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="flex w-full items-center">
-                <Button
-                  type="submit"
-                  className="h-12 w-full rounded-xl bg-blue-600 text-base font-semibold text-white shadow-md transition-all hover:bg-blue-700"
-                >
-                  Najít ideální místo
-                </Button>
-              </div>
+            <div className="flex w-full items-center gap-3">
+              <span className="inline-flex items-center justify-center w-7 h-7 bg-green-700 rounded-md flex-shrink-0">
+                <Users className="h-4 w-4 text-white" />
+              </span>
+              <Select
+                value={filters.capacity || undefined}
+                onValueChange={(value) => handleFilterChange("capacity", value)}
+              >
+                <SelectTrigger className="!w-full h-12 rounded-2xl border-2 border-green-700 bg-white text-base text-black focus:border-black">
+                  <SelectValue placeholder="Kolik lidí přivedeš?" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Libovolná kapacita</SelectItem>
+                  {CAPACITY_RANGES.map((range) => (
+                    <SelectItem key={range} value={range}>
+                      {range}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
-          )}
-        </div>
+
+            <div className="flex w-full items-center gap-3">
+              <span className="inline-flex items-center justify-center w-7 h-7 bg-amber-700 rounded-md flex-shrink-0">
+                <MapPin className="h-4 w-4 text-white" />
+              </span>
+              <Select
+                value={filters.district || undefined}
+                onValueChange={(value) => handleFilterChange("district", value)}
+              >
+                <SelectTrigger className="!w-full h-12 rounded-2xl border-2 border-amber-700 bg-white text-base text-black focus:border-black">
+                  <SelectValue placeholder="Kde to má být?" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Celá Praha</SelectItem>
+                  {PRAGUE_DISTRICTS.map((district) => (
+                    <SelectItem key={district} value={district}>
+                      {district}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <Button
+              type="submit"
+              className="h-12 rounded-xl bg-blue-600 px-8 text-base font-semibold text-white shadow-md transition-all hover:bg-blue-700 flex-shrink-0"
+            >
+              Najít ideální místo
+            </Button>
+          </div>
+        )}
       </div>
     </form>
   )

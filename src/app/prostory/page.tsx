@@ -231,7 +231,7 @@ export default async function VenuesPage({
       size="md"
       containerClassName="max-w-6xl mx-auto"
     >
-      <div className="relative mx-auto w-full max-w-5xl">
+      <div className="relative mx-auto w-full max-w-7xl">
         <VenueFilters initialValues={resolvedSearchParams} />
       </div>
     </PageHero>

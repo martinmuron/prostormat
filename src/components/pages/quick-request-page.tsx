@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Label } from "@/components/ui/label"
 import { LoginModal } from "@/components/auth/login-modal"
 import { EVENT_TYPES, LOCATION_OPTIONS } from "@/types"
-import { Clock, Send, Zap, CheckCircle, LogIn } from "lucide-react"
+import { Clock, Send, Zap, CheckCircle } from "lucide-react"
 import { PageHero } from "@/components/layout/page-hero"
 
 interface QuickRequestFormData {
@@ -160,7 +160,7 @@ export function QuickRequestPage() {
             <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0">
               <Clock className="h-5 w-5 text-orange-600" />
             </div>
-            <span className="text-sm font-medium text-gray-700">Odpověď do 48 h</span>
+            <span className="text-sm font-medium text-gray-700">Ušetříte hodně hodně a hodně času!</span>
           </div>
         </div>
       </div>
@@ -215,36 +215,6 @@ export function QuickRequestPage() {
       {hero}
       
       <div className="max-w-4xl mx-auto px-4 sm:px-6 pt-12 sm:pt-16 pb-8 sm:pb-12">
-
-        {/* Auth Check */}
-        {!session && (
-          <Card className="mb-8 border-amber-200 bg-amber-50">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-4">
-                <LogIn className="h-8 w-8 text-amber-600 flex-shrink-0" />
-                <div className="flex-1">
-                  <h3 className="font-semibold text-amber-900 mb-2">Přihlaste se pro lepší zážitek</h3>
-                  <p className="text-sm text-amber-700 mb-4">
-                    Přihlášení uživatelé mají automaticky vyplněné kontaktní údaje a mohou sledovat své poptávky.
-                  </p>
-                  <div className="flex gap-2">
-                    <Link href="/prihlaseni">
-                      <Button size="sm" className="bg-amber-700 text-white hover:bg-amber-800">
-                        Přihlásit se
-                      </Button>
-                    </Link>
-                    <Link href="/registrace">
-                      <Button variant="outline" size="sm" className="border-amber-600 text-amber-700">
-                        Registrace
-                      </Button>
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
         {/* Form */}
         <Card>
           <CardHeader>

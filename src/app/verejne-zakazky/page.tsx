@@ -111,9 +111,9 @@ export default function EventRequestsPage() {
   const [requests, setRequests] = useState<EventRequest[]>([])
   const [loading, setLoading] = useState(true)
   const [filters, setFilters] = useState({
-    location: "Všechny",
-    guestCount: "all",
-    dateRange: "all",
+    location: "",
+    guestCount: "",
+    dateRange: "",
     prostormat_venue_favorites: "all",
   })
 
@@ -140,14 +140,14 @@ export default function EventRequestsPage() {
     let filtered = [...requests]
 
     // Filter by location
-    if (filters.location !== "Všechny") {
-      filtered = filtered.filter(request => 
+    if (filters.location && filters.location !== "all") {
+      filtered = filtered.filter(request =>
         request.locationPreference?.includes(filters.location)
       )
     }
 
     // Filter by guest count
-    if (filters.guestCount !== "all") {
+    if (filters.guestCount && filters.guestCount !== "all") {
       const [min, max] = filters.guestCount.split("-").map(n => n === "+" ? Infinity : parseInt(n))
       filtered = filtered.filter(request => {
         const guests = request.guestCount
@@ -157,10 +157,10 @@ export default function EventRequestsPage() {
     }
 
     // Filter by date range
-    if (filters.dateRange !== "all") {
+    if (filters.dateRange && filters.dateRange !== "all") {
       const now = new Date()
       const filterDate = new Date()
-      
+
       switch (filters.dateRange) {
         case "7days":
           filterDate.setDate(now.getDate() - 7)
@@ -172,15 +172,15 @@ export default function EventRequestsPage() {
           filterDate.setDate(now.getDate() - 3)
           break
       }
-      
-      filtered = filtered.filter(request => 
+
+      filtered = filtered.filter(request =>
         new Date(request.createdAt) >= filterDate
       )
     }
 
     // Filter by favorites (only if user is logged in and favorites data is available)
     if (filters.prostormat_venue_favorites === "favorites" && session?.user?.id) {
-      filtered = filtered.filter(request => 
+      filtered = filtered.filter(request =>
         request.favorites?.some(fav => fav.userId === session.user.id) || false
       )
     }
@@ -190,16 +190,16 @@ export default function EventRequestsPage() {
 
   const clearFilters = () => {
     setFilters({
-      location: "Všechny",
-      guestCount: "all",
-      dateRange: "all",
+      location: "",
+      guestCount: "",
+      dateRange: "",
       prostormat_venue_favorites: "all",
     })
   }
 
-  const hasActiveFilters = filters.location !== "Všechny" ||
-                          filters.guestCount !== "all" ||
-                          filters.dateRange !== "all" ||
+  const hasActiveFilters = (filters.location && filters.location !== "all") ||
+                          (filters.guestCount && filters.guestCount !== "all") ||
+                          (filters.dateRange && filters.dateRange !== "all") ||
                           filters.prostormat_venue_favorites !== "all"
 
   const hero = (
@@ -241,11 +241,12 @@ export default function EventRequestsPage() {
               <span className="inline-flex items-center justify-center w-7 h-7 bg-amber-700 rounded-md flex-shrink-0">
                 <MapPin className="h-4 w-4 text-white" />
               </span>
-              <Select value={filters.location} onValueChange={(value) => setFilters(prev => ({ ...prev, location: value }))}>
+              <Select value={filters.location || undefined} onValueChange={(value) => setFilters(prev => ({ ...prev, location: value }))}>
                 <SelectTrigger className="!w-full h-12 rounded-2xl border-2 border-amber-700 bg-white text-base text-gray-900 focus:border-black">
-                  <SelectValue placeholder="Vyberte lokalitu" />
+                  <SelectValue placeholder="Kde to má být?" />
                 </SelectTrigger>
                 <SelectContent>
+                  <SelectItem value="all">Všechny lokality</SelectItem>
                   {LOCATIONS.map(location => (
                     <SelectItem key={location} value={location}>{location}</SelectItem>
                   ))}
@@ -257,11 +258,12 @@ export default function EventRequestsPage() {
               <span className="inline-flex items-center justify-center w-7 h-7 bg-green-700 rounded-md flex-shrink-0">
                 <Users className="h-4 w-4 text-white" />
               </span>
-              <Select value={filters.guestCount} onValueChange={(value) => setFilters(prev => ({ ...prev, guestCount: value }))}>
+              <Select value={filters.guestCount || undefined} onValueChange={(value) => setFilters(prev => ({ ...prev, guestCount: value }))}>
                 <SelectTrigger className="!w-full h-12 rounded-2xl border-2 border-green-700 bg-white text-base text-gray-900 focus:border-black">
-                  <SelectValue placeholder="Počet hostů" />
+                  <SelectValue placeholder="Kolik lidí přijde?" />
                 </SelectTrigger>
                 <SelectContent>
+                  <SelectItem value="all">Libovolný počet</SelectItem>
                   {GUEST_COUNTS.map(count => (
                     <SelectItem key={count.value} value={count.value}>{count.label}</SelectItem>
                   ))}
@@ -273,11 +275,12 @@ export default function EventRequestsPage() {
               <span className="inline-flex items-center justify-center w-7 h-7 bg-blue-700 rounded-md flex-shrink-0">
                 <Clock className="h-4 w-4 text-white" />
               </span>
-              <Select value={filters.dateRange} onValueChange={(value) => setFilters(prev => ({ ...prev, dateRange: value }))}>
+              <Select value={filters.dateRange || undefined} onValueChange={(value) => setFilters(prev => ({ ...prev, dateRange: value }))}>
                 <SelectTrigger className="!w-full h-12 rounded-2xl border-2 border-blue-700 bg-white text-base text-gray-900 focus:border-black">
-                  <SelectValue placeholder="Termín" />
+                  <SelectValue placeholder="Kdy to bude?" />
                 </SelectTrigger>
                 <SelectContent>
+                  <SelectItem value="all">Kdykoliv</SelectItem>
                   {DATE_RANGES.map(range => (
                     <SelectItem key={range.value} value={range.value}>{range.label}</SelectItem>
                   ))}

@@ -222,12 +222,8 @@ export default function EventRequestsPage() {
     >
       <div className="relative mx-auto w-full max-w-5xl">
         <div className="rounded-2xl border-2 border-rose-200 bg-white/95 shadow-xl backdrop-blur-sm p-6 sm:p-8">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900">Najděte správnou poptávku</h3>
-              <p className="text-sm text-gray-600">Filtrované podle lokality, kapacity i termínu.</p>
-            </div>
-            {hasActiveFilters && (
+          {hasActiveFilters && (
+            <div className="flex justify-end mb-4">
               <Button
                 variant="outline"
                 size="sm"
@@ -237,10 +233,10 @@ export default function EventRequestsPage() {
                 <X className="h-4 w-4 mr-2" />
                 Vymazat filtry
               </Button>
-            )}
-          </div>
+            </div>
+          )}
 
-          <div className={`mt-6 grid grid-cols-1 gap-4 md:grid-cols-2 ${session ? 'lg:grid-cols-4' : 'lg:grid-cols-3'}`}>
+          <div className={`grid grid-cols-1 gap-4 md:grid-cols-2 ${session ? 'lg:grid-cols-4' : 'lg:grid-cols-3'}`}>
             <div className="flex items-center gap-3">
               <span className="inline-flex items-center justify-center w-7 h-7 bg-amber-700 rounded-md flex-shrink-0">
                 <MapPin className="h-4 w-4 text-white" />

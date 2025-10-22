@@ -78,7 +78,7 @@ export function OrganizeEventPage() {
       <div className="mx-auto w-full max-w-3xl">
         <div className="rounded-2xl border-2 border-amber-200 bg-amber-50/90 px-6 py-4 text-center shadow-md">
           <span className="text-sm font-medium text-amber-900">
-            <strong>Vzhledem k vysoké poptávce</strong> aktuálně přijímáme pouze akce pro <strong>30+ osob</strong>.
+            Rádi pomůžeme s organizací vaší akce! V tuto chvíli se zaměřujeme na akce od 30 osob.
           </span>
         </div>
       </div>

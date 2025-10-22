@@ -7,12 +7,11 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Input } from "@/components/ui/input"
 import { EVENT_TYPES } from "@/types"
 import type { EventType } from "@/types"
 import { formatDate } from "@/lib/utils"
 import { EventRequestHeartButton } from "@/components/event-request/heart-button"
-import { Calendar, Users, MapPin, Euro, Mail, Phone, User, Search, Clock, X, LogIn, Heart } from "lucide-react"
+import { Calendar, Users, MapPin, Euro, Mail, Phone, User, Clock, X, LogIn, Heart } from "lucide-react"
 import { PageHero } from "@/components/layout/page-hero"
 
 // Force dynamic rendering to avoid caching issues
@@ -115,7 +114,6 @@ export default function EventRequestsPage() {
     location: "Všechny",
     guestCount: "all",
     dateRange: "all",
-    search: "",
     prostormat_venue_favorites: "all",
   })
 
@@ -140,16 +138,6 @@ export default function EventRequestsPage() {
 
   const filteredRequests = useMemo(() => {
     let filtered = [...requests]
-
-    // Filter by search
-    if (filters.search) {
-      const searchLower = filters.search.toLowerCase()
-      filtered = filtered.filter(request => 
-        request.title.toLowerCase().includes(searchLower) ||
-        request.description?.toLowerCase().includes(searchLower) ||
-        request.contactName.toLowerCase().includes(searchLower)
-      )
-    }
 
     // Filter by location
     if (filters.location !== "Všechny") {
@@ -203,17 +191,15 @@ export default function EventRequestsPage() {
   const clearFilters = () => {
     setFilters({
       location: "Všechny",
-      guestCount: "all", 
+      guestCount: "all",
       dateRange: "all",
-      search: "",
       prostormat_venue_favorites: "all",
     })
   }
 
-  const hasActiveFilters = filters.location !== "Všechny" || 
-                          filters.guestCount !== "all" || 
-                          filters.dateRange !== "all" || 
-                          filters.search !== "" ||
+  const hasActiveFilters = filters.location !== "Všechny" ||
+                          filters.guestCount !== "all" ||
+                          filters.dateRange !== "all" ||
                           filters.prostormat_venue_favorites !== "all"
 
   const hero = (
@@ -254,21 +240,7 @@ export default function EventRequestsPage() {
             )}
           </div>
 
-          <div className={`mt-6 grid grid-cols-1 gap-4 md:grid-cols-2 ${session ? 'lg:grid-cols-5' : 'lg:grid-cols-4'}`}>
-            <div className="col-span-1 md:col-span-2 lg:col-span-2 flex items-center gap-3">
-              <span className="inline-flex items-center justify-center w-7 h-7 bg-gray-700 rounded-md flex-shrink-0">
-                <Search className="h-4 w-4 text-white" />
-              </span>
-              <div className="relative flex-1">
-                <Input
-                  placeholder="Hledat v poptávkách..."
-                  value={filters.search}
-                  onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
-                  className="h-12 rounded-2xl border-2 border-gray-700 bg-white text-base text-gray-900 shadow-sm focus-visible:ring-0 focus-visible:border-black"
-                />
-              </div>
-            </div>
-
+          <div className={`mt-6 grid grid-cols-1 gap-4 md:grid-cols-2 ${session ? 'lg:grid-cols-4' : 'lg:grid-cols-3'}`}>
             <div className="flex items-center gap-3">
               <span className="inline-flex items-center justify-center w-7 h-7 bg-amber-700 rounded-md flex-shrink-0">
                 <MapPin className="h-4 w-4 text-white" />

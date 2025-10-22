@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useState } from "react"
+import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
@@ -27,10 +27,6 @@ export function VenueFilters({ initialValues }: VenueFiltersProps) {
     capacity: initialValues.capacity || '',
   })
 
-  const [isLocationSearchOpen, setIsLocationSearchOpen] = useState(false)
-  const [locationSearch, setLocationSearch] = useState('')
-  const locationInputRef = useRef<HTMLInputElement | null>(null)
-
   const typeTooltip = filters.type && filters.type !== 'all'
     ? VENUE_TYPES[filters.type as keyof typeof VENUE_TYPES] ?? filters.type
     : 'Vyber typ prostoru'
@@ -46,15 +42,11 @@ export function VenueFilters({ initialValues }: VenueFiltersProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     const params = new URLSearchParams()
     Object.entries(filters).forEach(([key, value]) => {
       if (value && value !== 'all') params.set(key, value)
     })
-
-    if (locationSearch.trim()) {
-      params.set('location', locationSearch.trim())
-    }
 
     const paramsString = params.toString()
     router.push(paramsString ? `/prostory?${paramsString}` : '/prostory')
@@ -62,24 +54,6 @@ export function VenueFilters({ initialValues }: VenueFiltersProps) {
 
   const handleFilterChange = (key: string, value: string) => {
     setFilters(prev => ({ ...prev, [key]: value }))
-  }
-
-  const toggleLocationSearch = () => {
-    setIsLocationSearchOpen((prev) => {
-      const next = !prev
-      if (!prev) {
-        requestAnimationFrame(() => {
-          locationInputRef.current?.focus()
-        })
-      }
-      return next
-    })
-  }
-
-  const closeLocationSearchIfEmpty = () => {
-    if (!locationSearch.trim()) {
-      setIsLocationSearchOpen(false)
-    }
   }
 
   return (
@@ -174,37 +148,8 @@ export function VenueFilters({ initialValues }: VenueFiltersProps) {
             </div>
           </div>
 
-          {/* Expandable location search */}
-          <div className="flex items-center justify-end gap-3">
-            <div
-              className={`relative flex items-center transition-all duration-200 ${
-                isLocationSearchOpen ? 'w-48 lg:w-56' : 'w-12'
-              }`}
-            >
-              <button
-                type="button"
-                onClick={toggleLocationSearch}
-                className="flex h-12 w-12 items-center justify-center rounded-full border border-gray-200 bg-transparent text-black transition-colors hover:border-black/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black"
-                aria-label={isLocationSearchOpen ? 'Zavřít vyhledávání lokality' : 'Otevřít vyhledávání lokality'}
-                aria-expanded={isLocationSearchOpen}
-              >
-                <Search className="h-5 w-5" />
-              </button>
-              <input
-                ref={locationInputRef}
-                value={locationSearch}
-                onChange={(event) => setLocationSearch(event.target.value)}
-                onBlur={closeLocationSearchIfEmpty}
-                className={`absolute right-0 h-12 rounded-full border border-gray-200 bg-white pl-10 pr-4 text-sm text-black shadow-sm transition-all duration-200 placeholder:text-gray-400 focus:border-black focus:outline-none focus:ring-2 focus:ring-black/20 ${
-                  isLocationSearchOpen ? 'opacity-100 w-full' : 'pointer-events-none opacity-0 w-0'
-                }`}
-                placeholder="Hledat lokalitu"
-              />
-              {isLocationSearchOpen && (
-                <Search className="pointer-events-none absolute left-3 h-4 w-4 text-gray-400" />
-              )}
-            </div>
-
+          {/* Submit button */}
+          <div className="flex items-center justify-end">
             <div className="flex w-full items-stretch justify-start lg:w-auto lg:justify-end">
               <Button
                 type="submit"

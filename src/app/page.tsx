@@ -4,7 +4,6 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { VenueCard } from "@/components/venue/venue-card"
 import { ScrollReveal } from "@/components/ui/scroll-reveal"
-import { AnimatedBackground, FloatingShapes } from "@/components/ui/animated-background"
 import { HeroSearch } from "@/components/ui/hero-search"
 import { Skeleton } from "@/components/ui/skeleton"
 import { db } from "@/lib/db"
@@ -159,12 +158,8 @@ async function FeaturedVenues() {
 export default function HomePage() {
   return (
     <div className="min-h-screen bg-white relative overflow-hidden">
-      {/* Animated Background */}
-      <AnimatedBackground />
-      
       {/* Hero Section */}
       <section className="relative py-20 sm:py-28 lg:py-36 px-4 sm:px-6 bg-gradient-to-br from-rose-50 via-white to-pink-50">
-        <FloatingShapes />
         <div className="max-w-5xl mx-auto text-center relative z-20">
           <div className="animate-slide-up">
             <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-semibold text-gray-900 mb-8 tracking-tight leading-tight">

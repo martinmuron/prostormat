@@ -103,6 +103,8 @@ export default function RootLayout({
         <Script
           id="gtm-script"
           strategy="afterInteractive"
+          type="text/plain"
+          data-cookieconsent="marketing"
           dangerouslySetInnerHTML={{
             __html: `
               (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
@@ -118,6 +120,8 @@ export default function RootLayout({
         <Script
           id="meta-pixel"
           strategy="afterInteractive"
+          type="text/plain"
+          data-cookieconsent="marketing"
           dangerouslySetInnerHTML={{
             __html: `
               !function(f,b,e,v,n,t,s)
@@ -136,7 +140,7 @@ export default function RootLayout({
       </head>
       <body className={GeistSans.className}>
         {/* Google Tag Manager (noscript) */}
-        <noscript>
+        <noscript data-cookieconsent="marketing">
           <iframe
             src="https://www.googletagmanager.com/ns.html?id=GTM-TRGRXRXV"
             height="0"
@@ -146,7 +150,7 @@ export default function RootLayout({
         </noscript>
 
         {/* Meta Pixel (noscript) */}
-        <noscript>
+        <noscript data-cookieconsent="marketing">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             height="1"

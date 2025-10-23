@@ -342,6 +342,13 @@ body {
   transform: translateY(0);
 }
 
+#CybotCookiebotDialogPoweredbyImage {
+  width: 120px;
+  height: auto;
+  aspect-ratio: 200 / 60;
+  display: inline-block;
+}
+
 /* Gradient text effects */
 .gradient-text {
   background: linear-gradient(135deg, #000000 0%, #404040 50%, #000000 100%);

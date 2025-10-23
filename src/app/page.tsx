@@ -11,7 +11,7 @@ import { db } from "@/lib/db"
 import { Upload, MessageSquare, Euro, ArrowRight, Zap, Clock } from "lucide-react"
 
 // Force dynamic rendering to avoid caching issues
-export const revalidate = 0
+export const revalidate = 120
 
 const featuredVenueSelect = {
   id: true,
@@ -148,7 +148,7 @@ async function FeaturedVenues() {
         <VenueCard
           key={venue.id}
           venue={venue}
-          priority={index < 3}
+          priority={index < 6}
           showPriorityBadge={typeof venue.priority === 'number'}
         />
       ))}
@@ -345,17 +345,15 @@ export default function HomePage() {
             </div>
           </ScrollReveal>
           
-          <ScrollReveal delay={200}>
-            <Suspense fallback={
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {Array.from({ length: 9 }).map((_, i) => (
-                  <VenueCardSkeleton key={i} />
-                ))}
-              </div>
-            }>
-              <FeaturedVenues />
-            </Suspense>
-          </ScrollReveal>
+          <Suspense fallback={
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {Array.from({ length: 9 }).map((_, i) => (
+                <VenueCardSkeleton key={i} />
+              ))}
+            </div>
+          }>
+            <FeaturedVenues />
+          </Suspense>
           
           <ScrollReveal delay={400}>
             <div className="text-center mt-12">

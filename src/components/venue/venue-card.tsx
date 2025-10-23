@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { VENUE_TYPES } from "@/types"
 import type { VenueType } from "@/types"
-import { Users } from "lucide-react"
+import { Users, Star } from "lucide-react"
 import { OptimizedImage } from "@/components/venue/OptimizedImage"
 
 function getPrimaryAddress(rawAddress?: string | null): string | null {
@@ -44,9 +44,10 @@ interface VenueCardProps {
     images: string[]
   }
   priority?: boolean
+  showPriorityBadge?: boolean
 }
 
-export function VenueCard({ venue, priority = false }: VenueCardProps) {
+export function VenueCard({ venue, priority = false, showPriorityBadge = false }: VenueCardProps) {
   const mainImage = venue.images[0] || "/images/placeholder-venue.jpg"
 
   // Support both single venueType (legacy) and venueTypes array
@@ -101,6 +102,14 @@ export function VenueCard({ venue, priority = false }: VenueCardProps) {
                 </svg>
                 {venue.images.length}
               </div>
+            </div>
+          )}
+          {showPriorityBadge && (
+            <div className="absolute top-3 right-3 sm:top-4 sm:right-4">
+              <span className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-3 py-1 rounded-full text-xs sm:text-sm font-semibold shadow-lg flex items-center gap-1">
+                <Star className="w-3 h-3 sm:w-4 sm:h-4" />
+                DOPORUČENO
+              </span>
             </div>
           )}
           <div className="absolute top-3 right-3 sm:top-4 sm:right-4 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0">

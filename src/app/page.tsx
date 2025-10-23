@@ -25,6 +25,7 @@ const featuredVenueSelect = {
   venueType: true,
   images: true,
   status: true,
+  priority: true,
 } satisfies Prisma.VenueSelect
 
 type FeaturedVenue = Prisma.VenueGetPayload<{ select: typeof featuredVenueSelect }>
@@ -148,6 +149,7 @@ async function FeaturedVenues() {
           key={venue.id}
           venue={venue}
           priority={index < 3}
+          showPriorityBadge={typeof venue.priority === 'number'}
         />
       ))}
     </div>

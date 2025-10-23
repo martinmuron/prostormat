@@ -4,26 +4,26 @@ interface LogoProps {
   variant?: "black" | "white"
   size?: "sm" | "md" | "lg"
   className?: string
-  href?: string
+  href?: string | null
 }
 
 const sizeClasses = {
   sm: "h-6 w-auto",
-  md: "h-8 w-auto", 
-  lg: "h-12 w-auto"
+  md: "h-8 w-auto",
+  lg: "h-12 w-auto",
 }
 
 const sizeConfig = {
   sm: { width: 135, height: 34 },
   md: { width: 180, height: 45 },
-  lg: { width: 270, height: 68 }
+  lg: { width: 270, height: 68 },
 }
 
-export function Logo({ 
-  variant = "black", 
-  size = "md", 
+export function Logo({
+  variant = "black",
+  size = "md",
   className = "",
-  href = "/"
+  href = "/",
 }: LogoProps) {
   const { width, height } = sizeConfig[size]
   const fill = variant === "white" ? "#FFFFFF" : "#000000"
@@ -34,16 +34,17 @@ export function Logo({
       width={width}
       height={height}
       className={`${sizeClasses[size]} ${className}`}
+      preserveAspectRatio="xMinYMid meet"
       role="img"
       aria-label="Prostormat"
     >
       <text
-        x="400"
+        x="0"
         y="130"
         fontFamily="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif"
         fontSize="120"
         fontWeight="700"
-        textAnchor="middle"
+        textAnchor="start"
         fill={fill}
       >
         prostormat.
@@ -60,4 +61,4 @@ export function Logo({
   }
 
   return logoElement
-} 
+}

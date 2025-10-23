@@ -5,98 +5,43 @@ import Link from "next/link"
 import { useSession, signOut } from "next-auth/react"
 import { Button } from "@/components/ui/button"
 import { Logo } from "@/components/ui/logo"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu"
-import { NavigationMenu, NavigationMenuItem, NavigationMenuLink, NavigationMenuList } from "@/components/ui/navigation-menu"
 import { Skeleton } from "@/components/ui/skeleton"
-import { User, Menu, LogOut, Plus } from "lucide-react"
+import { User, Menu, LogOut, Plus, Instagram } from "lucide-react"
+
+const navLinks = [
+  { href: "/", label: "Úvod" },
+  { href: "/prostory", label: "Prostory" },
+  { href: "/verejne-zakazky", label: "Veřejné zakázky" },
+  { href: "/rychla-poptavka", label: "Rychlá poptávka" },
+  { href: "/organizace-akce", label: "Organizace akce" },
+  { href: "/blog", label: "Blog" },
+  { href: "/ceny", label: "Ceník" },
+  { href: "/faq", label: "FAQ" },
+  { href: "/kontakt", label: "Kontakt" },
+]
 
 export function Header() {
   const { data: session, status } = useSession()
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
 
-  const closeMobileMenu = () => setMobileMenuOpen(false)
+  const closeMenu = () => setMenuOpen(false)
 
   return (
-    <header className="bg-white border-b border-black sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6">
-        <div className="flex items-center justify-between h-14 sm:h-16">
-          {/* Logo */}
-          <div className="flex-shrink-0">
-            <Logo variant="black" size="md" />
-          </div>
+    <header className="sticky top-0 z-50 border-b border-black bg-white">
+      <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:h-16 sm:px-6">
+        <Logo variant="black" size="md" />
 
-          {/* Desktop Navigation - Updated with FAQ */}
-          <NavigationMenu className="hidden lg:flex">
-            <NavigationMenuList className="space-x-1">
-              <NavigationMenuItem>
-                <NavigationMenuLink asChild>
-                  <Link href="/prostory" className="text-sm font-medium text-gray-600 hover:text-black transition-colors px-3 py-2 rounded-md">
-                    Prostory
-                  </Link>
-                </NavigationMenuLink>
-              </NavigationMenuItem>
-              <NavigationMenuItem>
-                <NavigationMenuLink asChild>
-                  <Link href="/verejne-zakazky" className="text-sm font-medium text-gray-600 hover:text-black transition-colors px-3 py-2 rounded-md">
-                    Veřejné zakázky
-                  </Link>
-                </NavigationMenuLink>
-              </NavigationMenuItem>
-              <NavigationMenuItem>
-                <NavigationMenuLink asChild>
-                  <Link href="/rychla-poptavka" className="text-sm font-medium text-gray-600 hover:text-black transition-colors px-3 py-2 rounded-md">
-                    Rychlá poptávka
-                  </Link>
-                </NavigationMenuLink>
-              </NavigationMenuItem>
-              <NavigationMenuItem>
-                <NavigationMenuLink asChild>
-                  <Link href="/organizace-akce" className="text-sm font-medium text-gray-600 hover:text-black transition-colors px-3 py-2 rounded-md">
-                    Organizace akce
-                  </Link>
-                </NavigationMenuLink>
-              </NavigationMenuItem>
-              <NavigationMenuItem>
-                <NavigationMenuLink asChild>
-                  <Link href="/blog" className="text-sm font-medium text-gray-600 hover:text-black transition-colors px-3 py-2 rounded-md">
-                    Blog
-                  </Link>
-                </NavigationMenuLink>
-              </NavigationMenuItem>
-              <NavigationMenuItem>
-                <NavigationMenuLink asChild>
-                  <Link href="/ceny" className="text-sm font-medium text-gray-600 hover:text-black transition-colors px-3 py-2 rounded-md">
-                    Ceník
-                  </Link>
-                </NavigationMenuLink>
-              </NavigationMenuItem>
-              <NavigationMenuItem>
-                <NavigationMenuLink asChild>
-                  <Link href="/faq" className="text-sm font-medium text-gray-600 hover:text-black transition-colors px-3 py-2 rounded-md">
-                    FAQ
-                  </Link>
-                </NavigationMenuLink>
-              </NavigationMenuItem>
-              <NavigationMenuItem>
-                <NavigationMenuLink asChild>
-                  <Link href="/kontakt" className="text-sm font-medium text-gray-600 hover:text-black transition-colors px-3 py-2 rounded-md">
-                    Kontakt
-                  </Link>
-                </NavigationMenuLink>
-              </NavigationMenuItem>
-            </NavigationMenuList>
-          </NavigationMenu>
-
-          {/* Desktop Auth & CTA */}
-          <div className="hidden md:flex items-center space-x-2">
+        <div className="flex items-center gap-2 sm:gap-3">
+          <div className="hidden items-center gap-2 md:flex">
             {status === "loading" ? (
-              <Skeleton className="w-8 h-8 rounded-full" />
+              <Skeleton className="h-8 w-8 rounded-full" />
             ) : session ? (
-              <div className="flex items-center space-x-2">
+              <>
                 <Link href="/pridat-prostor">
-                  <Button size="sm" className="bg-black text-white hover:bg-gray-800 rounded-full px-4">
-                    <Plus className="h-4 w-4 mr-1" />
+                  <Button size="sm" className="rounded-full bg-black px-4 text-white transition hover:bg-gray-800">
+                    <Plus className="mr-1 h-4 w-4" />
                     Přidat prostor
                   </Button>
                 </Link>
@@ -104,6 +49,7 @@ export function Header() {
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" size="sm" className="rounded-full p-2">
                       <User className="h-4 w-4" />
+                      <span className="sr-only">Uživatelské menu</span>
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-48 rounded-xl border-gray-100">
@@ -114,153 +60,143 @@ export function Header() {
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={() => signOut()} className="text-red-600 rounded-lg">
+                    <DropdownMenuItem onClick={() => signOut()} className="rounded-lg text-red-600">
                       <LogOut className="mr-2 h-4 w-4" />
                       Odhlásit se
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
-              </div>
+              </>
             ) : (
-              <div className="flex items-center space-x-2">
+              <>
                 <Link href="/prihlaseni">
-                  <Button variant="ghost" size="sm" className="rounded-full">Přihlásit se</Button>
+                  <Button variant="ghost" size="sm" className="rounded-full">
+                    Přihlásit se
+                  </Button>
                 </Link>
                 <Link href="/registrace">
-                  <Button size="sm" className="bg-black text-white hover:bg-gray-800 rounded-full">Registrace</Button>
+                  <Button size="sm" className="rounded-full bg-black text-white transition hover:bg-gray-800">
+                    Registrace
+                  </Button>
                 </Link>
-              </div>
+              </>
             )}
           </div>
 
-          {/* Mobile Menu */}
-          <div className="flex items-center space-x-2 md:hidden">
+          <div className="flex items-center gap-2">
             {session && (
-              <Link href="/pridat-prostor">
-                <Button size="sm" className="bg-black text-white hover:bg-gray-800 rounded-full p-2">
+              <Link href="/pridat-prostor" className="md:hidden">
+                <Button size="sm" className="rounded-full bg-black p-2 text-white transition hover:bg-gray-800">
                   <Plus className="h-4 w-4" />
+                  <span className="sr-only">Přidat prostor</span>
                 </Button>
               </Link>
             )}
-            <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+
+            <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="sm" className="rounded-full p-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="inline-flex items-center gap-2 rounded-full border-black/10 bg-white px-3 py-2 text-sm font-medium shadow-sm transition hover:border-black hover:bg-black hover:text-white"
+                >
                   <Menu className="h-5 w-5" />
-                  <span className="sr-only">Toggle menu</span>
+                  <span className="hidden sm:inline">Menu</span>
+                  <span className="sr-only">Otevřít navigaci</span>
                 </Button>
               </SheetTrigger>
-              <SheetContent side="right" className="w-80 rounded-l-2xl">
-                <nav className="flex flex-col space-y-1 mt-8">
-                  <Link 
-                    href="/prostory" 
-                    className="text-base font-medium text-gray-700 hover:text-black hover:bg-gray-50 transition-colors px-4 py-3 rounded-xl"
-                    onClick={closeMobileMenu}
-                  >
-                    Prostory
-                  </Link>
-                  <Link 
-                    href="/verejne-zakazky" 
-                    className="text-base font-medium text-gray-700 hover:text-black hover:bg-gray-50 transition-colors px-4 py-3 rounded-xl"
-                    onClick={closeMobileMenu}
-                  >
-                    Veřejné zakázky
-                  </Link>
-                  <Link 
-                    href="/rychla-poptavka" 
-                    className="text-base font-medium text-gray-700 hover:text-black hover:bg-gray-50 transition-colors px-4 py-3 rounded-xl"
-                    onClick={closeMobileMenu}
-                  >
-                    Rychlá poptávka
-                  </Link>
-                  <Link 
-                    href="/organizace-akce" 
-                    className="text-base font-medium text-gray-700 hover:text-black hover:bg-gray-50 transition-colors px-4 py-3 rounded-xl"
-                    onClick={closeMobileMenu}
-                  >
-                    Organizace akce
-                  </Link>
-                  <Link 
-                    href="/blog" 
-                    className="text-base font-medium text-gray-700 hover:text-black hover:bg-gray-50 transition-colors px-4 py-3 rounded-xl"
-                    onClick={closeMobileMenu}
-                  >
-                    Blog
-                  </Link>
-                  <Link 
-                    href="/ceny" 
-                    className="text-base font-medium text-gray-700 hover:text-black hover:bg-gray-50 transition-colors px-4 py-3 rounded-xl"
-                    onClick={closeMobileMenu}
-                  >
-                    Ceník
-                  </Link>
-                  <Link 
-                    href="/faq" 
-                    className="text-base font-medium text-gray-700 hover:text-black hover:bg-gray-50 transition-colors px-4 py-3 rounded-xl"
-                    onClick={closeMobileMenu}
-                  >
-                    FAQ
-                  </Link>
-                  <Link 
-                    href="/kontakt" 
-                    className="text-base font-medium text-gray-700 hover:text-black hover:bg-gray-50 transition-colors px-4 py-3 rounded-xl"
-                    onClick={closeMobileMenu}
-                  >
-                    Kontakt
-                  </Link>
-                  
-                  {/* Mobile Auth */}
-                  <div className="pt-6 mt-6 border-t border-gray-100 space-y-3">
+              <SheetContent side="right" className="flex w-full max-w-xs flex-col rounded-l-3xl border-l border-gray-100 px-0 pb-0 pt-0 sm:max-w-sm">
+                <div className="flex h-full flex-col">
+                  <SheetHeader className="border-b border-gray-100 px-6 pb-6 pt-8 text-left">
+                    <Link href="/" onClick={closeMenu} className="inline-flex items-center -ml-[3px]">
+                      <Logo variant="black" size="sm" href={null} className="h-7 w-auto" />
+                      <span className="sr-only">ProstorMat domů</span>
+                    </Link>
+                    <SheetTitle className="sr-only">Navigace</SheetTitle>
+                    <SheetDescription className="text-sm text-gray-500">
+                      ProstorMat propojuje organizátory s jedinečnými prostory po celé České republice.
+                    </SheetDescription>
+                  </SheetHeader>
+
+                  <nav className="flex-1 overflow-y-auto px-2 py-6">
+                    <div className="space-y-1">
+                      {navLinks.map((item) => (
+                        <Link
+                          key={item.href}
+                          href={item.href}
+                          onClick={closeMenu}
+                          className="flex items-center justify-between rounded-2xl px-4 py-3 text-base font-medium text-gray-700 transition hover:bg-gray-100 hover:text-black"
+                        >
+                          {item.label}
+                        </Link>
+                      ))}
+                    </div>
+                    <div className="px-4 pt-4">
+                      <Link
+                        href="https://www.instagram.com/prostormat"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={closeMenu}
+                        className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-gray-100 text-gray-700 transition hover:bg-black hover:text-white"
+                      >
+                        <Instagram className="h-5 w-5" />
+                        <span className="sr-only">Instagram</span>
+                      </Link>
+                    </div>
+                  </nav>
+
+                  <div className="space-y-4 border-t border-gray-100 px-6 pb-8 pt-6">
                     {status === "loading" ? (
-                      <Skeleton className="w-full h-12 rounded-xl" />
+                      <Skeleton className="h-12 w-full rounded-xl" />
                     ) : session ? (
                       <>
-                        <Link href="/dashboard" onClick={closeMobileMenu}>
-                          <Button variant="ghost" size="lg" className="w-full justify-start rounded-xl hover:bg-gray-50">
-                            <User className="h-5 w-5 mr-3" />
+                        <Link href="/dashboard" onClick={closeMenu}>
+                          <Button variant="ghost" size="lg" className="flex w-full items-center justify-start gap-3 rounded-xl hover:bg-gray-100">
+                            <User className="h-5 w-5" />
                             {session.user?.name || session.user?.email}
                           </Button>
                         </Link>
-                        <Link href="/pridat-prostor" onClick={closeMobileMenu}>
-                          <Button size="lg" className="w-full bg-black text-white hover:bg-gray-800 rounded-xl">
-                            <Plus className="h-5 w-5 mr-2" />
+                        <Link href="/pridat-prostor" onClick={closeMenu}>
+                          <Button size="lg" className="w-full rounded-xl bg-black text-white transition hover:bg-gray-800">
+                            <Plus className="mr-2 h-5 w-5" />
                             Přidat prostor
                           </Button>
                         </Link>
-                        <Button 
-                          variant="ghost" 
-                          size="lg" 
-                          className="w-full justify-start text-red-600 hover:bg-red-50 rounded-xl" 
+                        <Button
+                          variant="ghost"
+                          size="lg"
+                          className="flex w-full items-center justify-start gap-3 rounded-xl text-red-600 transition hover:bg-red-50"
                           onClick={() => {
                             signOut()
-                            closeMobileMenu()
+                            closeMenu()
                           }}
                         >
-                          <LogOut className="h-5 w-5 mr-3" />
+                          <LogOut className="h-5 w-5" />
                           Odhlásit se
                         </Button>
                       </>
                     ) : (
                       <>
-                        <Link href="/prihlaseni" onClick={closeMobileMenu}>
+                        <Link href="/prihlaseni" onClick={closeMenu}>
                           <Button variant="outline" size="lg" className="w-full rounded-xl border-gray-200">
                             Přihlásit se
                           </Button>
                         </Link>
-                        <Link href="/registrace" onClick={closeMobileMenu}>
-                          <Button size="lg" className="w-full bg-black text-white hover:bg-gray-800 rounded-xl">
+                        <Link href="/registrace" onClick={closeMenu}>
+                          <Button size="lg" className="w-full rounded-xl bg-black text-white transition hover:bg-gray-800">
                             Registrace
                           </Button>
                         </Link>
-                        <Link href="/pridat-prostor" onClick={closeMobileMenu}>
-                          <Button variant="outline" size="lg" className="w-full rounded-xl border-gray-200 mt-2">
-                            <Plus className="h-5 w-5 mr-2" />
+                        <Link href="/pridat-prostor" onClick={closeMenu}>
+                          <Button variant="outline" size="lg" className="mt-2 w-full rounded-xl border-gray-200">
+                            <Plus className="mr-2 h-5 w-5" />
                             Přidat prostor
                           </Button>
                         </Link>
                       </>
                     )}
                   </div>
-                </nav>
+                </div>
               </SheetContent>
             </Sheet>
           </div>

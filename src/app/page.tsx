@@ -69,7 +69,7 @@ async function getFeaturedVenues() {
       }
     }
 
-    const desiredCount = 9
+    const desiredCount = 12
 
     if (selected.length < desiredCount) {
       const fallbackVenues = await db.venue.findMany({

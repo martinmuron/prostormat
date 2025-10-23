@@ -2,7 +2,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { ScrollReveal } from "@/components/ui/scroll-reveal"
 import { PageHero } from "@/components/layout/page-hero"
-import { Check, Star, Zap, TrendingUp, Mail } from "lucide-react"
+import { Check, Star, Mail } from "lucide-react"
 
 export default function PricingPage() {
   return (
@@ -102,15 +102,10 @@ export default function PricingPage() {
           </ScrollReveal>
 
           {/* Premium Pricing Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16 items-stretch">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
             {/* Priority Package */}
             <ScrollReveal delay={100}>
               <div className="bg-white rounded-3xl p-8 hover-lift transition-all duration-300 shadow-lg border border-gray-100 relative overflow-hidden group h-full flex flex-col">
-                <div className="absolute top-4 right-4">
-                  <span className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
-                    NOVINKA
-                  </span>
-                </div>
                 <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-red-500 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
                   <Star className="w-8 h-8 text-white" />
                 </div>
@@ -128,93 +123,8 @@ export default function PricingPage() {
               </div>
             </ScrollReveal>
 
-            {/* Top Priority Package */}
-            <ScrollReveal delay={200}>
-              <div className="bg-white rounded-3xl p-8 hover-lift transition-all duration-300 shadow-lg border border-gray-100 relative overflow-hidden group h-full flex flex-col">
-                <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-500 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
-                  <TrendingUp className="w-8 h-8 text-white" />
-                </div>
-                <h3 className="text-title-3 font-bold text-black mb-3 text-center">
-                  Top Priority
-                </h3>
-                <p className="text-callout text-gray-600 leading-relaxed text-center mb-4">
-                  Umístění mezi prvními 48 prostory ve výpisu
-                </p>
-                <div className="text-center mb-2">
-                  <span className="text-4xl font-black text-black">3 700</span>
-                  <span className="text-lg text-gray-600 ml-2">Kč / měsíc</span>
-                </div>
-                <p className="text-sm font-semibold text-green-600 text-center mb-6">
-                  Až o 52% více poptávek
-                </p>
-                <div className="mt-auto" />
-              </div>
-            </ScrollReveal>
-
-            {/* Double Package */}
-            <ScrollReveal delay={300}>
-              <div className="bg-white rounded-3xl p-8 hover-lift transition-all duration-300 shadow-lg border-2 border-purple-200 relative overflow-hidden group h-full flex flex-col">
-                <div className="absolute top-4 right-4">
-                  <span className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
-                    POPULÁRNÍ
-                  </span>
-                </div>
-                <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
-                  <Zap className="w-8 h-8 text-white" />
-                </div>
-                <h3 className="text-title-3 font-bold text-black mb-3 text-center">
-                  Double
-                </h3>
-                <p className="text-callout text-gray-600 leading-relaxed text-center mb-4">
-                  Top 12 prostorů se zvětšeným formátem karty (max. 6 pozic)
-                </p>
-                <div className="text-center mb-2">
-                  <span className="text-4xl font-black text-black">7 400</span>
-                  <span className="text-lg text-gray-600 ml-2">Kč / měsíc</span>
-                </div>
-                <p className="text-sm text-gray-500 text-center mb-2">
-                  Nebo 2 200 Kč/týden
-                </p>
-                <p className="text-sm font-semibold text-green-600 text-center mb-6">
-                  Až o 90% více poptávek
-                </p>
-                <div className="mt-auto" />
-              </div>
-            </ScrollReveal>
-          </div>
-
-          {/* Premium Packages Row 2 */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-stretch">
-            {/* Home Package */}
-            <ScrollReveal delay={400}>
-              <div className="bg-white rounded-3xl p-8 hover-lift transition-all duration-300 shadow-lg border border-gray-100 relative overflow-hidden group h-full flex flex-col">
-                <div className="absolute top-4 right-4">
-                  <span className="bg-gradient-to-r from-green-500 to-teal-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
-                    NOVINKA
-                  </span>
-                </div>
-                <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-teal-500 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
-                  <Star className="w-8 h-8 text-white" />
-                </div>
-                <h3 className="text-title-3 font-bold text-black mb-3 text-center">
-                  Homepage
-                </h3>
-                <p className="text-callout text-gray-600 leading-relaxed text-center mb-4">
-                  Exkluzivní umístění mezi prvními 6 prostory na hlavní stránce (3 pozice celkem)
-                </p>
-                <div className="text-center mb-2">
-                  <span className="text-4xl font-black text-black">10 400</span>
-                  <span className="text-lg text-gray-600 ml-2">Kč / měsíc</span>
-                </div>
-                <p className="text-sm text-gray-500 text-center mb-6">
-                  Nebo 2 900 Kč/týden
-                </p>
-                <div className="mt-auto" />
-              </div>
-            </ScrollReveal>
-
             {/* Cover Package */}
-            <ScrollReveal delay={500}>
+            <ScrollReveal delay={200}>
               <div className="bg-white rounded-3xl p-8 hover-lift transition-all duration-300 shadow-lg border border-gray-100 relative overflow-hidden group h-full flex flex-col">
                 <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-blue-500 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
                   <Mail className="w-8 h-8 text-white" />
@@ -234,7 +144,7 @@ export default function PricingPage() {
             </ScrollReveal>
 
             {/* Homepage + Top Priority Combo */}
-            <ScrollReveal delay={600}>
+            <ScrollReveal delay={300}>
               <div className="bg-gradient-to-br from-black to-gray-800 rounded-3xl p-8 hover-lift transition-all duration-300 shadow-xl border border-gray-700 relative overflow-hidden group text-white h-full flex flex-col">
                 <div className="absolute top-4 right-4">
                   <span className="bg-gradient-to-r from-yellow-400 to-orange-500 text-black px-3 py-1 rounded-full text-sm font-bold">
@@ -268,7 +178,7 @@ export default function PricingPage() {
             </ScrollReveal>
           </div>
 
-          <ScrollReveal delay={500}>
+          <ScrollReveal delay={400}>
             <div className="text-center mt-16">
               <p className="text-body text-gray-600 mb-8 max-w-2xl mx-auto">
                 Zajímají vás prémiové funkce? Kontaktujte nás pro individuální nabídku.

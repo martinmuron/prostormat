@@ -16,6 +16,7 @@ const navLinks = [
   { href: "/verejne-zakazky", label: "Veřejné zakázky" },
   { href: "/rychla-poptavka", label: "Rychlá poptávka" },
   { href: "/organizace-akce", label: "Organizace akce" },
+  { href: "/eventove-agentury", label: "Eventové agentury" },
   { href: "/blog", label: "Blog" },
   { href: "/ceny", label: "Ceník" },
   { href: "/faq", label: "FAQ" },
@@ -113,9 +114,7 @@ export function Header() {
                       <span className="sr-only">ProstorMat domů</span>
                     </Link>
                     <SheetTitle className="sr-only">Navigace</SheetTitle>
-                    <SheetDescription className="text-sm text-gray-500">
-                      ProstorMat propojuje organizátory s jedinečnými prostory po celé České republice.
-                    </SheetDescription>
+                    <SheetDescription className="text-sm text-gray-500" />
                   </SheetHeader>
 
                   <nav className="flex-1 overflow-y-auto px-2 py-6">

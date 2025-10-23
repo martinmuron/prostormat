@@ -1,0 +1,19 @@
+import type { Metadata } from "next"
+import { EventAgenciesPage } from "@/components/pages/event-agencies-page"
+
+export const metadata: Metadata = {
+  title: "Eventové agentury | ProstorMat",
+  description: "Připravujeme partnerskou sekci pro eventové agentury, které s námi spolupracují na realizaci akcí. Ozvěte se nám, pokud chcete být u toho.",
+  alternates: {
+    canonical: "https://prostormat.cz/eventove-agentury",
+  },
+  openGraph: {
+    title: "Eventové agentury | ProstorMat",
+    description: "Spojujeme ověřené eventové agentury s klienty ProstorMat. Zanechte nám kontakt a probereme možnosti spolupráce.",
+    url: "https://prostormat.cz/eventove-agentury",
+  },
+}
+
+export default function EventAgenciesRoute() {
+  return <EventAgenciesPage />
+}

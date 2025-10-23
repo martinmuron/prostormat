@@ -26,7 +26,10 @@ import {
   Shield,
   Music,
   Instagram,
-  ArrowLeft
+  ArrowLeft,
+  CreditCard,
+  CheckCircle2,
+  XCircle
 } from "lucide-react"
 
 type ClaimantInfo = {
@@ -73,6 +76,10 @@ interface AdminVenue {
   manager?: VenueManagerInfo | null
   claims?: VenueClaimSummary[]
   totalViews?: number | null
+  paid?: boolean | null
+  paymentDate?: string | Date | null
+  expiresAt?: string | Date | null
+  subscriptionId?: string | null
   _count?: {
     inquiries: number
   }
@@ -114,6 +121,9 @@ export function AdminVenueEditForm({ venue }: AdminVenueEditFormProps) {
   const [errorMessage, setErrorMessage] = useState("")
   const [managerEmail, setManagerEmail] = useState(venue.manager?.email || "")
   const [managerPassword, setManagerPassword] = useState("")
+  const [paymentDate, setPaymentDate] = useState("")
+  const [isMarkingPaid, setIsMarkingPaid] = useState(false)
+  const [paymentNotes, setPaymentNotes] = useState("")
   const pendingClaims = venue.claims ?? []
 
   const [formData, setFormData] = useState<AdminVenueFormState>({
@@ -157,6 +167,48 @@ export function AdminVenueEditForm({ venue }: AdminVenueEditFormProps) {
     { value: "active", label: "Aktivní" },
     { value: "hidden", label: "Skrytý" },
   ]
+
+  const handleMarkAsPaid = async () => {
+    if (!paymentDate) {
+      setErrorMessage("Vyberte datum platby")
+      return
+    }
+
+    setIsMarkingPaid(true)
+    setSuccessMessage("")
+    setErrorMessage("")
+
+    try {
+      const response = await fetch("/api/admin/venues/mark-paid", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          venueId: venue.id,
+          paymentDate: paymentDate,
+          notes: paymentNotes || undefined,
+        }),
+      })
+
+      const data = await response.json()
+
+      if (response.ok) {
+        setSuccessMessage(`Prostor byl označen jako zaplacený. Platnost do: ${new Date(data.venue.expiresAt).toLocaleDateString('cs-CZ')}`)
+        setPaymentDate("")
+        setPaymentNotes("")
+        // Refresh the page to show updated payment status
+        router.refresh()
+      } else {
+        throw new Error(data.error || "Nepodařilo se označit prostor jako zaplacený")
+      }
+    } catch (error) {
+      console.error("Error marking venue as paid:", error)
+      setErrorMessage(error instanceof Error ? error.message : "Nepodařilo se označit prostor jako zaplacený")
+    } finally {
+      setIsMarkingPaid(false)
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -693,6 +745,97 @@ export function AdminVenueEditForm({ venue }: AdminVenueEditFormProps) {
                         </div>
                       </div>
                     )}
+
+                    {/* Payment & Subscription Section */}
+                    <div className="border-t pt-6 mt-6">
+                      <h3 className="text-lg font-medium text-gray-900 flex items-center gap-2 mb-4">
+                        <CreditCard className="h-5 w-5 text-green-600" />
+                        Platba a předplatné
+                      </h3>
+
+                      {/* Current Payment Status */}
+                      <div className="mb-6 p-4 rounded-lg bg-gray-50 border border-gray-200">
+                        <div className="flex items-start justify-between">
+                          <div className="space-y-2">
+                            <div className="flex items-center gap-2">
+                              <span className="text-sm font-medium text-gray-700">Status:</span>
+                              {venue.paid ? (
+                                <Badge className="bg-green-100 text-green-800 border-green-200 flex items-center gap-1">
+                                  <CheckCircle2 className="h-3 w-3" />
+                                  Zaplaceno
+                                </Badge>
+                              ) : (
+                                <Badge className="bg-red-100 text-red-800 border-red-200 flex items-center gap-1">
+                                  <XCircle className="h-3 w-3" />
+                                  Nezaplaceno
+                                </Badge>
+                              )}
+                            </div>
+                            {venue.paid && venue.paymentDate && (
+                              <div className="text-sm text-gray-600">
+                                <strong>Datum platby:</strong> {new Date(venue.paymentDate).toLocaleDateString('cs-CZ')}
+                              </div>
+                            )}
+                            {venue.expiresAt && (
+                              <div className="text-sm text-gray-600">
+                                <strong>Platnost do:</strong> {new Date(venue.expiresAt).toLocaleDateString('cs-CZ')}
+                              </div>
+                            )}
+                            {venue.subscriptionId && (
+                              <div className="text-xs text-gray-500">
+                                <strong>Subscription ID:</strong> {venue.subscriptionId}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Manual Payment Form */}
+                      <div className="space-y-4">
+                        <h4 className="text-sm font-semibold text-gray-900">
+                          Označit jako zaplaceno offline
+                        </h4>
+                        <p className="text-sm text-gray-600">
+                          Použijte tento formulář pro manuální označení platby (např. platba bankovním převodem nebo hotovostí).
+                        </p>
+
+                        <div>
+                          <Label htmlFor="paymentDate">Datum platby *</Label>
+                          <Input
+                            id="paymentDate"
+                            type="date"
+                            value={paymentDate}
+                            onChange={(e) => setPaymentDate(e.target.value)}
+                            className="max-w-xs"
+                          />
+                          <p className="text-xs text-gray-500 mt-1">
+                            Platnost předplatného bude nastavena na 1 rok od tohoto data
+                          </p>
+                        </div>
+
+                        <div>
+                          <Label htmlFor="paymentNotes">Poznámky (volitelné)</Label>
+                          <Textarea
+                            id="paymentNotes"
+                            value={paymentNotes}
+                            onChange={(e) => setPaymentNotes(e.target.value)}
+                            placeholder="Např: Platba bankovním převodem, číslo transakce..."
+                            rows={3}
+                            className="max-w-lg"
+                          />
+                        </div>
+
+                        <Button
+                          type="button"
+                          onClick={handleMarkAsPaid}
+                          disabled={isMarkingPaid || !paymentDate}
+                          variant="default"
+                          className="bg-green-600 hover:bg-green-700"
+                        >
+                          {isMarkingPaid ? "Zpracování..." : "Označit jako zaplaceno"}
+                        </Button>
+                      </div>
+                    </div>
                   </div>
                 </TabsContent>
 

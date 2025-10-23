@@ -82,6 +82,15 @@ export function Header() {
                 </Link>
               </>
             )}
+            <Link
+              href="https://www.instagram.com/prostormat"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-gray-200 text-gray-700 transition hover:border-black hover:bg-black hover:text-white"
+            >
+              <Instagram className="h-5 w-5" />
+              <span className="sr-only">Instagram</span>
+            </Link>
           </div>
 
           <div className="flex items-center gap-2">
@@ -93,6 +102,16 @@ export function Header() {
                 </Button>
               </Link>
             )}
+
+            <Link
+              href="https://www.instagram.com/prostormat"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-gray-200 text-gray-700 transition hover:border-black hover:bg-black hover:text-white md:hidden"
+            >
+              <Instagram className="h-5 w-5" />
+              <span className="sr-only">Instagram</span>
+            </Link>
 
             <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
               <SheetTrigger asChild>

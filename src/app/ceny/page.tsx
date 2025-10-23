@@ -49,7 +49,8 @@ export default function PricingPage() {
                     'Přístup k požadavkům na akce',
                     'Základní statistiky návštěvnosti',
                     'Email podpora',
-                    'Roční platba (žádné měsíční poplatky)'
+                    'Automatické obnovení každý rok',
+                    'Zrušení kdykoliv bez sankcí'
                   ].map((feature, index) => (
                     <div key={index} className="flex items-center gap-3">
                       <div className="w-6 h-6 bg-black rounded-full flex items-center justify-center flex-shrink-0">
@@ -58,6 +59,20 @@ export default function PricingPage() {
                       <span className="text-body text-gray-700 font-medium">{feature}</span>
                     </div>
                   ))}
+                </div>
+
+                {/* Subscription Info */}
+                <div className="bg-blue-50 border border-blue-200 rounded-2xl p-6 mb-8">
+                  <div className="flex items-start gap-3">
+                    <div className="text-blue-600 text-2xl">🔄</div>
+                    <div>
+                      <h4 className="font-semibold text-blue-900 mb-2">Automatické obnovení</h4>
+                      <p className="text-sm text-blue-800 leading-relaxed">
+                        Předplatné se automaticky obnoví každý rok, aby váš prostor zůstal vždy viditelný.
+                        Můžete kdykoliv zrušit v nastavení vašeho účtu bez jakýchkoliv sankcí nebo poplatků.
+                      </p>
+                    </div>
+                  </div>
                 </div>
 
                 {/* CTA Buttons */}

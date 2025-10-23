@@ -16,7 +16,36 @@ async function getVenueData(venueId: string) {
       where: {
         id: venueId,
       },
-      include: {
+      select: {
+        id: true,
+        slug: true,
+        name: true,
+        description: true,
+        address: true,
+        district: true,
+        capacitySeated: true,
+        capacityStanding: true,
+        venueType: true,
+        contactEmail: true,
+        contactPhone: true,
+        websiteUrl: true,
+        instagramUrl: true,
+        videoUrl: true,
+        youtubeUrl: true,
+        musicAfter10: true,
+        images: true,
+        amenities: true,
+        status: true,
+        isRecommended: true,
+        priority: true,
+        managerId: true,
+        paid: true,
+        paymentDate: true,
+        expiresAt: true,
+        subscriptionId: true,
+        totalViews: true,
+        createdAt: true,
+        updatedAt: true,
         manager: {
           select: {
             id: true,
@@ -26,7 +55,7 @@ async function getVenueData(venueId: string) {
           },
         },
         inquiries: {
-          orderBy: { createdAt: "desc" },
+          orderBy: { createdAt: "desc" as const },
           take: 10,
         },
         _count: {
@@ -39,7 +68,7 @@ async function getVenueData(venueId: string) {
             status: 'pending',
           },
           orderBy: {
-            createdAt: 'asc',
+            createdAt: 'asc' as const,
           },
           include: {
             claimant: {

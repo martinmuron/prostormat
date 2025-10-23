@@ -185,14 +185,45 @@ export async function POST(request: NextRequest) {
         },
       });
 
+      // Calculate expiry date (1 year from now)
+      const expiresAt = new Date(now);
+      expiresAt.setFullYear(expiresAt.getFullYear() + 1);
+
       // Mark venue as paid after successful payment
       await prisma.venue.update({
         where: { id: existingVenue.id },
         data: {
           paid: true,
           paymentDate: now,
+          expiresAt: expiresAt,
+          subscriptionId: venueData.subscriptionId || null,
         },
       });
+
+      // Create subscription record if we have subscription data
+      if (venueData.subscriptionId && venueData.customerId) {
+        try {
+          await prisma.subscription.upsert({
+            where: { venueId: existingVenue.id },
+            create: {
+              id: nanoid(),
+              venueId: existingVenue.id,
+              stripeSubscriptionId: venueData.subscriptionId,
+              stripeCustomerId: venueData.customerId,
+              status: 'active',
+              currentPeriodEnd: expiresAt,
+            },
+            update: {
+              stripeSubscriptionId: venueData.subscriptionId,
+              stripeCustomerId: venueData.customerId,
+              status: 'active',
+              currentPeriodEnd: expiresAt,
+            },
+          });
+        } catch (subscriptionError) {
+          console.error('Failed to create subscription record for claim:', subscriptionError);
+        }
+      }
 
       await prisma.paymentIntent.update({
         where: {
@@ -237,10 +268,18 @@ export async function POST(request: NextRequest) {
         await resend.emails.send({
           from: 'Prostormat <noreply@prostormat.cz>',
           to: venueData.userEmail,
-          subject: '✅ Platba přijata - žádost o převzetí čeká na schválení',
+          subject: '✅ Předplatné aktivováno - žádost o převzetí čeká na schválení',
           html: `
-            <h2>Děkujeme za platbu!</h2>
+            <h2>Děkujeme za aktivaci předplatného!</h2>
             <p>Vaše žádost o převzetí listingu "<strong>${existingVenue.name}</strong>" byla úspěšně odeslána.</p>
+
+            <h3>Detaily předplatného</h3>
+            <ul>
+              <li>💳 Částka: 12,000 CZK/rok</li>
+              <li>📅 Platnost do: ${expiresAt.toLocaleDateString('cs-CZ')}</li>
+              <li>🔄 Automatické obnovení: Ano</li>
+            </ul>
+
             <h3>Co bude následovat?</h3>
             <ul>
               <li>✅ Potvrdíme, že jste oprávněný správce tohoto prostoru</li>
@@ -309,6 +348,10 @@ export async function POST(request: NextRequest) {
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/(^-|-$)/g, '');
 
+    // Calculate expiry date (1 year from now)
+    const venueExpiresAt = new Date(now);
+    venueExpiresAt.setFullYear(venueExpiresAt.getFullYear() + 1);
+
     await prisma.venue.create({
       data: {
         id: venueId,
@@ -332,11 +375,30 @@ export async function POST(request: NextRequest) {
         paid: true, // Mark as paid after successful payment
         managerId: userId,
         paymentDate: now,
-        expiresAt: new Date(now.getTime() + 365 * 24 * 60 * 60 * 1000),
+        expiresAt: venueExpiresAt,
+        subscriptionId: venueData.subscriptionId || null,
         createdAt: now,
         updatedAt: now,
       },
     });
+
+    // Create subscription record if we have subscription data
+    if (venueData.subscriptionId && venueData.customerId) {
+      try {
+        await prisma.subscription.create({
+          data: {
+            id: nanoid(),
+            venueId: venueId,
+            stripeSubscriptionId: venueData.subscriptionId,
+            stripeCustomerId: venueData.customerId,
+            status: 'active',
+            currentPeriodEnd: venueExpiresAt,
+          },
+        });
+      } catch (subscriptionError) {
+        console.error('Failed to create subscription record:', subscriptionError);
+      }
+    }
 
     // Update payment record
     await prisma.paymentIntent.update({
@@ -381,11 +443,18 @@ export async function POST(request: NextRequest) {
       await resend.emails.send({
         from: 'Prostormat <noreply@prostormat.cz>',
         to: venueData.userEmail,
-        subject: '✅ Platba úspěšně přijata - Prostor čeká na schválení',
+        subject: '✅ Předplatné aktivováno - Prostor čeká na schválení',
         html: `
-          <h2>Děkujeme za platbu!</h2>
-          <p>Vaše platba za přidání prostoru "<strong>${venueData.name}</strong>" byla úspěšně přijata.</p>
-          
+          <h2>Děkujeme za aktivaci předplatného!</h2>
+          <p>Vaše předplatné pro prostor "<strong>${venueData.name}</strong>" bylo úspěšně aktivováno.</p>
+
+          <h3>Detaily předplatného</h3>
+          <ul>
+            <li>💳 Částka: 12,000 CZK/rok</li>
+            <li>📅 Platnost do: ${venueExpiresAt.toLocaleDateString('cs-CZ')}</li>
+            <li>🔄 Automatické obnovení: Ano (každý rok)</li>
+          </ul>
+
           <h3>Co bude dále?</h3>
           <ul>
             <li>✅ Váš účet byl vytvořen</li>
@@ -394,15 +463,17 @@ export async function POST(request: NextRequest) {
             <li>✏️ Po přihlášení můžete prostor ihned upravovat v administraci</li>
             <li>🎯 Pak budete moci přijímat rezervace!</li>
           </ul>
-          
+
           <p><strong>Přihlašovací údaje:</strong></p>
           <ul>
             <li>Email: ${venueData.userEmail}</li>
             <li>Heslo: (které jste si zvolili při registraci)</li>
           </ul>
-          
+
           <p>Můžete se přihlásit na: <a href="https://prostormat.cz/prihlaseni">prostormat.cz/prihlaseni</a></p>
-          
+
+          <p><small>Poznámka: Předplatné se automaticky obnoví za rok. Můžete ho kdykoliv zrušit v nastavení vašeho účtu.</small></p>
+
           <p>Děkujeme za důvěru!<br>Tým Prostormat</p>
         `,
       });

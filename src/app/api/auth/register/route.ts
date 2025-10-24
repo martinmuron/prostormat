@@ -9,8 +9,8 @@ const registerSchema = z.object({
   name: z.string().min(2, "Jméno musí mít alespoň 2 znaky"),
   email: z.string().email("Neplatná e-mailová adresa"),
   password: z.string().min(6, "Heslo musí mít alespoň 6 znaků"),
-  company: z.string().optional(),
-  phone: z.string().optional(),
+  company: z.string().optional().nullable(),
+  phone: z.string().optional().nullable(),
 })
 
 export async function POST(request: Request) {
@@ -41,8 +41,8 @@ export async function POST(request: Request) {
         email: validatedData.email,
         password: hashedPassword,
         role: "user", // All registrations are "user" role
-        company: validatedData.company || null,
-        phone: validatedData.phone || null,
+        company: null,
+        phone: null,
       },
       select: {
         id: true,
@@ -69,7 +69,6 @@ export async function POST(request: Request) {
       const [firstName, ...lastNameParts] = validatedData.name.split(' ')
       await trackRegistration({
         email: user.email,
-        phone: validatedData.phone,
         firstName: firstName,
         lastName: lastNameParts.join(' ') || undefined,
       }, request)

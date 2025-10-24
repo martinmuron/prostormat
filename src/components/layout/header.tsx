@@ -13,7 +13,7 @@ import { User, Menu, LogOut, Plus, Instagram } from "lucide-react"
 const navLinks = [
   { href: "/", label: "Úvod" },
   { href: "/prostory", label: "Prostory" },
-  { href: "/verejne-zakazky", label: "Veřejné zakázky" },
+  { href: "/event-board", label: "Event Board" },
   { href: "/rychla-poptavka", label: "Rychlá poptávka" },
   { href: "/organizace-akce", label: "Organizace akce" },
   { href: "/eventove-agentury", label: "Eventové agentury" },

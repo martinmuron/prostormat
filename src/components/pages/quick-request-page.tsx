@@ -193,9 +193,9 @@ export function QuickRequestPage() {
             </p>
             
             <div className="space-y-4 sm:space-y-0 sm:space-x-4 sm:flex sm:justify-center">
-              <Link href="/verejne-zakazky">
+              <Link href="/event-board">
                 <Button size="lg" className="bg-black text-white hover:bg-gray-800 rounded-xl w-full sm:w-auto">
-                  Zobrazit všechny poptávky
+                  Zobrazit Event Board
                 </Button>
               </Link>
               <Link href="/prostory">

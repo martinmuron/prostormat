@@ -184,7 +184,7 @@ export default async function UsersPage() {
                   <TableCell>
                     <div className="text-sm">
                       <div>Prostory: {user._count.venues}</div>
-                      <div>Veřejné zakázky: {user._count.eventRequests}</div>
+                      <div>Event Board: {user._count.eventRequests}</div>
                       <div>Dotazy: {user._count.venueInquiries}</div>
                     </div>
                   </TableCell>

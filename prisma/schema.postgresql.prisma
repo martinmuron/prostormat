@@ -94,6 +94,7 @@ model Venue {
   status           String   @default("draft") // draft, active, expired, pending, published
   isRecommended    Boolean  @default(false) // Featured/recommended venue
   priority         Int?     // 1 = highest priority, null = no priority
+  prioritySource   String?  // subscription | manual
   parentId         String?
   managerId        String
   paid             Boolean  @default(false) // Whether venue has paid subscription

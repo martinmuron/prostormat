@@ -61,7 +61,7 @@ export function EventRequestForm() {
       })
 
       if (response.ok) {
-        router.push("/verejne-zakazky?success=true")
+        router.push("/event-board?success=true")
       } else {
         throw new Error("Failed to create event request")
       }

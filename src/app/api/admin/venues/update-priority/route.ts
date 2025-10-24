@@ -22,10 +22,14 @@ export async function POST(request: Request) {
 
     const updatedVenue = await prisma.venue.update({
       where: { id: venueId },
-      data: { priority },
+      data: {
+        priority,
+        prioritySource: priority === null ? null : 'manual',
+      },
       select: {
         id: true,
         priority: true,
+        prioritySource: true,
       },
     })
 

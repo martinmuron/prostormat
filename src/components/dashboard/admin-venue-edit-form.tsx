@@ -80,6 +80,7 @@ interface AdminVenue {
   paymentDate?: string | Date | null
   expiresAt?: string | Date | null
   subscriptionId?: string | null
+  prioritySource?: string | null
   _count?: {
     inquiries: number
   }
@@ -106,6 +107,7 @@ interface AdminVenueFormState {
   status: string
   isRecommended: boolean
   priority: number | null
+  prioritySource: string | null
   managerId: string
 }
 
@@ -145,6 +147,7 @@ export function AdminVenueEditForm({ venue }: AdminVenueEditFormProps) {
     status: venue.status ?? "draft",
     isRecommended: !!venue.isRecommended,
     priority: typeof venue.priority === "number" ? venue.priority : null,
+    prioritySource: venue.prioritySource ?? (typeof venue.priority === "number" ? "manual" : null),
     managerId: venue.managerId ?? ""
   })
 
@@ -321,10 +324,28 @@ export function AdminVenueEditForm({ venue }: AdminVenueEditFormProps) {
   }
 
   const handleChange = (field: keyof AdminVenueFormState, value: AdminVenueFormState[keyof AdminVenueFormState]) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value,
-    }))
+    setFormData(prev => {
+      if (field === "priority") {
+        const numericValue = value as number | null
+        return {
+          ...prev,
+          priority: numericValue,
+          prioritySource: numericValue === null ? null : "manual",
+        }
+      }
+
+      if (field === "prioritySource") {
+        return {
+          ...prev,
+          prioritySource: value as string | null,
+        }
+      }
+
+      return {
+        ...prev,
+        [field]: value,
+      }
+    })
   }
 
   const formatClaimTimestamp = (value: string | Date) =>
@@ -646,13 +667,13 @@ export function AdminVenueEditForm({ venue }: AdminVenueEditFormProps) {
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="none">Bez priority</SelectItem>
-                          <SelectItem value="1">1 – vždy první</SelectItem>
-                          <SelectItem value="2">2 – po prioritě 1</SelectItem>
-                          <SelectItem value="3">3 – po prioritě 1 a 2</SelectItem>
+                          <SelectItem value="1">Top Priority – homepage + top výsledky</SelectItem>
+                          <SelectItem value="2">Priority – přednostní výsledky za Top Priority</SelectItem>
+                          <SelectItem value="3">Legacy Priority (interní)</SelectItem>
                         </SelectContent>
                       </Select>
                       <p className="text-xs text-gray-500 mt-1">
-                        Prázdná hodnota znamená náhodné pořadí po prioritách 1–3.
+                        Top Priority garantuje 12 slotů na homepage a první pozice ve vyhledávání. Priority zůstává přednostně zobrazena hned za Top Priority. Prázdná hodnota znamená běžné pořadí.
                       </p>
                     </div>
 

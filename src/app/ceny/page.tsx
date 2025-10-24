@@ -2,7 +2,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { ScrollReveal } from "@/components/ui/scroll-reveal"
 import { PageHero } from "@/components/layout/page-hero"
-import { Check, Star, Mail } from "lucide-react"
+import { Check, Star, Mail, Sparkles } from "lucide-react"
 
 export default function PricingPage() {
   return (
@@ -103,7 +103,7 @@ export default function PricingPage() {
       </section>
 
       {/* Premium Packages Section */}
-      <section className="py-20 px-4 sm:px-6 bg-gray-50 relative">
+      <section id="premium" className="py-20 px-4 sm:px-6 bg-gray-50 relative">
         <div className="max-w-6xl mx-auto">
           <ScrollReveal>
             <div className="text-center mb-16">
@@ -117,22 +117,54 @@ export default function PricingPage() {
           </ScrollReveal>
 
           {/* Premium Pricing Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-8 items-stretch">
             {/* Priority Package */}
             <ScrollReveal delay={100}>
               <div className="bg-white rounded-3xl p-8 hover-lift transition-all duration-300 shadow-lg border border-gray-100 relative overflow-hidden group h-full flex flex-col">
+                <div className="absolute top-4 right-4">
+                  <span className="bg-orange-100 text-orange-700 px-3 py-1 rounded-full text-sm font-semibold">
+                    +70 % poptávek
+                  </span>
+                </div>
                 <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-red-500 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
                   <Star className="w-8 h-8 text-white" />
                 </div>
                 <h3 className="text-title-3 font-bold text-black mb-3 text-center">
                   Priority
                 </h3>
-                <p className="text-callout text-gray-600 leading-relaxed text-center mb-6">
-                  Umístění mezi prvními 84 prostory ve výpisu
+                <p className="text-callout text-gray-600 leading-relaxed text-center mb-3">
+                  Umístění mezi prvními 24 prostory ve vyhledávání (včetně filtrů).
                 </p>
+                <p className="text-sm text-gray-500 text-center mb-4">Max 24 pozic</p>
                 <div className="text-center mb-6">
-                  <span className="text-4xl font-black text-black">2 200</span>
-                  <span className="text-lg text-gray-600 ml-2">Kč / měsíc</span>
+                  <span className="text-4xl font-black text-black">7 000</span>
+                  <span className="text-lg text-gray-600 ml-2">Kč / rok</span>
+                </div>
+                <div className="mt-auto" />
+              </div>
+            </ScrollReveal>
+
+            {/* Top Priority Package */}
+            <ScrollReveal delay={150}>
+              <div className="bg-gradient-to-br from-black via-gray-900 to-gray-800 rounded-3xl p-8 hover-lift transition-all duration-300 shadow-xl border border-gray-700 relative overflow-hidden group text-white h-full flex flex-col">
+                <div className="absolute top-4 right-4">
+                  <span className="bg-yellow-300 text-black px-3 py-1 rounded-full text-sm font-bold">
+                    +135 % poptávek
+                  </span>
+                </div>
+                <div className="w-16 h-16 bg-gradient-to-br from-yellow-400 to-orange-400 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
+                  <Star className="w-8 h-8 text-black" />
+                </div>
+                <h3 className="text-title-3 font-bold mb-3 text-center">
+                  Top Priority
+                </h3>
+                <p className="text-callout text-gray-200 leading-relaxed text-center mb-3">
+                  Umístění mezi prvními 12 prostory ve vyhledávání + doporučený výběr na homepage.
+                </p>
+                <p className="text-sm text-gray-300 text-center mb-4">Max 12 pozic</p>
+                <div className="text-center mb-6">
+                  <span className="text-4xl font-black">14 000</span>
+                  <span className="text-lg text-gray-300 ml-2">Kč / rok</span>
                 </div>
                 <div className="mt-auto" />
               </div>
@@ -158,40 +190,41 @@ export default function PricingPage() {
               </div>
             </ScrollReveal>
 
-            {/* Homepage + Top Priority Combo */}
-            <ScrollReveal delay={300}>
-              <div className="bg-gradient-to-br from-black to-gray-800 rounded-3xl p-8 hover-lift transition-all duration-300 shadow-xl border border-gray-700 relative overflow-hidden group text-white h-full flex flex-col">
+            {/* AI Package */}
+            <ScrollReveal delay={250}>
+              <div className="bg-gray-100 rounded-3xl p-8 border border-gray-200 relative overflow-hidden group h-full flex flex-col text-gray-600 opacity-90 pointer-events-none">
                 <div className="absolute top-4 right-4">
-                  <span className="bg-gradient-to-r from-yellow-400 to-orange-500 text-black px-3 py-1 rounded-full text-sm font-bold">
-                    NEJLEPŠÍ HODNOTA
+                  <span className="bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-sm font-semibold">
+                    Připravujeme
                   </span>
                 </div>
-                <div className="w-16 h-16 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
-                  <Star className="w-8 h-8 text-black" />
+                <div className="w-16 h-16 bg-gradient-to-br from-gray-200 to-gray-300 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                  <Sparkles className="w-8 h-8 text-gray-600" />
                 </div>
-                <h3 className="text-title-3 font-bold mb-3 text-center">
-                  Homepage + Top Priority
+                <h3 className="text-title-3 font-bold text-gray-700 mb-3 text-center">
+                  AI Matching Priority + AI Location Manager
                 </h3>
-                <p className="text-callout text-gray-200 leading-relaxed text-center mb-4">
-                  Výhodné kombo umístění na homepage i ve výpisu na předních pozicích
+                <p className="text-callout text-gray-600 leading-relaxed text-center mb-4">
+                  Automatické párování poptávek a AI asistence pro správu obsazenosti vašich prostorů.
                 </p>
-                <div className="text-center mb-2">
-                  <span className="text-4xl font-black">12 700</span>
-                  <span className="text-lg text-gray-300 ml-2">Kč / měsíc</span>
-                </div>
-                <p className="text-sm text-gray-300 text-center mb-2">
-                  Nebo 3 700 Kč/týden
-                </p>
-                <p className="text-sm text-gray-400 line-through text-center mb-2">
-                  Běžná cena: 14 100 Kč
-                </p>
-                <p className="text-sm font-semibold text-yellow-400 text-center mb-6">
-                  Úspora 1 400 Kč měsíčně
+                <p className="text-sm text-gray-500 text-center">
+                  Prémiové funkce s AI podporou, které brzy spustíme.
                 </p>
                 <div className="mt-auto" />
               </div>
             </ScrollReveal>
           </div>
+
+          <ScrollReveal delay={320}>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-12">
+              <div className="w-12 h-12 rounded-full bg-black text-white flex items-center justify-center shadow-lg">
+                <Mail className="w-6 h-6" />
+              </div>
+              <p className="text-body text-gray-700 font-medium text-center sm:text-left">
+                Všechny prémiové balíčky zahrnují newsletter marketing Prostormat.
+              </p>
+            </div>
+          </ScrollReveal>
 
           <ScrollReveal delay={400}>
             <div className="text-center mt-16">

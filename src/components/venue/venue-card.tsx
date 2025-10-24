@@ -7,6 +7,10 @@ import type { VenueType } from "@/types"
 import { Users, Star } from "lucide-react"
 import { OptimizedImage } from "@/components/venue/OptimizedImage"
 
+const DISPLAY_NAME_OVERRIDES: Record<string, string> = {
+  moonclub: "MOON Club",
+}
+
 function getPrimaryAddress(rawAddress?: string | null): string | null {
   if (!rawAddress) {
     return null
@@ -24,9 +28,29 @@ function getPrimaryAddress(rawAddress?: string | null): string | null {
     .map(stripPostalCode)
     .filter(Boolean)
 
-  const firstMeaningful = normalized.find(part => /[\p{L}]/u.test(part))
+  const formatPart = (value: string) => {
+    const strippedComma = value.replace(/,+$/, "").trim()
+    if (!strippedComma) {
+      return null
+    }
 
-  return firstMeaningful ?? normalized[0] ?? null
+    const isAllUppercase = strippedComma === strippedComma.toUpperCase()
+    if (isAllUppercase) {
+      return strippedComma
+        .toLocaleLowerCase("cs-CZ")
+        .replace(/\b\p{L}/gu, char => char.toLocaleUpperCase("cs-CZ"))
+    }
+
+    return strippedComma
+  }
+
+  const formattedNormalized = normalized
+    .map(formatPart)
+    .filter((part): part is string => Boolean(part))
+
+  const firstMeaningful = formattedNormalized.find(part => /[\p{L}]/u.test(part))
+
+  return firstMeaningful ?? formattedNormalized[0] ?? null
 }
 
 interface VenueCardProps {
@@ -42,6 +66,7 @@ interface VenueCardProps {
     venueType?: string | null
     venueTypes?: string[]
     images: string[]
+    priority?: number | null
   }
   priority?: boolean
   showPriorityBadge?: boolean
@@ -104,14 +129,24 @@ export function VenueCard({ venue, priority = false, showPriorityBadge = false }
               </div>
             </div>
           )}
-          {showPriorityBadge && (
-            <div className="absolute top-3 right-3 sm:top-4 sm:right-4">
-              <span className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-3 py-1 rounded-full text-xs sm:text-sm font-semibold shadow-lg flex items-center gap-1">
-                <Star className="w-3 h-3 sm:w-4 sm:h-4" />
-                DOPORUČENO
-              </span>
-            </div>
-          )}
+          {showPriorityBadge &&
+            (() => {
+              const priorityLevel = typeof venue.priority === 'number' ? venue.priority : null
+              const badgeLabel =
+                priorityLevel === 1 ? 'TOP PRIORITY' : priorityLevel === 2 ? 'PRIORITY' : 'DOPORUČENO'
+              const badgeClass =
+                priorityLevel === 1
+                  ? 'bg-gradient-to-r from-yellow-300 via-amber-400 to-orange-500 text-black'
+                  : 'bg-gradient-to-r from-orange-500 to-red-500 text-white'
+              return (
+                <div className="absolute top-3 right-3 sm:top-4 sm:right-4">
+                  <span className={`${badgeClass} px-3 py-1 rounded-full text-xs sm:text-sm font-semibold shadow-lg flex items-center gap-1`}>
+                    <Star className="w-3 h-3 sm:w-4 sm:h-4" />
+                    {badgeLabel}
+                  </span>
+                </div>
+              )
+            })()}
           <div className="absolute top-3 right-3 sm:top-4 sm:right-4 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0">
             <div className="w-10 h-10 bg-white/95 rounded-full flex items-center justify-center shadow-lg backdrop-blur-sm">
               <span className="text-sm font-bold text-black">→</span>
@@ -126,7 +161,7 @@ export function VenueCard({ venue, priority = false, showPriorityBadge = false }
             <div className="mb-4">
               <div className="flex items-start justify-between gap-2 mb-2">
                 <h3 className="text-lg sm:text-title-3 text-black group-hover:text-gray-500 transition-all duration-300 leading-tight font-bold tracking-tight flex-1">
-                  {venue.name}
+                  {DISPLAY_NAME_OVERRIDES[venue.slug] ?? venue.name}
                 </h3>
                 {totalCapacity > 0 && (
                   <span className="flex items-center gap-1 px-2 py-1 bg-white rounded-lg border border-black text-black font-semibold text-xs whitespace-nowrap">

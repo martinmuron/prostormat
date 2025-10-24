@@ -28,7 +28,7 @@ This comprehensive report analyzes Prostormat.cz's current SEO positioning, comp
 - Individual Venue Pages (/prostory/[slug])
 - Blog Section (/blog) - Currently using placeholder content
 - Quick Request Form (/rychla-poptavka)
-- Public Tenders (/verejne-zakazky)
+- Event Board (/event-board)
 - Event Organization Service (/organizace-akce)
 - Add Venue (/pridat-prostor)
 - Pricing (/ceny)

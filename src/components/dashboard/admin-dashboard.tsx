@@ -55,7 +55,7 @@ export function AdminDashboard({ data }: AdminDashboardProps) {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-caption text-gray-500 mb-1">Veřejné zakázky</p>
+                <p className="text-caption text-gray-500 mb-1">Event Board</p>
                 <p className="text-title-2 text-black">{stats.totalEventRequests}</p>
               </div>
               <Calendar className="h-8 w-8 text-gray-400" />

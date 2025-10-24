@@ -1,26 +1,15 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import Link from "next/link"
-import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { EVENT_TYPES } from "@/types"
 import type { EventType } from "@/types"
 import { formatDate } from "@/lib/utils"
-import { Calendar, MessageSquare, Building, Plus, Send, Heart } from "lucide-react"
+import { Calendar, Building, Plus, Send } from "lucide-react"
 import type { UserDashboardData } from "@/types/dashboard"
-
-interface FavoriteVenue {
-  id: string
-  name: string
-  slug: string
-  description?: string | null
-  images?: string[]
-  capacitySeated?: number | null
-  favoritedAt: string
-}
 
 interface UserDashboardProps {
   data: UserDashboardData
@@ -29,41 +18,17 @@ interface UserDashboardProps {
 export function UserDashboard({ data }: UserDashboardProps) {
   const { user, eventRequests, broadcasts, stats } = data
   const [activeTab, setActiveTab] = useState('overview')
-  const [favorites, setFavorites] = useState<FavoriteVenue[]>([])
-  const [loadingFavorites, setLoadingFavorites] = useState(false)
-
-  const fetchFavorites = async () => {
-    setLoadingFavorites(true)
-    try {
-      const response = await fetch('/api/user/favorites')
-      if (response.ok) {
-        const payload = (await response.json()) as { favorites?: FavoriteVenue[] }
-        setFavorites(payload.favorites ?? [])
-      }
-    } catch (error) {
-      console.error('Error fetching favorites:', error)
-    } finally {
-      setLoadingFavorites(false)
-    }
-  }
-
-  useEffect(() => {
-    if (activeTab === 'favorites') {
-      fetchFavorites()
-    }
-  }, [activeTab])
 
   const tabs = [
     { id: 'overview', label: 'Přehled', icon: Building },
-    { id: 'requests', label: 'Moje poptávky', icon: Calendar },
+    { id: 'requests', label: 'Aktivní poptávky', icon: Calendar },
     { id: 'broadcasts', label: 'Odeslané poptávky', icon: Send },
-    { id: 'favorites', label: 'Uložené prostory', icon: Heart },
   ]
 
   const renderOverview = () => (
     <>
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
         <Card className="bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
@@ -82,35 +47,7 @@ export function UserDashboard({ data }: UserDashboardProps) {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-caption text-gray-500 mb-1">Celkem požadavků</p>
-                <p className="text-title-2 text-black">{stats.totalRequests}</p>
-              </div>
-              <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
-                <Calendar className="h-6 w-6 text-blue-600" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-caption text-gray-500 mb-1">Odeslané dotazy</p>
-                <p className="text-title-2 text-black">{stats.totalInquiries}</p>
-              </div>
-              <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
-                <MessageSquare className="h-6 w-6 text-purple-600" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-caption text-gray-500 mb-1">Poptávky prostorům</p>
+                <p className="text-caption text-gray-500 mb-1">Odeslané poptávky</p>
                 <p className="text-title-2 text-black">{stats.totalBroadcasts}</p>
               </div>
               <div className="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center">
@@ -126,7 +63,7 @@ export function UserDashboard({ data }: UserDashboardProps) {
         <Card className="bg-white">
           <CardHeader>
             <div className="flex items-center justify-between">
-              <CardTitle className="text-gray-900">Nedávné poptávky</CardTitle>
+              <CardTitle className="text-gray-900">Nedávné aktivní poptávky</CardTitle>
               <Button 
                 size="sm" 
                 className="bg-blue-600 hover:bg-blue-700 text-white"
@@ -144,7 +81,7 @@ export function UserDashboard({ data }: UserDashboardProps) {
                 <p className="text-body text-gray-600 mb-4">
                   Zatím jste nevytvořili žádné poptávky
                 </p>
-                <Link href="/verejne-zakazky/novy">
+                <Link href="/event-board/novy">
                   <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white">Vytvořit první poptávku</Button>
                 </Link>
               </div>
@@ -232,8 +169,8 @@ export function UserDashboard({ data }: UserDashboardProps) {
     <Card className="bg-white">
       <CardHeader>
         <div className="flex items-center justify-between">
-          <CardTitle className="text-gray-900">Všechny moje poptávky</CardTitle>
-          <Link href="/verejne-zakazky/novy">
+          <CardTitle className="text-gray-900">Všechny aktivní poptávky</CardTitle>
+          <Link href="/event-board/novy">
             <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white">
               <Plus className="h-4 w-4 mr-2" />
               Nová poptávka
@@ -249,7 +186,7 @@ export function UserDashboard({ data }: UserDashboardProps) {
             <p className="text-body text-gray-600 mb-6">
               Zatím jste nevytvořili žádné poptávky na akci
             </p>
-            <Link href="/verejne-zakazky/novy">
+            <Link href="/event-board/novy">
               <Button className="bg-blue-600 hover:bg-blue-700 text-white">
                 <Plus className="h-4 w-4 mr-2" />
                 Vytvořit první poptávku
@@ -428,94 +365,10 @@ export function UserDashboard({ data }: UserDashboardProps) {
         return renderRequests()
       case 'broadcasts':
         return renderBroadcasts()
-      case 'favorites':
-        return renderFavorites()
       default:
         return renderOverview()
     }
   }
-
-  const renderFavorites = () => (
-    <Card className="bg-white">
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-gray-900">Uložené prostory</CardTitle>
-          <Link href="/prostory">
-            <Button size="sm" className="bg-purple-600 hover:bg-purple-700 text-white">
-              <Building className="h-4 w-4 mr-2" />
-              Prohlédnout prostory
-            </Button>
-          </Link>
-        </div>
-      </CardHeader>
-      <CardContent>
-        {loadingFavorites ? (
-          <div className="text-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">Načítání oblíbených prostorů...</p>
-          </div>
-        ) : favorites.length === 0 ? (
-          <div className="text-center py-12">
-            <Heart className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">Žádné oblíbené prostory</h3>
-            <p className="text-body text-gray-600 mb-6">
-              Zatím nemáte žádné uložené prostory. Klikněte na srdíčko u prostoru, který se vám líbí.
-            </p>
-            <Link href="/prostory">
-              <Button className="bg-purple-600 hover:bg-purple-700 text-white">
-                <Building className="h-4 w-4 mr-2" />
-                Prohlédnout prostory
-              </Button>
-            </Link>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {favorites.map((venue) => (
-              <div key={venue.id} className="border border-gray-200 rounded-xl overflow-hidden hover:shadow-md transition-shadow">
-                <div className="aspect-video bg-gray-200 relative">
-                  {venue.images && venue.images.length > 0 ? (
-                    <Image
-                      src={venue.images[0]}
-                      alt={venue.name}
-                      fill
-                      className="object-cover"
-                      sizes="(max-width: 768px) 100vw, 50vw"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center">
-                      <Building className="h-12 w-12 text-gray-400" />
-                    </div>
-                  )}
-                </div>
-                <div className="p-4">
-                  <div className="flex items-start justify-between mb-2">
-                    <h4 className="text-lg font-medium text-gray-900">{venue.name}</h4>
-                    <Badge variant="secondary" className="bg-purple-100 text-purple-800">
-                      <Heart className="h-3 w-3 mr-1" />
-                      Oblíbené
-                    </Badge>
-                  </div>
-                  <p className="text-gray-600 text-sm mb-3 line-clamp-2">
-                    {venue.description}
-                  </p>
-                  <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
-                    <span>{venue.capacitySeated || 0} míst k sezení</span>
-                    <span>Uloženo {formatDate(new Date(venue.favoritedAt))}</span>
-                  </div>
-                  <Link href={`/prostory/${venue.slug}`}>
-                    <Button variant="secondary" size="sm" className="w-full text-gray-700 border-gray-300 hover:bg-gray-50">
-                      <Building className="h-4 w-4 mr-2" />
-                      Zobrazit prostor
-                    </Button>
-                  </Link>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </CardContent>
-    </Card>
-  )
 
   return (
     <div>

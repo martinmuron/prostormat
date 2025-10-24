@@ -415,12 +415,11 @@ export default async function VenueDetailPage({
         </div>
         
         {/* Related Venues */}
-        <RelatedVenues 
+        <RelatedVenues
           currentVenueId={venue.id}
           venueType={venue.venueType}
           address={venue.address}
           district={venue.district}
-          amenities={venue.amenities}
           maxCapacity={Math.max(Number(venue.capacitySeated) || 0, Number(venue.capacityStanding) || 0)}
         />
       </div>

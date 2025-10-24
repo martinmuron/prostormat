@@ -143,7 +143,7 @@ export default async function UserProfilePage({
       <Tabs defaultValue="venues" className="space-y-4">
         <TabsList>
           <TabsTrigger value="venues">Prostory ({user.venues.length})</TabsTrigger>
-          <TabsTrigger value="requests">Veřejné zakázky ({user.eventRequests.length})</TabsTrigger>
+          <TabsTrigger value="requests">Event Board ({user.eventRequests.length})</TabsTrigger>
           <TabsTrigger value="inquiries">Dotazy ({user.venueInquiries.length})</TabsTrigger>
           <TabsTrigger value="billing">Fakturace</TabsTrigger>
         </TabsList>
@@ -211,7 +211,7 @@ export default async function UserProfilePage({
         <TabsContent value="requests">
           <Card>
             <CardHeader>
-              <CardTitle>Veřejné zakázky</CardTitle>
+              <CardTitle>Event Board</CardTitle>
             </CardHeader>
             <CardContent>
               {user.eventRequests.length > 0 ? (

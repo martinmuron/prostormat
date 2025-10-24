@@ -37,6 +37,7 @@ interface Venue {
   createdAt: string;
   updatedAt: string;
   priority?: number | null;
+  prioritySource?: string | null;
   claims?: {
     id: string;
     status: string;
@@ -272,7 +273,7 @@ const [updatingPaidId, setUpdatingPaidId] = useState<string | null>(null);
       if (response.ok) {
         setVenues(prev => prev.map(venue =>
           venue.id === venueId
-            ? { ...venue, priority: data.priority }
+            ? { ...venue, priority: data.priority, prioritySource: data.prioritySource }
             : venue
         ));
       } else {

@@ -7,7 +7,6 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent } from "@/components/ui/card"
-import { Logo } from "@/components/ui/logo"
 
 function SignInForm() {
   const router = useRouter()
@@ -49,24 +48,10 @@ function SignInForm() {
     }
   }
 
-  const handleGoogleSignIn = async () => {
-    setIsLoading(true)
-    try {
-      await signIn("google", { callbackUrl })
-    } catch (error) {
-      console.error("Failed to sign in with Google:", error)
-      setError("Došlo k chybě při přihlašování")
-      setIsLoading(false)
-    }
-  }
-
   return (
     <div className="min-h-screen bg-white flex items-center justify-center py-8 sm:py-12 px-4 sm:px-6">
       <div className="max-w-md w-full">
         <div className="text-center mb-6 sm:mb-8">
-          <div className="mb-4 sm:mb-6">
-            <Logo variant="black" size="md" />
-          </div>
           <h1 className="text-xl sm:text-title-3 text-black mb-2">Přihlášení</h1>
           <p className="text-sm sm:text-body text-gray-600">
             Přihlaste se ke svému účtu
@@ -135,25 +120,6 @@ function SignInForm() {
                 {isLoading ? "Přihlašuji..." : "Přihlásit se"}
               </Button>
             </form>
-
-            <div className="relative my-4 sm:my-6">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-200" />
-              </div>
-              <div className="relative flex justify-center text-xs sm:text-caption">
-                <span className="bg-white px-2 text-gray-500">Nebo</span>
-              </div>
-            </div>
-
-            <Button
-              type="button"
-              variant="secondary"
-              className="w-full min-h-[44px] sm:min-h-[48px]"
-              onClick={handleGoogleSignIn}
-              disabled={isLoading}
-            >
-              Přihlásit se přes Google
-            </Button>
 
             <div className="text-center mt-4 sm:mt-6 space-y-2">
               <p className="text-sm sm:text-callout text-gray-600">

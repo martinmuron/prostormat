@@ -16,7 +16,7 @@ const STATIC_ROUTES: Array<{ path: string; priority?: number }> = [
   { path: "/o-nas" },
   { path: "/ceny" },
   { path: "/pridat-prostor" },
-  { path: "/verejne-zakazky" },
+  { path: "/event-board" },
 ]
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {

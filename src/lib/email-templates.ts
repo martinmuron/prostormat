@@ -98,7 +98,7 @@ export function generateVenueBroadcastEmail(data: VenueBroadcastEmailData) {
                 
                 ${broadcast.requirements ? `
                 <div class="detail-row">
-                    <span class="label">Veřejné zakázky:</span> ${broadcast.requirements}
+                    <span class="label">Požadavky:</span> ${broadcast.requirements}
                 </div>
                 ` : ''}
             </div>
@@ -140,7 +140,7 @@ ${broadcast.eventDate ? `- Datum akce: ${new Date(broadcast.eventDate).toLocaleD
 ${broadcast.guestCount ? `- Počet hostů: ${broadcast.guestCount}` : ''}
 ${broadcast.budgetRange ? `- Rozpočet: ${broadcast.budgetRange}` : ''}
 ${broadcast.locationPreference ? `- Lokalita: ${broadcast.locationPreference}` : ''}
-${broadcast.requirements ? `- Veřejné zakázky: ${broadcast.requirements}` : ''}
+${broadcast.requirements ? `- Požadavky: ${broadcast.requirements}` : ''}
 
 Máte zájem o tuto akci? Zobrazit plné detaily (včetně kontaktních údajů):
 ${viewDetailsUrl}

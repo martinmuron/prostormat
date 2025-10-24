@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge"
 import { formatDate } from "@/lib/utils"
 import { Building, MessageSquare, Eye, Plus, Calendar, Settings, CreditCard } from "lucide-react"
 import type { VenueManagerDashboardData } from "@/types/dashboard"
+import { PremiumUpsellPrompt } from "@/components/dashboard/premium-upsell-prompt"
 
 interface VenueManagerDashboardProps {
   data: VenueManagerDashboardData
@@ -486,15 +487,17 @@ export function VenueManagerDashboard({ data }: VenueManagerDashboardProps) {
                 Přidat nový prostor
               </Button>
             </Link>
-            <Link href="/verejne-zakazky">
+            <Link href="/event-board">
               <Button variant="secondary" className="w-full justify-start text-gray-700 border-gray-300 hover:bg-gray-50 h-12">
                 <Calendar className="h-4 w-4 mr-2" />
-                Veřejné zakázky
+                Event Board
               </Button>
             </Link>
           </div>
-        </CardContent>
-      </Card>
+      </CardContent>
+    </Card>
+
+      <PremiumUpsellPrompt />
     </div>
   )
 }

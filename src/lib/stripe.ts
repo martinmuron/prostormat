@@ -1,6 +1,15 @@
 import Stripe from 'stripe';
 import { loadStripe } from '@stripe/stripe-js';
 import type { Stripe as StripeJS } from '@stripe/stripe-js';
+import {
+  STRIPE_BASE_PRICE_ID,
+  STRIPE_BASE_PRODUCT_ID,
+  STRIPE_PRIORITY_PRICE_ID,
+  STRIPE_PRIORITY_PRODUCT_ID,
+  STRIPE_TOP_PRIORITY_PRICE_ID,
+  STRIPE_TOP_PRIORITY_PRODUCT_ID,
+  PRIORITY_PRICE_LEVELS,
+} from '@/lib/stripe-config';
 
 // Initialize Stripe with secret key (server-side)
 export const stripe = process.env.STRIPE_SECRET_KEY 
@@ -21,8 +30,13 @@ export const getStripe = () => {
 };
 
 // Stripe product and price IDs for yearly subscription
-export const STRIPE_PRODUCT_ID = process.env.STRIPE_PRODUCT_ID || '';
-export const STRIPE_PRICE_ID = process.env.STRIPE_PRICE_ID || '';
+export const STRIPE_PRODUCT_ID = STRIPE_BASE_PRODUCT_ID;
+export const STRIPE_PRICE_ID = STRIPE_BASE_PRICE_ID;
+
+export const STRIPE_PRIORITY_ADDON_PRODUCT_ID = STRIPE_PRIORITY_PRODUCT_ID;
+export const STRIPE_PRIORITY_ADDON_PRICE_ID = STRIPE_PRIORITY_PRICE_ID;
+export const STRIPE_TOP_PRIORITY_ADDON_PRODUCT_ID = STRIPE_TOP_PRIORITY_PRODUCT_ID;
+export const STRIPE_TOP_PRIORITY_ADDON_PRICE_ID = STRIPE_TOP_PRIORITY_PRICE_ID;
 
 // Venue submission payment configuration (now subscription-based)
 export const VENUE_PAYMENT_CONFIG = {
@@ -45,6 +59,41 @@ export const isStripeConfigured = () => {
     STRIPE_PRICE_ID
   );
 };
+
+export function determinePriorityLevelFromPriceIds(priceIds: string[]): 1 | 2 | null {
+  if (!priceIds.length) {
+    return null;
+  }
+
+  let level: 1 | 2 | null = null;
+
+  for (const priceId of priceIds) {
+    const resolvedLevel = PRIORITY_PRICE_LEVELS.get(priceId);
+    if (!resolvedLevel) {
+      continue;
+    }
+
+    if (resolvedLevel === 1) {
+      return 1;
+    }
+
+    level = level ?? resolvedLevel;
+  }
+
+  return level;
+}
+
+export function determinePriorityLevelFromSubscription(subscription: Stripe.Subscription): 1 | 2 | null {
+  const priceIds = subscription.items?.data
+    ?.map((item) => {
+      const price = item.price as Stripe.Price | string | undefined | null;
+      if (!price) return null;
+      return typeof price === 'string' ? price : price.id;
+    })
+    .filter((value): value is string => Boolean(value)) ?? [];
+
+  return determinePriorityLevelFromPriceIds(priceIds);
+}
 
 // Helper function to create a subscription
 export const createSubscription = async (

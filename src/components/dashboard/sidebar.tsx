@@ -15,7 +15,8 @@ import {
   CreditCard,
   Mail,
   Menu,
-  PanelLeftClose
+  PanelLeftClose,
+  Sparkles
 } from "lucide-react"
 
 interface DashboardSidebarProps {
@@ -50,9 +51,14 @@ export function DashboardSidebar({ userRole, initialCollapsed = false }: Dashboa
           icon: MessageSquare,
         },
         {
-          name: "Veřejné zakázky",
-          href: "/verejne-zakazky",
+          name: "Event Board",
+          href: "/event-board",
           icon: Calendar,
+        },
+        {
+          name: "Prémiové balíčky",
+          href: "/ceny#premium",
+          icon: Sparkles,
         },
         {
           name: "Předplatné",
@@ -100,21 +106,22 @@ export function DashboardSidebar({ userRole, initialCollapsed = false }: Dashboa
 
     return [
       ...baseNav,
-      {
-        name: "Moje poptávky",
-        href: "/dashboard/requests",
-        icon: Calendar,
-      },
-      {
-        name: "Moje dotazy",
-        href: "/dashboard/inquiries",
-        icon: MessageSquare,
-      },
-      {
-        name: "Uložené prostory",
-        href: "/dashboard/saved",
-        icon: Building,
-      },
+      // TODO: Create these pages
+      // {
+      //   name: "Moje poptávky",
+      //   href: "/dashboard/requests",
+      //   icon: Calendar,
+      // },
+      // {
+      //   name: "Moje dotazy",
+      //   href: "/dashboard/inquiries",
+      //   icon: MessageSquare,
+      // },
+      // {
+      //   name: "Uložené prostory",
+      //   href: "/dashboard/saved",
+      //   icon: Building,
+      // },
     ]
   }, [userRole])
 

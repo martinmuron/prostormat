@@ -1,6 +1,7 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef, useMemo } from "react"
+import type { FocusEvent, MouseEvent } from "react"
 import { useRouter } from "next/navigation"
 import { useSession } from "next-auth/react"
 import { useForm } from "react-hook-form"
@@ -33,7 +34,10 @@ import {
   CheckCircle,
   AlertCircle,
   CreditCard,
-  ArrowLeft
+  ArrowLeft,
+  Loader2,
+  ArrowRight,
+  Plus
 } from "lucide-react"
 
 // Form input types (before validation)
@@ -142,6 +146,28 @@ function isValidYouTubeUrl(url: string): boolean {
 
 type FormStep = 'form' | 'payment' | 'success'
 
+type NameLookupStatus = 'idle' | 'checking' | 'match' | 'suggestions' | 'none' | 'error'
+
+interface InlineVenueMatch {
+  id: string
+  name: string
+  slug: string
+  status: string
+  address?: string | null
+  manager?: {
+    id: string
+    name: string | null
+    email: string | null
+  } | null
+}
+
+interface NameLookupResult {
+  status: NameLookupStatus
+  match: InlineVenueMatch | null
+  suggestions: InlineVenueMatch[]
+  error?: string
+}
+
 export default function AddVenuePage() {
   const router = useRouter()
   const { data: session, status } = useSession()
@@ -170,6 +196,14 @@ export default function AddVenuePage() {
     validatedData: VenueFormData
     existingVenueMatch: typeof claimInfo
   } | null>(null)
+  const [nameLookupResult, setNameLookupResult] = useState<NameLookupResult>({
+    status: 'idle',
+    match: null,
+    suggestions: [],
+  })
+  const nameLookupTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const nameDropdownHideTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const [isNameFieldFocused, setIsNameFieldFocused] = useState(false)
 
   const {
     register,
@@ -183,6 +217,7 @@ export default function AddVenuePage() {
       musicAfter10: false,
     },
   })
+  const nameField = register("name")
 
   // Check authentication status and pre-fill user data
   useEffect(() => {
@@ -200,6 +235,193 @@ export default function AddVenuePage() {
   const videoUrl = watch("videoUrl")
   const musicAfter10 = watch("musicAfter10")
   const isYouTubeUrlValid = isValidYouTubeUrl(videoUrl || "")
+  const watchedName = watch("name")
+  const watchedAddress = watch("address")
+  const trimmedName = (watchedName ?? "").trim()
+
+  useEffect(() => {
+    const name = (watchedName ?? "").trim()
+    const address = (watchedAddress ?? "").trim()
+
+    if (nameLookupTimeoutRef.current) {
+      clearTimeout(nameLookupTimeoutRef.current)
+      nameLookupTimeoutRef.current = null
+    }
+
+    if (name.length === 0) {
+      setNameLookupResult((prev) =>
+        prev.status === 'idle' && prev.match === null && prev.suggestions.length === 0
+          ? prev
+          : { status: 'idle', match: null, suggestions: [] }
+      )
+      return
+    }
+
+    const controller = new AbortController()
+
+    nameLookupTimeoutRef.current = setTimeout(() => {
+      setNameLookupResult({ status: 'checking', match: null, suggestions: [] })
+
+      const payload: Record<string, string> = { name }
+      if (address.length >= 3) {
+        payload.address = address
+      }
+
+      ;(async () => {
+        try {
+          const response = await fetch('/api/venues/check-existing', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload),
+            signal: controller.signal,
+          })
+
+          if (!response.ok) {
+            throw new Error('Failed to verify venue name')
+          }
+
+          const data = await response.json()
+          if (controller.signal.aborted) {
+            return
+          }
+
+          const suggestions: InlineVenueMatch[] = Array.isArray(data.suggestions)
+            ? data.suggestions
+            : []
+
+          if (data.exists && data.venue) {
+            setNameLookupResult({
+              status: 'match',
+              match: data.venue as InlineVenueMatch,
+              suggestions,
+            })
+          } else if (suggestions.length > 0) {
+            setNameLookupResult({
+              status: 'suggestions',
+              match: null,
+              suggestions,
+            })
+          } else {
+            setNameLookupResult({
+              status: 'none',
+              match: null,
+              suggestions: [],
+            })
+          }
+        } catch (error) {
+          if ((error as Error).name === 'AbortError') {
+            return
+          }
+          console.error('Failed to lookup venue name:', error)
+          setNameLookupResult({
+            status: 'error',
+            match: null,
+            suggestions: [],
+            error: 'Nepodařilo se ověřit existující prostory. Zkuste to prosím znovu.',
+          })
+        }
+      })()
+    }, 400)
+
+    return () => {
+      controller.abort()
+      if (nameLookupTimeoutRef.current) {
+        clearTimeout(nameLookupTimeoutRef.current)
+        nameLookupTimeoutRef.current = null
+      }
+      if (nameDropdownHideTimeoutRef.current) {
+        clearTimeout(nameDropdownHideTimeoutRef.current)
+        nameDropdownHideTimeoutRef.current = null
+      }
+    }
+  }, [watchedName, watchedAddress])
+
+  useEffect(() => {
+    return () => {
+      if (nameLookupTimeoutRef.current) {
+        clearTimeout(nameLookupTimeoutRef.current)
+      }
+      if (nameDropdownHideTimeoutRef.current) {
+        clearTimeout(nameDropdownHideTimeoutRef.current)
+      }
+    }
+  }, [])
+
+  const suggestionItems = useMemo(() => {
+    const items: InlineVenueMatch[] = []
+    if (nameLookupResult.match) {
+      items.push(nameLookupResult.match)
+    }
+    for (const suggestion of nameLookupResult.suggestions) {
+      if (!items.some((item) => item.id === suggestion.id)) {
+        items.push(suggestion)
+      }
+    }
+    return items
+  }, [nameLookupResult])
+
+  const showSuggestionsDropdown =
+    isNameFieldFocused &&
+    trimmedName.length > 0 &&
+    (nameLookupResult.status === 'checking' ||
+      nameLookupResult.status === 'match' ||
+      nameLookupResult.status === 'suggestions' ||
+      nameLookupResult.status === 'none')
+
+  const handleNameInputFocus = () => {
+    if (nameDropdownHideTimeoutRef.current) {
+      clearTimeout(nameDropdownHideTimeoutRef.current)
+      nameDropdownHideTimeoutRef.current = null
+    }
+    setIsNameFieldFocused(true)
+  }
+
+  const handleNameInputBlur = (event: FocusEvent<HTMLInputElement>) => {
+    nameField.onBlur(event)
+    nameDropdownHideTimeoutRef.current = setTimeout(() => {
+      setIsNameFieldFocused(false)
+    }, 150)
+  }
+
+  const handleSuggestionSelect = (suggestion: InlineVenueMatch) => {
+    if (nameDropdownHideTimeoutRef.current) {
+      clearTimeout(nameDropdownHideTimeoutRef.current)
+      nameDropdownHideTimeoutRef.current = null
+    }
+
+    setValue('name', suggestion.name, {
+      shouldDirty: true,
+      shouldTouch: true,
+      shouldValidate: true,
+    })
+
+    setClaimInfo({
+      id: suggestion.id,
+      name: suggestion.name,
+      slug: suggestion.slug,
+      status: suggestion.status,
+      manager: suggestion.manager,
+    })
+    setSubmissionMode('claim')
+    setPendingSubmission(null)
+    setShowClaimDialog(false)
+    setIsNameFieldFocused(false)
+  }
+
+  const handleAddNewSelection = () => {
+    if (nameDropdownHideTimeoutRef.current) {
+      clearTimeout(nameDropdownHideTimeoutRef.current)
+      nameDropdownHideTimeoutRef.current = null
+    }
+
+    setSubmissionMode('new')
+    setClaimInfo(null)
+    setPendingSubmission(null)
+    setShowClaimDialog(false)
+    setIsNameFieldFocused(false)
+  }
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || [])
@@ -718,17 +940,93 @@ export default function AddVenuePage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4 pt-0">
-              <div>
+              <div className="relative">
                 <label className="block text-sm sm:text-callout font-medium text-black mb-2">
                   Název prostoru *
                 </label>
-                <Input
-                  {...register("name")}
-                  placeholder="Název vašeho prostoru"
-                  className="h-11 sm:h-12"
-                />
+                <div className="relative">
+                  <Input
+                    {...nameField}
+                    placeholder="Název vašeho prostoru"
+                    className="h-11 sm:h-12"
+                    onFocus={handleNameInputFocus}
+                    onBlur={handleNameInputBlur}
+                  />
+                  {showSuggestionsDropdown && (
+                    <div
+                      className="absolute z-20 mt-2 w-full overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-xl"
+                      onMouseDown={(event: MouseEvent<HTMLDivElement>) => {
+                        event.preventDefault()
+                        if (nameDropdownHideTimeoutRef.current) {
+                          clearTimeout(nameDropdownHideTimeoutRef.current)
+                          nameDropdownHideTimeoutRef.current = null
+                        }
+                      }}
+                    >
+                      {nameLookupResult.status === 'checking' && (
+                        <div className="flex items-center gap-2 px-4 py-3 text-sm text-gray-500">
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                          Hledáme existující prostory…
+                        </div>
+                      )}
+
+                      {suggestionItems.map((suggestion) => {
+                        const isExactMatch = nameLookupResult.match?.id === suggestion.id
+                        return (
+                          <button
+                            key={suggestion.id}
+                            type="button"
+                            onClick={() => handleSuggestionSelect(suggestion)}
+                            className="flex w-full items-start justify-between gap-3 px-4 py-3 text-left transition-colors hover:bg-gray-50"
+                          >
+                            <div>
+                              <p className="text-sm font-semibold text-gray-900">{suggestion.name}</p>
+                              {suggestion.address && (
+                                <p className="text-xs text-gray-500">{suggestion.address}</p>
+                              )}
+                              {isExactMatch && (
+                                <p className="mt-1 text-xs font-medium text-yellow-600">
+                                  Tento listing už na Prostormatu vedeme. Kliknutím požádáte o převzetí.
+                                </p>
+                              )}
+                            </div>
+                            <div className="flex items-center gap-1 text-xs font-semibold text-blue-600">
+                              <span>Převzít</span>
+                              <ArrowRight className="h-3.5 w-3.5" />
+                            </div>
+                          </button>
+                        )
+                      })}
+
+                      {nameLookupResult.status === 'none' && suggestionItems.length === 0 && (
+                        <div className="px-4 py-3 text-sm text-gray-500">
+                          Žádný shodný prostor jsme nenašli.
+                        </div>
+                      )}
+
+                      <div className="border-t border-gray-100 bg-gray-50">
+                        <button
+                          type="button"
+                          onClick={handleAddNewSelection}
+                          className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left text-sm font-semibold text-gray-800 transition-colors hover:bg-white"
+                        >
+                          <div className="flex items-center gap-2">
+                            <Plus className="h-4 w-4" />
+                            <span>Přidat nový prostor „{trimmedName}“</span>
+                          </div>
+                          <ArrowRight className="h-3.5 w-3.5 text-gray-500" />
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
                 {errors.name && (
                   <p className="text-xs sm:text-caption text-red-600 mt-1">{errors.name.message}</p>
+                )}
+                {nameLookupResult.status === 'error' && (
+                  <p className="text-xs sm:text-caption text-red-600 mt-2">
+                    {nameLookupResult.error || 'Nepodařilo se ověřit existující prostory.'}
+                  </p>
                 )}
               </div>
 

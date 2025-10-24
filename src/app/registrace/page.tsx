@@ -7,7 +7,6 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent } from "@/components/ui/card"
-import { Logo } from "@/components/ui/logo"
 
 export default function RegisterPage() {
   const router = useRouter()
@@ -17,8 +16,6 @@ export default function RegisterPage() {
     email: "",
     password: "",
     confirmPassword: "",
-    company: "",
-    phone: "",
   })
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
@@ -50,13 +47,14 @@ export default function RegisterPage() {
           name: formData.name,
           email: formData.email,
           password: formData.password,
-          company: formData.company || null,
-          phone: formData.phone || null,
         }),
       })
 
       if (response.ok) {
         // Auto sign in after registration
+        // Give the database a moment to commit the user
+        await new Promise(resolve => setTimeout(resolve, 500))
+
         const result = await signIn("credentials", {
           email: formData.email,
           password: formData.password,
@@ -66,7 +64,8 @@ export default function RegisterPage() {
         if (result?.ok) {
           router.push("/dashboard")
         } else {
-          router.push("/prihlaseni?message=Účet byl vytvořen, přihlaste se prosím")
+          // If auto sign-in fails, show error but don't redirect
+          setError("Účet byl vytvořen, ale automatické přihlášení se nezdařilo. Zkuste se přihlásit manuálně.")
         }
       } else {
         const data = await response.json()
@@ -80,151 +79,103 @@ export default function RegisterPage() {
     }
   }
 
-  const handleGoogleSignUp = async () => {
-    setIsLoading(true)
-    try {
-      await signIn("google", { callbackUrl: "/dashboard" })
-    } catch (error) {
-      console.error("Failed to initiate Google sign-up:", error)
-      setError("Došlo k chybě při registraci")
-      setIsLoading(false)
-    }
-  }
 
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center py-12 px-6">
-      <div className="max-w-md w-full">
-        <div className="text-center mb-8">
-          <div className="mb-6">
-            <Logo variant="black" size="md" />
-          </div>
-          <h1 className="text-title-3 text-black mb-2">Registrace</h1>
-          <p className="text-body text-gray-600">
+    <div className="min-h-screen bg-white flex items-center justify-center py-8 sm:py-12 px-4 sm:px-6">
+      <div className="max-w-md md:max-w-2xl w-full">
+        <div className="text-center mb-6 sm:mb-8">
+          <h1 className="text-xl sm:text-title-3 text-black mb-2">Registrace</h1>
+          <p className="text-sm sm:text-body text-gray-600">
             Vytvořte si účet a začněte organizovat akce
           </p>
         </div>
 
         <Card>
-          <CardContent className="pt-6">
+          <CardContent className="pt-4 sm:pt-6 p-4 sm:p-6">
             {error && (
-              <div className="bg-red-50 border border-red-200 rounded-xl p-4 mb-6">
-                <p className="text-callout text-red-600">{error}</p>
+              <div className="bg-red-50 border border-red-200 rounded-xl p-3 sm:p-4 mb-4 sm:mb-6">
+                <p className="text-sm sm:text-callout text-red-600">{error}</p>
               </div>
             )}
 
             <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label className="block text-callout font-medium text-black mb-2">
-                  Jméno *
-                </label>
-                <Input
-                  type="text"
-                  value={formData.name}
-                  onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                  placeholder="Vaše jméno"
-                  required
-                />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm sm:text-callout font-medium text-black mb-2">
+                    Uživatelské jméno *
+                  </label>
+                  <Input
+                    type="text"
+                    value={formData.name}
+                    onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                    placeholder="Vaše uživatelské jméno"
+                    required
+                    className="h-11 sm:h-12"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm sm:text-callout font-medium text-black mb-2">
+                    E-mail *
+                  </label>
+                  <Input
+                    type="email"
+                    value={formData.email}
+                    onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                    placeholder="vas@email.cz"
+                    required
+                    className="h-11 sm:h-12"
+                  />
+                </div>
               </div>
 
-              <div>
-                <label className="block text-callout font-medium text-black mb-2">
-                  E-mail *
-                </label>
-                <Input
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                  placeholder="vas@email.cz"
-                  required
-                />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm sm:text-callout font-medium text-black mb-2">
+                    Heslo *
+                  </label>
+                  <Input
+                    type="password"
+                    value={formData.password}
+                    onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
+                    placeholder="••••••••"
+                    required
+                    className="h-11 sm:h-12"
+                  />
+                  <p className="text-xs sm:text-caption text-gray-500 mt-1">
+                    Heslo musí mít alespoň 6 znaků
+                  </p>
+                </div>
+
+                <div>
+                  <label className="block text-sm sm:text-callout font-medium text-black mb-2">
+                    Potvrzení hesla *
+                  </label>
+                  <Input
+                    type="password"
+                    value={formData.confirmPassword}
+                    onChange={(e) => setFormData(prev => ({ ...prev, confirmPassword: e.target.value }))}
+                    placeholder="••••••••"
+                    required
+                    className="h-11 sm:h-12"
+                  />
+                </div>
               </div>
 
-              <div>
-                <label className="block text-callout font-medium text-black mb-2">
-                  Společnost
-                </label>
-                <Input
-                  type="text"
-                  value={formData.company}
-                  onChange={(e) => setFormData(prev => ({ ...prev, company: e.target.value }))}
-                  placeholder="Název společnosti"
-                />
-              </div>
-
-              <div>
-                <label className="block text-callout font-medium text-black mb-2">
-                  Telefon
-                </label>
-                <Input
-                  type="tel"
-                  value={formData.phone}
-                  onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
-                  placeholder="+420 123 456 789"
-                />
-              </div>
-
-              <div>
-                <label className="block text-callout font-medium text-black mb-2">
-                  Heslo *
-                </label>
-                <Input
-                  type="password"
-                  value={formData.password}
-                  onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
-                  placeholder="••••••••"
-                  required
-                />
-                <p className="text-caption text-gray-500 mt-1">
-                  Heslo musí mít alespoň 6 znaků
-                </p>
-              </div>
-
-              <div>
-                <label className="block text-callout font-medium text-black mb-2">
-                  Potvrzení hesla *
-                </label>
-                <Input
-                  type="password"
-                  value={formData.confirmPassword}
-                  onChange={(e) => setFormData(prev => ({ ...prev, confirmPassword: e.target.value }))}
-                  placeholder="••••••••"
-                  required
-                />
-              </div>
-
-              <Button 
-                type="submit" 
-                className="w-full" 
+              <Button
+                type="submit"
+                className="w-full min-h-[44px] sm:min-h-[48px]"
                 disabled={isLoading}
               >
                 {isLoading ? "Vytvářím účet..." : "Vytvořit účet"}
               </Button>
             </form>
 
-            <div className="relative my-6">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-200" />
-              </div>
-              <div className="relative flex justify-center text-caption">
-                <span className="bg-white px-2 text-gray-500">Nebo</span>
-              </div>
-            </div>
-
-            <Button
-              type="button"
-              variant="secondary"
-              className="w-full"
-              onClick={handleGoogleSignUp}
-              disabled={isLoading}
-            >
-              Registrovat se přes Google
-            </Button>
-
-            <div className="text-center mt-6">
-              <p className="text-callout text-gray-600">
+            <div className="text-center mt-4 sm:mt-6">
+              <p className="text-sm sm:text-callout text-gray-600">
                 Už máte účet?{" "}
-                <Link 
-                  href="/prihlaseni" 
+                <Link
+                  href="/prihlaseni"
                   className="text-black hover:underline font-medium"
                 >
                   Přihlaste se

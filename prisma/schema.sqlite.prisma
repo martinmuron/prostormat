@@ -83,6 +83,7 @@ model Venue {
   videoUrl         String?
   status           String   @default("draft") // draft, active, expired
   priority         Int?
+  prioritySource   String?
   parentId         String?
   managerId        String
   subscriptionId   String?  // Stripe subscription ID

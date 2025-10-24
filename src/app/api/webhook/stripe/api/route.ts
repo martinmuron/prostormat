@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { stripe, isStripeConfigured } from '@/lib/stripe';
+import { stripe, isStripeConfigured, determinePriorityLevelFromSubscription } from '@/lib/stripe';
 import { prisma } from '@/lib/prisma';
 import { resend } from '@/lib/resend';
 import { nanoid } from 'nanoid';
@@ -15,6 +15,56 @@ const getInvoiceSubscriptionId = (invoice: Stripe.Invoice): string | null => {
   if (!subscriptionField) return null;
   return typeof subscriptionField === 'string' ? subscriptionField : subscriptionField.id;
 };
+
+type VenuePrioritySnapshot = {
+  id: string
+  priority: number | null
+  prioritySource?: string | null
+}
+
+async function syncVenuePriorityWithSubscription(
+  venue: VenuePrioritySnapshot,
+  subscription: Stripe.Subscription
+) {
+  const currentPriority = venue.priority ?? null
+  const currentSource = venue.prioritySource ?? null
+  const desiredPriority = determinePriorityLevelFromSubscription(subscription)
+
+  if (desiredPriority !== null) {
+    if (currentPriority !== desiredPriority || currentSource !== 'subscription') {
+      await prisma.venue.update({
+        where: { id: venue.id },
+        data: {
+          priority: desiredPriority,
+          prioritySource: 'subscription',
+        },
+      })
+    }
+    return
+  }
+
+  if (currentSource === 'subscription' && currentPriority !== null) {
+    await prisma.venue.update({
+      where: { id: venue.id },
+      data: {
+        priority: null,
+        prioritySource: null,
+      },
+    })
+  }
+}
+
+async function clearSubscriptionPriority(venue: VenuePrioritySnapshot) {
+  if ((venue.prioritySource ?? null) === 'subscription' && (venue.priority ?? null) !== null) {
+    await prisma.venue.update({
+      where: { id: venue.id },
+      data: {
+        priority: null,
+        prioritySource: null,
+      },
+    })
+  }
+}
 
 export async function POST(request: NextRequest) {
   // Check if Stripe is configured
@@ -112,21 +162,37 @@ async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
     const expiresAt = new Date();
     expiresAt.setFullYear(expiresAt.getFullYear() + 1);
 
-    // Find venue by customer email (manager email)
-    const venue = await prisma.venue.findFirst({
-      where: {
-        manager: {
-          email: customerEmail,
+    const metadataVenueId = typeof subscription.metadata?.venueId === 'string'
+      ? subscription.metadata.venueId
+      : null;
+
+    let venue = null;
+
+    if (metadataVenueId) {
+      venue = await prisma.venue.findUnique({
+        where: { id: metadataVenueId },
+        include: {
+          manager: true,
         },
-      },
-      include: {
-        manager: true,
-      },
-    });
+      });
+    }
+
+    if (!venue) {
+      venue = await prisma.venue.findFirst({
+        where: {
+          manager: {
+            email: customerEmail,
+          },
+        },
+        include: {
+          manager: true,
+        },
+      });
+    }
 
     if (venue) {
       // Update venue with subscription info
-      await prisma.venue.update({
+      const updatedVenue = await prisma.venue.update({
         where: { id: venue.id },
         data: {
           paid: true,
@@ -134,7 +200,14 @@ async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
           expiresAt: expiresAt,
           subscriptionId: subscription.id,
         },
+        select: {
+          id: true,
+          priority: true,
+          prioritySource: true,
+        },
       });
+
+      await syncVenuePriorityWithSubscription(updatedVenue, subscription);
 
       // Create or update subscription record
       await prisma.subscription.upsert({
@@ -202,25 +275,49 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
         },
       });
 
-      // If subscription is active, ensure venue is marked as paid
+      let venueSnapshot: VenuePrioritySnapshot | null = null;
+
       if (subscription.status === 'active') {
-        await prisma.venue.update({
+        venueSnapshot = await prisma.venue.update({
           where: { id: subscriptionRecord.venueId },
           data: {
             paid: true,
             expiresAt: getCurrentPeriodEndDate(subscription) ?? subscriptionRecord.currentPeriodEnd,
           },
+          select: {
+            id: true,
+            priority: true,
+            prioritySource: true,
+          },
         });
-      }
-
-      // If subscription is canceled or past_due, mark venue as unpaid
-      if (subscription.status === 'canceled' || subscription.status === 'past_due') {
-        await prisma.venue.update({
+      } else if (subscription.status === 'canceled' || subscription.status === 'past_due') {
+        venueSnapshot = await prisma.venue.update({
           where: { id: subscriptionRecord.venueId },
           data: {
             paid: false,
           },
+          select: {
+            id: true,
+            priority: true,
+            prioritySource: true,
+          },
         });
+      } else {
+        const existing = await prisma.venue.findUnique({
+          where: { id: subscriptionRecord.venueId },
+          select: {
+            id: true,
+            priority: true,
+            prioritySource: true,
+          },
+        });
+        if (existing) {
+          venueSnapshot = existing;
+        }
+      }
+
+      if (venueSnapshot) {
+        await syncVenuePriorityWithSubscription(venueSnapshot, subscription);
       }
 
       console.log(`Subscription ${subscription.id} updated with status: ${subscription.status}`);
@@ -249,12 +346,19 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
 
     if (subscriptionRecord) {
       // Mark venue as unpaid
-      await prisma.venue.update({
+      const updatedVenue = await prisma.venue.update({
         where: { id: subscriptionRecord.venueId },
         data: {
           paid: false,
         },
+        select: {
+          id: true,
+          priority: true,
+          prioritySource: true,
+        },
       });
+
+      await clearSubscriptionPriority(updatedVenue);
 
       // Update subscription status
       await prisma.subscription.update({

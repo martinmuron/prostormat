@@ -31,6 +31,32 @@ type FeaturedVenue = Prisma.VenueGetPayload<{ select: typeof featuredVenueSelect
 
 async function getFeaturedVenues() {
   try {
+    const desiredCount = 12
+    const selected: FeaturedVenue[] = []
+    const seen = new Set<string>()
+
+    const topPriorityVenues = await db.venue.findMany({
+      where: {
+        priority: 1,
+        status: { in: ['published', 'active'] },
+        parentId: null,
+      },
+      orderBy: {
+        updatedAt: 'desc',
+      },
+      take: desiredCount,
+      select: featuredVenueSelect,
+    })
+
+    for (const venue of topPriorityVenues) {
+      if (seen.has(venue.id)) continue
+      seen.add(venue.id)
+      selected.push(venue)
+      if (selected.length === desiredCount) {
+        return selected
+      }
+    }
+
     const homepageVenues = await db.homepageVenue.findMany({
       select: {
         venueId: true,
@@ -40,9 +66,6 @@ async function getFeaturedVenues() {
         position: 'asc',
       },
     })
-
-    const selected: FeaturedVenue[] = []
-    const seen = new Set<string>()
 
     if (homepageVenues.length) {
       const homepageVenueIds = homepageVenues.map(({ venueId }) => venueId)
@@ -67,8 +90,6 @@ async function getFeaturedVenues() {
         selected.push(venue)
       }
     }
-
-    const desiredCount = 12
 
     if (selected.length < desiredCount) {
       const fallbackVenues = await db.venue.findMany({
@@ -300,7 +321,7 @@ export default function HomePage() {
               </div>
               
               <div className="mt-8 space-y-4">
-                <Link href="/verejne-zakazky/novy" className="block">
+                <Link href="/event-board/novy" className="block">
                   <Button 
                     size="lg" 
                     className="w-full px-6 py-3 text-base font-medium rounded-xl bg-blue-600 text-white hover:bg-blue-700 transition-all duration-200"
@@ -309,13 +330,13 @@ export default function HomePage() {
                     Vytvořit poptávku
                   </Button>
                 </Link>
-                <Link href="/verejne-zakazky" className="block">
+                <Link href="/event-board" className="block">
                   <Button 
                     variant="outline" 
                     size="lg" 
                     className="w-full px-6 py-3 text-base font-medium rounded-xl border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white transition-all duration-200"
                   >
-                    Prohlédnout poptávky
+                    Prohlédnout Event Board
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </Button>
                 </Link>

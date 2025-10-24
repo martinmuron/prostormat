@@ -31,6 +31,11 @@ export async function POST(request: Request) {
     const normalizedAddress = address ? normalize(address) : null
     const slugCandidate = slugify(name)
 
+    const searchTerms = trimmedName
+      .split(/\s+/)
+      .map((term) => term.trim())
+      .filter((term) => term.length >= 3)
+
     const existingVenue = await db.venue.findFirst({
       where: {
         parentId: null,
@@ -47,6 +52,7 @@ export async function POST(request: Request) {
         name: true,
         slug: true,
         status: true,
+        address: true,
         priority: true,
         manager: {
           select: {
@@ -58,13 +64,65 @@ export async function POST(request: Request) {
       },
     })
 
+    const suggestionFilters: Prisma.VenueWhereInput[] = [
+      { name: { contains: trimmedName, mode: 'insensitive' } },
+      { slug: { contains: slugCandidate } },
+    ]
+
+    for (const term of searchTerms) {
+      suggestionFilters.push({ name: { contains: term, mode: 'insensitive' } })
+      suggestionFilters.push({ slug: { contains: slugify(term) } })
+    }
+
+    if (normalizedAddress) {
+      suggestionFilters.push({
+        address: { contains: normalizedAddress, mode: Prisma.QueryMode.insensitive },
+      })
+    }
+
+    const suggestionWhere: Prisma.VenueWhereInput = {
+      parentId: null,
+      OR: suggestionFilters,
+    }
+
+    if (existingVenue) {
+      suggestionWhere.id = { not: existingVenue.id }
+    }
+
+    const similarVenues =
+      trimmedName.length >= 1
+        ? await db.venue.findMany({
+            where: suggestionWhere,
+            select: {
+              id: true,
+              name: true,
+              slug: true,
+              address: true,
+              status: true,
+              manager: {
+                select: {
+                  id: true,
+                  name: true,
+                  email: true,
+                },
+              },
+            },
+            take: 5,
+          })
+        : []
+
     if (!existingVenue) {
-      return NextResponse.json({ exists: false })
+      return NextResponse.json({
+        exists: false,
+        venue: null,
+        suggestions: similarVenues,
+      })
     }
 
     return NextResponse.json({
       exists: true,
       venue: existingVenue,
+      suggestions: similarVenues,
     })
   } catch (error) {
     console.error('Error checking venue existence:', error)

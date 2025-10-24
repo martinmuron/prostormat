@@ -28,8 +28,8 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/verejne-zakazky" className="text-body text-gray-600 hover:text-black transition-colors">
-                  Veřejné zakázky
+                <Link href="/event-board" className="text-body text-gray-600 hover:text-black transition-colors">
+                  Event Board
                 </Link>
               </li>
               <li>

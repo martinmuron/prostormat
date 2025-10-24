@@ -9,6 +9,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "stripe:verify": "tsx scripts/check-stripe-setup.ts",
     "postinstall": "(npm run db:setup:production || echo 'Database setup skipped') && prisma generate",
     "db:setup:production": "cp prisma/schema.postgresql.prisma prisma/schema.prisma",
     "db:migrate:favorites": "tsx prisma/migrate-favorites.ts || echo 'Migration skipped'",

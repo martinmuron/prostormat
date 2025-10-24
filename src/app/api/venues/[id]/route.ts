@@ -26,6 +26,7 @@ const updateVenueSchema = z.object({
   status: z.enum(["draft", "pending", "published", "hidden", "active"]).optional(),
   isRecommended: z.boolean().optional(),
   priority: z.number().int().min(1).max(3).nullable().optional(),
+  prioritySource: z.enum(['manual', 'subscription']).nullable().optional(),
   managerId: z.string().optional(), // Allow admin to assign managers
   billingEmail: z.union([z.string().email(), z.literal("")]).optional(),
   billingName: z.string().optional().or(z.literal("")),
@@ -131,6 +132,7 @@ export async function PATCH(
     if (typeof body.status !== "undefined") updateData.status = body.status
     if (typeof body.isRecommended !== "undefined") updateData.isRecommended = body.isRecommended
     if (typeof body.priority !== "undefined") updateData.priority = body.priority
+    if (typeof body.prioritySource !== "undefined") updateData.prioritySource = body.prioritySource
     if (typeof body.managerId !== "undefined") updateData.managerId = body.managerId
     if (typeof body.billingEmail !== "undefined") updateData.billingEmail = normalizeString(body.billingEmail)
     if (typeof body.billingName !== "undefined") updateData.billingName = normalizeString(body.billingName)
@@ -154,6 +156,7 @@ export async function PATCH(
       delete updateData.status
       delete updateData.isRecommended
       delete updateData.priority
+      delete updateData.prioritySource
       delete updateData.managerId
       delete updateData.billingEmail
       delete updateData.billingName

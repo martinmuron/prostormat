@@ -99,8 +99,8 @@ All Prisma models use the `@@map()` directive to enforce the `prostormat_` table
 - `/` - Homepage with hero and featured venues
 - `/prostory` - Venue listings with search and filters
 - `/prostory/[slug]` - Individual venue detail pages
-- `/verejne-zakazky` - Veřejné zakázky board
-- `/verejne-zakazky/novy` - Create new Veřejné zakázky (auth required)
+- `/event-board` - Event Board with public event requests
+- `/event-board/novy` - Create a new Event Board request (auth required)
 
 ### Authentication
 - `/prihlaseni` - Sign in page

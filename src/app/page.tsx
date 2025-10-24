@@ -221,8 +221,11 @@ export default function HomePage() {
         <div className="max-w-6xl mx-auto">
           <ScrollReveal>
           <div className="text-center mb-12">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-600 rounded-2xl mb-6">
-              <Zap className="w-8 h-8 text-white" />
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-3xl mb-6 electric-icon">
+              <span className="electric-icon__spark electric-icon__spark--one" />
+              <span className="electric-icon__spark electric-icon__spark--two" />
+              <span className="electric-icon__spark electric-icon__spark--three" />
+              <Zap className="w-8 h-8 text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.55)]" />
             </div>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
               Rychlá poptávka
@@ -281,7 +284,7 @@ export default function HomePage() {
             </ScrollReveal>
             
             <ScrollReveal delay={150}>
-            <div className="bg-white rounded-3xl p-8 shadow-xl border border-gray-200">
+            <div className="bg-white rounded-3xl p-8 shadow-xl border border-gray-200 hover-lift">
               <div className="text-center mb-6">
                 <h3 className="text-2xl font-bold text-gray-900 mb-2">
                   Jak to funguje?
@@ -324,7 +327,7 @@ export default function HomePage() {
                 <Link href="/event-board/novy" className="block">
                   <Button 
                     size="lg" 
-                    className="w-full px-6 py-3 text-base font-medium rounded-xl bg-blue-600 text-white hover:bg-blue-700 transition-all duration-200"
+                    className="magnetic-button hover-lift w-full px-6 py-3 text-base font-medium rounded-xl bg-blue-600 text-white hover:bg-blue-700 transition-all duration-200"
                   >
                     <Zap className="w-5 h-5 mr-2" />
                     Vytvořit poptávku
@@ -407,7 +410,7 @@ export default function HomePage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <ScrollReveal delay={200}>
               <div className="space-y-8">
-                <div className="flex items-start space-x-4 hover-lift">
+                <div className="flex items-start space-x-4">
                   <div className="flex-shrink-0 w-12 h-12 bg-purple-600 rounded-xl flex items-center justify-center">
                     <Upload className="w-6 h-6 text-white" />
                   </div>
@@ -421,7 +424,7 @@ export default function HomePage() {
                   </div>
                 </div>
               
-                <div className="flex items-start space-x-4 hover-lift">
+                <div className="flex items-start space-x-4">
                   <div className="flex-shrink-0 w-12 h-12 bg-green-600 rounded-xl flex items-center justify-center">
                     <MessageSquare className="w-6 h-6 text-white" />
                   </div>
@@ -435,7 +438,7 @@ export default function HomePage() {
                   </div>
                 </div>
                 
-                <div className="flex items-start space-x-4 hover-lift">
+                <div className="flex items-start space-x-4">
                   <div className="flex-shrink-0 w-12 h-12 bg-orange-600 rounded-xl flex items-center justify-center">
                     <Euro className="w-6 h-6 text-white" />
                   </div>

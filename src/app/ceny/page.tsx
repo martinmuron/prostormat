@@ -1,8 +1,40 @@
 import Link from "next/link"
+import type { Metadata } from "next"
 import { Button } from "@/components/ui/button"
 import { ScrollReveal } from "@/components/ui/scroll-reveal"
 import { PageHero } from "@/components/layout/page-hero"
 import { Check, Star, Mail, Sparkles } from "lucide-react"
+
+export const metadata: Metadata = {
+  title: "Ceník - Prostormat | Transparentní ceny pro event prostory",
+  description: "Jednoduché a transparentní ceny za registraci event prostoru v Prostormat. Roční předplatné za 5 900 Kč bez provizí, bez skrytých poplatků. Maximální viditelnost vašeho prostoru.",
+  keywords: ["ceník event prostor", "cena registrace", "prostormat ceny", "event prostor Praha cena", "pronájem prostoru tarify"],
+  alternates: {
+    canonical: "https://prostormat.cz/ceny",
+  },
+  openGraph: {
+    title: "Ceník - Prostormat",
+    description: "Jednoduché ceny pro váš prostor. Roční předplatné 5 900 Kč, bez provizí z rezervací.",
+    url: "https://prostormat.cz/ceny",
+    siteName: "Prostormat",
+    images: [
+      {
+        url: "https://prostormat.cz/og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Prostormat - Ceník"
+      }
+    ],
+    locale: "cs_CZ",
+    type: "website"
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Ceník - Prostormat",
+    description: "Jednoduché ceny pro váš prostor. Roční předplatné 5 900 Kč, bez provizí z rezervací.",
+    images: ["https://prostormat.cz/og-image.jpg"]
+  }
+}
 
 export default function PricingPage() {
   return (

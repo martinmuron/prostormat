@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -28,46 +28,148 @@ const eventRequestSchema = z.object({
 
 type EventRequestFormData = z.infer<typeof eventRequestSchema>
 
-export function EventRequestForm() {
+interface EventRequestFormProps {
+  mode?: "create" | "edit"
+  initialValues?: Partial<EventRequestFormData>
+  eventRequestId?: string
+  successRedirect?: string
+}
+
+export function EventRequestForm({
+  mode = "create",
+  initialValues,
+  eventRequestId,
+  successRedirect,
+}: EventRequestFormProps = {}) {
   const router = useRouter()
   const { data: session } = useSession()
   const [isSubmitting, setIsSubmitting] = useState(false)
+
+  const defaultValues = useMemo<EventRequestFormData>(() => ({
+    title: initialValues?.title ?? "",
+    description: initialValues?.description ?? "",
+    eventType: initialValues?.eventType ?? "",
+    eventDate: initialValues?.eventDate ?? "",
+    guestCount: typeof initialValues?.guestCount === "number" ? initialValues.guestCount : undefined,
+    budgetRange: initialValues?.budgetRange ?? "",
+    locationPreference: initialValues?.locationPreference ?? "",
+    requirements: initialValues?.requirements ?? "",
+    contactName: initialValues?.contactName ?? session?.user?.name ?? "",
+    contactEmail: initialValues?.contactEmail ?? session?.user?.email ?? "",
+    contactPhone: initialValues?.contactPhone ?? "",
+  }), [initialValues, session?.user?.email, session?.user?.name])
 
   const {
     register,
     handleSubmit,
     setValue,
+    watch,
+    reset,
     formState: { errors },
   } = useForm<EventRequestFormData>({
     resolver: zodResolver(eventRequestSchema),
-    defaultValues: {
-      contactName: session?.user?.name || "",
-      contactEmail: session?.user?.email || "",
-    },
+    defaultValues,
   })
+
+  useEffect(() => {
+    reset(defaultValues)
+  }, [defaultValues, reset])
+
+  useEffect(() => {
+    register("eventType")
+    register("budgetRange")
+    register("locationPreference")
+  }, [register])
+
+  const eventTypeValue = watch("eventType") || ""
+  const budgetRangeValue = watch("budgetRange") || ""
+  const locationPreferenceValue = watch("locationPreference") || ""
+
+  const redirectTarget =
+    successRedirect ??
+    (mode === "edit" ? "/dashboard" : "/event-board?success=true")
+
+  const submitLabel = mode === "edit" ? "Uložit změny" : "Vytvořit poptávku"
+  const submittingLabel = mode === "edit" ? "Ukládám..." : "Vytvářím..."
 
   const onSubmit = async (data: EventRequestFormData) => {
     setIsSubmitting(true)
     try {
-      const response = await fetch("/api/event-requests", {
-        method: "POST",
+      if (mode === "edit" && !eventRequestId) {
+        throw new Error("Chybí ID poptávky pro úpravu.")
+      }
+
+      const payload: Record<string, unknown> = {
+        title: data.title.trim(),
+        eventType: data.eventType,
+        contactName: data.contactName.trim(),
+        contactEmail: data.contactEmail.trim(),
+      }
+
+      const trimmedDescription = data.description?.trim()
+      if (trimmedDescription) {
+        payload.description = trimmedDescription
+      } else if (mode === "edit") {
+        payload.description = null
+      }
+
+      if (data.eventDate) {
+        payload.eventDate = data.eventDate
+      } else if (mode === "edit") {
+        payload.eventDate = null
+      }
+
+      if (typeof data.guestCount === "number" && !Number.isNaN(data.guestCount)) {
+        payload.guestCount = data.guestCount
+      } else if (mode === "edit") {
+        payload.guestCount = null
+      }
+
+      if (data.budgetRange) {
+        payload.budgetRange = data.budgetRange
+      } else if (mode === "edit") {
+        payload.budgetRange = null
+      }
+
+      if (data.locationPreference) {
+        payload.locationPreference = data.locationPreference
+      } else if (mode === "edit") {
+        payload.locationPreference = null
+      }
+
+      const trimmedRequirements = data.requirements?.trim()
+      if (trimmedRequirements) {
+        payload.requirements = trimmedRequirements
+      } else if (mode === "edit") {
+        payload.requirements = null
+      }
+
+      const trimmedPhone = data.contactPhone?.trim()
+      if (trimmedPhone) {
+        payload.contactPhone = trimmedPhone
+      } else if (mode === "edit") {
+        payload.contactPhone = null
+      }
+
+      const endpoint =
+        mode === "edit" ? `/api/event-requests/${eventRequestId}` : "/api/event-requests"
+
+      const response = await fetch(endpoint, {
+        method: mode === "edit" ? "PATCH" : "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          ...data,
-          eventDate: data.eventDate ? new Date(data.eventDate) : null,
-        }),
+        body: JSON.stringify(payload),
       })
 
       if (response.ok) {
-        router.push("/event-board?success=true")
+        router.push(redirectTarget)
       } else {
-        throw new Error("Failed to create event request")
+        throw new Error("Failed to submit event request")
       }
     } catch (error) {
-      console.error("Error creating event request:", error)
-      alert("Došlo k chybě při vytváření požadavku. Zkuste to prosím znovu.")
+      console.error("Error submitting event request:", error)
+      alert("Došlo k chybě při ukládání poptávky. Zkuste to prosím znovu.")
     } finally {
       setIsSubmitting(false)
     }
@@ -106,7 +208,12 @@ export function EventRequestForm() {
           <label className="block text-headline font-semibold text-black mb-3">
             Typ akce *
           </label>
-          <Select onValueChange={(value) => setValue("eventType", value)} defaultValue="">
+          <Select
+            value={eventTypeValue}
+            onValueChange={(value) =>
+              setValue("eventType", value, { shouldDirty: true, shouldValidate: true })
+            }
+          >
             <SelectTrigger className="text-body">
               <SelectValue placeholder="Vyberte typ akce" />
             </SelectTrigger>
@@ -156,7 +263,12 @@ export function EventRequestForm() {
           <label className="block text-headline font-semibold text-black mb-3">
             Rozpočet
           </label>
-          <Select onValueChange={(value) => setValue("budgetRange", value)} defaultValue="">
+          <Select
+            value={budgetRangeValue}
+            onValueChange={(value) =>
+              setValue("budgetRange", value, { shouldDirty: true, shouldValidate: true })
+            }
+          >
             <SelectTrigger className="text-body">
               <SelectValue placeholder="Vyberte rozpočet" />
             </SelectTrigger>
@@ -175,7 +287,12 @@ export function EventRequestForm() {
         <label className="block text-headline font-semibold text-black mb-3">
           Preferovaná lokalita
         </label>
-        <Select onValueChange={(value) => setValue("locationPreference", value)} defaultValue="">
+        <Select
+          value={locationPreferenceValue}
+          onValueChange={(value) =>
+            setValue("locationPreference", value, { shouldDirty: true, shouldValidate: true })
+          }
+        >
           <SelectTrigger className="text-body">
             <SelectValue placeholder="Všechny lokality" />
           </SelectTrigger>
@@ -269,7 +386,7 @@ export function EventRequestForm() {
           disabled={isSubmitting}
           className="flex-1 py-4 text-body font-semibold rounded-2xl bg-black text-white hover:bg-gray-800 disabled:opacity-50"
         >
-          {isSubmitting ? "Vytvářím..." : "Vytvořit poptávku"}
+          {isSubmitting ? submittingLabel : submitLabel}
         </Button>
       </div>
 

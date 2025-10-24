@@ -81,6 +81,12 @@ export default function RootLayout({
   return (
     <html lang="cs" suppressHydrationWarning>
       <head>
+        {/* Resource hints for faster loading */}
+        <link rel="preconnect" href={process.env.NEXT_PUBLIC_SUPABASE_URL || ''} crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
+        <link rel="dns-prefetch" href="https://consent.cookiebot.com" />
+        <link rel="dns-prefetch" href="https://connect.facebook.net" />
+
         {/* Schema.org JSON-LD markup */}
         <script
           type="application/ld+json"

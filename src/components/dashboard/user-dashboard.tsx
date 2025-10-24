@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge"
 import { EVENT_TYPES } from "@/types"
 import type { EventType } from "@/types"
 import { formatDate } from "@/lib/utils"
-import { Calendar, Building, Plus, Send } from "lucide-react"
+import { Calendar, Building, Plus, Send, Pencil } from "lucide-react"
 import type { UserDashboardData } from "@/types/dashboard"
 
 interface UserDashboardProps {
@@ -101,9 +101,16 @@ export function UserDashboard({ data }: UserDashboardProps) {
                         </Badge>
                       </div>
                       <p className="text-caption text-gray-600 mb-2">{eventTypeLabel}</p>
-                      <p className="text-caption text-gray-500">
-                        Vytvořeno {formatDate(new Date(request.createdAt))}
-                      </p>
+                      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between text-caption text-gray-500">
+                        <p className="text-gray-500">Vytvořeno {formatDate(new Date(request.createdAt))}</p>
+                        <Link
+                          href={`/event-board/${request.id}/upravit`}
+                          className="inline-flex items-center gap-1 font-semibold text-blue-600 hover:text-blue-700 transition-colors"
+                        >
+                          <Pencil className="h-3.5 w-3.5" />
+                          Upravit
+                        </Link>
+                      </div>
                     </div>
                   )
                 })}
@@ -214,12 +221,21 @@ export function UserDashboard({ data }: UserDashboardProps) {
                       {request.status === "active" ? "Aktivní" : "Neaktivní"}
                     </Badge>
                   </div>
-                  <div className="flex items-center justify-between text-sm text-gray-500">
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between text-sm text-gray-500">
                     <span>Vytvořeno {formatDate(new Date(request.createdAt))}</span>
-                    <div className="flex gap-2">
-                      <span>{request.guestCount || 0} hostů</span>
-                      <span>•</span>
-                      <span>{request.budgetRange || "Bez rozpočtu"}</span>
+                    <div className="flex flex-wrap items-center gap-3">
+                      <div className="flex items-center gap-2">
+                        <span>{request.guestCount || 0} hostů</span>
+                        <span>•</span>
+                        <span>{request.budgetRange || "Bez rozpočtu"}</span>
+                      </div>
+                      <Link
+                        href={`/event-board/${request.id}/upravit`}
+                        className="inline-flex items-center gap-1 font-semibold text-blue-600 hover:text-blue-700 transition-colors"
+                      >
+                        <Pencil className="h-4 w-4" />
+                        Upravit
+                      </Link>
                     </div>
                   </div>
                 </div>

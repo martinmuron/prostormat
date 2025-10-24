@@ -2,7 +2,7 @@ import { Suspense } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import type { Metadata } from "next"
-import { Calendar, ChevronRight, User } from "lucide-react"
+import { Calendar, ChevronRight } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
@@ -73,51 +73,53 @@ function BlogPostCard({ post, className }: { post: BlogPostWithRelations; classN
   const excerpt = formatExcerpt(post.excerpt)
 
   return (
-    <Card className={cn("overflow-hidden hover:shadow-xl transition-all duration-500 group border border-gray-200 bg-white rounded-3xl h-full flex flex-col", className)}>
-      <Link href={`/blog/${post.slug}`}>
+    <Link href={`/blog/${post.slug}`} className="group block h-full">
+      <Card
+        className={cn(
+          "flex h-full flex-col overflow-hidden border border-gray-200 bg-white p-0 transition-all duration-500 hover:-translate-y-1 hover:shadow-2xl",
+          "rounded-3xl",
+          className
+        )}
+      >
         {post.coverImage && (
-          <div className="aspect-video relative overflow-hidden">
+          <div className="relative aspect-[4/3] overflow-hidden sm:aspect-video">
             <Image
               src={post.coverImage}
               alt={post.title}
               fill
-              className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-700 ease-out"
+              className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 400px"
+              priority={false}
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
           </div>
         )}
-      </Link>
 
-      <CardContent className="p-6 bg-white flex flex-col justify-between h-full">
-        <Link href={`/blog/${post.slug}`}>
-          <div className="flex-1 space-y-4">
-            <div className="flex-1">
-              <h2 className="text-lg sm:text-xl font-semibold text-gray-900 group-hover:text-gray-600 transition-all duration-300 mb-3 leading-tight">
-                {post.title}
-              </h2>
-              
-              {excerpt && (
-                <p className="text-sm text-gray-600 mb-5 leading-relaxed">
-                  {excerpt}
-                </p>
-              )}
-              
-              <div className="flex items-center gap-4 text-xs uppercase tracking-wide text-gray-500 mb-5">
-                <div className="flex items-center gap-1">
-                  <User className="w-4 h-4" />
-                  <span>{(post as unknown as { prostormat_users?: { name?: string | null; email?: string | null } | null }).prostormat_users?.name || (post as unknown as { prostormat_users?: { name?: string | null; email?: string | null } | null }).prostormat_users?.email || post.author?.name || 'Anonymous'}</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <Calendar className="w-4 h-4" />
-                  <span>{new Date(post.publishedAt).toLocaleDateString('cs-CZ')}</span>
-                </div>
+        <CardContent className="flex flex-1 flex-col space-y-5 p-6">
+          <div className="space-y-4">
+            <h2 className="text-lg font-semibold leading-tight text-gray-900 transition-colors duration-300 group-hover:text-blue-700 sm:text-xl">
+              {post.title}
+            </h2>
+
+            {excerpt && (
+              <p className="text-sm leading-relaxed text-gray-600 sm:text-base">
+                {excerpt}
+              </p>
+            )}
+
+            <div className="flex flex-wrap items-center gap-3 text-xs uppercase tracking-[0.22em] text-gray-500">
+              <div className="flex items-center gap-1">
+                <Calendar className="h-4 w-4" />
+                <span>{new Date(post.publishedAt).toLocaleDateString("cs-CZ")}</span>
               </div>
-              
               {tags.length > 0 && (
                 <div className="flex flex-wrap gap-2">
                   {tags.map((tag: string) => (
-                    <Badge key={tag} variant="secondary" className="text-xs bg-slate-100 text-slate-600 border border-slate-200">
+                    <Badge
+                      key={tag}
+                      variant="secondary"
+                      className="rounded-full border border-slate-200 bg-slate-100 px-3 py-1 text-[0.65rem] font-semibold tracking-[0.18em] text-slate-600"
+                    >
                       {tag}
                     </Badge>
                   ))}
@@ -125,15 +127,14 @@ function BlogPostCard({ post, className }: { post: BlogPostWithRelations; classN
               )}
             </div>
           </div>
-        </Link>
-        <div className="mt-auto pt-6">
-          <Link href={`/blog/${post.slug}`} className="inline-flex items-center text-sm font-semibold text-blue-600 hover:text-blue-700 transition-colors">
-            Číst celý článek
-            <ChevronRight className="w-4 h-4 ml-1" />
-          </Link>
-        </div>
-      </CardContent>
-    </Card>
+
+          <span className="mt-auto inline-flex items-center justify-between rounded-full border border-blue-100 bg-blue-50 px-4 py-2 text-sm font-semibold text-blue-700 transition-all duration-300 group-hover:border-blue-600 group-hover:bg-blue-600 group-hover:text-white group-hover:shadow-lg">
+            <span>Objevit celý článek</span>
+            <ChevronRight className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
+          </span>
+        </CardContent>
+      </Card>
+    </Link>
   )
 }
 
@@ -219,10 +220,6 @@ async function BlogGrid() {
             </p>
             <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500 mb-6">
               <span className="inline-flex items-center gap-2">
-                <User className="w-4 h-4" />
-                {(featuredPost as unknown as { prostormat_users?: { name?: string | null; email?: string | null } | null }).prostormat_users?.name || (featuredPost as unknown as { prostormat_users?: { name?: string | null; email?: string | null } | null }).prostormat_users?.email || featuredPost.author?.name || 'Prostormat tým'}
-              </span>
-              <span className="inline-flex items-center gap-2">
                 <Calendar className="w-4 h-4" />
                 {new Date(featuredPost.publishedAt).toLocaleDateString('cs-CZ', {
                   year: 'numeric',
@@ -239,8 +236,11 @@ async function BlogGrid() {
               )) : null}
             </div>
             <div className="flex flex-wrap gap-3">
-              <Link href={`/blog/${featuredPost.slug}`} className="inline-flex items-center justify-center rounded-full bg-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-600/20 hover:bg-blue-700 transition-colors">
-                Číst článek
+              <Link
+                href={`/blog/${featuredPost.slug}`}
+                className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 px-7 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-600/25 transition-transform hover:-translate-y-0.5 hover:shadow-xl"
+              >
+                Otevřít celý článek
               </Link>
               <Link href="/prostory" className="inline-flex items-center justify-center rounded-full border border-gray-300 px-6 py-3 text-sm font-semibold text-gray-700 hover:border-gray-400 transition-colors">
                 Prohlédnout prostory

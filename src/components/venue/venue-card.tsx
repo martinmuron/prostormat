@@ -86,7 +86,7 @@ export function VenueCard({ venue, priority = false, showPriorityBadge = false }
   const displayAddress = getPrimaryAddress(venue.address)
 
   return (
-    <Card className="overflow-hidden hover-lift transition-all duration-500 group border-2 border-black bg-white rounded-2xl h-full flex flex-col">
+    <Card className="overflow-hidden hover-lift transition-all duration-500 group border-2 border-black bg-white rounded-2xl h-full flex flex-col gap-0 py-0">
       <Link href={`/prostory/${venue.slug}`}>
         <div className="aspect-[4/3] relative overflow-hidden">
           <OptimizedImage

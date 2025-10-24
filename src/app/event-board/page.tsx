@@ -11,7 +11,7 @@ import { EVENT_TYPES } from "@/types"
 import type { EventType } from "@/types"
 import { formatDate } from "@/lib/utils"
 import { EventRequestHeartButton } from "@/components/event-request/heart-button"
-import { Calendar, Users, MapPin, Euro, Mail, Phone, User, Clock, X, LogIn, Heart, Building, Plus, Info } from "lucide-react"
+import { Calendar, Users, MapPin, Euro, Mail, Phone, User, Clock, X, LogIn, Heart, Plus, Info } from "lucide-react"
 import { PageHero } from "@/components/layout/page-hero"
 
 // Force dynamic rendering to avoid caching issues
@@ -410,11 +410,28 @@ export default function EventRequestsPage() {
                         <h2 className="text-xl font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors duration-200 leading-tight">
                           {request.title}
                         </h2>
-                        {/* Hide description for non-venue-managers to prevent sensitive info leakage */}
-                        {request.description && hasVenueAccess && (
-                          <p className="text-base text-gray-600 leading-relaxed line-clamp-2">
-                            {request.description}
-                          </p>
+                        {request.description && (
+                          <div className="mt-4">
+                            <div className="flex items-center gap-2 mb-2">
+                              <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                                Popis akce
+                              </span>
+                              {!hasVenueAccess && (
+                                <Badge variant="outline" className="bg-slate-50 text-slate-600 border-dashed border-slate-300">
+                                  Dostupné po registraci
+                                </Badge>
+                              )}
+                            </div>
+                            {hasVenueAccess ? (
+                              <p className="text-base text-gray-600 leading-relaxed">
+                                {request.description}
+                              </p>
+                            ) : (
+                              <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50/80 p-4 text-sm text-slate-600 leading-relaxed">
+                                Kompletní popis akce je viditelný pro ověřené venue manažery. Přidejte svůj prostor a uvidíte, co organizátor plánuje.
+                              </div>
+                            )}
+                          </div>
                         )}
                       </div>
 
@@ -475,82 +492,111 @@ export default function EventRequestsPage() {
                     )}
                     
                     {/* Contact Info */}
-                    <div className="relative overflow-hidden rounded-xl">
-                      <div className="bg-gradient-to-br from-slate-50 to-gray-100 rounded-xl p-4 border border-slate-200">
-                        <div className={`flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 ${!hasVenueAccess ? 'blur-sm' : ''}`}>
-                          <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 bg-slate-200 rounded-xl flex items-center justify-center">
-                              <User className="h-5 w-5 text-slate-600" />
-                            </div>
-                            <span className="font-medium text-slate-900">{request.contactName}</span>
-                          </div>
-
-                          <div className="flex flex-wrap gap-3">
-                            <a
-                              href={hasVenueAccess ? `mailto:${request.contactEmail}` : '#'}
-                              className="inline-flex items-center gap-2 px-3 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors text-sm font-medium"
-                              onClick={!hasVenueAccess ? (e) => e.preventDefault() : undefined}
-                            >
-                              <Mail className="h-4 w-4" />
-                              Email
-                            </a>
-
-                            {request.contactPhone && (
-                              <a
-                                href={hasVenueAccess ? `tel:${request.contactPhone}` : '#'}
-                                className="inline-flex items-center gap-2 px-3 py-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors text-sm font-medium"
-                                onClick={!hasVenueAccess ? (e) => e.preventDefault() : undefined}
-                              >
-                                <Phone className="h-4 w-4" />
-                                Telefon
-                              </a>
-                            )}
-                          </div>
+                    <div className="mt-6">
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-slate-600">
+                          <User className="h-4 w-4 text-slate-500" />
+                          Kontaktní údaje
                         </div>
+                        {!hasVenueAccess && (
+                          <Badge variant="outline" className="bg-orange-50 text-orange-700 border-orange-200">
+                            Uzamčeno
+                          </Badge>
+                        )}
                       </div>
 
-                      {/* Overlay for non-venue-managers */}
-                      {!hasVenueAccess && (
-                        <div className="absolute inset-0 bg-white/90 backdrop-blur-sm rounded-xl flex items-center justify-center p-2">
-                          <div className="text-center max-w-xs px-2">
-                            <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-2">
-                              <Building className="h-5 w-5 text-orange-600" />
+                      <div className="rounded-xl border border-slate-200 bg-gradient-to-br from-slate-50 to-white shadow-inner">
+                        {hasVenueAccess ? (
+                          <div className="p-4 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+                            <div className="flex items-center gap-3">
+                              <div className="w-10 h-10 bg-slate-200 rounded-xl flex items-center justify-center">
+                                <User className="h-5 w-5 text-slate-600" />
+                              </div>
+                              <span className="font-medium text-slate-900">{request.contactName}</span>
                             </div>
-                            <h4 className="text-sm font-bold text-gray-900 mb-1">
-                              {session ? 'Zaregistrujte svůj prostor' : 'Přihlaste se'}
-                            </h4>
-                            <p className="text-xs text-gray-600 mb-2 line-clamp-2">
-                              {session
-                                ? 'Pro přístup k plným kontaktům musíte mít registrovaný prostor'
-                                : 'Přihlaste se pro zobrazení kontaktních údajů'}
-                            </p>
-                            <div className="flex flex-col sm:flex-row gap-1.5">
-                              {session ? (
-                                <Link href="/pridat-prostor" className="w-full">
-                                  <Button size="sm" className="bg-orange-600 hover:bg-orange-700 text-white rounded-lg w-full h-8 text-xs">
-                                    <Plus className="h-3 w-3 mr-1" />
-                                    Přidat prostor
-                                  </Button>
-                                </Link>
-                              ) : (
-                                <>
-                                  <Link href="/prihlaseni" className="w-full sm:w-auto flex-1">
-                                    <Button size="sm" className="bg-black text-white hover:bg-gray-800 rounded-lg w-full h-8 text-xs">
-                                      <LogIn className="h-3 w-3 mr-1" />
-                                      Přihlásit se
-                                    </Button>
-                                  </Link>
-                                  <Link href="/registrace" className="w-full sm:w-auto flex-1">
-                                    <Button variant="outline" size="sm" className="rounded-lg border-gray-300 w-full h-8 text-xs">
-                                      Registrace
-                                    </Button>
-                                  </Link>
-                                </>
+
+                            <div className="flex flex-wrap gap-3">
+                              <a
+                                href={`mailto:${request.contactEmail}`}
+                                className="inline-flex items-center gap-2 px-3 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors text-sm font-medium"
+                              >
+                                <Mail className="h-4 w-4" />
+                                Email
+                              </a>
+
+                              {request.contactPhone && (
+                                <a
+                                  href={`tel:${request.contactPhone}`}
+                                  className="inline-flex items-center gap-2 px-3 py-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors text-sm font-medium"
+                                >
+                                  <Phone className="h-4 w-4" />
+                                  Telefon
+                                </a>
                               )}
                             </div>
                           </div>
-                        </div>
-                      )}
+                        ) : (
+                          <div className="p-4 flex flex-col gap-4">
+                            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+                              <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 bg-slate-200 rounded-xl flex items-center justify-center">
+                                  <User className="h-5 w-5 text-slate-500" />
+                                </div>
+                                <span className="font-medium text-slate-500">
+                                  Jméno kontaktu je dostupné po registraci
+                                </span>
+                              </div>
+                              <div className="flex flex-wrap gap-3">
+                                <div className="inline-flex items-center gap-2 px-3 py-2 rounded-lg border border-dashed border-slate-300 text-sm font-medium text-slate-500 bg-white/70">
+                                  <Mail className="h-4 w-4" />
+                                  Email po registraci
+                                </div>
+                                <div className="inline-flex items-center gap-2 px-3 py-2 rounded-lg border border-dashed border-slate-300 text-sm font-medium text-slate-500 bg-white/70">
+                                  <Phone className="h-4 w-4" />
+                                  Telefon po registraci
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="border-t border-slate-200 pt-4">
+                              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                                <div>
+                                  <p className="text-sm font-semibold text-slate-900">
+                                    Získejte přístup ke kontaktům organizátora
+                                  </p>
+                                  <p className="text-sm text-slate-600">
+                                    Ověřte svůj prostor a uvidíte email i telefon do několika minut.
+                                  </p>
+                                </div>
+                                <div className="flex flex-col sm:flex-row gap-2">
+                                  {session ? (
+                                    <Link href="/pridat-prostor">
+                                      <Button size="sm" className="bg-orange-600 hover:bg-orange-700 text-white rounded-lg px-4">
+                                        <Plus className="h-3 w-3 mr-1" />
+                                        Přidat prostor
+                                      </Button>
+                                    </Link>
+                                  ) : (
+                                    <>
+                                      <Link href="/prihlaseni">
+                                        <Button size="sm" className="bg-black text-white hover:bg-gray-800 rounded-lg px-4">
+                                          <LogIn className="h-3 w-3 mr-1" />
+                                          Přihlásit se
+                                        </Button>
+                                      </Link>
+                                      <Link href="/registrace">
+                                        <Button variant="outline" size="sm" className="rounded-lg border-gray-300 px-4">
+                                          Registrace
+                                        </Button>
+                                      </Link>
+                                    </>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </CardContent>
                 </Card>

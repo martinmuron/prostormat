@@ -6,18 +6,19 @@ import { EventRequestForm } from "@/components/forms/event-request-form"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
 interface EditEventRequestPageProps {
-  params: { id: string }
+  params: Promise<{ id: string }>
 }
 
 export default async function EditEventRequestPage({ params }: EditEventRequestPageProps) {
+  const { id } = await params
   const session = await getServerSession(authOptions)
 
   if (!session?.user?.id) {
-    redirect(`/prihlaseni?callbackUrl=/event-board/${params.id}/upravit`)
+    redirect(`/prihlaseni?callbackUrl=/event-board/${id}/upravit`)
   }
 
   const eventRequest = await db.eventRequest.findUnique({
-    where: { id: params.id },
+    where: { id },
     select: {
       id: true,
       userId: true,
@@ -75,7 +76,7 @@ export default async function EditEventRequestPage({ params }: EditEventRequestP
           <CardContent className="p-8">
             <EventRequestForm
               mode="edit"
-              eventRequestId={eventRequest.id}
+              eventRequestId={id}
               initialValues={initialValues}
               successRedirect="/dashboard"
             />

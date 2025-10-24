@@ -44,14 +44,28 @@ async function getDashboardData(userId: string, userRole: string): Promise<Dashb
         }
       })
 
+      // Fetch favorited event requests
+      const favoritedEventRequests = await db.eventRequestFavorite.findMany({
+        where: { userId },
+        include: {
+          eventRequest: true
+        },
+        orderBy: {
+          createdAt: "desc"
+        },
+        take: 5
+      })
+
       return {
         kind: 'venue_manager',
         ...baseData,
         venues,
+        favoritedEventRequests: favoritedEventRequests.map(fav => fav.eventRequest),
         stats: {
           totalVenues: venues.length,
           activeVenues: venues.filter(v => v.status === "active" || v.status === "published").length,
           totalInquiries: venues.reduce((sum, venue) => sum + venue._count.inquiries, 0),
+          totalFavorites: favoritedEventRequests.length,
         }
       }
     }

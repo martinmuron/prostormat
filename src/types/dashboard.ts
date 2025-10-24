@@ -62,10 +62,12 @@ export interface DashboardBaseData {
 export interface VenueManagerDashboardData extends DashboardBaseData {
   kind: 'venue_manager'
   venues: VenueManagerVenue[]
+  favoritedEventRequests: EventRequestSummary[]
   stats: {
     totalVenues: number
     activeVenues: number
     totalInquiries: number
+    totalFavorites: number
   }
 }
 

@@ -11,7 +11,7 @@ import { EVENT_TYPES } from "@/types"
 import type { EventType } from "@/types"
 import { formatDate } from "@/lib/utils"
 import { EventRequestHeartButton } from "@/components/event-request/heart-button"
-import { Calendar, Users, MapPin, Euro, Mail, Phone, User, Clock, X, LogIn, Heart } from "lucide-react"
+import { Calendar, Users, MapPin, Euro, Mail, Phone, User, Clock, X, LogIn, Heart, Building, Plus } from "lucide-react"
 import { PageHero } from "@/components/layout/page-hero"
 
 // Force dynamic rendering to avoid caching issues
@@ -55,8 +55,9 @@ const DATE_RANGES = [
 
 const LOCATIONS = [
   "Všechny",
+  "Celá Praha",
   "Praha 1",
-  "Praha 2", 
+  "Praha 2",
   "Praha 3",
   "Praha 4",
   "Praha 5",
@@ -65,6 +66,12 @@ const LOCATIONS = [
   "Praha 8",
   "Praha 9",
   "Praha 10",
+  "Praha 11",
+  "Praha 12",
+  "Praha 13",
+  "Praha 14",
+  "Praha 15",
+  "Praha 16",
   "Brno",
   "Ostrava",
   "Plzeň",
@@ -110,16 +117,41 @@ export default function EventRequestsPage() {
   const { data: session, status } = useSession()
   const [requests, setRequests] = useState<EventRequest[]>([])
   const [loading, setLoading] = useState(true)
+  const [hasVenueAccess, setHasVenueAccess] = useState(false)
+  const [checkingAccess, setCheckingAccess] = useState(true)
   const [filters, setFilters] = useState({
-    location: "",
-    guestCount: "",
-    dateRange: "",
+    location: "all",
+    guestCount: "all",
+    dateRange: "all",
     prostormat_venue_favorites: "all",
   })
 
   useEffect(() => {
     fetchRequests()
+    checkVenueAccess()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  const checkVenueAccess = async () => {
+    if (!session?.user?.id) {
+      setCheckingAccess(false)
+      setHasVenueAccess(false)
+      return
+    }
+
+    try {
+      const response = await fetch('/api/user/has-venue-access')
+      if (response.ok) {
+        const data = await response.json()
+        setHasVenueAccess(data.hasAccess)
+      }
+    } catch (error) {
+      console.error('Error checking venue access:', error)
+      setHasVenueAccess(false)
+    } finally {
+      setCheckingAccess(false)
+    }
+  }
 
   const fetchRequests = async () => {
     try {
@@ -141,9 +173,16 @@ export default function EventRequestsPage() {
 
     // Filter by location
     if (filters.location && filters.location !== "all") {
-      filtered = filtered.filter(request =>
-        request.locationPreference?.includes(filters.location)
-      )
+      if (filters.location === "Celá Praha") {
+        // Match any Prague district (Praha 1-16)
+        filtered = filtered.filter(request =>
+          request.locationPreference?.startsWith("Praha")
+        )
+      } else {
+        filtered = filtered.filter(request =>
+          request.locationPreference?.includes(filters.location)
+        )
+      }
     }
 
     // Filter by guest count
@@ -190,9 +229,9 @@ export default function EventRequestsPage() {
 
   const clearFilters = () => {
     setFilters({
-      location: "",
-      guestCount: "",
-      dateRange: "",
+      location: "all",
+      guestCount: "all",
+      dateRange: "all",
       prostormat_venue_favorites: "all",
     })
   }
@@ -241,7 +280,7 @@ export default function EventRequestsPage() {
               <span className="inline-flex items-center justify-center w-7 h-7 bg-amber-700 rounded-md flex-shrink-0">
                 <MapPin className="h-4 w-4 text-white" />
               </span>
-              <Select value={filters.location || undefined} onValueChange={(value) => setFilters(prev => ({ ...prev, location: value }))}>
+              <Select value={filters.location} onValueChange={(value) => setFilters(prev => ({ ...prev, location: value }))}>
                 <SelectTrigger className="!w-full h-12 rounded-2xl border-2 border-amber-700 bg-white text-base text-gray-900 focus:border-black">
                   <SelectValue placeholder="Kde to má být?" />
                 </SelectTrigger>
@@ -258,7 +297,7 @@ export default function EventRequestsPage() {
               <span className="inline-flex items-center justify-center w-7 h-7 bg-green-700 rounded-md flex-shrink-0">
                 <Users className="h-4 w-4 text-white" />
               </span>
-              <Select value={filters.guestCount || undefined} onValueChange={(value) => setFilters(prev => ({ ...prev, guestCount: value }))}>
+              <Select value={filters.guestCount} onValueChange={(value) => setFilters(prev => ({ ...prev, guestCount: value }))}>
                 <SelectTrigger className="!w-full h-12 rounded-2xl border-2 border-green-700 bg-white text-base text-gray-900 focus:border-black">
                   <SelectValue placeholder="Kolik lidí přijde?" />
                 </SelectTrigger>
@@ -275,7 +314,7 @@ export default function EventRequestsPage() {
               <span className="inline-flex items-center justify-center w-7 h-7 bg-blue-700 rounded-md flex-shrink-0">
                 <Clock className="h-4 w-4 text-white" />
               </span>
-              <Select value={filters.dateRange || undefined} onValueChange={(value) => setFilters(prev => ({ ...prev, dateRange: value }))}>
+              <Select value={filters.dateRange} onValueChange={(value) => setFilters(prev => ({ ...prev, dateRange: value }))}>
                 <SelectTrigger className="!w-full h-12 rounded-2xl border-2 border-blue-700 bg-white text-base text-gray-900 focus:border-black">
                   <SelectValue placeholder="Kdy to bude?" />
                 </SelectTrigger>
@@ -310,7 +349,7 @@ export default function EventRequestsPage() {
     </PageHero>
   )
 
-  if (status === "loading" || loading) {
+  if (status === "loading" || loading || checkingAccess) {
     return (
       <div className="min-h-screen bg-white">
         {hero}
@@ -320,6 +359,53 @@ export default function EventRequestsPage() {
               <EventRequestSkeleton key={i} />
             ))}
           </div>
+        </div>
+      </div>
+    )
+  }
+
+  // Access denied state for non-venue-managers
+  if (!hasVenueAccess) {
+    return (
+      <div className="min-h-screen bg-white">
+        {hero}
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-12 sm:pt-16 pb-12">
+          <Card className="border-2 border-orange-200 bg-gradient-to-br from-orange-50 to-amber-50">
+            <CardContent className="p-8 text-center">
+              <div className="mb-6">
+                <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Building className="h-8 w-8 text-orange-600" />
+                </div>
+                <h2 className="text-2xl font-bold text-gray-900 mb-3">
+                  Přístup pouze pro majitele prostorů
+                </h2>
+                <p className="text-lg text-gray-700 mb-2">
+                  Event Board je dostupný pouze pro registrované majitele event prostorů.
+                </p>
+                <p className="text-base text-gray-600 max-w-2xl mx-auto">
+                  Pro přístup k plné funkčnosti Event Boardu a kontaktování organizátorů akcí je potřeba mít na Prostormat.cz zveřejněný alespoň jeden prostor.
+                </p>
+              </div>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                <Link href="/pridat-prostor">
+                  <Button size="lg" className="bg-orange-600 hover:bg-orange-700 text-white rounded-xl px-8">
+                    <Plus className="h-5 w-5 mr-2" />
+                    Přidat prostor
+                  </Button>
+                </Link>
+                <Link href="/prostory">
+                  <Button variant="outline" size="lg" className="rounded-xl border-orange-300 text-orange-700 hover:bg-orange-50 px-8">
+                    Procházet prostory
+                  </Button>
+                </Link>
+              </div>
+              <div className="mt-8 pt-6 border-t border-orange-200">
+                <p className="text-sm text-gray-600">
+                  Máte již prostor přidaný? Ujistěte se, že je aktivní a máte předplatné.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
     )
@@ -342,36 +428,37 @@ export default function EventRequestsPage() {
                 <Card key={request.id} className="group hover:shadow-lg hover:-translate-y-1 transition-all duration-300 ease-out border border-gray-200 shadow-sm">
                   <CardContent className="p-6">
                     {/* Header */}
-                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4 mb-6">
+                    <div className="flex justify-between items-start gap-4 mb-6">
                       <div className="flex-1">
                         <div className="flex items-start gap-3 mb-3">
                           <Badge variant="outline" className="bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 border-blue-200 font-medium px-3 py-1 text-sm">
                             {eventTypeLabel}
                           </Badge>
-                          <div className="text-sm text-gray-500 flex items-center gap-1">
-                            <Clock className="h-4 w-4" />
-                            {formatDate(new Date(request.createdAt))}
-                          </div>
                         </div>
                         <h2 className="text-xl font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors duration-200 leading-tight">
                           {request.title}
                         </h2>
-                        {request.description && (
+                        {/* Hide description for non-venue-managers to prevent sensitive info leakage */}
+                        {request.description && hasVenueAccess && (
                           <p className="text-base text-gray-600 leading-relaxed line-clamp-2">
                             {request.description}
                           </p>
                         )}
                       </div>
-                      
-                      {/* Heart Button for logged-in users */}
-                      {session?.user?.id && (
-                        <div className="flex-shrink-0">
-                          <EventRequestHeartButton 
+
+                      {/* Right column: Date and Heart Button */}
+                      <div className="flex flex-col items-end gap-3">
+                        <div className="text-sm text-gray-500 flex items-center gap-1">
+                          <Clock className="h-4 w-4" />
+                          {formatDate(new Date(request.createdAt))}
+                        </div>
+                        {session?.user?.id && (
+                          <EventRequestHeartButton
                             eventRequestId={request.id}
                             className="shadow-sm"
                           />
-                        </div>
-                      )}
+                        )}
+                      </div>
                     </div>
                     
                     {/* Stats Grid */}

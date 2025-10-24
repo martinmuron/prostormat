@@ -18,19 +18,24 @@ export function EventRequestHeartButton({ eventRequestId, className = "", size =
   const [showLoginOverlay, setShowLoginOverlay] = useState(false)
 
   const checkFavoriteStatus = useCallback(async () => {
+    if (!session?.user?.id) {
+      return
+    }
+
     try {
       const response = await fetch(`/api/event-requests/${eventRequestId}/favorite`)
       if (response.ok) {
         const data = await response.json()
         setIsFavorited(data.isFavorited)
-      } else {
+      } else if (response.status !== 401) {
+        // Only log errors that are not auth-related
         const errorData = await response.json()
         console.error('Error checking favorite status:', errorData)
       }
     } catch (error) {
       console.error('Error checking favorite status:', error)
     }
-  }, [eventRequestId])
+  }, [eventRequestId, session?.user?.id])
 
   // Check if event request is favorited when component mounts
   useEffect(() => {
@@ -60,13 +65,6 @@ export function EventRequestHeartButton({ eventRequestId, className = "", size =
       if (response.ok) {
         const data = await response.json()
         setIsFavorited(data.isFavorited)
-        
-        // Show a subtle success message
-        if (data.isFavorited) {
-          console.log('Event request added to favorites!')
-        } else {
-          console.log('Event request removed from favorites!')
-        }
       } else {
         const errorData = await response.json()
         console.error('Error toggling favorite:', errorData)

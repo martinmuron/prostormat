@@ -94,10 +94,8 @@ export const PRAGUE_DISTRICTS = [
 ] as const
 
 export const LOCATION_OPTIONS = [
-  ...PRAGUE_DISTRICTS,
-  'Praha - západ',
-  'Praha - východ',
-  'Středočeský kraj'
+  'Celá Praha',
+  ...PRAGUE_DISTRICTS
 ] as const
 
 export const BUDGET_RANGES = [

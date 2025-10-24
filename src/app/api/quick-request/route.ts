@@ -63,10 +63,20 @@ async function findMatchingVenues(criteria: {
 
   const andConditions: Prisma.VenueWhereInput[] = []
 
+  // Handle location preference
   if (criteria.locationPreference) {
-    where.district = {
-      equals: criteria.locationPreference,
-      mode: 'insensitive',
+    if (criteria.locationPreference === "Celá Praha") {
+      // Match any Prague district (Praha 1-16)
+      where.district = {
+        startsWith: "Praha",
+        mode: 'insensitive',
+      }
+    } else {
+      // Use flexible matching for specific districts
+      where.district = {
+        contains: criteria.locationPreference,
+        mode: 'insensitive',
+      }
     }
   }
 
@@ -99,6 +109,12 @@ async function findMatchingVenues(criteria: {
         }
       }
     }
+  })
+
+  console.log(`[Quick Request] Matched ${venues.length} venues for criteria:`, {
+    location: criteria.locationPreference,
+    minGuests,
+    eventType: criteria.eventType
   })
 
   return venues.filter(venue => {

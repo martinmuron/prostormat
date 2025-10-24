@@ -3,7 +3,9 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { formatDate } from "@/lib/utils"
-import { Building, MessageSquare, Eye, Plus, Calendar, Settings, CreditCard } from "lucide-react"
+import { Building, MessageSquare, Eye, Plus, Calendar, Settings, CreditCard, Heart, Users, MapPin } from "lucide-react"
+import { EVENT_TYPES } from "@/types"
+import type { EventType } from "@/types"
 import type { VenueManagerDashboardData } from "@/types/dashboard"
 import { PremiumUpsellPrompt } from "@/components/dashboard/premium-upsell-prompt"
 
@@ -12,7 +14,7 @@ interface VenueManagerDashboardProps {
 }
 
 export function VenueManagerDashboard({ data }: VenueManagerDashboardProps) {
-  const { user, venues, stats } = data
+  const { user, venues, favoritedEventRequests, stats } = data
 
   type VenueInquiryEntry = VenueManagerDashboardData['venues'][number]['inquiries'][number]
 
@@ -305,7 +307,7 @@ export function VenueManagerDashboard({ data }: VenueManagerDashboardProps) {
         </CardContent>
       </Card>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
         {/* My Venues */}
         <Card className="bg-white">
           <CardHeader>
@@ -433,6 +435,79 @@ export function VenueManagerDashboard({ data }: VenueManagerDashboardProps) {
           </CardContent>
         </Card>
       </div>
+
+      {/* Favorited Event Requests */}
+      {favoritedEventRequests && favoritedEventRequests.length > 0 && (
+        <Card className="mb-8 bg-white">
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-gray-900 flex items-center">
+                <Heart className="h-5 w-5 mr-2 text-rose-600" />
+                Oblíbené poptávky
+              </CardTitle>
+              <Link href="/event-board">
+                <Button size="sm" variant="secondary" className="text-gray-700 border-gray-300 hover:bg-gray-50">
+                  Zobrazit Event Board
+                </Button>
+              </Link>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {favoritedEventRequests.slice(0, 3).map((request) => {
+                const eventTypeLabel = EVENT_TYPES[request.eventType as EventType] || request.eventType
+                return (
+                  <div key={request.id} className="border border-gray-200 rounded-xl p-4 hover:shadow-md transition-shadow">
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-2">
+                          <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 text-xs">
+                            {eventTypeLabel}
+                          </Badge>
+                          <span className="text-xs text-gray-500">
+                            {formatDate(new Date(request.createdAt))}
+                          </span>
+                        </div>
+                        <h4 className="text-callout font-medium text-gray-900 mb-2">{request.title}</h4>
+                        <div className="flex flex-wrap gap-3 text-caption text-gray-600">
+                          <div className="flex items-center gap-1">
+                            <Users className="h-3 w-3" />
+                            <span>{request.guestCount} osob</span>
+                          </div>
+                          {request.locationPreference && (
+                            <div className="flex items-center gap-1">
+                              <MapPin className="h-3 w-3" />
+                              <span>{request.locationPreference}</span>
+                            </div>
+                          )}
+                          {request.eventDate && (
+                            <div className="flex items-center gap-1">
+                              <Calendar className="h-3 w-3" />
+                              <span>{formatDate(new Date(request.eventDate))}</span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                    <Link href="/event-board">
+                      <Button size="sm" variant="secondary" className="w-full text-gray-700 border-gray-300 hover:bg-gray-50">
+                        Zobrazit detail
+                      </Button>
+                    </Link>
+                  </div>
+                )
+              })}
+              {favoritedEventRequests.length > 3 && (
+                <Link href="/event-board?filter=favorites">
+                  <Button variant="secondary" size="sm" className="w-full text-gray-700 border-gray-300 hover:bg-gray-50">
+                    Zobrazit všechny oblíbené ({favoritedEventRequests.length})
+                  </Button>
+                </Link>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Profile Management */}
       <Card className="mt-8 bg-white">

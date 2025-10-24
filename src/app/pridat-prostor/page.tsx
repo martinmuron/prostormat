@@ -402,7 +402,7 @@ export default function AddVenuePage() {
       name: suggestion.name,
       slug: suggestion.slug,
       status: suggestion.status,
-      manager: suggestion.manager,
+      manager: suggestion.manager ?? undefined,
     })
     setSubmissionMode('claim')
     setPendingSubmission(null)

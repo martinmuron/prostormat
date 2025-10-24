@@ -11,7 +11,7 @@ import { EVENT_TYPES } from "@/types"
 import type { EventType } from "@/types"
 import { formatDate } from "@/lib/utils"
 import { EventRequestHeartButton } from "@/components/event-request/heart-button"
-import { Calendar, Users, MapPin, Euro, Mail, Phone, User, Clock, X, LogIn, Heart, Building, Plus } from "lucide-react"
+import { Calendar, Users, MapPin, Euro, Mail, Phone, User, Clock, X, LogIn, Heart, Building, Plus, Info } from "lucide-react"
 import { PageHero } from "@/components/layout/page-hero"
 
 // Force dynamic rendering to avoid caching issues
@@ -118,7 +118,6 @@ export default function EventRequestsPage() {
   const [requests, setRequests] = useState<EventRequest[]>([])
   const [loading, setLoading] = useState(true)
   const [hasVenueAccess, setHasVenueAccess] = useState(false)
-  const [checkingAccess, setCheckingAccess] = useState(true)
   const [filters, setFilters] = useState({
     location: "all",
     guestCount: "all",
@@ -134,7 +133,6 @@ export default function EventRequestsPage() {
 
   const checkVenueAccess = async () => {
     if (!session?.user?.id) {
-      setCheckingAccess(false)
       setHasVenueAccess(false)
       return
     }
@@ -148,8 +146,6 @@ export default function EventRequestsPage() {
     } catch (error) {
       console.error('Error checking venue access:', error)
       setHasVenueAccess(false)
-    } finally {
-      setCheckingAccess(false)
     }
   }
 
@@ -245,7 +241,11 @@ export default function EventRequestsPage() {
     <PageHero
       eyebrow="Poptávky"
       title="Event Board"
-      subtitle="Prohlédněte si Event Board s aktuálními poptávkami na event prostory a kontaktujte organizátory přímo prostřednictvím uvedených údajů."
+      subtitle={
+        hasVenueAccess
+          ? "Prohlédněte si aktuální poptávky a kontaktujte organizátory přímo"
+          : "Zveřejněte svou poptávku a nechte prostory kontaktovat vás. Nebo zaregistrujte svůj prostor pro přístup ke kontaktům."
+      }
       variant="plain"
       className="bg-gradient-to-br from-rose-50 via-white to-pink-50 pb-16"
       actions={
@@ -349,7 +349,7 @@ export default function EventRequestsPage() {
     </PageHero>
   )
 
-  if (status === "loading" || loading || checkingAccess) {
+  if (status === "loading" || loading) {
     return (
       <div className="min-h-screen bg-white">
         {hero}
@@ -364,58 +364,30 @@ export default function EventRequestsPage() {
     )
   }
 
-  // Access denied state for non-venue-managers
-  if (!hasVenueAccess) {
-    return (
-      <div className="min-h-screen bg-white">
-        {hero}
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-12 sm:pt-16 pb-12">
-          <Card className="border-2 border-orange-200 bg-gradient-to-br from-orange-50 to-amber-50">
-            <CardContent className="p-8 text-center">
-              <div className="mb-6">
-                <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Building className="h-8 w-8 text-orange-600" />
-                </div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-3">
-                  Přístup pouze pro majitele prostorů
-                </h2>
-                <p className="text-lg text-gray-700 mb-2">
-                  Event Board je dostupný pouze pro registrované majitele event prostorů.
-                </p>
-                <p className="text-base text-gray-600 max-w-2xl mx-auto">
-                  Pro přístup k plné funkčnosti Event Boardu a kontaktování organizátorů akcí je potřeba mít na Prostormat.cz zveřejněný alespoň jeden prostor.
-                </p>
-              </div>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                <Link href="/pridat-prostor">
-                  <Button size="lg" className="bg-orange-600 hover:bg-orange-700 text-white rounded-xl px-8">
-                    <Plus className="h-5 w-5 mr-2" />
-                    Přidat prostor
-                  </Button>
-                </Link>
-                <Link href="/prostory">
-                  <Button variant="outline" size="lg" className="rounded-xl border-orange-300 text-orange-700 hover:bg-orange-50 px-8">
-                    Procházet prostory
-                  </Button>
-                </Link>
-              </div>
-              <div className="mt-8 pt-6 border-t border-orange-200">
-                <p className="text-sm text-gray-600">
-                  Máte již prostor přidaný? Ujistěte se, že je aktivní a máte předplatné.
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    )
-  }
-
   return (
     <div className="min-h-screen bg-white">
       {hero}
       
       <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-12 sm:pt-16 pb-8 sm:pb-12">
+
+        {/* Info banner for non-venue-managers */}
+        {!hasVenueAccess && session && (
+          <Card className="mb-6 border-orange-200 bg-gradient-to-r from-orange-50 to-amber-50">
+            <CardContent className="p-4 flex items-center gap-3">
+              <Info className="h-5 w-5 text-orange-600 flex-shrink-0" />
+              <div className="flex-1">
+                <p className="text-sm text-gray-700">
+                  <strong>Pro majitele prostorů:</strong> Zaregistrujte svůj prostor pro zobrazení plných kontaktních údajů organizátorů.
+                </p>
+              </div>
+              <Link href="/pridat-prostor">
+                <Button size="sm" variant="outline" className="border-orange-300 text-orange-700 hover:bg-orange-100 rounded-xl">
+                  Přidat prostor
+                </Button>
+              </Link>
+            </CardContent>
+          </Card>
+        )}
 
         <div className="space-y-6">
           {filteredRequests.length === 0 ? (
@@ -452,7 +424,7 @@ export default function EventRequestsPage() {
                           <Clock className="h-4 w-4" />
                           {formatDate(new Date(request.createdAt))}
                         </div>
-                        {session?.user?.id && (
+                        {session?.user?.id && hasVenueAccess && (
                           <EventRequestHeartButton
                             eventRequestId={request.id}
                             className="shadow-sm"
@@ -503,57 +475,78 @@ export default function EventRequestsPage() {
                     )}
                     
                     {/* Contact Info */}
-                    <div className="relative bg-gradient-to-br from-slate-50 to-gray-100 rounded-xl p-4 border border-slate-200">
-                      <div className={`flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 ${!session ? 'blur-sm' : ''}`}>
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-slate-200 rounded-xl flex items-center justify-center">
-                            <User className="h-5 w-5 text-slate-600" />
+                    <div className="relative">
+                      <div className="bg-gradient-to-br from-slate-50 to-gray-100 rounded-xl p-4 border border-slate-200">
+                        <div className={`flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 ${!hasVenueAccess ? 'blur-sm' : ''}`}>
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 bg-slate-200 rounded-xl flex items-center justify-center">
+                              <User className="h-5 w-5 text-slate-600" />
+                            </div>
+                            <span className="font-medium text-slate-900">{request.contactName}</span>
                           </div>
-                          <span className="font-medium text-slate-900">{request.contactName}</span>
-                        </div>
-                        
-                        <div className="flex flex-wrap gap-3">
-                          <a 
-                            href={session ? `mailto:${request.contactEmail}` : '#'}
-                            className="inline-flex items-center gap-2 px-3 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors text-sm font-medium"
-                            onClick={!session ? (e) => e.preventDefault() : undefined}
-                          >
-                            <Mail className="h-4 w-4" />
-                            Email
-                          </a>
-                          
-                          {request.contactPhone && (
-                            <a 
-                              href={session ? `tel:${request.contactPhone}` : '#'}
-                              className="inline-flex items-center gap-2 px-3 py-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors text-sm font-medium"
-                              onClick={!session ? (e) => e.preventDefault() : undefined}
+
+                          <div className="flex flex-wrap gap-3">
+                            <a
+                              href={hasVenueAccess ? `mailto:${request.contactEmail}` : '#'}
+                              className="inline-flex items-center gap-2 px-3 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors text-sm font-medium"
+                              onClick={!hasVenueAccess ? (e) => e.preventDefault() : undefined}
                             >
-                              <Phone className="h-4 w-4" />
-                              Telefon
+                              <Mail className="h-4 w-4" />
+                              Email
                             </a>
-                          )}
+
+                            {request.contactPhone && (
+                              <a
+                                href={hasVenueAccess ? `tel:${request.contactPhone}` : '#'}
+                                className="inline-flex items-center gap-2 px-3 py-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors text-sm font-medium"
+                                onClick={!hasVenueAccess ? (e) => e.preventDefault() : undefined}
+                              >
+                                <Phone className="h-4 w-4" />
+                                Telefon
+                              </a>
+                            )}
+                          </div>
                         </div>
                       </div>
-                      
-                      {/* Login overlay for non-authenticated users */}
-                      {!session && (
-                        <div className="absolute inset-0 bg-white/80 backdrop-blur-[1px] rounded-xl flex items-center justify-center p-2">
-                          <div className="flex flex-col sm:flex-row items-center gap-3 p-4 text-center sm:text-left">
-                            <LogIn className="h-6 w-6 text-gray-600 flex-shrink-0" />
-                            <p className="text-sm font-medium text-gray-900">
-                              Přihlaste se pro zobrazení kontaktních údajů
+
+                      {/* Overlay for non-venue-managers */}
+                      {!hasVenueAccess && (
+                        <div className="absolute inset-0 bg-white/90 backdrop-blur-sm rounded-xl flex items-center justify-center p-4">
+                          <div className="text-center max-w-sm">
+                            <div className="w-14 h-14 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                              <Building className="h-7 w-7 text-orange-600" />
+                            </div>
+                            <h4 className="text-base font-bold text-gray-900 mb-2">
+                              {session ? 'Zaregistrujte svůj prostor' : 'Přihlaste se pro zobrazení kontaktů'}
+                            </h4>
+                            <p className="text-sm text-gray-600 mb-4">
+                              {session
+                                ? 'Pro přístup k plným kontaktním informacím organizátorů musíte mít registrovaný event prostor'
+                                : 'Přihlaste se nebo zaregistrujte svůj prostor pro zobrazení kontaktních údajů'}
                             </p>
-                            <div className="flex flex-col sm:flex-row gap-2 flex-shrink-0 w-full sm:w-auto">
-                              <Link href="/prihlaseni" className="w-full sm:w-auto">
-                                <Button size="sm" className="bg-black text-white hover:bg-gray-800 rounded-lg w-full">
-                                  Přihlásit se
-                                </Button>
-                              </Link>
-                              <Link href="/registrace" className="w-full sm:w-auto">
-                                <Button variant="outline" size="sm" className="rounded-lg border-gray-300 w-full">
-                                  Registrace
-                                </Button>
-                              </Link>
+                            <div className="flex flex-col gap-2">
+                              {session ? (
+                                <Link href="/pridat-prostor">
+                                  <Button size="sm" className="bg-orange-600 hover:bg-orange-700 text-white rounded-xl w-full">
+                                    <Plus className="h-4 w-4 mr-1" />
+                                    Přidat prostor
+                                  </Button>
+                                </Link>
+                              ) : (
+                                <>
+                                  <Link href="/prihlaseni">
+                                    <Button size="sm" className="bg-black text-white hover:bg-gray-800 rounded-lg w-full">
+                                      <LogIn className="h-4 w-4 mr-1" />
+                                      Přihlásit se
+                                    </Button>
+                                  </Link>
+                                  <Link href="/registrace">
+                                    <Button variant="outline" size="sm" className="rounded-lg border-gray-300 w-full">
+                                      Registrace
+                                    </Button>
+                                  </Link>
+                                </>
+                              )}
                             </div>
                           </div>
                         </div>

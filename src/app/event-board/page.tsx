@@ -475,7 +475,7 @@ export default function EventRequestsPage() {
                     )}
                     
                     {/* Contact Info */}
-                    <div className="relative">
+                    <div className="relative overflow-hidden rounded-xl">
                       <div className="bg-gradient-to-br from-slate-50 to-gray-100 rounded-xl p-4 border border-slate-200">
                         <div className={`flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 ${!hasVenueAccess ? 'blur-sm' : ''}`}>
                           <div className="flex items-center gap-3">
@@ -511,37 +511,37 @@ export default function EventRequestsPage() {
 
                       {/* Overlay for non-venue-managers */}
                       {!hasVenueAccess && (
-                        <div className="absolute inset-0 bg-white/90 backdrop-blur-sm rounded-xl flex items-center justify-center p-4">
-                          <div className="text-center max-w-sm">
-                            <div className="w-14 h-14 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                              <Building className="h-7 w-7 text-orange-600" />
+                        <div className="absolute inset-0 bg-white/90 backdrop-blur-sm rounded-xl flex items-center justify-center p-2">
+                          <div className="text-center max-w-xs px-2">
+                            <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                              <Building className="h-5 w-5 text-orange-600" />
                             </div>
-                            <h4 className="text-base font-bold text-gray-900 mb-2">
-                              {session ? 'Zaregistrujte svůj prostor' : 'Přihlaste se pro zobrazení kontaktů'}
+                            <h4 className="text-sm font-bold text-gray-900 mb-1">
+                              {session ? 'Zaregistrujte svůj prostor' : 'Přihlaste se'}
                             </h4>
-                            <p className="text-sm text-gray-600 mb-4">
+                            <p className="text-xs text-gray-600 mb-2 line-clamp-2">
                               {session
-                                ? 'Pro přístup k plným kontaktním informacím organizátorů musíte mít registrovaný event prostor'
-                                : 'Přihlaste se nebo zaregistrujte svůj prostor pro zobrazení kontaktních údajů'}
+                                ? 'Pro přístup k plným kontaktům musíte mít registrovaný prostor'
+                                : 'Přihlaste se pro zobrazení kontaktních údajů'}
                             </p>
-                            <div className="flex flex-col gap-2">
+                            <div className="flex flex-col sm:flex-row gap-1.5">
                               {session ? (
-                                <Link href="/pridat-prostor">
-                                  <Button size="sm" className="bg-orange-600 hover:bg-orange-700 text-white rounded-xl w-full">
-                                    <Plus className="h-4 w-4 mr-1" />
+                                <Link href="/pridat-prostor" className="w-full">
+                                  <Button size="sm" className="bg-orange-600 hover:bg-orange-700 text-white rounded-lg w-full h-8 text-xs">
+                                    <Plus className="h-3 w-3 mr-1" />
                                     Přidat prostor
                                   </Button>
                                 </Link>
                               ) : (
                                 <>
-                                  <Link href="/prihlaseni">
-                                    <Button size="sm" className="bg-black text-white hover:bg-gray-800 rounded-lg w-full">
-                                      <LogIn className="h-4 w-4 mr-1" />
+                                  <Link href="/prihlaseni" className="w-full sm:w-auto flex-1">
+                                    <Button size="sm" className="bg-black text-white hover:bg-gray-800 rounded-lg w-full h-8 text-xs">
+                                      <LogIn className="h-3 w-3 mr-1" />
                                       Přihlásit se
                                     </Button>
                                   </Link>
-                                  <Link href="/registrace">
-                                    <Button variant="outline" size="sm" className="rounded-lg border-gray-300 w-full">
+                                  <Link href="/registrace" className="w-full sm:w-auto flex-1">
+                                    <Button variant="outline" size="sm" className="rounded-lg border-gray-300 w-full h-8 text-xs">
                                       Registrace
                                     </Button>
                                   </Link>

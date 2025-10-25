@@ -221,11 +221,8 @@ export default function HomePage() {
         <div className="max-w-6xl mx-auto">
           <ScrollReveal>
           <div className="text-center mb-12">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-3xl mb-6 electric-icon">
-              <span className="electric-icon__spark electric-icon__spark--one" />
-              <span className="electric-icon__spark electric-icon__spark--two" />
-              <span className="electric-icon__spark electric-icon__spark--three" />
-              <Zap className="w-8 h-8 text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.55)]" />
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-3xl mb-6 bg-blue-600">
+              <Zap className="w-8 h-8 text-white" />
             </div>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
               Rychlá poptávka

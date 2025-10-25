@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo } from "react"
 import Link from "next/link"
+import { useSearchParams } from "next/navigation"
 import { useSession } from "next-auth/react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -11,7 +12,7 @@ import { EVENT_TYPES } from "@/types"
 import type { EventType } from "@/types"
 import { formatDate } from "@/lib/utils"
 import { EventRequestHeartButton } from "@/components/event-request/heart-button"
-import { Calendar, Users, MapPin, Euro, Mail, Phone, User, Clock, X, LogIn, Heart, Plus, Info } from "lucide-react"
+import { Calendar, Users, MapPin, Euro, Mail, Phone, User, Clock, X, LogIn, Heart, Plus, Info, Building } from "lucide-react"
 import { PageHero } from "@/components/layout/page-hero"
 
 // Force dynamic rendering to avoid caching issues
@@ -31,6 +32,7 @@ interface EventRequest {
   contactEmail: string
   contactPhone?: string | null
   createdAt: string
+  status: string
   user: {
     name: string
   }
@@ -115,6 +117,7 @@ function EventRequestSkeleton() {
 
 export default function EventRequestsPage() {
   const { data: session, status } = useSession()
+  const searchParams = useSearchParams()
   const [requests, setRequests] = useState<EventRequest[]>([])
   const [loading, setLoading] = useState(true)
   const [hasVenueAccess, setHasVenueAccess] = useState(false)
@@ -237,6 +240,12 @@ export default function EventRequestsPage() {
                           (filters.dateRange && filters.dateRange !== "all") ||
                           filters.prostormat_venue_favorites !== "all"
 
+  const [showSuccessBanner, setShowSuccessBanner] = useState(false)
+
+  useEffect(() => {
+    setShowSuccessBanner(searchParams.get("success") === "true")
+  }, [searchParams])
+
   const hero = (
     <PageHero
       eyebrow="Poptávky"
@@ -261,6 +270,25 @@ export default function EventRequestsPage() {
     >
       <div className="relative mx-auto w-full max-w-5xl">
         <div className="rounded-2xl border-2 border-rose-200 bg-white/95 shadow-xl backdrop-blur-sm p-6 sm:p-8">
+          {showSuccessBanner && (
+            <div className="mb-4 rounded-xl border border-green-300 bg-green-50 px-4 py-3 text-sm text-green-800 flex items-start gap-3">
+              <div className="flex-1">
+                <p className="font-semibold">Poptávka byla úspěšně zveřejněna.</p>
+                <p className="text-green-700">
+                  Nyní je viditelná pro ověřené provozovatele prostorů. Jakmile reagují, uvidíte nabídky ve vašem dashboardu.
+                </p>
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-green-800 hover:text-green-900 hover:bg-green-100 px-2"
+                onClick={() => setShowSuccessBanner(false)}
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+          )}
+
           {hasActiveFilters && (
             <div className="flex justify-end mb-4">
               <Button
@@ -395,6 +423,13 @@ export default function EventRequestsPage() {
           ) : (
             filteredRequests.map((request: EventRequest) => {
               const eventTypeLabel = EVENT_TYPES[request.eventType as EventType] || request.eventType
+              const isClosed = request.status !== "active"
+              const statusLabel =
+                request.status === "active" ? "Aktivní" : request.status === "closed" ? "Uzavřená" : "Neaktivní"
+              const statusBadgeClass =
+                request.status === "active"
+                  ? "bg-emerald-100 text-emerald-700 border-emerald-200"
+                  : "bg-gray-100 text-gray-700 border-gray-200"
               
               return (
                 <Card key={request.id} className="group hover:shadow-lg hover:-translate-y-1 transition-all duration-300 ease-out border border-gray-200 shadow-sm">
@@ -406,6 +441,9 @@ export default function EventRequestsPage() {
                           <Badge variant="outline" className="bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 border-blue-200 font-medium px-3 py-1 text-sm">
                             {eventTypeLabel}
                           </Badge>
+                          <Badge variant="outline" className={`${statusBadgeClass} font-medium px-3 py-1 text-sm border`}>
+                            {statusLabel}
+                          </Badge>
                         </div>
                         <h2 className="text-xl font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors duration-200 leading-tight">
                           {request.title}
@@ -416,13 +454,13 @@ export default function EventRequestsPage() {
                               <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">
                                 Popis akce
                               </span>
-                              {!hasVenueAccess && (
+                              {!hasVenueAccess && !isClosed && (
                                 <Badge variant="outline" className="bg-slate-50 text-slate-600 border-dashed border-slate-300">
                                   Dostupné po registraci
                                 </Badge>
                               )}
                             </div>
-                            {hasVenueAccess ? (
+                            {hasVenueAccess || isClosed ? (
                               <p className="text-base text-gray-600 leading-relaxed">
                                 {request.description}
                               </p>
@@ -441,7 +479,7 @@ export default function EventRequestsPage() {
                           <Clock className="h-4 w-4" />
                           {formatDate(new Date(request.createdAt))}
                         </div>
-                        {session?.user?.id && hasVenueAccess && (
+                        {session?.user?.id && hasVenueAccess && !isClosed && (
                           <EventRequestHeartButton
                             eventRequestId={request.id}
                             className="shadow-sm"
@@ -490,6 +528,15 @@ export default function EventRequestsPage() {
                         </div>
                       </div>
                     )}
+
+                    {isClosed && (
+                      <div className="mb-6">
+                        <div className="rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-700">
+                          <p className="font-semibold text-gray-800">Tato poptávka je uzavřená.</p>
+                          <p>Organizátor již našel vhodný prostor a další nabídky nepřijímá.</p>
+                        </div>
+                      </div>
+                    )}
                     
                     {/* Contact Info */}
                     <div className="mt-6">
@@ -498,15 +545,15 @@ export default function EventRequestsPage() {
                           <User className="h-4 w-4 text-slate-500" />
                           Kontaktní údaje
                         </div>
-                        {!hasVenueAccess && (
+                        {!hasVenueAccess && !isClosed && (
                           <Badge variant="outline" className="bg-orange-50 text-orange-700 border-orange-200">
                             Uzamčeno
                           </Badge>
                         )}
                       </div>
 
-                      <div className="rounded-xl border border-slate-200 bg-gradient-to-br from-slate-50 to-white shadow-inner">
-                        {hasVenueAccess ? (
+                      <div className="rounded-xl border border-slate-200 bg-gradient-to-br from-slate-50 to-white shadow-inner relative">
+                        {hasVenueAccess && !isClosed ? (
                           <div className="p-4 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
                             <div className="flex items-center gap-3">
                               <div className="w-10 h-10 bg-slate-200 rounded-xl flex items-center justify-center">
@@ -535,7 +582,7 @@ export default function EventRequestsPage() {
                               )}
                             </div>
                           </div>
-                        ) : (
+                        ) : !isClosed ? (
                           <div className="p-4 flex flex-col gap-4">
                             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
                               <div className="flex items-center gap-3">
@@ -592,6 +639,60 @@ export default function EventRequestsPage() {
                                     </>
                                   )}
                                 </div>
+                              </div>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="p-4 text-sm text-slate-600">
+                            <div className="flex items-center gap-3">
+                              <div className="w-10 h-10 bg-slate-200 rounded-xl flex items-center justify-center">
+                                <User className="h-5 w-5 text-slate-500" />
+                              </div>
+                              <div>
+                                <p className="font-medium text-slate-800">{request.contactName}</p>
+                                <p>Kontakty jsou skryté, protože poptávka je uzavřená.</p>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
+                        {!hasVenueAccess && !isClosed && (
+                          <div className="absolute inset-0 bg-white/90 backdrop-blur-sm rounded-xl flex items-center justify-center p-2">
+                            <div className="text-center max-w-xs px-2">
+                              <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                                <Building className="h-5 w-5 text-orange-600" />
+                              </div>
+                              <h4 className="text-sm font-bold text-gray-900 mb-1">
+                                {session ? 'Zaregistrujte svůj prostor' : 'Přihlaste se'}
+                              </h4>
+                              <p className="text-xs text-gray-600 mb-2 line-clamp-2">
+                                {session
+                                  ? 'Pro přístup k plným kontaktům musíte mít registrovaný prostor'
+                                  : 'Přihlaste se pro zobrazení kontaktních údajů'}
+                              </p>
+                              <div className="flex flex-col sm:flex-row gap-1.5">
+                                {session ? (
+                                  <Link href="/pridat-prostor" className="w-full">
+                                    <Button size="sm" className="bg-orange-600 hover:bg-orange-700 text-white rounded-lg w-full h-8 text-xs">
+                                      <Plus className="h-3 w-3 mr-1" />
+                                      Přidat prostor
+                                    </Button>
+                                  </Link>
+                                ) : (
+                                  <>
+                                    <Link href="/prihlaseni" className="w-full sm:w-auto flex-1">
+                                      <Button size="sm" className="bg-black text-white hover:bg-gray-800 rounded-lg w-full h-8 text-xs">
+                                        <LogIn className="h-3 w-3 mr-1" />
+                                        Přihlásit se
+                                      </Button>
+                                    </Link>
+                                    <Link href="/registrace" className="w-full sm:w-auto flex-1">
+                                      <Button variant="outline" size="sm" className="rounded-lg border-gray-300 w-full h-8 text-xs">
+                                        Registrace
+                                      </Button>
+                                    </Link>
+                                  </>
+                                )}
                               </div>
                             </div>
                           </div>

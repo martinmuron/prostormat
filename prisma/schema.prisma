@@ -38,27 +38,27 @@ model Session {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String    @unique
-  emailVerified DateTime?
-  image         String?
-  password      String?   // for credential-based auth
-  phone         String?
-  role          String    @default("user") // user, venue_manager, admin
-  company       String?   // for event organizers
-  accounts      Account[]
-  sessions      Session[]
-  venues        Venue[]
-  eventRequests EventRequest[]
-  venueInquiries VenueInquiry[]
-  blogPosts     BlogPost[]
-  venueBroadcasts VenueBroadcast[]
-  emailFlowLogs EmailFlowLog[]
+  id                    String                 @id @default(cuid())
+  name                  String?
+  email                 String                 @unique
+  emailVerified         DateTime?
+  image                 String?
+  password              String? // for credential-based auth
+  phone                 String?
+  role                  String                 @default("user") // user, venue_manager, admin
+  company               String? // for event organizers
+  accounts              Account[]
+  sessions              Session[]
+  venues                Venue[]
+  eventRequests         EventRequest[]
+  venueInquiries        VenueInquiry[]
+  blogPosts             BlogPost[]
+  venueBroadcasts       VenueBroadcast[]
+  emailFlowLogs         EmailFlowLog[]
   eventRequestFavorites EventRequestFavorite[]
-  passwordResetTokens PasswordResetToken[]
-  venueClaims VenueClaim[]
-  createdAt     DateTime  @default(now())
+  passwordResetTokens   PasswordResetToken[]
+  venueClaims           VenueClaim[]
+  createdAt             DateTime               @default(now())
 
   @@map("prostormat_users")
 }
@@ -72,49 +72,49 @@ model VerificationToken {
 }
 
 model Venue {
-  id               String   @id @default(cuid())
+  id               String    @id @default(cuid())
   name             String
-  slug             String   @unique
+  slug             String    @unique
   description      String?
   address          String
-  district         String?  // Prague district (Praha 1, Praha 2, etc.)
+  district         String? // Prague district (Praha 1, Praha 2, etc.)
   capacitySeated   Int?
   capacityStanding Int?
-  venueType        String?  // DEPRECATED - use venueTypes
-  venueTypes       String[] @default([]) // Multiple categories per venue
+  venueType        String? // DEPRECATED - use venueTypes
+  venueTypes       String[]  @default([]) // Multiple categories per venue
   amenities        String[]
   contactEmail     String?
   contactPhone     String?
   websiteUrl       String?
-  instagramUrl     String?  // Instagram URL
+  instagramUrl     String? // Instagram URL
   images           String[]
   videoUrl         String?
-  youtubeUrl       String?  // YouTube URL
+  youtubeUrl       String? // YouTube URL
   musicAfter10     Boolean? // Can play music after 22:00
-  status           String   @default("draft") // draft, active, expired, pending, published
-  isRecommended    Boolean  @default(false) // Featured/recommended venue
-  priority         Int?     // 1 = highest priority, null = no priority
-  prioritySource   String?  // subscription | manual
+  status           String    @default("draft") // draft, active, expired, pending, published
+  isRecommended    Boolean   @default(false) // Featured/recommended venue
+  priority         Int? // 1 = highest priority, null = no priority
+  prioritySource   String? // subscription | manual
   parentId         String?
   managerId        String
-  paid             Boolean  @default(false) // Whether venue has paid subscription
-  subscriptionId   String?  // Stripe subscription ID
+  paid             Boolean   @default(false) // Whether venue has paid subscription
+  subscriptionId   String? // Stripe subscription ID
   paymentDate      DateTime? // When the 12,000 CZK was paid
   expiresAt        DateTime?
   lastViewedAt     DateTime? // Last time venue was viewed
-  totalViews       Int      @default(0) // Total view count
-  views            Int      @default(0) // View count
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  totalViews       Int       @default(0) // Total view count
+  views            Int       @default(0) // View count
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
 
-  manager      User           @relation(fields: [managerId], references: [id])
-  parent       Venue?         @relation("VenueHierarchy", fields: [parentId], references: [id])
-  subVenues    Venue[]        @relation("VenueHierarchy")
-  inquiries    VenueInquiry[]
-  subscription Subscription?
+  manager       User                @relation(fields: [managerId], references: [id])
+  parent        Venue?              @relation("VenueHierarchy", fields: [parentId], references: [id])
+  subVenues     Venue[]             @relation("VenueHierarchy")
+  inquiries     VenueInquiry[]
+  subscription  Subscription?
   broadcastLogs VenueBroadcastLog[]
-  claims       VenueClaim[]
-  homepageSlot HomepageVenue?
+  claims        VenueClaim[]
+  homepageSlot  HomepageVenue?
 
   @@map("prostormat_venues")
 }
@@ -129,11 +129,17 @@ model VenueClaim {
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
-  venue    Venue @relation(fields: [venueId], references: [id])
-  claimant User  @relation(fields: [claimantId], references: [id])
+  venue         Venue          @relation(fields: [venueId], references: [id])
+  claimant      User           @relation(fields: [claimantId], references: [id])
   paymentIntent PaymentIntent? @relation("PaymentIntentClaim")
 
   @@map("prostormat_venue_claims")
+}
+
+enum VenueBroadcastStatus {
+  pending
+  partial
+  completed
 }
 
 model HomepageVenue {
@@ -149,26 +155,26 @@ model HomepageVenue {
 }
 
 model EventRequest {
-  id                  String   @id @default(cuid())
-  userId              String
-  title               String
-  description         String?
-  eventType           String   // firemni-akce, teambuilding, svatba, soukroma-akce
-  eventDate           DateTime?
-  guestCount          Int?
+  id                      String    @id @default(cuid())
+  userId                  String
+  title                   String
+  description             String?
+  eventType               String // firemni-akce, teambuilding, svatba, soukroma-akce
+  eventDate               DateTime?
+  guestCount              Int?
   guestCountStandingRange String?
   guestCountSeatedRange   String?
-  budgetRange         String?
-  locationPreference  String?  // Praha 1, Praha 2, etc.
-  requirements        String?
-  contactEmail        String   // PUBLIC - for direct contact
-  contactPhone        String?
-  contactName         String   // PUBLIC
-  status              String   @default("active") // active, closed, expired
-  expiresAt           DateTime
-  createdAt           DateTime @default(now())
+  budgetRange             String?
+  locationPreference      String? // Praha 1, Praha 2, etc.
+  requirements            String?
+  contactEmail            String // PUBLIC - for direct contact
+  contactPhone            String?
+  contactName             String // PUBLIC
+  status                  String    @default("active") // active, closed, expired
+  expiresAt               DateTime
+  createdAt               DateTime  @default(now())
 
-  user User @relation(fields: [userId], references: [id])
+  user      User                   @relation(fields: [userId], references: [id])
   favorites EventRequestFavorite[]
 
   @@map("prostormat_event_requests")
@@ -177,7 +183,7 @@ model EventRequest {
 model VenueInquiry {
   id         String    @id @default(cuid())
   venueId    String
-  userId     String?   // can be null for anonymous inquiries
+  userId     String? // can be null for anonymous inquiries
   name       String
   email      String
   phone      String?
@@ -195,7 +201,7 @@ model Subscription {
   venueId              String   @unique
   stripeSubscriptionId String   @unique
   stripeCustomerId     String
-  status               String   // active, canceled, past_due
+  status               String // active, canceled, past_due
   currentPeriodEnd     DateTime
   createdAt            DateTime @default(now())
 
@@ -203,20 +209,20 @@ model Subscription {
 }
 
 model BlogPost {
-  id              String   @id @default(cuid())
+  id              String    @id @default(cuid())
   title           String
-  slug            String   @unique
+  slug            String    @unique
   excerpt         String?
   content         String
   coverImage      String?
-  status          String   @default("draft") // draft, published
+  status          String    @default("draft") // draft, published
   authorId        String
   tags            String // JSON array
   metaTitle       String?
   metaDescription String?
   publishedAt     DateTime?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 
   author User @relation(fields: [authorId], references: [id])
 
@@ -224,36 +230,39 @@ model BlogPost {
 }
 
 model VenueBroadcast {
-  id               String   @id @default(cuid())
-  userId           String
-  title            String
-  description      String
-  eventType        String   // firemni-akce, teambuilding, svatba, soukroma-akce
-  eventDate        DateTime?
-  guestCount       Int?
-  budgetRange      String?
-  locationPreference String?  // Praha 1, Praha 2, etc.
-  requirements     String?
-  contactEmail     String
-  contactPhone     String?
-  contactName      String
-  sentVenues       String[] // Array of venue IDs that received the email
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  id                 String               @id @default(cuid())
+  userId             String
+  title              String
+  description        String
+  eventType          String // firemni-akce, teambuilding, svatba, soukroma-akce
+  eventDate          DateTime?
+  guestCount         Int?
+  budgetRange        String?
+  locationPreference String? // Praha 1, Praha 2, etc.
+  requirements       String?
+  contactEmail       String
+  contactPhone       String?
+  contactName        String
+  sentVenues         String[] // Array of venue IDs that received the email
+  status             VenueBroadcastStatus @default(pending)
+  sentCount          Int                  @default(0)
+  lastSentAt         DateTime?
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
 
-  user User @relation(fields: [userId], references: [id])
+  user User                @relation(fields: [userId], references: [id])
   logs VenueBroadcastLog[]
 
   @@map("prostormat_venue_broadcasts")
 }
 
 model VenueBroadcastLog {
-  id            String   @id @default(cuid())
-  broadcastId   String
-  venueId       String
-  sentAt        DateTime @default(now())
-  emailStatus   String   @default("sent") // sent, delivered, failed, pending, skipped
-  emailError    String?  // Error message if email failed
+  id          String   @id @default(cuid())
+  broadcastId String
+  venueId     String
+  sentAt      DateTime @default(now())
+  emailStatus String   @default("pending") // pending, sent, delivered, failed, skipped
+  emailError  String? // Error message if email failed
 
   // Resend tracking fields
   resendEmailId     String?   @unique
@@ -267,61 +276,61 @@ model VenueBroadcastLog {
   clickCount        Int       @default(0)
 
   broadcast VenueBroadcast @relation(fields: [broadcastId], references: [id])
-  venue Venue @relation(fields: [venueId], references: [id])
+  venue     Venue          @relation(fields: [venueId], references: [id])
 
   @@map("prostormat_venue_broadcast_logs")
 }
 
 model EmailFlowLog {
-  id               String           @id
-  emailType        String
-  recipient        String
-  subject          String
-  status           String
-  error            String?
-  recipientType    String?
-  sentBy           String
-  createdAt        DateTime         @default(now())
-  user             User             @relation(fields: [sentBy], references: [id])
+  id            String   @id
+  emailType     String
+  recipient     String
+  subject       String
+  status        String
+  error         String?
+  recipientType String?
+  sentBy        String
+  createdAt     DateTime @default(now())
+  user          User     @relation(fields: [sentBy], references: [id])
 
   @@map("prostormat_email_flow_logs")
 }
 
 model PasswordResetToken {
-  id        String   @id @default(cuid())
+  id        String    @id @default(cuid())
   userId    String
-  token     String   @unique
+  token     String    @unique
   expiresAt DateTime
   usedAt    DateTime?
 
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("prostormat_password_reset_tokens")
 }
 
 model EventRequestFavorite {
-  id               String           @id @default(cuid())
-  userId           String
-  eventRequestId   String
-  createdAt        DateTime         @default(now())
+  id             String   @id @default(cuid())
+  userId         String
+  eventRequestId String
+  createdAt      DateTime @default(now())
 
-  user             User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  eventRequest     EventRequest     @relation(fields: [eventRequestId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  eventRequest EventRequest @relation(fields: [eventRequestId], references: [id], onDelete: Cascade)
 
   @@unique([userId, eventRequestId])
 }
 
 model PaymentIntent {
-  id                     String    @id @default(cuid())
-  stripePaymentIntentId  String    @unique
-  venueData              String    // JSON string of venue form data
-  userEmail              String
-  status                 String    @default("pending") // pending, completed, failed
-  venueId                String?   // Set after venue is created
-  venueClaimId           String?   @unique
-  paymentCompletedAt     DateTime?
-  createdAt              DateTime  @default(now())
-  updatedAt              DateTime  @updatedAt
+  id                    String    @id @default(cuid())
+  stripePaymentIntentId String    @unique
+  venueData             String // JSON string of venue form data
+  userEmail             String
+  status                String    @default("pending") // pending, completed, failed
+  venueId               String? // Set after venue is created
+  venueClaimId          String?   @unique
+  paymentCompletedAt    DateTime?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
 
   venueClaim VenueClaim? @relation("PaymentIntentClaim", fields: [venueClaimId], references: [id])
 
@@ -331,12 +340,12 @@ model PaymentIntent {
 model EmailTemplate {
   id          String   @id @default(cuid())
   templateKey String   @unique // welcome_user, welcome_location_owner, etc.
-  name        String   // Display name
-  subject     String   // Email subject line
-  htmlContent String   // HTML email content
-  textContent String?  // Plain text fallback
+  name        String // Display name
+  subject     String // Email subject line
+  htmlContent String // HTML email content
+  textContent String? // Plain text fallback
   variables   String[] // Array of variable placeholders like {{name}}, {{email}}
-  description String?  // What this template is used for
+  description String? // What this template is used for
   isActive    Boolean  @default(true) // Can be toggled on/off
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -345,14 +354,14 @@ model EmailTemplate {
 }
 
 model EmailTrigger {
-  id           String   @id @default(cuid())
-  triggerKey   String   @unique // user_registration, venue_inquiry, etc.
-  name         String   // Display name
-  description  String?  // What triggers this email
-  templateKey  String   // Links to EmailTemplate.templateKey
-  isEnabled    Boolean  @default(false) // Toggle on/off
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id          String   @id @default(cuid())
+  triggerKey  String   @unique // user_registration, venue_inquiry, etc.
+  name        String // Display name
+  description String? // What triggers this email
+  templateKey String // Links to EmailTemplate.templateKey
+  isEnabled   Boolean  @default(false) // Toggle on/off
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   @@map("prostormat_email_triggers")
 }

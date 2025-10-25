@@ -1,5 +1,8 @@
 import type { Metadata } from "next"
 
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export const metadata: Metadata = {
   title: "Event Board - Poptávky po prostorech | Prostormat",
   description: "Prohlížejte aktuální poptávky organizátorů firemních akcí, teambuilding a konferencí v Praze. Oslovte je jako majitel event prostoru a nabídněte své místo.",

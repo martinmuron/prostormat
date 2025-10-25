@@ -850,6 +850,160 @@ interface QuickRequestVenueNotificationData {
   }
 }
 
+
+
+interface QuickRequestInternalNotificationVenue {
+  name: string
+  district?: string | null
+  capacityStanding?: number | null
+  capacitySeated?: number | null
+}
+
+interface QuickRequestInternalNotificationData {
+  broadcastId: string
+  quickRequest: {
+    eventType: string
+    eventDate?: string
+    guestCount?: string
+    budgetRange?: string
+    locationPreference?: string
+    requirements?: string
+    message?: string
+    contactName: string
+    contactEmail: string
+    contactPhone?: string
+  }
+  matchingVenues: QuickRequestInternalNotificationVenue[]
+}
+
+export function generateQuickRequestInternalNotificationEmail(data: QuickRequestInternalNotificationData) {
+  const { quickRequest, matchingVenues, broadcastId } = data
+  const eventTypeLabel = EVENT_TYPES[quickRequest.eventType as EventType] || quickRequest.eventType
+  const adminUrl = `https://prostormat.cz/admin/quick-requests?highlight=${broadcastId}`
+
+  const venueListHtml = matchingVenues.length
+    ? matchingVenues
+        .map((venue, index) => {
+          const pieces: string[] = []
+          if (venue.capacitySeated) {
+            pieces.push(`Sezení: ${venue.capacitySeated}`)
+          }
+          if (venue.capacityStanding) {
+            pieces.push(`Stání: ${venue.capacityStanding}`)
+          }
+          if (venue.district) {
+            pieces.push(venue.district)
+          }
+          const details = pieces.length ? ` <span style="color:#6c757d">(${pieces.join(', ')})</span>` : ''
+          return `<li style="margin-bottom:6px;"><strong>${index + 1}. ${venue.name}</strong>${details}</li>`
+        })
+        .join('')
+    : '<li><em>Žádné vhodné prostory nenalezeny</em></li>'
+
+  const venueListText = matchingVenues.length
+    ? matchingVenues
+        .map((venue, index) => {
+          const pieces: string[] = []
+          if (venue.capacitySeated) pieces.push(`Sezení: ${venue.capacitySeated}`)
+          if (venue.capacityStanding) pieces.push(`Stání: ${venue.capacityStanding}`)
+          if (venue.district) pieces.push(venue.district)
+          const suffix = pieces.length ? ` (${pieces.join(', ')})` : ''
+          return `${index + 1}. ${venue.name}${suffix}`
+        })
+        .join('\n')
+    : 'Žádné vhodné prostory'
+
+  const eventDateText = quickRequest.eventDate
+    ? new Date(quickRequest.eventDate).toLocaleDateString('cs-CZ')
+    : 'Neuvedeno'
+
+  const subject = `Nová rychlá poptávka – ${eventTypeLabel}`
+
+  const html = `
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>${subject}</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f8f9fa; color: #212529; line-height: 1.6; margin: 0; padding: 0; }
+    .container { max-width: 640px; margin: 0 auto; background: #ffffff; padding: 32px; border-radius: 16px; box-shadow: 0 15px 35px rgba(15, 23, 42, 0.08); }
+    .header { margin-bottom: 24px; }
+    .badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 999px; background: #eefff4; color: #0f5132; font-weight: 600; font-size: 13px; }
+    .section { margin: 24px 0; padding: 20px; border-radius: 14px; border: 1px solid #e9ecef; background: #fdfdfe; }
+    .section h3 { margin: 0 0 12px 0; font-size: 16px; color: #0f172a; }
+    .detail { margin: 6px 0; }
+    .detail span { display: inline-block; min-width: 140px; color: #475569; font-weight: 600; }
+    .cta { margin-top: 28px; text-align: center; }
+    .cta a { display: inline-block; background: #0ea5e9; color: #fff; padding: 12px 28px; border-radius: 999px; font-size: 15px; font-weight: 600; text-decoration: none; }
+    ul { padding-left: 20px; margin: 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="badge">⚡ Rychlá poptávka</div>
+      <h2 style="margin: 16px 0 8px 0; font-size: 24px;">${eventTypeLabel}</h2>
+      <p style="margin: 0; color: #475569;">Máme novou poptávku čekající na manuální odeslání provozovatelům.</p>
+    </div>
+
+    <div class="section">
+      <h3>Detaily poptávky</h3>
+      <div class="detail"><span>Datum akce:</span> ${eventDateText}</div>
+      <div class="detail"><span>Počet hostů:</span> ${quickRequest.guestCount || 'Neuvedeno'}</div>
+      <div class="detail"><span>Lokalita:</span> ${quickRequest.locationPreference || 'Neuvedeno'}</div>
+      <div class="detail"><span>Rozpočet:</span> ${quickRequest.budgetRange || 'Neuvedeno'}</div>
+      ${quickRequest.requirements ? `<div class="detail"><span>Požadavky:</span> ${quickRequest.requirements}</div>` : ''}
+      ${quickRequest.message ? `<div class="detail"><span>Zpráva:</span> ${quickRequest.message}</div>` : ''}
+    </div>
+
+    <div class="section">
+      <h3>Kontakt</h3>
+      <div class="detail"><span>Jméno:</span> ${quickRequest.contactName}</div>
+      <div class="detail"><span>Email:</span> <a href="mailto:${quickRequest.contactEmail}">${quickRequest.contactEmail}</a></div>
+      <div class="detail"><span>Telefon:</span> ${quickRequest.contactPhone || 'Neuvedeno'}</div>
+    </div>
+
+    <div class="section">
+      <h3>Vyhovující prostory (${matchingVenues.length})</h3>
+      <ul>${venueListHtml}</ul>
+    </div>
+
+    <div class="cta">
+      <a href="${adminUrl}">Otevřít v administraci</a>
+    </div>
+
+    <p style="margin-top: 24px; color: #64748b; font-size: 14px;">Po zkontrolování poptávky prosím odešlete emaily ručně pomocí tlačítka „Odeslat“ u jednotlivých prostorů nebo „Odeslat všem“.</p>
+  </div>
+</body>
+</html>
+`
+
+  const text = `
+Nová rychlá poptávka – ${eventTypeLabel}
+
+Datum akce: ${eventDateText}
+Počet hostů: ${quickRequest.guestCount || 'Neuvedeno'}
+Lokalita: ${quickRequest.locationPreference || 'Neuvedeno'}
+Rozpočet: ${quickRequest.budgetRange || 'Neuvedeno'}
+Požadavky: ${quickRequest.requirements || '-'}
+Zpráva: ${quickRequest.message || '-'}
+
+Kontakt:
+- Jméno: ${quickRequest.contactName}
+- Email: ${quickRequest.contactEmail}
+- Telefon: ${quickRequest.contactPhone || 'Neuvedeno'}
+
+Vyhovující prostory (${matchingVenues.length}):
+${venueListText}
+
+Detail správy: ${adminUrl}
+`
+
+  return { subject, html, text }
+}
+
 export function generateQuickRequestVenueNotificationEmail(data: QuickRequestVenueNotificationData) {
   const { venueName, quickRequest } = data
   const eventTypeLabel = EVENT_TYPES[quickRequest.eventType as EventType] || quickRequest.eventType

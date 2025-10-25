@@ -10,6 +10,12 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum VenueBroadcastStatus {
+  pending
+  partial
+  completed
+}
+
 model Account {
   id                String  @id @default(cuid())
   userId            String
@@ -238,6 +244,9 @@ model VenueBroadcast {
   contactPhone     String?
   contactName      String
   sentVenues       String[] // Array of venue IDs that received the email
+  status           VenueBroadcastStatus @default(pending)
+  sentCount        Int      @default(0)
+  lastSentAt       DateTime?
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 
@@ -252,7 +261,7 @@ model VenueBroadcastLog {
   broadcastId   String
   venueId       String
   sentAt        DateTime @default(now())
-  emailStatus   String   @default("sent") // sent, delivered, failed, pending, skipped
+  emailStatus   String   @default("pending") // pending, sent, delivered, failed, skipped
   emailError    String?  // Error message if email failed
 
   // Resend tracking fields

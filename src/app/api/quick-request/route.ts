@@ -6,7 +6,7 @@ import { Prisma } from "@prisma/client"
 import { authOptions } from "@/lib/auth"
 import { randomUUID } from "crypto"
 import { resend } from "@/lib/resend"
-import { generateQuickRequestVenueNotificationEmail } from "@/lib/email-templates"
+import { generateQuickRequestInternalNotificationEmail } from "@/lib/email-templates"
 import { trackBulkFormSubmit } from "@/lib/meta-conversions-api"
 
 const quickRequestSchema = z.object({
@@ -21,7 +21,6 @@ const quickRequestSchema = z.object({
   contactEmail: z.string().email("Valid email is required"),
   contactPhone: z.string().optional(),
 })
-type QuickRequestData = z.infer<typeof quickRequestSchema>
 
 type VenueMatch = {
   id: string
@@ -30,6 +29,7 @@ type VenueMatch = {
   contactEmail: string | null
   capacityStanding: number | null
   capacitySeated: number | null
+  district: string | null
   manager: {
     name: string | null
     email: string | null
@@ -102,6 +102,7 @@ async function findMatchingVenues(criteria: {
       contactEmail: true,
       capacityStanding: true,
       capacitySeated: true,
+      district: true,
       manager: {
         select: {
           name: true,
@@ -125,56 +126,6 @@ async function findMatchingVenues(criteria: {
   })
 }
 
-// Helper function to send email to venue
-async function sendEmailToVenue(
-  venue: VenueMatch,
-  requestData: QuickRequestData & { broadcastId: string }
-) {
-  if (!venue.contactEmail) {
-    throw new Error(`Venue ${venue.name} has no contact email`)
-  }
-
-  // Parse guest count to get approximate number for email
-  const guestCountRange = requestData.guestCount
-  const guestCountApprox = guestCountRange ? parseInt(guestCountRange.split('-')[0], 10) : null
-  const eventDate = new Date(requestData.eventDate)
-
-  const emailContent = generateQuickRequestVenueNotificationEmail({
-    venueName: venue.name,
-    venueContactEmail: venue.contactEmail,
-    quickRequest: {
-      eventType: requestData.eventType,
-      eventDate,
-      guestCount: guestCountApprox ?? undefined,
-      budgetRange: requestData.budgetRange || undefined,
-      locationPreference: requestData.locationPreference,
-      additionalInfo: requestData.requirements || requestData.message || undefined,
-      contactName: requestData.contactName,
-      contactEmail: requestData.contactEmail,
-      contactPhone: requestData.contactPhone || undefined,
-    }
-  })
-
-  // Send email via Resend
-  const emailResult = await resend.emails.send({
-    from: 'Prostormat <noreply@prostormat.cz>',
-    to: venue.contactEmail,
-    replyTo: 'info@prostormat.cz',
-    subject: emailContent.subject,
-    html: emailContent.html,
-    text: emailContent.text,
-  })
-
-  if (!emailResult.data) {
-    throw new Error(`Failed to send email to ${venue.contactEmail}`)
-  }
-
-  return {
-    success: true,
-    resendEmailId: emailResult.data.id
-  }
-}
-
 export async function POST(request: Request) {
   try {
     const session = await getServerSession(authOptions)
@@ -195,6 +146,12 @@ export async function POST(request: Request) {
       )
     }
 
+    const sentVenueIds = matchingVenues.map((venue) => venue.id)
+    const isSqlite = process.env.DATABASE_URL?.startsWith("file:")
+    const sentVenuesValue = (
+      isSqlite ? JSON.stringify(sentVenueIds) : sentVenueIds
+    ) as unknown as string[]
+
     // Create a broadcast record to track this request
     const broadcast = await db.venueBroadcast.create({
       data: {
@@ -211,78 +168,51 @@ export async function POST(request: Request) {
         contactEmail: validatedData.contactEmail,
         contactPhone: validatedData.contactPhone || null,
         contactName: validatedData.contactName,
-        sentVenues: matchingVenues.map(v => v.id),
+        sentVenues: sentVenuesValue,
+        status: "pending",
+        sentCount: 0,
         updatedAt: new Date()
       }
     })
 
-    // Send emails to matching venues
-    let successCount = 0
-    const emailPromises = matchingVenues.map(async (venue) => {
-      try {
-        const emailResult = await sendEmailToVenue(venue, {
-          ...validatedData,
-          broadcastId: broadcast.id,
-        })
-
-        // Log the broadcast in VenueBroadcastLog
-        await db.venueBroadcastLog.create({
-          data: {
-            id: randomUUID(),
-            broadcastId: broadcast.id,
-            venueId: venue.id,
-            emailStatus: "sent",
-            resendEmailId: emailResult.resendEmailId || null,
-          }
-        })
-
-        // Log in Email Flow system
-        await db.emailFlowLog.create({
-          data: {
-            id: randomUUID(),
-            emailType: 'quick_request_venue_notification',
-            recipient: venue.contactEmail || 'unknown',
-            subject: `Zákazník má zájem o váš prostor! - ${venue.name}`,
-            status: 'sent',
-            recipientType: 'venue_owner',
-            sentBy: session?.user?.id || 'anonymous',
-          }
-        })
-
-        successCount++
-      } catch (error) {
-        console.error(`Failed to send email to venue ${venue.id}:`, error)
-
-        const errorMessage = error instanceof Error ? error.message : 'Unknown error'
-
-        // Log the failed attempt in VenueBroadcastLog
-        await db.venueBroadcastLog.create({
-          data: {
-            id: randomUUID(),
-            broadcastId: broadcast.id,
-            venueId: venue.id,
-            emailStatus: "failed",
-            emailError: errorMessage,
-          }
-        })
-
-        // Log failure in Email Flow system
-        await db.emailFlowLog.create({
-          data: {
-            id: randomUUID(),
-            emailType: 'quick_request_venue_notification',
-            recipient: venue.contactEmail || 'unknown',
-            subject: `Zákazník má zájem o váš prostor! - ${venue.name}`,
-            status: 'failed',
-            error: errorMessage,
-            recipientType: 'venue_owner',
-            sentBy: session?.user?.id || 'anonymous',
-          }
-        })
-      }
+    await db.venueBroadcastLog.createMany({
+      data: matchingVenues.map((venue) => ({
+        id: randomUUID(),
+        broadcastId: broadcast.id,
+        venueId: venue.id,
+        emailStatus: "pending",
+      })),
     })
 
-    await Promise.all(emailPromises)
+    const summaryEmail = generateQuickRequestInternalNotificationEmail({
+      broadcastId: broadcast.id,
+      quickRequest: {
+        eventType: validatedData.eventType,
+        eventDate: validatedData.eventDate,
+        guestCount: validatedData.guestCount,
+        budgetRange: validatedData.budgetRange,
+        locationPreference: validatedData.locationPreference,
+        requirements: validatedData.requirements,
+        message: validatedData.message,
+        contactName: validatedData.contactName,
+        contactEmail: validatedData.contactEmail,
+        contactPhone: validatedData.contactPhone,
+      },
+      matchingVenues: matchingVenues.map((venue) => ({
+        name: venue.name,
+        district: venue.district,
+        capacitySeated: venue.capacitySeated,
+        capacityStanding: venue.capacityStanding,
+      })),
+    })
+
+    await resend.emails.send({
+      from: 'Prostormat <noreply@prostormat.cz>',
+      to: 'poptavka@prostormat.cz',
+      subject: summaryEmail.subject,
+      html: summaryEmail.html,
+      text: summaryEmail.text,
+    })
 
     // Track bulk form submission in Meta (don't block on failure)
     try {
@@ -306,9 +236,8 @@ export async function POST(request: Request) {
     return NextResponse.json({
       success: true,
       broadcastId: broadcast.id,
-      sentToCount: successCount,
-      totalMatching: matchingVenues.length,
-      message: `Vaše poptávka byla odeslána ${successCount} prostorům`
+      pendingCount: matchingVenues.length,
+      message: "Vaše poptávka byla předána týmu Prostormat. Po schválení ji odešleme relevantním prostorům."
     })
 
   } catch (error) {

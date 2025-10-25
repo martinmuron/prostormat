@@ -16,6 +16,7 @@ const updateEventRequestSchema = z.object({
   contactName: z.string().min(2).optional(),
   contactEmail: z.string().email().optional(),
   contactPhone: z.union([z.string(), z.null()]).optional(),
+  status: z.enum(["active", "closed"]).optional(),
 })
 
 export async function PATCH(
@@ -115,6 +116,10 @@ export async function PATCH(
     if (typeof body.contactPhone !== "undefined") {
       const trimmed = body.contactPhone?.trim()
       updateData.contactPhone = trimmed && trimmed.length > 0 ? trimmed : null
+    }
+
+    if (typeof body.status !== "undefined") {
+      updateData.status = body.status
     }
 
     await db.eventRequest.update({

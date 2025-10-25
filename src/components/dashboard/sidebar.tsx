@@ -16,7 +16,8 @@ import {
   Mail,
   Menu,
   PanelLeftClose,
-  Sparkles
+  Sparkles,
+  Zap,
 } from "lucide-react"
 
 interface DashboardSidebarProps {
@@ -40,6 +41,11 @@ export function DashboardSidebar({ userRole, initialCollapsed = false }: Dashboa
     if (userRole === "venue_manager") {
       return [
         ...baseNav,
+        {
+          name: "Rychlé poptávky",
+          href: "/admin/quick-requests",
+          icon: Zap,
+        },
         {
           name: "Můj prostor",
           href: "/dashboard/venue",

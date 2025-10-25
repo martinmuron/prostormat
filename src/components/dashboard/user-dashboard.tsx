@@ -18,12 +18,63 @@ interface UserDashboardProps {
 export function UserDashboard({ data }: UserDashboardProps) {
   const { user, eventRequests, broadcasts, stats } = data
   const [activeTab, setActiveTab] = useState('overview')
+  const [userRequests, setUserRequests] = useState(eventRequests)
+  const [updatingRequestId, setUpdatingRequestId] = useState<string | null>(null)
+  const [requestError, setRequestError] = useState<string | null>(null)
 
   const tabs = [
     { id: 'overview', label: 'Přehled', icon: Building },
     { id: 'requests', label: 'Aktivní poptávky', icon: Calendar },
     { id: 'broadcasts', label: 'Odeslané poptávky', icon: Send },
   ]
+
+  const activeRequestCount = userRequests.filter((request) => request.status === "active").length
+
+  const statusLabel = (status: string) => {
+    switch (status) {
+      case "active":
+        return "Aktivní"
+      case "closed":
+        return "Uzavřená"
+      default:
+        return "Neaktivní"
+    }
+  }
+
+  const handleRequestStatusChange = async (requestId: string, nextStatus: "active" | "closed") => {
+    try {
+      setUpdatingRequestId(requestId)
+      setRequestError(null)
+
+      const response = await fetch(`/api/event-requests/${requestId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ status: nextStatus }),
+      })
+
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}))
+        throw new Error(data?.error || "Nepodařilo se upravit stav poptávky")
+      }
+
+      setUserRequests((prev) =>
+        prev.map((request) =>
+          request.id === requestId ? { ...request, status: nextStatus } : request,
+        ),
+      )
+    } catch (error) {
+      console.error("Error updating request status:", error)
+      setRequestError(
+        error instanceof Error
+          ? error.message
+          : "Nepodařilo se upravit stav poptávky. Zkuste to prosím znovu.",
+      )
+    } finally {
+      setUpdatingRequestId(null)
+    }
+  }
 
   const renderOverview = () => (
     <>
@@ -34,7 +85,7 @@ export function UserDashboard({ data }: UserDashboardProps) {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-caption text-gray-500 mb-1">Aktivní poptávky</p>
-                <p className="text-title-2 text-black">{stats.activeRequests}</p>
+                <p className="text-title-2 text-black">{activeRequestCount}</p>
               </div>
               <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
                 <Calendar className="h-6 w-6 text-green-600" />
@@ -75,7 +126,12 @@ export function UserDashboard({ data }: UserDashboardProps) {
             </div>
           </CardHeader>
           <CardContent>
-            {eventRequests.length === 0 ? (
+            {requestError && (
+              <div className="mb-4 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800">
+                {requestError}
+              </div>
+            )}
+            {userRequests.length === 0 ? (
               <div className="text-center py-8">
                 <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                 <p className="text-body text-gray-600 mb-4">
@@ -87,7 +143,7 @@ export function UserDashboard({ data }: UserDashboardProps) {
               </div>
             ) : (
               <div className="space-y-4">
-                {eventRequests.slice(0, 3).map((request) => {
+                {userRequests.slice(0, 3).map((request) => {
                   const eventTypeLabel = EVENT_TYPES[request.eventType as EventType] || request.eventType
                   return (
                     <div key={request.id} className="border border-gray-200 rounded-xl p-4">
@@ -97,19 +153,29 @@ export function UserDashboard({ data }: UserDashboardProps) {
                           variant={request.status === "active" ? "default" : "secondary"}
                           className="text-xs"
                         >
-                          {request.status === "active" ? "Aktivní" : "Neaktivní"}
+                          {statusLabel(request.status)}
                         </Badge>
                       </div>
                       <p className="text-caption text-gray-600 mb-2">{eventTypeLabel}</p>
                       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between text-caption text-gray-500">
                         <p className="text-gray-500">Vytvořeno {formatDate(new Date(request.createdAt))}</p>
-                        <Link
-                          href={`/event-board/${request.id}/upravit`}
-                          className="inline-flex items-center gap-1 font-semibold text-blue-600 hover:text-blue-700 transition-colors"
-                        >
-                          <Pencil className="h-3.5 w-3.5" />
-                          Upravit
-                        </Link>
+                        <div className="flex flex-wrap items-center gap-2">
+                          <Link
+                            href={`/event-board/${request.id}/upravit`}
+                            className="inline-flex items-center gap-1 font-semibold text-blue-600 hover:text-blue-700 transition-colors"
+                          >
+                            <Pencil className="h-3.5 w-3.5" />
+                            Upravit
+                          </Link>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleRequestStatusChange(request.id, request.status === "active" ? "closed" : "active")}
+                            disabled={updatingRequestId === request.id}
+                          >
+                            {request.status === "active" ? "Uzavřít" : "Znovu otevřít"}
+                          </Button>
+                        </div>
                       </div>
                     </div>
                   )
@@ -186,7 +252,7 @@ export function UserDashboard({ data }: UserDashboardProps) {
         </div>
       </CardHeader>
       <CardContent>
-        {eventRequests.length === 0 ? (
+        {userRequests.length === 0 ? (
           <div className="text-center py-12">
             <Calendar className="h-16 w-16 text-gray-400 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-gray-900 mb-2">Žádné poptávky</h3>
@@ -202,7 +268,7 @@ export function UserDashboard({ data }: UserDashboardProps) {
           </div>
         ) : (
           <div className="space-y-4">
-            {eventRequests.map((request) => {
+            {userRequests.map((request) => {
               const eventTypeLabel = EVENT_TYPES[request.eventType as EventType] || request.eventType
               return (
                 <div key={request.id} className="border border-gray-200 rounded-xl p-6 hover:shadow-md transition-shadow">
@@ -218,7 +284,7 @@ export function UserDashboard({ data }: UserDashboardProps) {
                       variant={request.status === "active" ? "default" : "secondary"}
                       className={request.status === "active" ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-800"}
                     >
-                      {request.status === "active" ? "Aktivní" : "Neaktivní"}
+                      {statusLabel(request.status)}
                     </Badge>
                   </div>
                   <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between text-sm text-gray-500">
@@ -229,13 +295,23 @@ export function UserDashboard({ data }: UserDashboardProps) {
                         <span>•</span>
                         <span>{request.budgetRange || "Bez rozpočtu"}</span>
                       </div>
-                      <Link
-                        href={`/event-board/${request.id}/upravit`}
-                        className="inline-flex items-center gap-1 font-semibold text-blue-600 hover:text-blue-700 transition-colors"
-                      >
-                        <Pencil className="h-4 w-4" />
-                        Upravit
-                      </Link>
+                      <div className="flex items-center gap-2">
+                        <Link
+                          href={`/event-board/${request.id}/upravit`}
+                          className="inline-flex items-center gap-1 font-semibold text-blue-600 hover:text-blue-700 transition-colors"
+                        >
+                          <Pencil className="h-4 w-4" />
+                          Upravit
+                        </Link>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleRequestStatusChange(request.id, request.status === "active" ? "closed" : "active")}
+                          disabled={updatingRequestId === request.id}
+                        >
+                          {request.status === "active" ? "Uzavřít" : "Znovu otevřít"}
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -248,7 +324,7 @@ export function UserDashboard({ data }: UserDashboardProps) {
   )
 
   const renderBroadcasts = () => (
-    <Card className="bg-white">
+      <Card className="bg-white">
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle className="text-gray-900">Všechny odeslané poptávky</CardTitle>
@@ -260,8 +336,13 @@ export function UserDashboard({ data }: UserDashboardProps) {
           </Link>
         </div>
       </CardHeader>
-      <CardContent>
-        {broadcasts.length === 0 ? (
+          <CardContent>
+            {requestError && (
+              <div className="mb-4 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800">
+                {requestError}
+              </div>
+            )}
+            {broadcasts.length === 0 ? (
           <div className="text-center py-12">
             <Send className="h-16 w-16 text-gray-400 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-gray-900 mb-2">Žádné poptávky</h3>

@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import type { Metadata } from "next"
@@ -17,31 +19,7 @@ import { generateVenueSchema, generateBreadcrumbSchema, schemaToJsonLd } from "@
 import { buildVenueMetaDescription, buildVenueKeywords, absoluteUrl } from "@/lib/seo"
 import { getOptimizedImageUrl } from "@/lib/supabase-images"
 
-// ISR: Revalidate every 1 hour (reduces server costs while keeping content fresh)
-export const revalidate = 3600
-
-// Generate static paths for all active venues at build time
-export async function generateStaticParams() {
-  try {
-    const venues = await db.venue.findMany({
-      where: {
-        status: {
-          in: ["published", "active"]
-        }
-      },
-      select: {
-        slug: true
-      }
-    })
-
-    return venues.map((venue) => ({
-      slug: venue.slug
-    }))
-  } catch (error) {
-    console.error("Error generating static params for venues:", error)
-    return []
-  }
-}
+export const revalidate = 0
 
 function formatDisplayAddress(address?: string | null) {
   if (!address) return ""

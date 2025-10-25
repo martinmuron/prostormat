@@ -48,7 +48,7 @@ export function QuickRequestPage() {
   const { data: session, status } = useSession()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
-  const [sentToCount, setSentToCount] = useState(0)
+  const [pendingCount, setPendingCount] = useState(0)
   const [showLoginModal, setShowLoginModal] = useState(false)
   
   const [formData, setFormData] = useState<QuickRequestFormData>({
@@ -100,7 +100,7 @@ export function QuickRequestPage() {
       if (response.ok) {
         const data = await response.json()
         setIsSuccess(true)
-        setSentToCount(data.sentToCount || 0)
+        setPendingCount(data.pendingCount || 0)
       } else {
         const errorData = await response.json()
         alert(`Chyba: ${errorData.error}`)
@@ -188,14 +188,14 @@ export function QuickRequestPage() {
               Poptávka byla odeslána!
             </h1>
             <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
-              Vaše poptávka byla úspěšně odeslána {sentToCount} prostorům, které odpovídají vašim kritériím. 
-              Měli byste očekávat odpovědi v průběhu příštích 24-48 hodin.
+              Vaši poptávku jsme přijali a náš tým ji manuálně zkontroluje. 
+              Po schválení ji odešleme {pendingCount} vybraným prostorům a potvrdíme vám to emailem.
             </p>
             
             <div className="space-y-4 sm:space-y-0 sm:space-x-4 sm:flex sm:justify-center">
-              <Link href="/event-board">
+              <Link href="/dashboard">
                 <Button size="lg" className="bg-black text-white hover:bg-gray-800 rounded-xl w-full sm:w-auto">
-                  Zobrazit Event Board
+                  Otevřít můj dashboard
                 </Button>
               </Link>
               <Link href="/prostory">

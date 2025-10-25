@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import { DEFAULT_OG_IMAGE, DEFAULT_OG_IMAGES } from "@/lib/seo"
 
 export const metadata: Metadata = {
   title: "Přidat prostor - Prostormat | Zaregistrujte svůj event prostor zdarma",
@@ -17,14 +18,7 @@ export const metadata: Metadata = {
     description: "Zaregistrujte svůj event prostor a oslovte tisíce organizátorů firemních akcí v Praze. Bezplatná registrace, žádné provize.",
     url: "https://prostormat.cz/pridat-prostor",
     siteName: "Prostormat",
-    images: [
-      {
-        url: "https://prostormat.cz/og-image.jpg",
-        width: 1200,
-        height: 630,
-        alt: "Prostormat - Přidat prostor"
-      }
-    ],
+    images: [...DEFAULT_OG_IMAGES],
     locale: "cs_CZ",
     type: "website"
   },
@@ -32,7 +26,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Přidat prostor - Prostormat",
     description: "Zaregistrujte svůj event prostor a oslovte tisíce organizátorů firemních akcí v Praze.",
-    images: ["https://prostormat.cz/og-image.jpg"]
+    images: [DEFAULT_OG_IMAGE]
   },
   alternates: {
     canonical: "https://prostormat.cz/pridat-prostor"

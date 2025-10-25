@@ -8,6 +8,8 @@ import { db } from "@/lib/db"
 import { fallbackBlogPosts } from "@/data/blog-fallback-posts"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { absoluteUrl, DEFAULT_OG_IMAGE, stripHtml } from "@/lib/seo"
+import { generateBlogPostingSchema, generateBreadcrumbSchema, schemaToJsonLd } from "@/lib/schema-markup"
 
 type BlogPostData = {
   id: string
@@ -21,6 +23,16 @@ type BlogPostData = {
   author?: { name: string | null; email: string | null } | null
   metaTitle?: string | null
   metaDescription?: string | null
+}
+
+function parseTags(value?: string | null) {
+  if (!value) return []
+  try {
+    const parsed = JSON.parse(value)
+    return Array.isArray(parsed) ? parsed : []
+  } catch {
+    return []
+  }
 }
 
 function mapFallbackPost(slug: string): BlogPostData | null {
@@ -130,29 +142,43 @@ export async function generateMetadata({
   }
 
   const title = post.metaTitle ?? post.title
-  const description = post.metaDescription ?? post.excerpt ?? "Článek z blogu Prostormat."
+  const tags = parseTags(post.tags)
+  const fallbackDescription = stripHtml(post.content).slice(0, 155).trim()
+  const description = post.metaDescription ?? post.excerpt ?? (fallbackDescription || "Článek z blogu Prostormat.")
+  const canonicalUrl = absoluteUrl(`/blog/${post.slug}`)
+  const ogImage = post.coverImage ? absoluteUrl(post.coverImage) : DEFAULT_OG_IMAGE
+  const images = [
+    {
+      url: ogImage,
+      width: 1200,
+      height: 630,
+      alt: post.title,
+    },
+  ]
 
   return {
     title,
     description,
+    keywords: tags.length ? tags : undefined,
+    authors: post.author?.name ? [{ name: post.author.name }] : undefined,
     openGraph: {
       title,
       description,
       type: "article",
-      url: `https://prostormat.cz/blog/${post.slug}`,
-      images: post.coverImage
-        ? [
-            {
-              url: post.coverImage,
-              width: 1200,
-              height: 630,
-              alt: post.title,
-            },
-          ]
-        : undefined,
+      url: canonicalUrl,
+      images,
+      siteName: "Prostormat",
+      publishedTime: post.publishedAt,
+      tags: tags.length ? tags : undefined,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [ogImage],
     },
     alternates: {
-      canonical: `https://prostormat.cz/blog/${post.slug}`,
+      canonical: canonicalUrl,
     },
   }
 }
@@ -169,14 +195,40 @@ export default async function BlogPostPage({
     notFound()
   }
 
-  const tags = post.tags ? JSON.parse(post.tags) : []
+  const tags = parseTags(post.tags)
   const readingTime = estimateReadingTime(post.content)
   const contentWithAnchors = addAnchorsToHeadings(post.content)
   const tableOfContents = extractTableOfContents(post.content)
+  const seoDescription = post.metaDescription ?? post.excerpt ?? (stripHtml(post.content).slice(0, 155).trim() || "Článek z blogu Prostormat.")
+  const canonicalUrl = absoluteUrl(`/blog/${post.slug}`)
+  const breadcrumbSchema = generateBreadcrumbSchema([
+    { name: "Domů", url: absoluteUrl("/") },
+    { name: "Blog", url: absoluteUrl("/blog") },
+    { name: post.title, url: canonicalUrl },
+  ])
+  const articleSchema = generateBlogPostingSchema({
+    title: post.metaTitle ?? post.title,
+    description: seoDescription,
+    slug: post.slug,
+    contentHtml: post.content,
+    coverImage: post.coverImage,
+    authorName: post.author?.name ?? undefined,
+    publishedAt: post.publishedAt,
+    tags,
+  })
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-white pb-16">
-      <div className="relative overflow-hidden border-b border-gray-200 bg-white">
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={schemaToJsonLd(breadcrumbSchema)}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={schemaToJsonLd(articleSchema)}
+      />
+      <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-white pb-16">
+        <div className="relative overflow-hidden border-b border-gray-200 bg-white">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
           <Link href="/blog" className="inline-flex items-center text-sm font-medium text-gray-500 hover:text-gray-700 mb-6">
             <ArrowLeft className="w-4 h-4 mr-2" />
@@ -304,6 +356,7 @@ export default async function BlogPostPage({
         </footer>
       </div>
     </div>
+    </>
   )
 }
 

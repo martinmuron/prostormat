@@ -4,7 +4,7 @@
  */
 
 import { getOptimizedImageUrl } from '@/lib/supabase-images'
-import { absoluteUrl, SITE_URL } from '@/lib/seo'
+import { absoluteUrl, SITE_URL, DEFAULT_OG_IMAGE } from '@/lib/seo'
 
 interface VenueData {
   name: string
@@ -146,5 +146,125 @@ export function generateWebSiteSchema() {
 export function schemaToJsonLd(schema: object) {
   return {
     __html: JSON.stringify(schema, null, 0),
+  }
+}
+
+interface FaqItem {
+  question: string
+  answer: string
+}
+
+export function generateFaqSchema(items: FaqItem[]) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: items.map((item) => ({
+      '@type': 'Question',
+      name: item.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: item.answer,
+      },
+    })),
+  }
+}
+
+interface ContactSchemaOptions {
+  url?: string
+  email: string
+  telephone: string
+  address?: {
+    streetAddress?: string
+    postalCode?: string
+    addressLocality?: string
+    addressCountry?: string
+  }
+}
+
+export function generateContactPageSchema({
+  url,
+  email,
+  telephone,
+  address,
+}: ContactSchemaOptions) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'ContactPage',
+    url: url ?? absoluteUrl('/kontakt'),
+    mainEntity: {
+      '@type': 'Organization',
+      name: 'Prostormat',
+      url: SITE_URL,
+      contactPoint: {
+        '@type': 'ContactPoint',
+        contactType: 'customer support',
+        email,
+        telephone,
+        areaServed: 'CZ',
+        availableLanguage: ['cs', 'en'],
+      },
+      address: address
+        ? {
+            '@type': 'PostalAddress',
+            streetAddress: address.streetAddress,
+            postalCode: address.postalCode,
+            addressLocality: address.addressLocality ?? 'Praha',
+            addressCountry: address.addressCountry ?? 'CZ',
+          }
+        : undefined,
+    },
+  }
+}
+
+interface BlogPostingSchemaOptions {
+  title: string
+  description: string
+  slug: string
+  contentHtml: string
+  coverImage?: string | null
+  authorName?: string | null
+  publishedAt: string
+  modifiedAt?: string
+  tags?: string[]
+}
+
+export function generateBlogPostingSchema({
+  title,
+  description,
+  slug,
+  contentHtml,
+  coverImage,
+  authorName,
+  publishedAt,
+  modifiedAt,
+  tags,
+}: BlogPostingSchemaOptions) {
+  const image = coverImage ? absoluteUrl(coverImage) : DEFAULT_OG_IMAGE
+  const canonical = absoluteUrl(`/blog/${slug}`)
+
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    headline: title,
+    description,
+    image,
+    datePublished: publishedAt,
+    dateModified: modifiedAt ?? publishedAt,
+    mainEntityOfPage: canonical,
+    author: {
+      '@type': 'Person',
+      name: authorName ?? 'Prostormat tým',
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'Prostormat',
+      url: SITE_URL,
+      logo: {
+        '@type': 'ImageObject',
+        url: absoluteUrl('/images/logo-black.svg'),
+      },
+    },
+    articleBody: contentHtml,
+    keywords: tags && tags.length ? tags.join(', ') : undefined,
   }
 }

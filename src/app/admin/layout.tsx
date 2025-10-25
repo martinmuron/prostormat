@@ -1,3 +1,4 @@
+import type { Metadata } from "next"
 import type { ReactNode } from "react"
 import { redirect } from "next/navigation"
 import { getServerSession } from "next-auth"
@@ -6,6 +7,20 @@ import { DashboardSidebar } from "@/components/dashboard/sidebar"
 
 interface AdminLayoutProps {
   children: ReactNode
+}
+
+export const metadata: Metadata = {
+  robots: {
+    index: false,
+    follow: false,
+    googleBot: {
+      index: false,
+      follow: false,
+      "max-snippet": 0,
+      "max-image-preview": "none",
+      "max-video-preview": 0,
+    },
+  },
 }
 
 export default async function AdminLayout({ children }: AdminLayoutProps) {

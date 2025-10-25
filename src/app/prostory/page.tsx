@@ -7,6 +7,7 @@ import { db } from "@/lib/db"
 import { buildVenueWhereClause } from "@/lib/venue-filters"
 import { generateOrderSeed, sortVenuesByPriority } from "@/lib/venue-priority"
 import { PageHero } from "@/components/layout/page-hero"
+import { DEFAULT_OG_IMAGE, DEFAULT_OG_IMAGES } from "@/lib/seo"
 
 interface SearchParams {
   q?: string
@@ -45,6 +46,15 @@ export async function generateMetadata({
       title,
       description,
       url: canonical,
+      images: [...DEFAULT_OG_IMAGES],
+      locale: "cs_CZ",
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [DEFAULT_OG_IMAGE],
     },
   }
 }

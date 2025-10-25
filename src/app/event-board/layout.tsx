@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import { DEFAULT_OG_IMAGE, DEFAULT_OG_IMAGES } from "@/lib/seo"
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
@@ -22,14 +23,7 @@ export const metadata: Metadata = {
     description: "Prohlížejte aktuální poptávky organizátorů firemních akcí a nabídněte své místo.",
     url: "https://prostormat.cz/event-board",
     siteName: "Prostormat",
-    images: [
-      {
-        url: "https://prostormat.cz/og-image.jpg",
-        width: 1200,
-        height: 630,
-        alt: "Prostormat - Event Board"
-      }
-    ],
+    images: [...DEFAULT_OG_IMAGES],
     locale: "cs_CZ",
     type: "website"
   },
@@ -37,7 +31,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Event Board - Poptávky po prostorech",
     description: "Prohlížejte aktuální poptávky organizátorů firemních akcí a nabídněte své místo.",
-    images: ["https://prostormat.cz/og-image.jpg"]
+    images: [DEFAULT_OG_IMAGE]
   }
 }
 

@@ -1,4 +1,6 @@
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ?? "https://prostormat.cz"
+const DEFAULT_OG_IMAGE_PATH = "/images/prostormat_sharing.jpg"
+const DEFAULT_OG_IMAGE_ALT = "Prostormat – Největší katalog event prostorů v Praze"
 
 export function absoluteUrl(pathOrUrl: string): string {
   if (!pathOrUrl) {
@@ -12,6 +14,16 @@ export function absoluteUrl(pathOrUrl: string): string {
   const normalised = pathOrUrl.startsWith("/") ? pathOrUrl : `/${pathOrUrl}`
   return `${SITE_URL}${normalised}`
 }
+
+const DEFAULT_OG_IMAGE = absoluteUrl(DEFAULT_OG_IMAGE_PATH)
+const DEFAULT_OG_IMAGES = [
+  {
+    url: DEFAULT_OG_IMAGE,
+    width: 1200,
+    height: 630,
+    alt: DEFAULT_OG_IMAGE_ALT,
+  },
+] as const
 
 export function stripHtml(value: string): string {
   return value
@@ -96,4 +108,4 @@ export function buildVenueKeywords({
   return Array.from(new Set(keywords))
 }
 
-export { SITE_URL }
+export { SITE_URL, DEFAULT_OG_IMAGE, DEFAULT_OG_IMAGES, DEFAULT_OG_IMAGE_ALT, DEFAULT_OG_IMAGE_PATH }

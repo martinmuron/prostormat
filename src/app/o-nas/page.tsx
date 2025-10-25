@@ -1,4 +1,28 @@
+import type { Metadata } from "next"
 import { CheckCircle, Users, Building, Sparkles } from 'lucide-react'
+import { DEFAULT_OG_IMAGE, DEFAULT_OG_IMAGES } from "@/lib/seo"
+
+export const metadata: Metadata = {
+  title: "O nás | Prostormat",
+  description: "Poznejte tým Prostormat, naši vizi pro eventový trh v Česku a principy, podle kterých budujeme největší katalog eventových prostorů.",
+  alternates: {
+    canonical: "https://prostormat.cz/o-nas",
+  },
+  openGraph: {
+    title: "O Prostormat | Příběh eventového katalogu",
+    description: "Budujeme největší český katalog eventových prostorů a propojeme organizátory akcí s majiteli lokací.",
+    url: "https://prostormat.cz/o-nas",
+    images: [...DEFAULT_OG_IMAGES],
+    locale: "cs_CZ",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "O nás | Prostormat",
+    description: "Zjistěte, kdo stojí za Prostormat a jak pomáháme firmám i majitelům prostor.",
+    images: [DEFAULT_OG_IMAGE],
+  },
+}
 
 export default function AboutUsPage() {
   const values = [
@@ -59,7 +83,7 @@ export default function AboutUsPage() {
 
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 mb-16">
             <p className="text-lg text-gray-700 leading-relaxed mb-6">
-              ProstorMat vznikl z potřeby zjednodušit proces hledání a rezervace prostor pro různé typy akcí. 
+              Prostormat vznikl z potřeby zjednodušit proces hledání a rezervace prostor pro různé typy akcí. 
               Uvědomili jsme si, jak náročné může být najít ten správný prostor pro firemní akci, svatbu, 
               teambuilding nebo soukromou oslavu.
             </p>
@@ -80,7 +104,7 @@ export default function AboutUsPage() {
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
             <h2 className="text-3xl font-bold text-gray-900 text-center mb-12">
-              ProstorMat v číslech
+              Prostormat v číslech
             </h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
               {stats.map((stat, index) => (
@@ -106,7 +130,7 @@ export default function AboutUsPage() {
               Naše hodnoty
             </h2>
             <p className="text-xl text-gray-600">
-              Principy, kterými se řídíme při budování ProstorMat
+              Principy, kterými se řídíme při budování Prostormat
             </p>
           </div>
 
@@ -137,7 +161,7 @@ export default function AboutUsPage() {
                 Náš tým
               </h2>
               <p className="text-xl text-gray-600">
-                Lidé, kteří stojí za ProstorMat
+                Lidé, kteří stojí za Prostormat
               </p>
             </div>
 
@@ -155,7 +179,7 @@ export default function AboutUsPage() {
                 </p>
                 <p className="text-gray-600 leading-relaxed">
                   Jan má více než 10 let zkušeností v oblasti event managementu 
-                  a technologických startupů. Rozhodl se vytvořit ProstorMat poté, 
+                  a technologických startupů. Rozhodl se vytvořit Prostormat poté, 
                   co sám zažil frustraci z hledání vhodných prostor pro firemní akce.
                 </p>
               </div>
@@ -173,7 +197,7 @@ export default function AboutUsPage() {
                 </p>
                 <p className="text-gray-600 leading-relaxed">
                   Marie je zkušená vývojářka s láskou k čistému kódu a uživatelskému 
-                  zážitku. Zodpovídá za technickou stránku ProstorMat a neustále 
+                  zážitku. Zodpovídá za technickou stránku Prostormat a neustále 
                   vylepšuje platformu pro naše uživatele.
                 </p>
               </div>

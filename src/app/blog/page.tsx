@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 import { db } from "@/lib/db"
 import { fallbackBlogPosts } from "@/data/blog-fallback-posts"
+import { DEFAULT_OG_IMAGE, DEFAULT_OG_IMAGES } from "@/lib/seo"
 
 type BlogPostWithRelations = {
   id: string
@@ -57,7 +58,16 @@ export const metadata: Metadata = {
     title: "Blog Prostormat | Firemní akce a event marketing",
     description: "Inspirace a praktické rady pro organizaci firemních akcí, svateb a teambuildingů v Praze.",
     url: "https://prostormat.cz/blog",
+    siteName: "Prostormat",
+    images: [...DEFAULT_OG_IMAGES],
+    locale: "cs_CZ",
     type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Blog Prostormat | Firemní akce a event marketing",
+    description: "Inspirace a praktické rady pro organizaci firemních akcí, svateb a teambuildingů v Praze.",
+    images: [DEFAULT_OG_IMAGE],
   },
 }
 

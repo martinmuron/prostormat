@@ -130,7 +130,7 @@ export function Header() {
                   <SheetHeader className="border-b border-gray-100 px-6 pb-6 pt-8 text-left">
                     <Link href="/" onClick={closeMenu} className="inline-flex items-center -ml-[3px]">
                       <Logo variant="black" size="sm" href={null} className="h-7 w-auto" />
-                      <span className="sr-only">ProstorMat domů</span>
+                      <span className="sr-only">Prostormat domů</span>
                     </Link>
                     <SheetTitle className="sr-only">Navigace</SheetTitle>
                     <SheetDescription className="text-sm text-gray-500" />

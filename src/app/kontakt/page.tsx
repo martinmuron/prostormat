@@ -1,5 +1,7 @@
 import type { Metadata } from "next"
 import { ContactPage } from "@/components/pages/contact-page"
+import { DEFAULT_OG_IMAGE, DEFAULT_OG_IMAGES } from "@/lib/seo"
+import { generateContactPageSchema, schemaToJsonLd } from "@/lib/schema-markup"
 
 export const metadata: Metadata = {
   title: "Kontaktujte nás | Prostormat",
@@ -13,14 +15,7 @@ export const metadata: Metadata = {
     description: "Potřebujete poradit s výběrem prostoru nebo hledáte partnera pro organizaci firemní akce? Napište nám.",
     url: "https://prostormat.cz/kontakt",
     siteName: "Prostormat",
-    images: [
-      {
-        url: "https://prostormat.cz/og-image.jpg",
-        width: 1200,
-        height: 630,
-        alt: "Prostormat - Kontakt"
-      }
-    ],
+    images: [...DEFAULT_OG_IMAGES],
     locale: "cs_CZ",
     type: "website"
   },
@@ -28,10 +23,27 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Kontakt Prostormat",
     description: "Potřebujete poradit s výběrem prostoru nebo hledáte partnera pro organizaci firemní akce?",
-    images: ["https://prostormat.cz/og-image.jpg"]
+    images: [DEFAULT_OG_IMAGE]
   }
 }
 
 export default function ContactRoute() {
-  return <ContactPage />
+  const contactSchema = generateContactPageSchema({
+    email: "info@prostormat.cz",
+    telephone: "+420 775 654 639",
+    address: {
+      addressLocality: "Praha",
+      addressCountry: "CZ",
+    },
+  })
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={schemaToJsonLd(contactSchema)}
+      />
+      <ContactPage />
+    </>
+  )
 }

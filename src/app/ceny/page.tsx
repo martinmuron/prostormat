@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button"
 import { ScrollReveal } from "@/components/ui/scroll-reveal"
 import { PageHero } from "@/components/layout/page-hero"
 import { Check, Star, Mail, Sparkles } from "lucide-react"
+import { DEFAULT_OG_IMAGE, DEFAULT_OG_IMAGES } from "@/lib/seo"
 
 export const metadata: Metadata = {
   title: "Ceník - Prostormat | Transparentní ceny pro event prostory",
@@ -17,14 +18,7 @@ export const metadata: Metadata = {
     description: "Jednoduché ceny pro váš prostor. Roční předplatné 5 900 Kč, bez provizí z rezervací.",
     url: "https://prostormat.cz/ceny",
     siteName: "Prostormat",
-    images: [
-      {
-        url: "https://prostormat.cz/og-image.jpg",
-        width: 1200,
-        height: 630,
-        alt: "Prostormat - Ceník"
-      }
-    ],
+    images: [...DEFAULT_OG_IMAGES],
     locale: "cs_CZ",
     type: "website"
   },
@@ -32,7 +26,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Ceník - Prostormat",
     description: "Jednoduché ceny pro váš prostor. Roční předplatné 5 900 Kč, bez provizí z rezervací.",
-    images: ["https://prostormat.cz/og-image.jpg"]
+    images: [DEFAULT_OG_IMAGE]
   }
 }
 

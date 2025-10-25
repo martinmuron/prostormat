@@ -7,6 +7,7 @@ import { Header } from "@/components/layout/header"
 import { Footer } from "@/components/layout/footer"
 import GlobalClickSpark from "@/components/ui/click-spark"
 import { generateOrganizationSchema, generateWebSiteSchema, schemaToJsonLd } from "@/lib/schema-markup"
+import { DEFAULT_OG_IMAGE, DEFAULT_OG_IMAGES, SITE_URL } from "@/lib/seo"
 
 export const metadata: Metadata = {
   title: "Prostormat - Největší katalog event prostorů v Praze",
@@ -25,19 +26,15 @@ export const metadata: Metadata = {
     'eventové prostory',
     'Prostormat',
   ],
+  metadataBase: new URL(SITE_URL),
+  applicationName: "Prostormat",
+  category: "Eventy",
   openGraph: {
     title: 'Prostormat - Největší katalog event prostorů v Praze',
     description: 'Hledáte prostor na firemní akci, svatbu, konferenci nebo teambuilding? Najděte perfektní prostor z 866+ lokací v Praze.',
     url: 'https://prostormat.cz',
     siteName: 'Prostormat',
-    images: [
-      {
-        url: 'https://prostormat.cz/og-image.jpg',
-        width: 1200,
-        height: 630,
-        alt: 'Prostormat - Event prostory v Praze',
-      },
-    ],
+    images: [...DEFAULT_OG_IMAGES],
     locale: 'cs_CZ',
     type: 'website',
   },
@@ -45,7 +42,8 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Prostormat - Největší katalog event prostorů v Praze',
     description: 'Hledáte prostor na firemní akci, svatbu, konferenci nebo teambuilding? Najděte perfektní prostor z 866+ lokací v Praze.',
-    images: ['https://prostormat.cz/og-image.jpg'],
+    images: [DEFAULT_OG_IMAGE],
+    creator: '@prostormat',
   },
   icons: {
     icon: [
@@ -55,7 +53,7 @@ export const metadata: Metadata = {
     apple: '/favicon-32x32.svg',
   },
   alternates: {
-    canonical: 'https://prostormat.cz',
+    canonical: SITE_URL,
   },
   robots: {
     index: true,
@@ -77,12 +75,24 @@ export default function RootLayout({
 }) {
   const organizationSchema = generateOrganizationSchema()
   const webSiteSchema = generateWebSiteSchema()
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  let supabaseOrigin: string | null = null
+
+  if (supabaseUrl) {
+    try {
+      supabaseOrigin = new URL(supabaseUrl).origin
+    } catch (error) {
+      console.warn("Invalid NEXT_PUBLIC_SUPABASE_URL provided:", error)
+    }
+  }
 
   return (
     <html lang="cs" suppressHydrationWarning>
       <head>
         {/* Resource hints for faster loading */}
-        <link rel="preconnect" href={process.env.NEXT_PUBLIC_SUPABASE_URL || ''} crossOrigin="anonymous" />
+        {supabaseOrigin ? (
+          <link rel="preconnect" href={supabaseOrigin} crossOrigin="anonymous" />
+        ) : null}
         <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
         <link rel="dns-prefetch" href="https://consent.cookiebot.com" />
         <link rel="dns-prefetch" href="https://connect.facebook.net" />

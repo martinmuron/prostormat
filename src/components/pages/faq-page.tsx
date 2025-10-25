@@ -4,54 +4,7 @@ import { useState } from 'react'
 import { ChevronDown, ChevronUp } from 'lucide-react'
 import { ScrollReveal } from "@/components/ui/scroll-reveal"
 import { PageHero } from "@/components/layout/page-hero"
-
-interface FAQItem {
-  question: string
-  answer: string
-}
-
-const faqData: FAQItem[] = [
-  {
-    question: "Jak funguje Prostormat?",
-    answer: "Prostormat je platforma, která spojuje organizátory akcí s majiteli prostor. Můžete si prohlédnout dostupné prostory, odeslat poptávku a přímo komunikovat s majiteli prostor."
-  },
-  {
-    question: "Je registrace zdarma?",
-    answer: "Ano, registrace na Prostormat je zcela zdarma pro organizátory akcí. Poplatky platí pouze majitelé prostor za prémiové funkce."
-  },
-  {
-    question: "Jak mohu přidat svůj prostor?",
-    answer: "Po registraci klikněte na 'Přidat prostor' v hlavním menu. Vyplňte všechny potřebné informace o vašem prostoru včetně fotografií a kontaktních údajů."
-  },
-  {
-    question: "Jaké typy akcí podporujete?",
-    answer: "Podporujeme širokou škálu akcí včetně firemních akcí, teambuilding aktivit, svateb, soukromých oslav, konferencí a dalších společenských událostí."
-  },
-  {
-    question: "Jak probíhá rezervace prostoru?",
-    answer: "Po nalezení vhodného prostoru odešlete poptávku majiteli. Majitel prostoru vás kontaktuje a dohodnete se na detailech rezervace přímo s ním."
-  },
-  {
-    question: "Jsou nějaké skryté poplatky?",
-    answer: "Ne, Prostormat neúčtuje žádné skryté poplatky. Všechny náklady jsou transparentní a dohodnete si je přímo s majitelem prostoru."
-  },
-  {
-    question: "Mohu zrušit svou poptávku?",
-    answer: "Ano, můžete zrušit svou poptávku kdykoli před potvrzením rezervace. Po potvrzení se řiďte podmínkami zrušení dohodnutými s majitelem prostoru."
-  },
-  {
-    question: "Jak mohu kontaktovat podporu?",
-    answer: "Můžete nás kontaktovat na email info@prostormat.cz nebo zavolat na +420 775 654 639. Jsme tu pro vás každý pracovní den od 9:00 do 18:00."
-  },
-  {
-    question: "Můžu upravit svůj profil prostoru?",
-    answer: "Ano, jako majitel prostoru můžete kdykoli upravit informace o vašem prostoru, včetně fotografií, popisu, ceny a dostupnosti."
-  },
-  {
-    question: "Jak dlouho trvá schválení prostoru?",
-    answer: "Schválení nového prostoru obvykle trvá 24-48 hodin. Náš tým zkontroluje všechny informace a fotografie před zveřejněním."
-  }
-]
+import { faqItems } from '@/data/faq'
 
 export function FAQPage() {
   const [openItems, setOpenItems] = useState<number[]>([])
@@ -88,7 +41,7 @@ export function FAQPage() {
           
           <div className="max-w-4xl mx-auto">
             <div className="space-y-4">
-              {faqData.map((item, index) => (
+              {faqItems.map((item, index) => (
                 <ScrollReveal key={index} delay={index * 50}>
                   <div 
                     className="bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden hover-lift transition-all duration-300"

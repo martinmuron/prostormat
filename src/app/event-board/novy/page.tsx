@@ -1,8 +1,28 @@
 import { redirect } from "next/navigation"
+import type { Metadata } from "next"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { EventRequestForm } from "@/components/forms/event-request-form"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+
+export const metadata: Metadata = {
+  title: "Nová poptávka na Event Board | Prostormat",
+  description: "Vytvořte novou poptávku a oslovte provozovatele eventových prostorů v Praze. Formulář je dostupný registrovaným uživatelům.",
+  alternates: {
+    canonical: "https://prostormat.cz/event-board/novy",
+  },
+  robots: {
+    index: false,
+    follow: false,
+    googleBot: {
+      index: false,
+      follow: false,
+      "max-snippet": 0,
+      "max-image-preview": "none",
+      "max-video-preview": 0,
+    },
+  },
+}
 
 export default async function NewEventRequestPage() {
   const session = await getServerSession(authOptions)

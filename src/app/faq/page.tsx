@@ -1,5 +1,8 @@
 import type { Metadata } from "next"
 import { FAQPage } from "@/components/pages/faq-page"
+import { faqItems } from "@/data/faq"
+import { DEFAULT_OG_IMAGE, DEFAULT_OG_IMAGES } from "@/lib/seo"
+import { generateFaqSchema, schemaToJsonLd } from "@/lib/schema-markup"
 
 export const metadata: Metadata = {
   title: "Nejčastější otázky o Prostormat | Prostormat",
@@ -13,14 +16,7 @@ export const metadata: Metadata = {
     description: "Zjistěte, jak přesně probíhá vyhledávání a poptávání eventových prostorů přes Prostormat.",
     url: "https://prostormat.cz/faq",
     siteName: "Prostormat",
-    images: [
-      {
-        url: "https://prostormat.cz/og-image.jpg",
-        width: 1200,
-        height: 630,
-        alt: "Prostormat - FAQ"
-      }
-    ],
+    images: [...DEFAULT_OG_IMAGES],
     locale: "cs_CZ",
     type: "website"
   },
@@ -28,10 +24,20 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "FAQ: Jak funguje Prostormat",
     description: "Zjistěte, jak přesně probíhá vyhledávání a poptávání eventových prostorů přes Prostormat.",
-    images: ["https://prostormat.cz/og-image.jpg"]
+    images: [DEFAULT_OG_IMAGE]
   }
 }
 
 export default function FAQRoute() {
-  return <FAQPage />
+  const faqSchema = generateFaqSchema(faqItems)
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={schemaToJsonLd(faqSchema)}
+      />
+      <FAQPage />
+    </>
+  )
 }

@@ -9,7 +9,7 @@ async function main() {
     update: {},
     create: {
       email: DEFAULT_MANAGER_EMAIL,
-      name: 'ProstorMat Team',
+      name: 'Prostormat Team',
       role: 'venue_manager',
     },
   })

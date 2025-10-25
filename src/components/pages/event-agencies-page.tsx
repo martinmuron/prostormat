@@ -10,7 +10,7 @@ export function EventAgenciesPage() {
       <PageHero
         eyebrow="Spolupráce"
         title="Eventové agentury"
-        subtitle="ProstorMat propojuje pečlivě vybrané eventové agentury s firmami a značkami, které chtějí připravit výjimečné akce. Společně tvoříme síť partnerů, kteří sdílí důraz na kvalitu a profesionální servis."
+        subtitle="Prostormat propojuje pečlivě vybrané eventové agentury s firmami a značkami, které chtějí připravit výjimečné akce. Společně tvoříme síť partnerů, kteří sdílí důraz na kvalitu a profesionální servis."
         tone="rose"
         variant="plain"
         className="bg-gradient-to-br from-rose-50 via-white to-fuchsia-100"

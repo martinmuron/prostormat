@@ -16,7 +16,7 @@ import { VENUE_TYPES } from "@/types"
 import type { VenueType } from "@/types"
 import { MapPin, Users, Instagram } from "lucide-react"
 import { generateVenueSchema, generateBreadcrumbSchema, schemaToJsonLd } from "@/lib/schema-markup"
-import { buildVenueMetaDescription, buildVenueKeywords, absoluteUrl } from "@/lib/seo"
+import { buildVenueMetaDescription, buildVenueKeywords, absoluteUrl, DEFAULT_OG_IMAGE } from "@/lib/seo"
 import { getOptimizedImageUrl } from "@/lib/supabase-images"
 
 export const revalidate = 0
@@ -121,7 +121,7 @@ export async function generateMetadata({
     .map((imagePath) => getOptimizedImageUrl(imagePath, "medium"))
     .filter((url) => Boolean(url)) as string[]
 
-  const normalizedOgImages = (ogImageUrls.length > 0 ? ogImageUrls : [absoluteUrl("/og-image.jpg")])
+  const normalizedOgImages = (ogImageUrls.length > 0 ? ogImageUrls : [DEFAULT_OG_IMAGE])
     .map((url) => absoluteUrl(url))
 
   const keywords = buildVenueKeywords({

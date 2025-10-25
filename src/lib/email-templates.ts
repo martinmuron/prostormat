@@ -206,6 +206,85 @@ export function generatePasswordResetEmail(resetLink: string) {
   return { subject, html, text }
 }
 
+
+export function generateQuickRequestVenueNotificationEmail(data: QuickRequestVenueNotificationData) {
+  const { venueName, venueSlug, broadcastId, quickRequest } = data
+  const eventTypeLabel = EVENT_TYPES[quickRequest.eventType as EventType] || quickRequest.eventType
+  const detailUrl = `https://prostormat.cz/poptavka/${broadcastId}?venue=${encodeURIComponent(venueSlug)}`
+
+  const subject = `Nová poptávka čeká ve vašem účtu – ${venueName}`
+
+  const html = `
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${subject}</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f8fafc; color: #0f172a; margin: 0; padding: 0; }
+    .container { max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 18px; box-shadow: 0 20px 45px rgba(15, 23, 42, 0.12); overflow: hidden; }
+    .header { background: linear-gradient(135deg, #0ea5e9, #6366f1); padding: 32px 36px; color: #fff; }
+    .header h1 { margin: 0; font-size: 26px; line-height: 1.2; }
+    .header p { margin: 12px 0 0 0; opacity: 0.9; font-size: 16px; }
+    .content { padding: 36px; }
+    .badge { display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px; border-radius: 999px; background: #f0f9ff; color: #0369a1; font-weight: 600; font-size: 13px; margin-bottom: 20px; }
+    .highlight { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 16px; padding: 20px 24px; margin: 24px 0 32px 0; }
+    .cta { text-align: center; margin: 30px 0 10px 0; }
+    .cta a { display: inline-block; padding: 14px 28px; background: #0ea5e9; color: #fff; border-radius: 999px; font-weight: 600; font-size: 16px; text-decoration: none; }
+    .footer { padding: 24px 36px 32px 36px; background: #f8fafc; color: #475569; font-size: 13px; text-align: center; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🎯 Nová poptávka je připravena</h1>
+      <p>V účtu Prostormat máte novou rychlou poptávku k prostoru <strong>${venueName}</strong>.</p>
+    </div>
+    <div class="content">
+      <span class="badge">Rychlá poptávka · ${eventTypeLabel}</span>
+
+      <div class="highlight">
+        <p style="margin: 0; font-size: 16px; color: #1e293b;">
+          Kompletní detail je dostupný pouze v administraci Prostormatu. Po přihlášení si prosím poptávku pročtěte a odpovězte klientovi co nejdříve.
+        </p>
+      </div>
+
+      <div class="cta">
+        <a href="${detailUrl}">Otevřít poptávku v administraci</a>
+      </div>
+
+      <p style="margin: 28px 0 0 0; font-size: 15px; color: #475569;">
+        Pokud nemáte aktivní roční členství, po přihlášení vám nabídneme nejrychlejší cestu k jeho aktivaci. Aktivní členové mají přístup ke všem detailům i kontaktům.
+      </p>
+    </div>
+    <div class="footer">
+      Prostormat · Největší katalog event prostorů v Praze<br />
+      prostormat.cz · info@prostromat.cz
+    </div>
+  </div>
+</body>
+</html>
+`
+
+  const plainText = `
+Nová rychlá poptávka je ve vašem účtu Prostormat.
+
+Prostor: ${venueName}
+Typ akce: ${eventTypeLabel}
+
+Detail naleznete pouze po přihlášení:
+${detailUrl}
+
+Pokud nemáte aktivní členství, nabídneme vám jeho aktivaci po přihlášení.
+`
+
+  return {
+    subject,
+    html,
+    text: plainText
+  }
+}
 // Welcome email template for normal users
 interface WelcomeUserData {
   name: string
@@ -836,17 +915,10 @@ prostormat.cz | info@prostormat.cz
 // Quick Request Venue Notification email template
 interface QuickRequestVenueNotificationData {
   venueName: string
-  venueContactEmail: string
+  venueSlug: string
+  broadcastId: string
   quickRequest: {
     eventType: string
-    eventDate?: Date | null
-    guestCount?: number | null
-    budgetRange?: string
-    locationPreference?: string
-    additionalInfo?: string
-    contactName: string
-    contactEmail: string
-    contactPhone?: string
   }
 }
 
@@ -881,37 +953,7 @@ export function generateQuickRequestInternalNotificationEmail(data: QuickRequest
   const eventTypeLabel = EVENT_TYPES[quickRequest.eventType as EventType] || quickRequest.eventType
   const adminUrl = `https://prostormat.cz/admin/quick-requests?highlight=${broadcastId}`
 
-  const venueListHtml = matchingVenues.length
-    ? matchingVenues
-        .map((venue, index) => {
-          const pieces: string[] = []
-          if (venue.capacitySeated) {
-            pieces.push(`Sezení: ${venue.capacitySeated}`)
-          }
-          if (venue.capacityStanding) {
-            pieces.push(`Stání: ${venue.capacityStanding}`)
-          }
-          if (venue.district) {
-            pieces.push(venue.district)
-          }
-          const details = pieces.length ? ` <span style="color:#6c757d">(${pieces.join(', ')})</span>` : ''
-          return `<li style="margin-bottom:6px;"><strong>${index + 1}. ${venue.name}</strong>${details}</li>`
-        })
-        .join('')
-    : '<li><em>Žádné vhodné prostory nenalezeny</em></li>'
-
-  const venueListText = matchingVenues.length
-    ? matchingVenues
-        .map((venue, index) => {
-          const pieces: string[] = []
-          if (venue.capacitySeated) pieces.push(`Sezení: ${venue.capacitySeated}`)
-          if (venue.capacityStanding) pieces.push(`Stání: ${venue.capacityStanding}`)
-          if (venue.district) pieces.push(venue.district)
-          const suffix = pieces.length ? ` (${pieces.join(', ')})` : ''
-          return `${index + 1}. ${venue.name}${suffix}`
-        })
-        .join('\n')
-    : 'Žádné vhodné prostory'
+  const matchingCount = matchingVenues.length
 
   const eventDateText = quickRequest.eventDate
     ? new Date(quickRequest.eventDate).toLocaleDateString('cs-CZ')
@@ -965,19 +1007,15 @@ export function generateQuickRequestInternalNotificationEmail(data: QuickRequest
       <div class="detail"><span>Telefon:</span> ${quickRequest.contactPhone || 'Neuvedeno'}</div>
     </div>
 
-    <div class="section">
-      <h3>Vyhovující prostory (${matchingVenues.length})</h3>
-      <ul>${venueListHtml}</ul>
-    </div>
-
     <div class="cta">
       <a href="${adminUrl}">Otevřít v administraci</a>
     </div>
 
-    <p style="margin-top: 24px; color: #64748b; font-size: 14px;">Po zkontrolování poptávky prosím odešlete emaily ručně pomocí tlačítka „Odeslat“ u jednotlivých prostorů nebo „Odeslat všem“.</p>
+    <p style="margin-top: 24px; color: #64748b; font-size: 14px;">
+      Celkem nalezeno <strong>${matchingCount}</strong> vhodných prostorů. Kompletní seznam najdete po otevření poptávky v administraci.
+    </p>
+    <p style="margin-top: 12px; color: #64748b; font-size: 14px;">Po zkontrolování poptávky prosím odešlete emaily ručně pomocí tlačítka „Odeslat“ u jednotlivých prostorů nebo „Odeslat všem“.</p>
   </div>
-</body>
-</html>
 `
 
   const text = `
@@ -995,187 +1033,9 @@ Kontakt:
 - Email: ${quickRequest.contactEmail}
 - Telefon: ${quickRequest.contactPhone || 'Neuvedeno'}
 
-Vyhovující prostory (${matchingVenues.length}):
-${venueListText}
-
+Vyhovující prostory: ${matchingCount}
 Detail správy: ${adminUrl}
 `
 
   return { subject, html, text }
-}
-
-export function generateQuickRequestVenueNotificationEmail(data: QuickRequestVenueNotificationData) {
-  const { venueName, quickRequest } = data
-  const eventTypeLabel = EVENT_TYPES[quickRequest.eventType as EventType] || quickRequest.eventType
-  
-  const subject = `Zákazník má zájem o váš prostor! - ${venueName}`
-  
-  const html = `
-<!DOCTYPE html>
-<html lang="cs">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${subject}</title>
-    <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background-color: #f8f9fa; }
-        .container { max-width: 600px; margin: 0 auto; background: white; }
-        .header { background: #28a745; color: white; padding: 30px; text-align: center; }
-        .content { padding: 40px 30px; }
-        .event-details { background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0; }
-        .detail-row { margin: 10px 0; }
-        .label { font-weight: 600; color: #495057; }
-        .cta-button { display: inline-block; background: #28a745; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 600; margin: 20px 0; }
-        .footer { background: #f8f9fa; padding: 20px 30px; text-align: center; color: #6c757d; font-size: 14px; }
-        .highlight { background: #d4edda; padding: 20px; border-left: 4px solid #28a745; margin: 20px 0; border-radius: 6px; }
-        .urgent-notice { background: #fff3cd; padding: 15px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #ffc107; }
-        .contact-highlight { background: #e9ecef; padding: 20px; border-radius: 8px; margin: 20px 0; }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h1 style="margin: 0; font-size: 24px;">🎯 Máte nového zájemce!</h1>
-            <p style="margin: 10px 0 0 0; opacity: 0.9;">Prostormat - Rychlá poptávka</p>
-        </div>
-        
-        <div class="content">
-            <h2 style="color: #212529; margin-bottom: 10px;">Dobrý den,</h2>
-            
-            <div class="highlight">
-                <h3 style="margin: 0 0 10px 0; color: #155724;">🏢 Zákazník má zájem o váš prostor "${venueName}"!</h3>
-                <p style="margin: 0; color: #155724;">Uživatel Prostormatu vyplnil rychlou poptávku a hledá prostor jako je ten váš.</p>
-            </div>
-            
-            <div class="urgent-notice">
-                <h3 style="margin: 0 0 10px 0; color: #856404;">⚡ Rychle zareagujte!</h3>
-                <p style="margin: 0; color: #856404;"><strong>Pošlete mu nabídku co nejdříve</strong> - klienti obvykle vybírají z prvních odpovědí.</p>
-            </div>
-            
-            <div class="event-details">
-                <h4 style="margin: 0 0 15px 0; color: #212529;">Detaily poptávky:</h4>
-                
-                <div class="detail-row">
-                    <span class="label">Typ akce:</span> ${eventTypeLabel}
-                </div>
-                
-                ${quickRequest.eventDate ? `
-                <div class="detail-row">
-                    <span class="label">Datum akce:</span> ${new Date(quickRequest.eventDate).toLocaleDateString('cs-CZ')}
-                </div>
-                ` : ''}
-                
-                ${quickRequest.guestCount ? `
-                <div class="detail-row">
-                    <span class="label">Počet hostů:</span> ${quickRequest.guestCount}
-                </div>
-                ` : ''}
-                
-                ${quickRequest.budgetRange ? `
-                <div class="detail-row">
-                    <span class="label">Rozpočet:</span> ${quickRequest.budgetRange}
-                </div>
-                ` : ''}
-                
-                ${quickRequest.locationPreference ? `
-                <div class="detail-row">
-                    <span class="label">Lokalita:</span> ${quickRequest.locationPreference}
-                </div>
-                ` : ''}
-                
-                ${quickRequest.additionalInfo ? `
-                <div class="detail-row">
-                    <span class="label">Dodatečné informace:</span> ${quickRequest.additionalInfo}
-                </div>
-                ` : ''}
-            </div>
-            
-            <div class="contact-highlight">
-                <h4 style="color: #212529; margin: 0 0 15px 0;">📞 Kontaktujte zákazníka:</h4>
-                <div class="detail-row">
-                    <span class="label">Jméno:</span> ${quickRequest.contactName}
-                </div>
-                <div class="detail-row">
-                    <span class="label">Email:</span> <a href="mailto:${quickRequest.contactEmail}" style="color: #28a745; font-weight: bold;">${quickRequest.contactEmail}</a>
-                </div>
-                ${quickRequest.contactPhone ? `
-                <div class="detail-row">
-                    <span class="label">Telefon:</span> <a href="tel:${quickRequest.contactPhone}" style="color: #28a745; font-weight: bold;">${quickRequest.contactPhone}</a>
-                </div>
-                ` : ''}
-            </div>
-            
-            <p style="margin: 30px 0 20px 0;">
-                <strong>💡 Doporučujeme:</strong>
-            </p>
-            <ul>
-                <li><strong>Odpovězte do 1 hodiny</strong> - Rychlost je klíčová!</li>
-                <li><strong>Připravte konkrétní nabídku</strong> - Cena, dostupnost, možnosti</li>
-                <li><strong>Přiložte fotky prostoru</strong> - Vizuál přesvědčí</li>
-                <li><strong>Nabídněte prohlídku</strong> - Osobní kontakt vždy zabere</li>
-            </ul>
-            
-            <a href="mailto:${quickRequest.contactEmail}?subject=Nabídka prostoru ${venueName} - Prostormat&body=Dobrý den ${quickRequest.contactName},%0A%0Aděkuji za váš zájem o náš prostor ${venueName}.%0A%0A[Zde napište svou nabídku]%0A%0AS pozdravem" class="cta-button">
-                📧 Napsat nabídku
-            </a>
-            
-            <p style="margin-top: 30px; color: #6c757d;">
-                <strong>Tip:</strong> Pro lepší správu poptávek se přihlaste do svého <a href="https://prostormat.cz/dashboard" style="color: #28a745;">dashboardu</a> na Prostormatu.
-            </p>
-        </div>
-        
-        <div class="footer">
-            <p><strong>Prostormat</strong> - Platforma pro pronájem event prostorů</p>
-            <p>Tento email jste obdrželi, protože váš prostor odpovídá kritériím rychlé poptávky.</p>
-            <p>
-                <a href="mailto:info@prostormat.cz" style="color: #007bff;">info@prostormat.cz</a> | 
-                <a href="https://prostormat.cz" style="color: #007bff;">prostormat.cz</a>
-            </p>
-        </div>
-    </div>
-</body>
-</html>`
-
-  const plainText = `
-Zákazník má zájem o váš prostor! - ${venueName}
-
-Dobrý den,
-
-máte nového zájemce! Uživatel Prostormatu vyplnil rychlou poptávku a hledá prostor jako je váš "${venueName}".
-
-⚡ RYCHLE ZAREAGUJTE!
-Pošlete mu nabídku co nejdříve - klienti obvykle vybírají z prvních odpovědí.
-
-Detaily poptávky:
-- Typ akce: ${eventTypeLabel}
-${quickRequest.eventDate ? `- Datum akce: ${new Date(quickRequest.eventDate).toLocaleDateString('cs-CZ')}` : ''}
-${quickRequest.guestCount ? `- Počet hostů: ${quickRequest.guestCount}` : ''}
-${quickRequest.budgetRange ? `- Rozpočet: ${quickRequest.budgetRange}` : ''}
-${quickRequest.locationPreference ? `- Lokalita: ${quickRequest.locationPreference}` : ''}
-${quickRequest.additionalInfo ? `- Dodatečné informace: ${quickRequest.additionalInfo}` : ''}
-
-Kontaktujte zákazníka:
-- Jméno: ${quickRequest.contactName}
-- Email: ${quickRequest.contactEmail}
-${quickRequest.contactPhone ? `- Telefon: ${quickRequest.contactPhone}` : ''}
-
-DOPORUČUJEME:
-- Odpovězte do 1 hodiny - Rychlost je klíčová!
-- Připravte konkrétní nabídku - Cena, dostupnost, možnosti
-- Přiložte fotky prostoru - Vizuál přesvědčí
-- Nabídněte prohlídku - Osobní kontakt vždy zabere
-
-Dashboard: https://prostormat.cz/dashboard
-
---
-Prostormat - Platforma pro pronájem event prostorů
-Tento email jste obdrželi, protože váš prostor odpovídá kritériím rychlé poptávky.
-prostormat.cz | info@prostormat.cz
-`
-
-  return {
-    subject,
-    html,
-    text: plainText
-  }
 }

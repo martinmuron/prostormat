@@ -97,17 +97,10 @@ export function EmailTemplatesManager() {
     } else if (templateId === 'quick_request_venue_notification') {
       emailData = generateQuickRequestVenueNotificationEmail({
         venueName: "Stylová galerie v centru Prahy",
-        venueContactEmail: "galerie@example.com",
+        venueSlug: "stylova-galerie",
+        broadcastId: "sample-broadcast-id",
         quickRequest: {
           eventType: "firemni-akce",
-          eventDate: new Date("2024-12-15"),
-          guestCount: 50,
-          budgetRange: "50000-100000 Kč",
-          locationPreference: "Praha centrum",
-          additionalInfo: "Potřebujeme prostor s kvalitním osvětlením a prezentační technikou.",
-          contactName: "Anna Svobodová",
-          contactEmail: "anna.svobodova@firma.cz",
-          contactPhone: "+420 777 123 456"
         }
       })
     }

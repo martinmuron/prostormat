@@ -43,6 +43,7 @@ export async function POST(
         select: {
           id: true,
           name: true,
+          slug: true,
           district: true,
           contactEmail: true,
           capacityStanding: true,
@@ -77,18 +78,12 @@ export async function POST(
         {
           id: log.venue.id,
           name: log.venue.name,
+          slug: log.venue.slug,
           contactEmail: log.venue.contactEmail,
         },
+        id,
         {
           eventType: broadcast.eventType,
-          eventDate: broadcast.eventDate ?? undefined,
-          guestCount: broadcast.guestCount ?? undefined,
-          budgetRange: broadcast.budgetRange ?? undefined,
-          locationPreference: broadcast.locationPreference ?? undefined,
-          additionalInfo: broadcast.requirements ?? undefined,
-          contactName: broadcast.contactName,
-          contactEmail: broadcast.contactEmail,
-          contactPhone: broadcast.contactPhone ?? undefined,
         }
       )
 

@@ -172,17 +172,10 @@ async function testAllEmailTemplates() {
   // Test 8: Quick Request Venue Notification Email
   const quickRequestData = {
     venueName: 'Test Event Space',
-    venueContactEmail: 'venue-owner@test.com',
+    venueSlug: 'test-event-space',
+    broadcastId: 'test-broadcast-id',
     quickRequest: {
-      eventType: 'corporate',
-      eventDate: new Date(Date.now() + 21 * 24 * 60 * 60 * 1000), // 21 days from now
-      guestCount: 75,
-      budgetRange: '25,000 - 50,000 Kč',
-      locationPreference: 'Brno',
-      additionalInfo: 'Need modern AV equipment',
-      contactName: 'Test Quick Requester',
-      contactEmail: 'requester@test.com',
-      contactPhone: '+420987654321'
+      eventType: 'corporate'
     }
   }
   

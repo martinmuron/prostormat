@@ -3,24 +3,18 @@ import { generateQuickRequestVenueNotificationEmail } from "@/lib/email-template
 
 interface QuickRequestContact {
   eventType: string
-  eventDate?: Date | null
-  guestCount?: number | null
-  budgetRange?: string | null
-  locationPreference?: string | null
-  additionalInfo?: string | null
-  contactName: string
-  contactEmail: string
-  contactPhone?: string | null
 }
 
 interface QuickRequestVenueInfo {
   id: string
   name: string
-  contactEmail: string
+  slug: string
+  contactEmail: string | null
 }
 
 export async function sendQuickRequestEmailToVenue(
   venue: QuickRequestVenueInfo,
+  broadcastId: string,
   request: QuickRequestContact
 ) {
   if (!venue.contactEmail) {
@@ -29,24 +23,16 @@ export async function sendQuickRequestEmailToVenue(
 
   const emailContent = generateQuickRequestVenueNotificationEmail({
     venueName: venue.name,
-    venueContactEmail: venue.contactEmail,
+    venueSlug: venue.slug,
+    broadcastId,
     quickRequest: {
       eventType: request.eventType,
-      eventDate: request.eventDate,
-      guestCount: request.guestCount ?? undefined,
-      budgetRange: request.budgetRange ?? undefined,
-      locationPreference: request.locationPreference ?? undefined,
-      additionalInfo: request.additionalInfo ?? undefined,
-      contactName: request.contactName,
-      contactEmail: request.contactEmail,
-      contactPhone: request.contactPhone ?? undefined,
     },
   })
 
   const emailResult = await resend.emails.send({
     from: "Prostormat <noreply@prostormat.cz>",
     to: venue.contactEmail,
-    replyTo: request.contactEmail,
     subject: emailContent.subject,
     html: emailContent.html,
     text: emailContent.text,

@@ -19,17 +19,10 @@ async function sendQuickRequestTest() {
 
   const emailData = generateQuickRequestVenueNotificationEmail({
     venueName: 'Medusa Prague',
-    venueContactEmail: 'mark.muron@gmail.com',
+    venueSlug: 'medusa-prague',
+    broadcastId: 'test-broadcast-123',
     quickRequest: {
-      eventType: 'firemni-akce',
-      eventDate: new Date('2025-03-20'),
-      guestCount: 40,
-      budgetRange: '30,000 - 50,000 CZK',
-      locationPreference: 'Praha 1',
-      additionalInfo: 'Potřebujeme projektor, ozvučení a možnost cateringu. Akce bude probíhat od 18:00 do 23:00.',
-      contactName: 'Jan Novák',
-      contactEmail: 'jan.novak@example.com',
-      contactPhone: '+420 123 456 789'
+      eventType: 'firemni-akce'
     }
   });
 
@@ -37,7 +30,6 @@ async function sendQuickRequestTest() {
     const result = await resend.emails.send({
       from: 'Prostormat <noreply@prostormat.cz>',
       to: 'mark.muron@gmail.com',
-      replyTo: 'info@prostormat.cz',
       subject: emailData.subject + ' [TEST EMAIL]',
       html: emailData.html,
       text: emailData.text,

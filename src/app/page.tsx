@@ -1,6 +1,7 @@
 import type { Prisma } from "@prisma/client"
 import { Suspense } from "react"
 import Link from "next/link"
+import { getServerSession } from "next-auth"
 import { Button } from "@/components/ui/button"
 import { VenueCard } from "@/components/venue/venue-card"
 import { ScrollReveal } from "@/components/ui/scroll-reveal"
@@ -8,6 +9,7 @@ import { HeroSearch } from "@/components/ui/hero-search"
 import { Skeleton } from "@/components/ui/skeleton"
 import { db } from "@/lib/db"
 import { Upload, MessageSquare, Euro, ArrowRight, Zap, Clock } from "lucide-react"
+import { authOptions } from "@/lib/auth"
 
 // Force dynamic rendering to avoid caching issues
 export const revalidate = 120
@@ -31,6 +33,11 @@ type FeaturedVenue = Prisma.VenueGetPayload<{ select: typeof featuredVenueSelect
 
 async function getFeaturedVenues() {
   try {
+    const session = await getServerSession(authOptions)
+    const visibleStatuses = session?.user?.role === "admin"
+      ? ['published', 'active', 'hidden']
+      : ['published', 'active']
+
     const desiredCount = 12
     const selected: FeaturedVenue[] = []
     const seen = new Set<string>()
@@ -38,7 +45,7 @@ async function getFeaturedVenues() {
     const topPriorityVenues = await db.venue.findMany({
       where: {
         priority: 1,
-        status: { in: ['published', 'active'] },
+        status: { in: visibleStatuses },
         parentId: null,
       },
       orderBy: {
@@ -73,6 +80,7 @@ async function getFeaturedVenues() {
         where: {
           id: { in: homepageVenueIds },
           parentId: null,
+          status: { in: visibleStatuses },
         },
         select: featuredVenueSelect,
       })
@@ -84,7 +92,7 @@ async function getFeaturedVenues() {
       for (const entry of homepageVenues) {
         const venue = homepageVenueMap.get(entry.venueId)
         if (!venue) continue
-        if (!['published', 'active'].includes(venue.status)) continue
+        if (!visibleStatuses.includes(venue.status)) continue
         if (seen.has(venue.id)) continue
         seen.add(venue.id)
         selected.push(venue)
@@ -94,7 +102,7 @@ async function getFeaturedVenues() {
     if (selected.length < desiredCount) {
       const fallbackVenues = await db.venue.findMany({
         where: {
-          status: { in: ['published', 'active'] },
+          status: { in: visibleStatuses },
           id: { notIn: Array.from(seen) },
           parentId: null,
         },

@@ -758,151 +758,109 @@ Klikněte na odkaz pro obnovení hesla (platný 60 minut):
     isActive: true
   },
   {
-    templateKey: 'quick_request_venue',
+    templateKey: 'quick_request_venue_notification',
     name: 'Notifikace prostoru - rychlá poptávka',
-    subject: 'Zákazník má zájem o váš prostor! - {{venueName}}',
-    description: 'Email odeslaný majitelům prostoru při rychlé poptávce',
-    variables: ['{{venueName}}', '{{eventType}}', '{{eventDate}}', '{{guestCount}}', '{{budgetRange}}', '{{locationPreference}}', '{{additionalInfo}}', '{{contactName}}', '{{contactEmail}}', '{{contactPhone}}'],
+    subject: '{{guestCount}} hostů - Prostormat poptávka',
+    description: 'Email odeslaný majiteli prostoru při nové poptávce přes Prostormat',
+    variables: ['{{venueName}}', '{{eventTitle}}', '{{guestCount}}', '{{eventDate}}', '{{eventType}}', '{{locationPreference}}', '{{detailUrl}}'],
     htmlContent: `<!DOCTYPE html>
 <html lang="cs">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zákazník má zájem o váš prostor! - {{venueName}}</title>
-    <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background-color: #f8f9fa; }
-        .container { max-width: 600px; margin: 0 auto; background: white; }
-        .header { background: #28a745; color: white; padding: 30px; text-align: center; }
-        .content { padding: 40px 30px; }
-        .event-details { background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0; }
-        .detail-row { margin: 10px 0; }
-        .label { font-weight: 600; color: #495057; }
-        .cta-button { display: inline-block; background: #28a745; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 600; margin: 20px 0; }
-        .footer { background: #f8f9fa; padding: 20px 30px; text-align: center; color: #6c757d; font-size: 14px; }
-        .highlight { background: #d4edda; padding: 20px; border-left: 4px solid #28a745; margin: 20px 0; border-radius: 6px; }
-        .urgent-notice { background: #fff3cd; padding: 15px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #ffc107; }
-        .contact-highlight { background: #e9ecef; padding: 20px; border-radius: 8px; margin: 20px 0; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{guestCount}} hostů - Prostormat poptávka</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f8fafc; color: #0f172a; margin: 0; padding: 24px; }
+    .wrapper { max-width: 640px; margin: 0 auto; }
+    .card { background: #ffffff; border-radius: 20px; box-shadow: 0 18px 38px rgba(15, 23, 42, 0.12); overflow: hidden; }
+    .header { background: linear-gradient(135deg, #1d4ed8, #3b82f6); padding: 32px 36px; color: #ffffff; }
+    .header h1 { margin: 0; font-size: 26px; line-height: 1.3; }
+    .header p { margin: 12px 0 0 0; font-size: 16px; opacity: 0.95; }
+    .content { padding: 36px; }
+    .intro { font-size: 17px; margin: 0 0 28px 0; color: #0f172a; }
+    .details { border: 1px solid #e2e8f0; border-radius: 16px; padding: 24px; background: #f8fafc; }
+    .detail-row { display: flex; flex-direction: column; margin-bottom: 18px; }
+    .detail-row:last-child { margin-bottom: 0; }
+    .label { font-size: 13px; text-transform: uppercase; letter-spacing: 0.08em; color: #64748b; margin-bottom: 6px; }
+    .value { font-size: 17px; font-weight: 600; color: #0f172a; }
+    .note { margin: 32px 0 12px 0; font-size: 15px; color: #475569; line-height: 1.6; }
+    .cta { text-align: center; margin: 28px 0 10px 0; }
+    .cta a { display: inline-block; padding: 14px 32px; border-radius: 999px; background: #1d4ed8; color: #ffffff; font-weight: 600; text-decoration: none; font-size: 16px; }
+    .footer { padding: 24px 36px 30px 36px; background: #f8fafc; color: #475569; font-size: 13px; text-align: center; line-height: 1.6; }
+    @media (max-width: 600px) {
+      body { padding: 16px; }
+      .header, .content { padding: 28px 24px; }
+      .cta a { width: 100%; }
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1 style="margin: 0; font-size: 24px;">🎯 Máte nového zájemce!</h1>
-            <p style="margin: 10px 0 0 0; opacity: 0.9;">Prostormat - Rychlá poptávka</p>
+  <div class="wrapper">
+    <div class="card">
+      <div class="header">
+        <h1>Máte novou poptávku na váš prostor {{venueName}}</h1>
+        <p>V účtu Prostormat čeká poptávka, která odpovídá vašemu prostoru.</p>
+      </div>
+      <div class="content">
+        <p class="intro">
+          Přihlaste se do administrace a zareagujte co nejdříve. Klienti obvykle vybírají z prvních odpovědí.
+        </p>
+        <div class="details">
+          <div class="detail-row">
+            <span class="label">Název akce</span>
+            <span class="value">{{eventTitle}}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Počet hostů</span>
+            <span class="value">{{guestCount}}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Datum</span>
+            <span class="value">{{eventDate}}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Typ akce</span>
+            <span class="value">{{eventType}}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Preferovaná lokalita</span>
+            <span class="value">{{locationPreference}}</span>
+          </div>
         </div>
-
-        <div class="content">
-            <h2 style="color: #212529; margin-bottom: 10px;">Dobrý den,</h2>
-
-            <div class="highlight">
-                <h3 style="margin: 0 0 10px 0; color: #155724;">🏢 Zákazník má zájem o váš prostor "{{venueName}}"!</h3>
-                <p style="margin: 0; color: #155724;">Uživatel Prostormatu vyplnil rychlou poptávku a hledá prostor jako je ten váš.</p>
-            </div>
-
-            <div class="urgent-notice">
-                <h3 style="margin: 0 0 10px 0; color: #856404;">⚡ Rychle zareagujte!</h3>
-                <p style="margin: 0; color: #856404;"><strong>Pošlete mu nabídku co nejdříve</strong> - klienti obvykle vybírají z prvních odpovědí.</p>
-            </div>
-
-            <div class="event-details">
-                <h4 style="margin: 0 0 15px 0; color: #212529;">Detaily poptávky:</h4>
-                <div class="detail-row">
-                    <span class="label">Typ akce:</span> {{eventType}}
-                </div>
-                <div class="detail-row">
-                    <span class="label">Datum akce:</span> {{eventDate}}
-                </div>
-                <div class="detail-row">
-                    <span class="label">Počet hostů:</span> {{guestCount}}
-                </div>
-                <div class="detail-row">
-                    <span class="label">Rozpočet:</span> {{budgetRange}}
-                </div>
-                <div class="detail-row">
-                    <span class="label">Lokalita:</span> {{locationPreference}}
-                </div>
-                <div class="detail-row">
-                    <span class="label">Dodatečné informace:</span> {{additionalInfo}}
-                </div>
-            </div>
-
-            <div class="contact-highlight">
-                <h4 style="color: #212529; margin: 0 0 15px 0;">📞 Kontaktujte zákazníka:</h4>
-                <div class="detail-row">
-                    <span class="label">Jméno:</span> {{contactName}}
-                </div>
-                <div class="detail-row">
-                    <span class="label">Email:</span> <a href="mailto:{{contactEmail}}" style="color: #28a745; font-weight: bold;">{{contactEmail}}</a>
-                </div>
-                <div class="detail-row">
-                    <span class="label">Telefon:</span> <a href="tel:{{contactPhone}}" style="color: #28a745; font-weight: bold;">{{contactPhone}}</a>
-                </div>
-            </div>
-
-            <p style="margin: 30px 0 20px 0;">
-                <strong>💡 Doporučujeme:</strong>
-            </p>
-            <ul>
-                <li><strong>Odpovězte do 1 hodiny</strong> - Rychlost je klíčová!</li>
-                <li><strong>Připravte konkrétní nabídku</strong> - Cena, dostupnost, možnosti</li>
-                <li><strong>Přiložte fotky prostoru</strong> - Vizuál přesvědčí</li>
-                <li><strong>Nabídněte prohlídku</strong> - Osobní kontakt vždy zabere</li>
-            </ul>
-
-            <a href="mailto:{{contactEmail}}?subject=Nabídka prostoru {{venueName}} - Prostormat&body=Dobrý den {{contactName}},%0A%0Aděkuji za váš zájem o náš prostor {{venueName}}.%0A%0A[Zde napište svou nabídku]%0A%0AS pozdravem" class="cta-button">
-                📧 Napsat nabídku
-            </a>
-
-            <p style="margin-top: 30px; color: #6c757d;">
-                <strong>Tip:</strong> Pro lepší správu poptávek se přihlaste do svého <a href="https://prostormat.cz/dashboard" style="color: #28a745;">dashboardu</a> na Prostormatu.
-            </p>
+        <p class="note">
+          Kompletní detaily (rozpočet, požadavky, kontakt) najdete přímo ve vašem dashboardu.
+        </p>
+        <div class="cta">
+          <a href="{{detailUrl}}">Otevřít poptávku v administraci</a>
         </div>
-
-        <div class="footer">
-            <p><strong>Prostormat</strong> - Platforma pro pronájem event prostorů</p>
-            <p>Tento email jste obdrželi, protože váš prostor odpovídá kritériím rychlé poptávky.</p>
-            <p>
-                <a href="mailto:info@prostormat.cz" style="color: #007bff;">info@prostormat.cz</a> |
-                <a href="https://prostormat.cz" style="color: #007bff;">prostormat.cz</a>
-            </p>
-        </div>
+        <p class="note" style="margin-top: 24px;">
+          Pokud nemáte aktivní členství, po přihlášení vám nabídneme nejrychlejší cestu k jeho aktivaci.
+        </p>
+      </div>
     </div>
+    <div class="footer">
+      Prostormat · Největší katalog event prostorů v Praze<br />
+      prostormat.cz · info@prostromat.cz
+    </div>
+  </div>
 </body>
 </html>`,
-    textContent: `Zákazník má zájem o váš prostor! - {{venueName}}
+    textContent: `Máte novou poptávku na váš prostor {{venueName}}
 
-Dobrý den,
+Název akce: {{eventTitle}}
+Počet hostů: {{guestCount}}
+Datum: {{eventDate}}
+Typ akce: {{eventType}}
+Preferovaná lokalita: {{locationPreference}}
 
-máte nového zájemce! Uživatel Prostormatu vyplnil rychlou poptávku a hledá prostor jako je váš "{{venueName}}".
+Kompletní detaily najdete ve vašem dashboardu:
+{{detailUrl}}
 
-⚡ RYCHLE ZAREAGUJTE!
-Pošlete mu nabídku co nejdříve - klienti obvykle vybírají z prvních odpovědí.
-
-Detaily poptávky:
-- Typ akce: {{eventType}}
-- Datum akce: {{eventDate}}
-- Počet hostů: {{guestCount}}
-- Rozpočet: {{budgetRange}}
-- Lokalita: {{locationPreference}}
-- Dodatečné informace: {{additionalInfo}}
-
-Kontaktujte zákazníka:
-- Jméno: {{contactName}}
-- Email: {{contactEmail}}
-- Telefon: {{contactPhone}}
-
-DOPORUČUJEME:
-- Odpovězte do 1 hodiny - Rychlost je klíčová!
-- Připravte konkrétní nabídku - Cena, dostupnost, možnosti
-- Přiložte fotky prostoru - Vizuál přesvědčí
-- Nabídněte prohlídku - Osobní kontakt vždy zabere
-
-Dashboard: https://prostormat.cz/dashboard
+Zareagujte co nejdříve – klienti obvykle vybírají z prvních odpovědí.
 
 --
-Prostormat - Platforma pro pronájem event prostorů
-Tento email jste obdrželi, protože váš prostor odpovídá kritériím rychlé poptávky.
-prostormat.cz | info@prostormat.cz`,
+Prostormat · Největší katalog event prostorů v Praze
+prostormat.cz | info@prostromat.cz`,
     isActive: true
   },
 ]

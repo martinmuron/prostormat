@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server"
+import { getServerSession } from "next-auth"
 import { db } from "@/lib/db"
 import { buildVenueWhereClause } from "@/lib/venue-filters"
+import { authOptions } from "@/lib/auth"
 
 export async function GET(request: NextRequest) {
   try {
@@ -10,8 +12,14 @@ export async function GET(request: NextRequest) {
     const type = searchParams.get("type") || undefined
     const district = searchParams.get("district") || undefined
     const capacity = searchParams.get("capacity") || undefined
+    const includeHiddenRequested = searchParams.get("includeHidden") === "true"
+    const session = includeHiddenRequested ? await getServerSession(authOptions) : null
+    const visibleStatuses =
+      includeHiddenRequested && session?.user?.role === "admin"
+        ? ['published', 'active', 'hidden']
+        : ['published', 'active']
 
-    const where = buildVenueWhereClause({ q, type, district, capacity, includeSubvenues: false })
+    const where = buildVenueWhereClause({ q, type, district, capacity, statuses: visibleStatuses, includeSubvenues: false })
 
     const count = await db.venue.count({ where })
 

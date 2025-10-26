@@ -1,9 +1,10 @@
 export const dynamic = 'force-dynamic'
 
 import Link from "next/link"
-import { notFound } from "next/navigation"
+import { notFound, redirect } from "next/navigation"
 import type { Metadata } from "next"
 import Image from "next/image"
+import { getServerSession } from "next-auth"
 import { VenueGallery } from "@/components/venue/venue-gallery"
 import { VenueContactForm } from "@/components/forms/venue-contact-form"
 import { HeartButton } from "@/components/venue/heart-button"
@@ -18,6 +19,7 @@ import { MapPin, Users, Instagram } from "lucide-react"
 import { generateVenueSchema, generateBreadcrumbSchema, schemaToJsonLd } from "@/lib/schema-markup"
 import { buildVenueMetaDescription, buildVenueKeywords, absoluteUrl, DEFAULT_OG_IMAGE } from "@/lib/seo"
 import { getOptimizedImageUrl } from "@/lib/supabase-images"
+import { authOptions } from "@/lib/auth"
 
 export const revalidate = 0
 
@@ -30,9 +32,9 @@ function formatDisplayAddress(address?: string | null) {
     .trim()
 }
 
-async function getVenue(slug: string) {
+async function getVenue(slug: string, viewerRole?: string | null) {
   try {
-  const venue = await db.venue.findUnique({
+    const venue = await db.venue.findUnique({
       where: {
         slug,
       },
@@ -53,7 +55,7 @@ async function getVenue(slug: string) {
         },
         subVenues: {
           where: {
-            status: { in: ["published", "active", "hidden"] },
+            status: { in: viewerRole === 'admin' ? ["published", "active", "hidden"] : ["published", "active"] },
           },
           select: {
             id: true,
@@ -73,17 +75,23 @@ async function getVenue(slug: string) {
       }
     })
 
-    if (!venue) return null
-
-    if (!['published', 'active', 'hidden'].includes(venue.status)) {
-      return null
+    if (!venue) {
+      return { status: 'not_found' }
     }
 
-    // PostgreSQL returns arrays directly, no need to parse
-    return venue
+    const allowedStatuses = viewerRole === 'admin'
+      ? ['published', 'active', 'hidden']
+      : ['published', 'active']
+
+    if (!allowedStatuses.includes(venue.status)) {
+      const restricted = venue.status === 'hidden'
+      return { status: restricted ? 'hidden' : 'not_found' }
+    }
+
+    return { status: 'ok', venue }
   } catch (error) {
     console.error("Error fetching venue:", error)
-    return null
+    return { status: 'not_found' }
   }
 }
 
@@ -94,14 +102,17 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>
 }): Promise<Metadata> {
   const { slug } = await params
-  const venue = await getVenue(slug)
+  const session = await getServerSession(authOptions)
+  const result = await getVenue(slug, session?.user?.role)
 
-  if (!venue) {
+  if (result.status !== 'ok') {
     return {
       title: 'Prostor nenalezen - Prostormat',
       description: 'Tento prostor nebyl nalezen. Vyberte si z našeho katalogu event prostorů v Praze.',
     }
   }
+
+  const venue = result.venue!
 
   const capacity = Math.max(Number(venue.capacitySeated) || 0, Number(venue.capacityStanding) || 0)
   const venueTypeLabel = venue.venueType ? VENUE_TYPES[venue.venueType as VenueType] || venue.venueType : 'Event prostor'
@@ -168,11 +179,22 @@ export default async function VenueDetailPage({
   params: Promise<{ slug: string }>
 }) {
   const { slug } = await params
-  const venue = await getVenue(slug)
+  const session = await getServerSession(authOptions)
+  const result = await getVenue(slug, session?.user?.role)
 
-  if (!venue) {
+  if (result.status === 'hidden') {
+    redirect('/')
+  }
+
+  if (result.status !== 'ok') {
     notFound()
   }
+
+  if (!result.venue) {
+    notFound()
+  }
+
+  const venue = result.venue
 
   const venueTypeLabel = venue.venueType ? VENUE_TYPES[venue.venueType as VenueType] || venue.venueType : null
 
@@ -188,7 +210,6 @@ export default async function VenueDetailPage({
     capacitySeated: venue.capacitySeated,
     capacityStanding: venue.capacityStanding,
     slug: venue.slug,
-    manager: venue.manager,
     district: venue.district,
     instagramUrl: venue.instagramUrl ?? undefined,
   })

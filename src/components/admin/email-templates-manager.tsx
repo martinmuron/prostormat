@@ -101,6 +101,10 @@ export function EmailTemplatesManager() {
         broadcastId: "sample-broadcast-id",
         quickRequest: {
           eventType: "firemni-akce",
+          title: "Networking večer Prostormat",
+          guestCount: 120,
+          eventDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
+          locationPreference: "Praha 1",
         }
       })
     }

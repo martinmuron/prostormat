@@ -22,7 +22,11 @@ async function sendQuickRequestTest() {
     venueSlug: 'medusa-prague',
     broadcastId: 'test-broadcast-123',
     quickRequest: {
-      eventType: 'firemni-akce'
+      eventType: 'firemni-akce',
+      title: 'Networking večer Prostormat',
+      guestCount: 150,
+      eventDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+      locationPreference: 'Praha 1',
     }
   });
 

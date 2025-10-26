@@ -71,8 +71,15 @@ export function buildVenueWhereClause({
     where.parentId = null
   }
 
-  if (statuses && statuses.length > 0) {
-    where.status = { in: statuses }
+  const effectiveStatuses =
+    statuses === null
+      ? null
+      : statuses && statuses.length > 0
+        ? statuses
+        : ['published', 'active']
+
+  if (effectiveStatuses) {
+    where.status = { in: effectiveStatuses }
   }
 
   if (q && q.trim().length > 0) {

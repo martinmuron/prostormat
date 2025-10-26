@@ -212,7 +212,38 @@ export function generateQuickRequestVenueNotificationEmail(data: QuickRequestVen
   const eventTypeLabel = EVENT_TYPES[quickRequest.eventType as EventType] || quickRequest.eventType
   const detailUrl = `https://prostormat.cz/poptavka/${broadcastId}?venue=${encodeURIComponent(venueSlug)}`
 
-  const subject = `Nová poptávka čeká ve vašem účtu – ${venueName}`
+  const eventTitle = (quickRequest.title ?? '').trim() || 'Název akce nebyl uveden'
+
+  let guestCountText: string | null = null
+  let guestCountIsNumeric = false
+  if (typeof quickRequest.guestCount === 'number' && Number.isFinite(quickRequest.guestCount)) {
+    guestCountText = new Intl.NumberFormat('cs-CZ').format(quickRequest.guestCount)
+    guestCountIsNumeric = true
+  } else if (typeof quickRequest.guestCount === 'string') {
+    const trimmed = quickRequest.guestCount.trim()
+    const parsed = Number.parseInt(trimmed, 10)
+    if (Number.isFinite(parsed)) {
+      guestCountText = new Intl.NumberFormat('cs-CZ').format(parsed)
+      guestCountIsNumeric = true
+    } else {
+      guestCountText = trimmed || null
+    }
+  }
+
+  const subject = guestCountText
+    ? `${guestCountText}${guestCountIsNumeric ? ' hostů' : ''} - Prostormat poptávka`
+    : 'Nová poptávka - Prostormat'
+
+  const eventDateText = quickRequest.eventDate
+    ? new Date(quickRequest.eventDate).toLocaleDateString('cs-CZ')
+    : 'Datum nebylo uvedeno'
+
+  const locationText = (quickRequest.locationPreference ?? '').trim()
+  const guestCountDisplay = guestCountText
+    ? guestCountIsNumeric
+      ? `${guestCountText} hostů`
+      : guestCountText
+    : 'Neuvedeno'
 
   const html = `
 <!DOCTYPE html>
@@ -222,41 +253,75 @@ export function generateQuickRequestVenueNotificationEmail(data: QuickRequestVen
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>${subject}</title>
   <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f8fafc; color: #0f172a; margin: 0; padding: 0; }
-    .container { max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 18px; box-shadow: 0 20px 45px rgba(15, 23, 42, 0.12); overflow: hidden; }
-    .header { background: linear-gradient(135deg, #0ea5e9, #6366f1); padding: 32px 36px; color: #fff; }
-    .header h1 { margin: 0; font-size: 26px; line-height: 1.2; }
-    .header p { margin: 12px 0 0 0; opacity: 0.9; font-size: 16px; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f8fafc; color: #0f172a; margin: 0; padding: 24px; }
+    .wrapper { max-width: 640px; margin: 0 auto; }
+    .card { background: #ffffff; border-radius: 20px; box-shadow: 0 18px 38px rgba(15, 23, 42, 0.12); overflow: hidden; }
+    .header { background: linear-gradient(135deg, #1d4ed8, #3b82f6); padding: 32px 36px; color: #ffffff; }
+    .header h1 { margin: 0; font-size: 26px; line-height: 1.3; }
+    .header p { margin: 12px 0 0 0; font-size: 16px; opacity: 0.95; }
     .content { padding: 36px; }
-    .badge { display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px; border-radius: 999px; background: #f0f9ff; color: #0369a1; font-weight: 600; font-size: 13px; margin-bottom: 20px; }
-    .highlight { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 16px; padding: 20px 24px; margin: 24px 0 32px 0; }
-    .cta { text-align: center; margin: 30px 0 10px 0; }
-    .cta a { display: inline-block; padding: 14px 28px; background: #0ea5e9; color: #fff; border-radius: 999px; font-weight: 600; font-size: 16px; text-decoration: none; }
-    .footer { padding: 24px 36px 32px 36px; background: #f8fafc; color: #475569; font-size: 13px; text-align: center; }
+    .intro { font-size: 17px; margin: 0 0 28px 0; color: #0f172a; }
+    .details { border: 1px solid #e2e8f0; border-radius: 16px; padding: 24px; background: #f8fafc; }
+    .detail-row { display: flex; flex-direction: column; margin-bottom: 18px; }
+    .detail-row:last-child { margin-bottom: 0; }
+    .label { font-size: 13px; text-transform: uppercase; letter-spacing: 0.08em; color: #64748b; margin-bottom: 6px; }
+    .value { font-size: 17px; font-weight: 600; color: #0f172a; }
+    .note { margin: 32px 0 12px 0; font-size: 15px; color: #475569; line-height: 1.6; }
+    .cta { text-align: center; margin: 28px 0 10px 0; }
+    .cta a { display: inline-block; padding: 14px 32px; border-radius: 999px; background: #1d4ed8; color: #ffffff; font-weight: 600; text-decoration: none; font-size: 16px; }
+    .footer { padding: 24px 36px 30px 36px; background: #f8fafc; color: #475569; font-size: 13px; text-align: center; line-height: 1.6; }
+    @media (max-width: 600px) {
+      body { padding: 16px; }
+      .header, .content { padding: 28px 24px; }
+      .cta a { width: 100%; }
+    }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="header">
-      <h1>🎯 Nová poptávka je připravena</h1>
-      <p>V účtu Prostormat máte novou rychlou poptávku k prostoru <strong>${venueName}</strong>.</p>
-    </div>
-    <div class="content">
-      <span class="badge">Rychlá poptávka · ${eventTypeLabel}</span>
-
-      <div class="highlight">
-        <p style="margin: 0; font-size: 16px; color: #1e293b;">
-          Kompletní detail je dostupný pouze v administraci Prostormatu. Po přihlášení si prosím poptávku pročtěte a odpovězte klientovi co nejdříve.
+  <div class="wrapper">
+    <div class="card">
+      <div class="header">
+        <h1>Máte novou poptávku na váš prostor ${venueName}</h1>
+        <p>V účtu Prostormat čeká poptávka, která odpovídá vašemu prostoru.</p>
+      </div>
+      <div class="content">
+        <p class="intro">
+          Přihlaste se do administrace a zareagujte co nejdříve. Klienti obvykle vybírají z prvních odpovědí.
+        </p>
+        <div class="details">
+          <div class="detail-row">
+            <span class="label">Název akce</span>
+            <span class="value">${eventTitle}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Počet hostů</span>
+            <span class="value">${guestCountDisplay}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Datum</span>
+            <span class="value">${eventDateText}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Typ akce</span>
+            <span class="value">${eventTypeLabel}</span>
+          </div>
+          ${locationText
+            ? `<div class="detail-row">
+            <span class="label">Preferovaná lokalita</span>
+            <span class="value">${locationText}</span>
+          </div>`
+            : ''}
+        </div>
+        <p class="note">
+          Kompletní detaily (rozpočet, požadavky, kontakt) najdete přímo ve vašem dashboardu.
+        </p>
+        <div class="cta">
+          <a href="${detailUrl}">Otevřít poptávku v administraci</a>
+        </div>
+        <p class="note" style="margin-top: 24px;">
+          Pokud nemáte aktivní členství, po přihlášení vám nabídneme nejrychlejší cestu k jeho aktivaci.
         </p>
       </div>
-
-      <div class="cta">
-        <a href="${detailUrl}">Otevřít poptávku v administraci</a>
-      </div>
-
-      <p style="margin: 28px 0 0 0; font-size: 15px; color: #475569;">
-        Pokud nemáte aktivní roční členství, po přihlášení vám nabídneme nejrychlejší cestu k jeho aktivaci. Aktivní členové mají přístup ke všem detailům i kontaktům.
-      </p>
     </div>
     <div class="footer">
       Prostormat · Největší katalog event prostorů v Praze<br />
@@ -268,15 +333,18 @@ export function generateQuickRequestVenueNotificationEmail(data: QuickRequestVen
 `
 
   const plainText = `
-Nová rychlá poptávka je ve vašem účtu Prostormat.
+Máte novou poptávku na váš prostor ${venueName}
 
-Prostor: ${venueName}
+Název akce: ${eventTitle}
+Počet hostů: ${guestCountDisplay}
+Datum: ${eventDateText}
 Typ akce: ${eventTypeLabel}
+${locationText ? `Preferovaná lokalita: ${locationText}\n` : ''}
 
-Detail naleznete pouze po přihlášení:
+Kompletní detaily najdete ve vašem dashboardu:
 ${detailUrl}
 
-Pokud nemáte aktivní členství, nabídneme vám jeho aktivaci po přihlášení.
+Zareagujte co nejdříve – klienti obvykle vybírají z prvních odpovědí.
 `
 
   return {
@@ -919,6 +987,10 @@ interface QuickRequestVenueNotificationData {
   broadcastId: string
   quickRequest: {
     eventType: string
+    title?: string | null
+    guestCount?: number | string | null
+    eventDate?: Date | string | null
+    locationPreference?: string | null
   }
 }
 

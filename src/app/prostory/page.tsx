@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { Suspense } from "react"
 import type { Metadata } from "next"
+import { getServerSession } from "next-auth"
 import { VenueFilters } from "@/components/venue/venue-filters"
 import { InfiniteVenueList } from "@/components/venue/infinite-venue-list"
 import { db } from "@/lib/db"
@@ -8,6 +9,7 @@ import { buildVenueWhereClause } from "@/lib/venue-filters"
 import { generateOrderSeed, sortVenuesByPriority } from "@/lib/venue-priority"
 import { PageHero } from "@/components/layout/page-hero"
 import { DEFAULT_OG_IMAGE, DEFAULT_OG_IMAGES } from "@/lib/seo"
+import { authOptions } from "@/lib/auth"
 
 interface SearchParams {
   q?: string
@@ -59,13 +61,19 @@ export async function generateMetadata({
   }
 }
 
-async function getInitialVenues(searchParams: SearchParams, orderSeed: number, pageNumber: number) {
+async function getInitialVenues(
+  searchParams: SearchParams,
+  orderSeed: number,
+  pageNumber: number,
+  visibleStatuses: string[]
+) {
   try {
     const where = buildVenueWhereClause({
       q: searchParams.q ?? null,
       type: searchParams.type ?? null,
       district: searchParams.district ?? null,
       capacity: searchParams.capacity ?? null,
+      statuses: visibleStatuses,
       includeSubvenues: false,
     })
 
@@ -129,8 +137,23 @@ function VenueGridSkeleton() {
   )
 }
 
-async function VenueContent({ searchParams, orderSeed, currentPage }: { searchParams: SearchParams, orderSeed: number, currentPage: number }) {
-  const { venues, totalCount, hasMore } = await getInitialVenues(searchParams, orderSeed, currentPage)
+async function VenueContent({
+  searchParams,
+  orderSeed,
+  currentPage,
+  visibleStatuses,
+}: {
+  searchParams: SearchParams
+  orderSeed: number
+  currentPage: number
+  visibleStatuses: string[]
+}) {
+  const { venues, totalCount, hasMore } = await getInitialVenues(
+    searchParams,
+    orderSeed,
+    currentPage,
+    visibleStatuses,
+  )
 
   if (venues.length === 0) {
     return (
@@ -156,6 +179,7 @@ async function VenueContent({ searchParams, orderSeed, currentPage }: { searchPa
         hasMore={hasMore}
         orderSeed={orderSeed}
         initialPage={currentPage}
+        includeHidden={visibleStatuses.includes("hidden")}
       />
       <PaginationLinks
         currentPage={currentPage}
@@ -227,6 +251,9 @@ export default async function VenuesPage({
   searchParams: Promise<SearchParams>
 }) {
   const resolvedSearchParams = await searchParams
+  const session = await getServerSession(authOptions)
+  const isAdmin = session?.user?.role === "admin"
+  const visibleStatuses = isAdmin ? ['published', 'active', 'hidden'] : ['published', 'active']
   const orderSeed = generateOrderSeed()
   const currentPage = Math.max(1, Number.parseInt(resolvedSearchParams.page ?? "1", 10) || 1)
 
@@ -253,7 +280,12 @@ export default async function VenuesPage({
       {/* Venue Grid */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-12 sm:pt-16 pb-8 sm:pb-12">
         <Suspense fallback={<VenueGridSkeleton />}>
-          <VenueContent searchParams={resolvedSearchParams} orderSeed={orderSeed} currentPage={currentPage} />
+          <VenueContent
+            searchParams={resolvedSearchParams}
+            orderSeed={orderSeed}
+            currentPage={currentPage}
+            visibleStatuses={visibleStatuses}
+          />
         </Suspense>
       </div>
     </div>

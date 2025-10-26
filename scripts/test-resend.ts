@@ -175,7 +175,11 @@ async function testAllEmailTemplates() {
     venueSlug: 'test-event-space',
     broadcastId: 'test-broadcast-id',
     quickRequest: {
-      eventType: 'corporate'
+      eventType: 'corporate',
+      title: 'Firemní galavečer',
+      guestCount: 180,
+      eventDate: new Date(Date.now() + 21 * 24 * 60 * 60 * 1000),
+      locationPreference: 'Praha 1',
     }
   }
   

@@ -5,6 +5,7 @@ import { randomUUID } from "crypto"
 import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { sendQuickRequestEmailToVenue } from "@/lib/quick-request-email"
+import { generateQuickRequestVenueNotificationEmail } from "@/lib/email-templates"
 
 const sendSchema = z.object({
   venueId: z.string().optional(),
@@ -73,8 +74,16 @@ export async function POST(
       continue
     }
 
+    const quickRequestPayload = {
+      eventType: broadcast.eventType,
+      title: broadcast.title,
+      guestCount: broadcast.guestCount,
+      eventDate: broadcast.eventDate,
+      locationPreference: broadcast.locationPreference,
+    }
+
     try {
-      const emailId = await sendQuickRequestEmailToVenue(
+      const { emailId, subject } = await sendQuickRequestEmailToVenue(
         {
           id: log.venue.id,
           name: log.venue.name,
@@ -82,9 +91,7 @@ export async function POST(
           contactEmail: log.venue.contactEmail,
         },
         id,
-        {
-          eventType: broadcast.eventType,
-        }
+        quickRequestPayload
       )
 
       await prisma.venueBroadcastLog.update({
@@ -101,7 +108,7 @@ export async function POST(
           id: randomUUID(),
           emailType: "quick_request_venue_notification",
           recipient: log.venue.contactEmail,
-          subject: `Zákazník má zájem o váš prostor! - ${log.venue.name}`,
+          subject,
           status: "sent",
           recipientType: "venue_owner",
           sentBy: session.user.id,
@@ -126,7 +133,12 @@ export async function POST(
           id: randomUUID(),
           emailType: "quick_request_venue_notification",
           recipient: log.venue?.contactEmail ?? "unknown",
-          subject: `Zákazník má zájem o váš prostor! - ${log.venue?.name ?? "Unknown"}`,
+          subject: generateQuickRequestVenueNotificationEmail({
+            venueName: log.venue?.name ?? "Neznámý prostor",
+            venueSlug: log.venue?.slug ?? "neznamy-prostor",
+            broadcastId: id,
+            quickRequest: quickRequestPayload,
+          }).subject,
           status: "failed",
           error: message,
           recipientType: "venue_owner",

@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { getServerSession } from 'next-auth'
 import { db } from '@/lib/db'
 import { buildVenueWhereClause } from '@/lib/venue-filters'
 import { sortVenuesByPriority } from '@/lib/venue-priority'
+import { authOptions } from '@/lib/auth'
 
 const VENUES_PER_PAGE = 20
 
@@ -19,12 +21,19 @@ export async function GET(request: NextRequest) {
     const orderSeed = Number.isFinite(parsedSeed) ? parsedSeed : 0
 
     const skip = (page - 1) * VENUES_PER_PAGE
+    const includeHiddenRequested = searchParams.get('includeHidden') === 'true'
+    const session = includeHiddenRequested ? await getServerSession(authOptions) : null
+    const visibleStatuses =
+      includeHiddenRequested && session?.user?.role === 'admin'
+        ? ['published', 'active', 'hidden']
+        : ['published', 'active']
 
     const where = buildVenueWhereClause({
       q: q ?? null,
       type: type ?? null,
       district: district ?? null,
       capacity: capacity ?? null,
+      statuses: visibleStatuses,
       includeSubvenues: false,
     })
 

@@ -3,6 +3,10 @@ import { generateQuickRequestVenueNotificationEmail } from "@/lib/email-template
 
 interface QuickRequestContact {
   eventType: string
+  title?: string | null
+  guestCount?: number | null
+  eventDate?: Date | string | null
+  locationPreference?: string | null
 }
 
 interface QuickRequestVenueInfo {
@@ -27,6 +31,10 @@ export async function sendQuickRequestEmailToVenue(
     broadcastId,
     quickRequest: {
       eventType: request.eventType,
+      title: request.title,
+      guestCount: request.guestCount,
+      eventDate: request.eventDate,
+      locationPreference: request.locationPreference,
     },
   })
 
@@ -42,5 +50,8 @@ export async function sendQuickRequestEmailToVenue(
     throw new Error(`Resend nevrátil email ID pro ${venue.contactEmail}`)
   }
 
-  return emailResult.data.id
+  return {
+    emailId: emailResult.data.id,
+    subject: emailContent.subject,
+  }
 }

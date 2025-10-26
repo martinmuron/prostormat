@@ -29,6 +29,7 @@ interface InfiniteVenueListProps {
   hasMore: boolean
   orderSeed: number
   initialPage: number
+  includeHidden?: boolean
 }
 
 export function InfiniteVenueList({
@@ -37,6 +38,7 @@ export function InfiniteVenueList({
   hasMore: initialHasMore,
   orderSeed,
   initialPage,
+  includeHidden = false,
 }: InfiniteVenueListProps) {
   const [venues, setVenues] = useState<Venue[]>(initialVenues)
   const [page, setPage] = useState(initialPage)
@@ -49,7 +51,7 @@ export function InfiniteVenueList({
     setVenues(initialVenues)
     setPage(initialPage)
     setHasMore(initialHasMore)
-  }, [initialVenues, initialHasMore, initialPage, orderSeed])
+  }, [initialVenues, initialHasMore, initialPage, orderSeed, includeHidden])
 
   const loadMoreVenues = useCallback(async () => {
     if (loading || !hasMore) return
@@ -67,6 +69,10 @@ export function InfiniteVenueList({
         }
       })
 
+      if (includeHidden) {
+        params.set('includeHidden', 'true')
+      }
+
       const response = await fetch(`/api/venues/paginated?${params}`)
       const data = await response.json()
 
@@ -83,7 +89,7 @@ export function InfiniteVenueList({
     } finally {
       setLoading(false)
     }
-  }, [hasMore, loading, orderSeed, page, searchParams])
+  }, [hasMore, includeHidden, loading, orderSeed, page, searchParams])
 
   // Load more venues when user scrolls near the bottom
   useEffect(() => {

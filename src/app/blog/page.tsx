@@ -139,7 +139,7 @@ function BlogPostCard({ post, className }: { post: BlogPostWithRelations; classN
           </div>
 
           <span className="mt-auto inline-flex items-center justify-between rounded-full border border-blue-100 bg-blue-50 px-4 py-2 text-sm font-semibold text-blue-700 transition-all duration-300 group-hover:border-blue-600 group-hover:bg-blue-600 group-hover:text-white group-hover:shadow-lg">
-            <span>Objevit celý článek</span>
+            <span>Otevřít celý článek</span>
             <ChevronRight className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
           </span>
         </CardContent>
@@ -245,15 +245,13 @@ async function BlogGrid() {
                 </Badge>
               )) : null}
             </div>
-            <div className="flex flex-wrap gap-3">
+            <div>
               <Link
                 href={`/blog/${featuredPost.slug}`}
-                className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 px-7 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-600/25 transition-transform hover:-translate-y-0.5 hover:shadow-xl"
+                className="inline-flex items-center justify-center gap-2 rounded-full bg-blue-600 px-7 py-3 text-sm font-semibold text-white shadow-lg transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl"
               >
                 Otevřít celý článek
-              </Link>
-              <Link href="/prostory" className="inline-flex items-center justify-center rounded-full border border-gray-300 px-6 py-3 text-sm font-semibold text-gray-700 hover:border-gray-400 transition-colors">
-                Prohlédnout prostory
+                <ChevronRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
               </Link>
             </div>
           </div>

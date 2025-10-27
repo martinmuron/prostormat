@@ -702,7 +702,7 @@ const [updatingPaidId, setUpdatingPaidId] = useState<string | null>(null);
                             className="flex items-center gap-1"
                           >
                             <ExternalLink className="h-3 w-3" />
-                            Zobrazit
+                            Zobrazit jako zákazník
                           </a>
                         </Button>
 

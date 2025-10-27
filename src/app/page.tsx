@@ -1,7 +1,6 @@
 import type { Prisma } from "@prisma/client"
 import { Suspense } from "react"
 import Link from "next/link"
-import { getServerSession } from "next-auth"
 import { Button } from "@/components/ui/button"
 import { VenueCard } from "@/components/venue/venue-card"
 import { ScrollReveal } from "@/components/ui/scroll-reveal"
@@ -9,9 +8,8 @@ import { HeroSearch } from "@/components/ui/hero-search"
 import { Skeleton } from "@/components/ui/skeleton"
 import { db } from "@/lib/db"
 import { Upload, MessageSquare, Euro, ArrowRight, Zap, Clock } from "lucide-react"
-import { authOptions } from "@/lib/auth"
 
-// Force dynamic rendering to avoid caching issues
+// Revalidate homepage data every two minutes
 export const revalidate = 120
 
 const featuredVenueSelect = {
@@ -33,10 +31,7 @@ type FeaturedVenue = Prisma.VenueGetPayload<{ select: typeof featuredVenueSelect
 
 async function getFeaturedVenues() {
   try {
-    const session = await getServerSession(authOptions)
-    const visibleStatuses = session?.user?.role === "admin"
-      ? ['published', 'active', 'hidden']
-      : ['published', 'active']
+    const visibleStatuses = ['published', 'active']
 
     const desiredCount = 12
     const selected: FeaturedVenue[] = []

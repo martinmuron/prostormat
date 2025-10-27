@@ -1,7 +1,6 @@
 import Link from "next/link"
 import { Suspense } from "react"
 import type { Metadata } from "next"
-import { getServerSession } from "next-auth"
 import { VenueFilters } from "@/components/venue/venue-filters"
 import { InfiniteVenueList } from "@/components/venue/infinite-venue-list"
 import { db } from "@/lib/db"
@@ -9,7 +8,8 @@ import { buildVenueWhereClause } from "@/lib/venue-filters"
 import { generateOrderSeed, sortVenuesByPriority } from "@/lib/venue-priority"
 import { PageHero } from "@/components/layout/page-hero"
 import { DEFAULT_OG_IMAGE, DEFAULT_OG_IMAGES } from "@/lib/seo"
-import { authOptions } from "@/lib/auth"
+
+export const dynamic = "force-dynamic"
 
 interface SearchParams {
   q?: string
@@ -20,6 +20,7 @@ interface SearchParams {
 }
 
 const VENUES_PER_PAGE = 20
+const PUBLIC_STATUSES: string[] = ["published", "active"]
 
 export async function generateMetadata({
   searchParams,
@@ -65,7 +66,6 @@ async function getInitialVenues(
   searchParams: SearchParams,
   orderSeed: number,
   pageNumber: number,
-  visibleStatuses: string[]
 ) {
   try {
     const where = buildVenueWhereClause({
@@ -73,7 +73,7 @@ async function getInitialVenues(
       type: searchParams.type ?? null,
       district: searchParams.district ?? null,
       capacity: searchParams.capacity ?? null,
-      statuses: visibleStatuses,
+      statuses: PUBLIC_STATUSES,
       includeSubvenues: false,
     })
 
@@ -141,18 +141,15 @@ async function VenueContent({
   searchParams,
   orderSeed,
   currentPage,
-  visibleStatuses,
 }: {
   searchParams: SearchParams
   orderSeed: number
   currentPage: number
-  visibleStatuses: string[]
 }) {
   const { venues, totalCount, hasMore } = await getInitialVenues(
     searchParams,
     orderSeed,
     currentPage,
-    visibleStatuses,
   )
 
   if (venues.length === 0) {
@@ -179,7 +176,7 @@ async function VenueContent({
         hasMore={hasMore}
         orderSeed={orderSeed}
         initialPage={currentPage}
-        includeHidden={visibleStatuses.includes("hidden")}
+        includeHidden={false}
       />
       <PaginationLinks
         currentPage={currentPage}
@@ -251,9 +248,6 @@ export default async function VenuesPage({
   searchParams: Promise<SearchParams>
 }) {
   const resolvedSearchParams = await searchParams
-  const session = await getServerSession(authOptions)
-  const isAdmin = session?.user?.role === "admin"
-  const visibleStatuses = isAdmin ? ['published', 'active', 'hidden'] : ['published', 'active']
   const orderSeed = generateOrderSeed()
   const currentPage = Math.max(1, Number.parseInt(resolvedSearchParams.page ?? "1", 10) || 1)
 
@@ -284,7 +278,6 @@ export default async function VenuesPage({
             searchParams={resolvedSearchParams}
             orderSeed={orderSeed}
             currentPage={currentPage}
-            visibleStatuses={visibleStatuses}
           />
         </Suspense>
       </div>

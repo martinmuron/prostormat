@@ -116,7 +116,13 @@ export function TermsOfUsePage() {
                       Tyto podmínky použití jsou účinné od 1. ledna 2024.
                     </p>
                     <p className="text-gray-600 text-sm mt-2">
-                      Kontakt: info@prostormat.cz | +420 775 654 639
+                      Future Developments s.r.o., IČO: 12345678
+                    </p>
+                    <p className="text-gray-600 text-sm">
+                      Adresa: Rybná 716/24, Staré Město, 110 00 Praha (virtuální adresa)
+                    </p>
+                    <p className="text-gray-600 text-sm">
+                      Kontakt: info@prostormat.cz
                     </p>
                   </div>
                 </div>

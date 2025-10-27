@@ -30,9 +30,10 @@ export const metadata: Metadata = {
 export default function ContactRoute() {
   const contactSchema = generateContactPageSchema({
     email: "info@prostormat.cz",
-    telephone: "+420 775 654 639",
     address: {
-      addressLocality: "Praha",
+      streetAddress: "Rybná 716/24",
+      addressLocality: "Praha 1 - Staré Město",
+      postalCode: "110 00",
       addressCountry: "CZ",
     },
   })

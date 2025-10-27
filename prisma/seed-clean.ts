@@ -58,7 +58,6 @@ async function main() {
       password: testPassword,
       role: 'user',
       company: 'Test Company',
-      phone: '+420 775 654 639',
     },
   })
 

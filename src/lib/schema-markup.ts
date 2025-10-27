@@ -172,7 +172,7 @@ export function generateFaqSchema(items: FaqItem[]) {
 interface ContactSchemaOptions {
   url?: string
   email: string
-  telephone: string
+  telephone?: string
   address?: {
     streetAddress?: string
     postalCode?: string
@@ -187,6 +187,18 @@ export function generateContactPageSchema({
   telephone,
   address,
 }: ContactSchemaOptions) {
+  const contactPoint: Record<string, unknown> = {
+    '@type': 'ContactPoint',
+    contactType: 'customer support',
+    email,
+    areaServed: 'CZ',
+    availableLanguage: ['cs', 'en'],
+  }
+
+  if (telephone) {
+    contactPoint.telephone = telephone
+  }
+
   return {
     '@context': 'https://schema.org',
     '@type': 'ContactPage',
@@ -195,14 +207,7 @@ export function generateContactPageSchema({
       '@type': 'Organization',
       name: 'Prostormat',
       url: SITE_URL,
-      contactPoint: {
-        '@type': 'ContactPoint',
-        contactType: 'customer support',
-        email,
-        telephone,
-        areaServed: 'CZ',
-        availableLanguage: ['cs', 'en'],
-      },
+      contactPoint,
       address: address
         ? {
             '@type': 'PostalAddress',

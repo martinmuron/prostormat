@@ -34,7 +34,7 @@ export const faqItems: FAQItem[] = [
   },
   {
     question: "Jak mohu kontaktovat podporu?",
-    answer: "Napište nám na info@prostormat.cz nebo zavolejte na +420 775 654 639. Jsme vám k dispozici každý pracovní den od 9:00 do 18:00."
+    answer: "Napište nám na info@prostormat.cz. Jsme vám k dispozici každý pracovní den od 9:00 do 18:00 a ozveme se co nejdříve."
   },
   {
     question: "Mohu upravit profil svého prostoru?",

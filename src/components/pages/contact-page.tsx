@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Mail, Phone } from 'lucide-react'
+import { Mail, MapPin } from 'lucide-react'
 import { ScrollReveal } from "@/components/ui/scroll-reveal"
 import { PageHero } from "@/components/layout/page-hero"
 import { Button } from "@/components/ui/button"
@@ -78,23 +78,13 @@ export function ContactPage() {
         title="Jsme připraveni vám pomoci"
         subtitle="Máte dotaz nebo potřebujete pomoc? Ozvěte se a náš tým se vám co nejdříve ozve zpět."
         actions={
-          <>
-            <Button
-              asChild
-              size="lg"
-              className="magnetic-button hover-lift rounded-2xl px-8 py-4 text-base font-semibold shadow-lg bg-black text-white hover:bg-gray-900"
-            >
-              <a href="mailto:info@prostormat.cz">Napsat email</a>
-            </Button>
-            <Button
-              asChild
-              variant="outline"
-              size="lg"
-              className="magnetic-button hover-lift rounded-2xl px-8 py-4 text-base font-semibold border-2 border-black text-black hover:bg-black hover:text-white"
-            >
-              <a href="tel:+420775654639">Zavolat</a>
-            </Button>
-          </>
+          <Button
+            asChild
+            size="lg"
+            className="magnetic-button hover-lift rounded-2xl px-8 py-4 text-base font-semibold shadow-lg bg-black text-white hover:bg-gray-900"
+          >
+            <a href="mailto:info@prostormat.cz">Napsat email</a>
+          </Button>
         }
       />
 
@@ -131,20 +121,20 @@ export function ContactPage() {
                   </div>
                 </div>
 
-                {/* Phone */}
+                {/* Address */}
                 <div className="flex items-start space-x-4 group">
                   <div className="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-all duration-300">
-                    <Phone className="h-8 w-8 text-green-600" />
+                    <MapPin className="h-8 w-8 text-green-600" />
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold text-gray-900">Telefon</h3>
-                    <p className="text-gray-600 mb-2">Zavolejte nám na</p>
-                    <a
-                      href="tel:+420775654639"
-                      className="text-blue-600 hover:text-blue-700 font-medium text-lg"
-                    >
-                      +420 775 654 639
-                    </a>
+                    <h3 className="text-xl font-bold text-gray-900">Sídlo společnosti</h3>
+                    <p className="text-gray-600 mb-2">
+                      Future Developments s.r.o.
+                    </p>
+                    <p className="text-gray-600">
+                      Rybná 716/24, Staré Město<br />
+                      110 00 Praha (virtuální adresa)
+                    </p>
                   </div>
                 </div>
               </div>

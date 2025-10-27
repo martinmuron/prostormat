@@ -831,7 +831,6 @@ export function generateContactFormThankYouEmail(data: ContactFormThankYouData) 
             <div class="contact-info">
                 <h3 style="margin: 0 0 15px 0; color: #212529;">Potřebujete okamžitou pomoc?</h3>
                 <p style="margin: 0;"><strong>📧 Email:</strong> <a href="mailto:info@prostormat.cz" style="color: #000;">info@prostormat.cz</a></p>
-                <p style="margin: 5px 0 0 0;"><strong>📞 Telefon:</strong> <a href="tel:+420775654639" style="color: #000;">+420 775 654 639</a></p>
                 <p style="margin: 5px 0 0 0; color: #6c757d; font-size: 14px;">Pracovní doba: Pondělí-Pátek 9:00-18:00</p>
             </div>
         </div>
@@ -865,7 +864,6 @@ Mezitím můžete:
 
 Potřebujete okamžitou pomoc?
 Email: info@prostormat.cz
-Telefon: +420 775 654 639
 Pracovní doba: Pondělí-Pátek 9:00-18:00
 
 --

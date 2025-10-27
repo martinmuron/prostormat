@@ -283,7 +283,7 @@ export function VenueBroadcastPage() {
                       value={formData.contactPhone}
                       onChange={handleChange}
                       className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                      placeholder="+420 775 654 639"
+                      placeholder="+420 123 456 789"
                     />
                   </div>
                 </div>

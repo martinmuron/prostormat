@@ -3,7 +3,7 @@ import type { Metadata } from "next"
 import { Button } from "@/components/ui/button"
 import { ScrollReveal } from "@/components/ui/scroll-reveal"
 import { PageHero } from "@/components/layout/page-hero"
-import { Check, Star, Mail, Sparkles } from "lucide-react"
+import { Check, Star, Mail, Sparkles, Image as ImageIcon } from "lucide-react"
 import { DEFAULT_OG_IMAGE, DEFAULT_OG_IMAGES } from "@/lib/seo"
 import { getTopPrioritySoldOut } from "@/lib/site-settings"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
@@ -227,7 +227,7 @@ export default async function PricingPage() {
               </div>
             </ScrollReveal>
 
-            {/* AI Package */}
+            {/* AI Packages */}
             <ScrollReveal delay={250}>
               <div className="bg-gray-100 rounded-3xl p-8 border border-gray-200 relative overflow-hidden group h-full flex flex-col text-gray-600 opacity-90 pointer-events-none">
                 <div className="absolute top-4 right-4">
@@ -239,10 +239,33 @@ export default async function PricingPage() {
                   <Sparkles className="w-8 h-8 text-gray-600" />
                 </div>
                 <h3 className="text-title-3 font-bold text-gray-700 mb-3 text-center">
-                  AI Matching Priority + AI Location Manager
+                  AI Matching
                 </h3>
                 <p className="text-callout text-gray-600 leading-relaxed text-center mb-4">
-                  Automatické párování poptávek a AI asistence pro správu obsazenosti vašich prostorů.
+                  Automatické párování poptávek a vyhledávání pomocí AI.
+                </p>
+                <p className="text-sm text-gray-500 text-center">
+                  Prémiové funkce s AI podporou, které brzy spustíme.
+                </p>
+                <div className="mt-auto" />
+              </div>
+            </ScrollReveal>
+
+            <ScrollReveal delay={280}>
+              <div className="bg-gray-100 rounded-3xl p-8 border border-gray-200 relative overflow-hidden group h-full flex flex-col text-gray-600 opacity-90 pointer-events-none">
+                <div className="absolute top-4 right-4">
+                  <span className="bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-sm font-semibold">
+                    Připravujeme
+                  </span>
+                </div>
+                <div className="w-16 h-16 bg-gradient-to-br from-gray-200 to-gray-300 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                  <ImageIcon className="w-8 h-8 text-gray-600" />
+                </div>
+                <h3 className="text-title-3 font-bold text-gray-700 mb-3 text-center">
+                  AI Visual Event
+                </h3>
+                <p className="text-callout text-gray-600 leading-relaxed text-center mb-4">
+                  Popište svou akci a uvidíte ji přímo v prostoru pomocí AI.
                 </p>
                 <p className="text-sm text-gray-500 text-center">
                   Prémiové funkce s AI podporou, které brzy spustíme.

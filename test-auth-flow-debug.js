@@ -23,7 +23,6 @@ async function testAuthFlowDebug() {
     const timestamp = Date.now();
     const testEmail = `test-${timestamp}@prostormat.cz`;
     const testPassword = 'TestPassword123';
-    const testName = 'Test User';
 
     console.log('📧 Test credentials:');
     console.log(`   Email: ${testEmail}`);
@@ -48,11 +47,6 @@ async function testAuthFlowDebug() {
 
     // Fill registration form
     console.log('   ✓ Filling registration form...');
-
-    // Find and fill name field
-    const nameInput = page.locator('input[type="text"]').first();
-    await nameInput.fill(testName);
-    console.log('   ✓ Name field filled');
 
     // Find and fill email field
     const emailInput = page.locator('input[type="email"]');

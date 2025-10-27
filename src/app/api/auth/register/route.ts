@@ -7,7 +7,6 @@ import { trackRegistration } from "@/lib/meta-conversions-api"
 import { trackGA4ServerRegistration } from "@/lib/ga4-server-tracking"
 
 const registerSchema = z.object({
-  name: z.string().min(2, "Jméno musí mít alespoň 2 znaky"),
   email: z.string().email("Neplatná e-mailová adresa"),
   password: z.string().min(6, "Heslo musí mít alespoň 6 znaků"),
   company: z.string().optional().nullable(),
@@ -38,7 +37,7 @@ export async function POST(request: Request) {
     const user = await db.user.create({
       data: {
         id: crypto.randomUUID(),
-        name: validatedData.name,
+        name: validatedData.email,
         email: validatedData.email,
         password: hashedPassword,
         role: "user", // All registrations are "user" role
@@ -67,11 +66,8 @@ export async function POST(request: Request) {
 
     // Track registration event in Meta (don't block on failure)
     try {
-      const [firstName, ...lastNameParts] = validatedData.name.split(' ')
       await trackRegistration({
         email: user.email,
-        firstName: firstName,
-        lastName: lastNameParts.join(' ') || undefined,
       }, request)
     } catch (metaError) {
       console.error('Failed to track Meta registration event:', metaError)

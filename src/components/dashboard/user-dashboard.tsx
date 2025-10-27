@@ -471,7 +471,7 @@ export function UserDashboard({ data }: UserDashboardProps) {
     <div>
       <div className="mb-8">
         <h1 className="text-title-1 text-gray-900 mb-2">
-          Vítejte zpět, {user.name}!
+          Vítejte zpět, {user.email}!
         </h1>
         <p className="text-body text-gray-600">
           Přehled vašich aktivit na Prostormatu

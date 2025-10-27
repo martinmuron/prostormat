@@ -168,7 +168,7 @@ export default async function UsersPage() {
                 <TableRow key={user.id}>
                   <TableCell>
                     <div>
-                      <div className="font-medium">{user.name || "Bez jména"}</div>
+                      <div className="font-medium">{user.name || user.email}</div>
                       <div className="text-sm text-gray-500">{user.email}</div>
                       {user.phone && (
                         <div className="text-sm text-gray-500">{user.phone}</div>

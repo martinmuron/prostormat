@@ -160,7 +160,7 @@ export function VenueManagerDashboard({ data }: VenueManagerDashboardProps) {
     <div>
       <div className="mb-8">
         <h1 className="text-title-1 text-gray-900 mb-2">
-          Vítejte zpět, {user.name}!
+          Vítejte zpět, {user.email}!
         </h1>
         <p className="text-body text-gray-600">
           Správa vašich event prostorů a předplatného
@@ -519,10 +519,6 @@ export function VenueManagerDashboard({ data }: VenueManagerDashboardProps) {
             <div>
               <h3 className="text-lg font-medium text-gray-900 mb-4">Informace o účtu</h3>
               <div className="space-y-3">
-                <div>
-                  <label className="text-sm text-gray-600">Jméno</label>
-                  <p className="text-gray-900">{user.name}</p>
-                </div>
                 <div>
                   <label className="text-sm text-gray-600">E-mail</label>
                   <p className="text-gray-900">{user.email}</p>

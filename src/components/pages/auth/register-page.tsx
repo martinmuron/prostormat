@@ -13,7 +13,6 @@ export function RegisterPage() {
   const router = useRouter()
 
   const [formData, setFormData] = useState({
-    name: "",
     email: "",
     password: "",
     confirmPassword: "",
@@ -45,7 +44,6 @@ export function RegisterPage() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          name: formData.name,
           email: formData.email,
           password: formData.password,
         }),
@@ -102,34 +100,18 @@ export function RegisterPage() {
             )}
 
             <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm sm:text-callout font-medium text-black mb-2">
-                    Uživatelské jméno *
-                  </label>
-                  <Input
-                    type="text"
-                    value={formData.name}
-                    onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
-                    placeholder="Vaše uživatelské jméno"
-                    required
-                    className="h-11 sm:h-12"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm sm:text-callout font-medium text-black mb-2">
-                    E-mail *
-                  </label>
-                  <Input
-                    type="email"
-                    value={formData.email}
-                    onChange={(e) => setFormData((prev) => ({ ...prev, email: e.target.value }))}
-                    placeholder="vas@email.cz"
-                    required
-                    className="h-11 sm:h-12"
-                  />
-                </div>
+              <div>
+                <label className="block text-sm sm:text-callout font-medium text-black mb-2">
+                  E-mail *
+                </label>
+                <Input
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, email: e.target.value }))}
+                  placeholder="vas@email.cz"
+                  required
+                  className="h-11 sm:h-12"
+                />
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

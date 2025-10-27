@@ -149,7 +149,7 @@ export default async function VenueInquiryPage({ params }: VenueInquiryPageProps
                 <dl className="space-y-2 text-sm leading-relaxed">
                   <div>
                     <dt className="font-medium text-muted-foreground">Jméno</dt>
-                    <dd>{inquiry.user.name ?? "Neuvedeno"}</dd>
+                    <dd>{inquiry.user.name ?? inquiry.user.email ?? "Neuvedeno"}</dd>
                   </div>
                   <div>
                     <dt className="font-medium text-muted-foreground">E-mail</dt>

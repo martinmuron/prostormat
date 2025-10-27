@@ -12,7 +12,6 @@ async function testAuthFlow() {
     const timestamp = Date.now();
     const testEmail = `test-${timestamp}@prostormat.cz`;
     const testPassword = 'TestPassword123';
-    const testName = 'Test User';
 
     console.log('📧 Test credentials:');
     console.log(`   Email: ${testEmail}`);
@@ -33,7 +32,6 @@ async function testAuthFlow() {
 
     // Fill registration form
     console.log('   ✓ Filling registration form...');
-    await page.fill('input[type="text"][placeholder*="jméno" i]', testName);
     await page.fill('input[type="email"]', testEmail);
     await page.fill('input[type="password"]:first-of-type', testPassword);
     await page.fill('input[type="password"]:last-of-type', testPassword);

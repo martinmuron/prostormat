@@ -249,8 +249,7 @@ function AddVenuePageContent() {
 
     if (session?.user) {
       setIsLoggedIn(true)
-      // Pre-fill user data
-      if (session.user.name) setValue('userName', session.user.name)
+      // Pre-fill available user data
       if (session.user.email) setValue('userEmail', session.user.email)
       // Phone is not available in session, will be handled in form data preparation
     }
@@ -730,7 +729,7 @@ function AddVenuePageContent() {
       const uploadedImageUrls = await uploadImages()
 
       const submitData: PaymentData = {
-        userName: isLoggedIn ? session?.user?.name : validatedData.userName,
+        userName: isLoggedIn ? null : validatedData.userName,
         userEmail: isLoggedIn ? session?.user?.email : validatedData.userEmail,
         userPassword: isLoggedIn ? undefined : validatedData.userPassword,
         userPhone: validatedData.userPhone,
@@ -1131,7 +1130,7 @@ function AddVenuePageContent() {
                     <CheckCircle className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
                     <div>
                       <p className="text-sm font-medium text-green-900 mb-1">
-                        Jste přihlášeni jako: {session?.user?.name || session?.user?.email}
+                        Jste přihlášeni jako: {session?.user?.email}
                       </p>
                       <p className="text-sm text-green-800">
                         Prostor bude přiřazen k vašemu účtu. Nemusíte vyplňovat účtové údaje.

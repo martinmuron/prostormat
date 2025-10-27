@@ -217,7 +217,7 @@ export default function ManualAddVenuePage() {
                   <SelectContent>
                     {users.map((user) => (
                       <SelectItem key={user.id} value={user.id}>
-                        {user.name || 'Bez jména'} ({user.email})
+                        {user.name ? `${user.name} (${user.email})` : user.email}
                       </SelectItem>
                     ))}
                   </SelectContent>

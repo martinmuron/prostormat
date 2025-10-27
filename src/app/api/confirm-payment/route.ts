@@ -334,7 +334,7 @@ export async function POST(request: NextRequest) {
           html: `
             <h2>Dorazila žádost o převzetí listingu</h2>
             <p><strong>Listing:</strong> ${existingVenue.name}</p>
-            <p><strong>Žadatel:</strong> ${venueData.userName || 'Neuvedeno'} (${venueData.userEmail})</p>
+            <p><strong>Žadatel:</strong> ${venueData.userName ? `${venueData.userName} (${venueData.userEmail})` : venueData.userEmail}</p>
             <p><strong>Adresa:</strong> ${venueData.address}</p>
             <p><strong>Platba:</strong> ✅ Přijata (12,000 CZK)</p>
             <p>Žádost je k dispozici v administraci v detailu listingu.</p>
@@ -550,7 +550,7 @@ export async function POST(request: NextRequest) {
         html: `
           <h2>Nový prostor byl přidán a zaplacen</h2>
           <p><strong>Prostor:</strong> ${venueData.name}</p>
-          <p><strong>Majitel:</strong> ${venueData.userName}</p>
+          <p><strong>Majitel:</strong> ${venueData.userName || venueData.userEmail}</p>
           <p><strong>Email:</strong> ${venueData.userEmail}</p>
           <p><strong>Adresa:</strong> ${venueData.address}</p>
           <p><strong>Platba:</strong> ✅ Úspěšně zaplaceno (12,000 CZK)</p>

@@ -173,9 +173,9 @@ export async function POST(request: NextRequest) {
         html: `
           <h2>Byl manuálně vytvořen nový prostor</h2>
           <p><strong>Prostor:</strong> ${name}</p>
-          <p><strong>Majitel:</strong> ${user.name || 'Bez jména'} (${user.email})</p>
+          <p><strong>Majitel:</strong> ${user.name ? `${user.name} (${user.email})` : user.email}</p>
           <p><strong>Adresa:</strong> ${address}, ${district}</p>
-          <p><strong>Vytvořil:</strong> ${session.user.name} (${session.user.email})</p>
+          <p><strong>Vytvořil:</strong> ${session.user.email}</p>
           <p><strong>Platba:</strong> ${paymentAmount} CZK (${new Date(paymentDate).toLocaleDateString('cs-CZ')})</p>
           ${paymentNote ? `<p><strong>Poznámka k platbě:</strong> ${paymentNote}</p>` : ''}
 

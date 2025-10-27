@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { LogIn, UserPlus, Mail, Lock, User, Eye, EyeOff } from "lucide-react"
+import { LogIn, UserPlus, Mail, Lock, Eye, EyeOff } from "lucide-react"
 
 interface LoginModalProps {
   isOpen: boolean
@@ -31,7 +31,6 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
 
   // Register form state
   const [registerData, setRegisterData] = useState({
-    name: "",
     email: "",
     password: "",
     confirmPassword: "",
@@ -85,7 +84,6 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          name: registerData.name,
           email: registerData.email,
           password: registerData.password,
         }),
@@ -211,22 +209,6 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
 
           <TabsContent value="register" className="space-y-4">
             <form onSubmit={handleRegister} className="space-y-4">
-              <div>
-                <Label htmlFor="register-name">Jméno a příjmení</Label>
-                <div className="relative">
-                  <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                  <Input
-                    id="register-name"
-                    type="text"
-                    placeholder="Jan Novák"
-                    value={registerData.name}
-                    onChange={(e) => setRegisterData(prev => ({ ...prev, name: e.target.value }))}
-                    className="pl-10"
-                    required
-                  />
-                </div>
-              </div>
-
               <div>
                 <Label htmlFor="register-email">Email</Label>
                 <div className="relative">

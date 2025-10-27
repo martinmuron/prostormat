@@ -108,7 +108,7 @@ export default async function UserProfilePage({
             </Avatar>
             <div className="space-y-2">
               <div>
-                <h2 className="text-xl font-semibold">{user.name || "Bez jména"}</h2>
+                <h2 className="text-xl font-semibold">{user.name || user.email}</h2>
                 <Badge variant="outline">
                   {roleLabels[user.role as keyof typeof roleLabels] || user.role}
                 </Badge>

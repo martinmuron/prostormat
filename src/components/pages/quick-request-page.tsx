@@ -449,7 +449,6 @@ export function QuickRequestPage() {
             if (session?.user) {
               setFormData(prev => ({
                 ...prev,
-                contactName: session.user.name || prev.contactName,
                 contactEmail: session.user.email || prev.contactEmail,
               }))
             }

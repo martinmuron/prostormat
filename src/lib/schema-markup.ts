@@ -95,7 +95,7 @@ export function generateOrganizationSchema() {
     sameAs: [
       // Add social media URLs when available
       // 'https://www.facebook.com/prostormat',
-      // 'https://www.instagram.com/prostormat',
+      'https://www.instagram.com/prostormatcz',
     ],
   }
 }

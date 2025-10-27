@@ -83,7 +83,7 @@ export function Header() {
               </>
             )}
             <Link
-              href="https://www.instagram.com/prostormat"
+              href="https://www.instagram.com/prostormatcz"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-gray-200 text-gray-700 transition hover:border-black hover:bg-black hover:text-white"
@@ -104,7 +104,7 @@ export function Header() {
             )}
 
             <Link
-              href="https://www.instagram.com/prostormat"
+              href="https://www.instagram.com/prostormatcz"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-gray-200 text-gray-700 transition hover:border-black hover:bg-black hover:text-white md:hidden"
@@ -151,7 +151,7 @@ export function Header() {
                     </div>
                     <div className="px-4 pt-4">
                       <Link
-                        href="https://www.instagram.com/prostormat"
+                        href="https://www.instagram.com/prostormatcz"
                         target="_blank"
                         rel="noopener noreferrer"
                         onClick={closeMenu}
@@ -195,18 +195,18 @@ export function Header() {
                       </>
                     ) : (
                       <>
-                        <Link href="/prihlaseni" onClick={closeMenu}>
+                        <Link href="/prihlaseni" onClick={closeMenu} className="block">
                           <Button variant="outline" size="lg" className="w-full rounded-xl border-gray-200">
                             Přihlásit se
                           </Button>
                         </Link>
-                        <Link href="/registrace" onClick={closeMenu}>
+                        <Link href="/registrace" onClick={closeMenu} className="block">
                           <Button size="lg" className="w-full rounded-xl bg-black text-white transition hover:bg-gray-800">
                             Registrace
                           </Button>
                         </Link>
-                        <Link href="/pridat-prostor" onClick={closeMenu}>
-                          <Button variant="outline" size="lg" className="mt-2 w-full rounded-xl border-gray-200">
+                        <Link href="/pridat-prostor" onClick={closeMenu} className="block">
+                          <Button variant="outline" size="lg" className="w-full rounded-xl border-gray-200">
                             <Plus className="mr-2 h-5 w-5" />
                             Přidat prostor
                           </Button>

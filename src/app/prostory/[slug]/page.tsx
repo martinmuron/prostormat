@@ -431,6 +431,22 @@ export default async function VenueDetailPage({
                 </CardHeader>
                 <CardContent>
                   <VenueContactForm venueId={venue.id} venueName={venue.name} />
+                  {!venue.paid && (
+                    <div className="mt-6 rounded-xl border border-blue-200 bg-blue-50 p-4 text-sm text-blue-800">
+                      <p className="font-semibold text-blue-900 mb-2">
+                        Provozujete prostor {venue.name}?
+                      </p>
+                      <p className="mb-3">
+                        Převzetím listingu získáte kontrolu nad informacemi, kontakty i poptávkami.
+                      </p>
+                      <Link
+                        href={`/pridat-prostor?claimVenueId=${venue.id}`}
+                        className="inline-flex items-center justify-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-blue-700"
+                      >
+                        Převzít listing nyní
+                      </Link>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </div>

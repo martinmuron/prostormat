@@ -8,6 +8,7 @@ import { randomUUID } from "crypto"
 import { resend } from "@/lib/resend"
 import { generateQuickRequestInternalNotificationEmail } from "@/lib/email-templates"
 import { trackBulkFormSubmit } from "@/lib/meta-conversions-api"
+import { trackGA4ServerLead } from "@/lib/ga4-server-tracking"
 
 const quickRequestSchema = z.object({
   eventType: z.string().min(1, "Event type is required"),
@@ -230,6 +231,23 @@ export async function POST(request: Request) {
       }, request)
     } catch (metaError) {
       console.error('Failed to track Meta bulk form submit event:', metaError)
+      // Continue anyway - request was successful
+    }
+
+    // Track bulk form submission in GA4 (don't block on failure)
+    try {
+      await trackGA4ServerLead({
+        userId: session?.user?.id,
+        formType: 'bulk_request',
+        eventType: validatedData.eventType,
+        guestCount: validatedData.guestCount,
+        location: validatedData.locationPreference,
+        budgetRange: validatedData.budgetRange,
+        email: validatedData.contactEmail,
+        request,
+      })
+    } catch (ga4Error) {
+      console.error('Failed to track GA4 bulk form submit event:', ga4Error)
       // Continue anyway - request was successful
     }
 

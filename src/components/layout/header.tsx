@@ -3,7 +3,6 @@
 import { useState } from "react"
 import Link from "next/link"
 import { useSession, signOut } from "next-auth/react"
-import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Logo } from "@/components/ui/logo"
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
@@ -27,11 +26,6 @@ const navLinks = [
 export function Header() {
   const { data: session, status } = useSession()
   const [menuOpen, setMenuOpen] = useState(false)
-  const pathname = usePathname()
-
-  if (pathname.startsWith("/dashboard") || pathname.startsWith("/admin")) {
-    return null
-  }
 
   const closeMenu = () => setMenuOpen(false)
 

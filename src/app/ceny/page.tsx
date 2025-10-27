@@ -5,6 +5,9 @@ import { ScrollReveal } from "@/components/ui/scroll-reveal"
 import { PageHero } from "@/components/layout/page-hero"
 import { Check, Star, Mail, Sparkles } from "lucide-react"
 import { DEFAULT_OG_IMAGE, DEFAULT_OG_IMAGES } from "@/lib/seo"
+import { getTopPrioritySoldOut } from "@/lib/site-settings"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { Badge } from "@/components/ui/badge"
 
 export const metadata: Metadata = {
   title: "Ceník - Prostormat | Transparentní ceny pro event prostory",
@@ -30,7 +33,9 @@ export const metadata: Metadata = {
   }
 }
 
-export default function PricingPage() {
+export default async function PricingPage() {
+  const topPrioritySoldOut = await getTopPrioritySoldOut()
+
   return (
     <div className="min-h-screen bg-white">
       <PageHero
@@ -69,11 +74,10 @@ export default function PricingPage() {
                 {/* Features List */}
                 <div className="space-y-4 mb-10">
                   {[
-                    'Profesionální promo video vaší lokace (zdarma v rámci ročního plánu)',
                     'Profil prostoru s fotogalerií',
                     'Neomezené dotazy od klientů',
                     'Přístup k požadavkům na akce',
-                    'Základní statistiky návštěvnosti',
+                    'Přístup do Event Boardu',
                     'Email podpora',
                     'Automatické obnovení každý rok',
                     'Zrušení kdykoliv bez sankcí'
@@ -143,7 +147,18 @@ export default function PricingPage() {
           </ScrollReveal>
 
           {/* Premium Pricing Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-8 items-stretch">
+          {topPrioritySoldOut && (
+            <div className="mb-10">
+              <Alert variant="destructive" className="border-red-200 bg-red-50">
+                <AlertTitle>Balíček Top Priority je aktuálně vyprodaný</AlertTitle>
+                <AlertDescription>
+                  Můžete si jej rezervovat do pořadníku – napište nám na <a href="mailto:info@prostormat.cz" className="underline font-medium">info@prostormat.cz</a> a dáme vám vědět hned, jak se uvolní nové místo.
+                </AlertDescription>
+              </Alert>
+            </div>
+          )}
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch">
             {/* Priority Package */}
             <ScrollReveal delay={100}>
               <div className="bg-white rounded-3xl p-8 hover-lift transition-all duration-300 shadow-lg border border-gray-100 relative overflow-hidden group h-full flex flex-col">
@@ -172,12 +187,22 @@ export default function PricingPage() {
 
             {/* Top Priority Package */}
             <ScrollReveal delay={150}>
-              <div className="bg-gradient-to-br from-black via-gray-900 to-gray-800 rounded-3xl p-8 hover-lift transition-all duration-300 shadow-xl border border-gray-700 relative overflow-hidden group text-white h-full flex flex-col">
+              <div className={`bg-gradient-to-br from-black via-gray-900 to-gray-800 rounded-3xl p-8 transition-all duration-300 shadow-xl border border-gray-700 relative overflow-hidden group text-white h-full flex flex-col ${topPrioritySoldOut ? "opacity-80" : "hover-lift"}`}>
+                {topPrioritySoldOut && (
+                  <div className="absolute inset-0 bg-black/60 pointer-events-none" aria-hidden="true" />
+                )}
                 <div className="absolute top-4 right-4">
                   <span className="bg-yellow-300 text-black px-3 py-1 rounded-full text-sm font-bold">
                     +135 % poptávek
                   </span>
                 </div>
+                {topPrioritySoldOut && (
+                  <div className="absolute top-4 left-4 z-10">
+                    <Badge variant="destructive" className="text-sm px-3 py-1">
+                      Vyprodáno
+                    </Badge>
+                  </div>
+                )}
                 <div className="w-16 h-16 bg-gradient-to-br from-yellow-400 to-orange-400 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
                   <Star className="w-8 h-8 text-black" />
                 </div>
@@ -192,27 +217,13 @@ export default function PricingPage() {
                   <span className="text-4xl font-black">14 000</span>
                   <span className="text-lg text-gray-300 ml-2">Kč / rok</span>
                 </div>
-                <div className="mt-auto" />
-              </div>
-            </ScrollReveal>
-
-            {/* Cover Package */}
-            <ScrollReveal delay={200}>
-              <div className="bg-white rounded-3xl p-8 hover-lift transition-all duration-300 shadow-lg border border-gray-100 relative overflow-hidden group h-full flex flex-col">
-                <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-blue-500 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
-                  <Mail className="w-8 h-8 text-white" />
+                <div className="mt-auto relative z-10">
+                  {topPrioritySoldOut ? (
+                    <p className="text-center text-sm text-gray-200">
+                      Už máte Top Priority? Napište nám a přidáme vás na waiting list.
+                    </p>
+                  ) : null}
                 </div>
-                <h3 className="text-title-3 font-bold text-black mb-3 text-center">
-                  Cover
-                </h3>
-                <p className="text-callout text-gray-600 leading-relaxed text-center mb-6">
-                  Foto a odkaz na hlavní stránce. Fotografie podléhá schválení.
-                </p>
-                <div className="text-center mb-6">
-                  <span className="text-4xl font-black text-black">10 400</span>
-                  <span className="text-lg text-gray-600 ml-2">Kč / měsíc</span>
-                </div>
-                <div className="mt-auto" />
               </div>
             </ScrollReveal>
 

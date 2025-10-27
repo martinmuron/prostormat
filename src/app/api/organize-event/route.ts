@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { z } from "zod"
 import { sendEmailFromTemplate } from "@/lib/email-service"
 import { trackOrganizaceSubmit } from "@/lib/meta-conversions-api"
+import { trackGA4ServerLead } from "@/lib/ga4-server-tracking"
 
 const organizeEventSchema = z.object({
   name: z.string().min(2, "Jméno je povinné"),
@@ -76,6 +77,22 @@ export async function POST(request: NextRequest) {
         }, request)
       } catch (metaError) {
         console.error('Failed to track Meta organizace submit event:', metaError)
+        // Continue anyway - form submission was successful
+      }
+
+      // Track OrganizaceSubmit event in GA4 (don't block on failure)
+      try {
+        await trackGA4ServerLead({
+          formType: 'organizace',
+          eventType: data.eventType,
+          guestCount: data.guestCount,
+          location: data.locationPreference,
+          budgetRange: data.budgetRange,
+          email: data.email,
+          request,
+        })
+      } catch (ga4Error) {
+        console.error('Failed to track GA4 organizace submit event:', ga4Error)
         // Continue anyway - form submission was successful
       }
 

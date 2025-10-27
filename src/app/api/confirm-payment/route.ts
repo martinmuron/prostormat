@@ -5,6 +5,7 @@ import bcrypt from 'bcryptjs';
 import { nanoid } from 'nanoid';
 import { resend } from '@/lib/resend';
 import { trackLocationRegistration, trackPayment } from '@/lib/meta-conversions-api';
+import { trackGA4ServerPayment, trackGA4ServerLocationRegistration } from '@/lib/ga4-server-tracking';
 
 export async function POST(request: NextRequest) {
   try {
@@ -250,6 +251,19 @@ export async function POST(request: NextRequest) {
         console.error('Failed to track Meta location registration event (claim):', metaError);
       }
 
+      // Track LocationRegistration event in GA4 (claim mode)
+      try {
+        await trackGA4ServerLocationRegistration({
+          userId: userId,
+          venueName: existingVenue.name,
+          venueId: existingVenue.id,
+          mode: 'claim',
+          request,
+        });
+      } catch (ga4Error) {
+        console.error('Failed to track GA4 location registration event (claim):', ga4Error);
+      }
+
       // Track Payment event in Meta (claim mode)
       try {
         const [firstName, ...lastNameParts] = (normalizedName || '').split(' ');
@@ -261,6 +275,22 @@ export async function POST(request: NextRequest) {
         }, paymentIntent.amount / 100, 'CZK', request);
       } catch (metaError) {
         console.error('Failed to track Meta payment event (claim):', metaError);
+      }
+
+      // Track Payment event in GA4 (claim mode)
+      try {
+        await trackGA4ServerPayment({
+          userId: userId,
+          transactionId: paymentIntentId,
+          value: paymentIntent.amount / 100,
+          currency: 'CZK',
+          venueName: existingVenue.name,
+          venueId: existingVenue.id,
+          subscription: true,
+          request,
+        });
+      } catch (ga4Error) {
+        console.error('Failed to track GA4 payment event (claim):', ga4Error);
       }
 
       // Notify user about claim submission
@@ -425,6 +455,19 @@ export async function POST(request: NextRequest) {
       console.error('Failed to track Meta location registration event (new):', metaError);
     }
 
+    // Track LocationRegistration event in GA4 (new venue)
+    try {
+      await trackGA4ServerLocationRegistration({
+        userId: userId,
+        venueName: venueData.name,
+        venueId: venueId,
+        mode: 'new',
+        request,
+      });
+    } catch (ga4Error) {
+      console.error('Failed to track GA4 location registration event (new):', ga4Error);
+    }
+
     // Track Payment event in Meta (new venue)
     try {
       const [firstName, ...lastNameParts] = (normalizedName || '').split(' ');
@@ -436,6 +479,22 @@ export async function POST(request: NextRequest) {
       }, paymentIntent.amount / 100, 'CZK', request);
     } catch (metaError) {
       console.error('Failed to track Meta payment event (new):', metaError);
+    }
+
+    // Track Payment event in GA4 (new venue)
+    try {
+      await trackGA4ServerPayment({
+        userId: userId,
+        transactionId: paymentIntentId,
+        value: paymentIntent.amount / 100,
+        currency: 'CZK',
+        venueName: venueData.name,
+        venueId: venueId,
+        subscription: true,
+        request,
+      });
+    } catch (ga4Error) {
+      console.error('Failed to track GA4 payment event (new):', ga4Error);
     }
 
     // Send confirmation email to user

@@ -13,6 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { EVENT_TYPES, PRAGUE_DISTRICTS, BUDGET_RANGES } from '@/types'
 import { CheckCircle, ClipboardList, Clock } from 'lucide-react'
 import { PageHero } from '@/components/layout/page-hero'
+import { trackGA4OrganizaceSubmit } from '@/lib/ga4-tracking'
 
 const formSchema = z.object({
   name: z.string().min(2, 'Zadejte vaše jméno'),
@@ -50,6 +51,14 @@ export function OrganizeEventPage() {
       })
 
       if (res.ok) {
+        // Track organize event form submission in GA4
+        trackGA4OrganizaceSubmit({
+          event_type: values.eventType,
+          guest_count: values.guestCount,
+          budget_range: values.budgetRange,
+          location: values.locationPreference,
+        })
+
         setIsSuccess(true)
         reset({ guestCount: 30 })
       } else {

@@ -84,6 +84,7 @@ export function EventRequestForm({
   const eventTypeValue = watch("eventType") || ""
   const budgetRangeValue = watch("budgetRange") || ""
   const locationPreferenceValue = watch("locationPreference") || ""
+  const today = useMemo(() => new Date().toISOString().split("T")[0], [])
 
   const redirectTarget =
     successRedirect ??
@@ -237,6 +238,7 @@ export function EventRequestForm({
           <Input
             type="date"
             {...register("eventDate")}
+            min={today}
             className="text-body"
           />
         </div>

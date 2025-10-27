@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
@@ -17,35 +17,74 @@ interface VenueFiltersProps {
   }
 }
 
+type FilterState = {
+  q: string
+  type?: string
+  district?: string
+  capacity?: string
+}
+
 export function VenueFilters({ initialValues }: VenueFiltersProps) {
   const router = useRouter()
 
-  const [filters, setFilters] = useState(() => {
+  const computeFilterValue = (value?: string) => {
+    if (!value || value === "all") return undefined
+    return value
+  }
+
+  const [filters, setFilters] = useState<FilterState>(() => {
     const hasSearch = Boolean(initialValues.q)
     return {
-      q: initialValues.q || "",
-      type: hasSearch ? "" : initialValues.type || "",
-      district: hasSearch ? "" : initialValues.district || "",
-      capacity: hasSearch ? "" : initialValues.capacity || "",
+      q: initialValues.q ?? "",
+      type: hasSearch ? undefined : computeFilterValue(initialValues.type),
+      district: hasSearch ? undefined : computeFilterValue(initialValues.district),
+      capacity: hasSearch ? undefined : computeFilterValue(initialValues.capacity),
     }
   })
   const [isSearchMode, setIsSearchMode] = useState(Boolean(initialValues.q))
 
+  useEffect(() => {
+    const hasSearch = Boolean(initialValues.q)
+    setFilters({
+      q: initialValues.q ?? "",
+      type: hasSearch ? undefined : computeFilterValue(initialValues.type),
+      district: hasSearch ? undefined : computeFilterValue(initialValues.district),
+      capacity: hasSearch ? undefined : computeFilterValue(initialValues.capacity),
+    })
+    setIsSearchMode(hasSearch)
+  }, [initialValues.q, initialValues.type, initialValues.district, initialValues.capacity])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
 
     const params = new URLSearchParams()
-    Object.entries(filters).forEach(([key, value]) => {
-      if (value && value !== 'all') params.set(key, value)
-    })
+    const trimmedQuery = filters.q.trim()
+    if (trimmedQuery.length > 0) {
+      params.set("q", trimmedQuery)
+    }
+    if (filters.type) {
+      params.set("type", filters.type)
+    }
+    if (filters.district) {
+      params.set("district", filters.district)
+    }
+    if (filters.capacity) {
+      params.set("capacity", filters.capacity)
+    }
 
     const paramsString = params.toString()
     router.push(paramsString ? `/prostory?${paramsString}` : '/prostory')
   }
 
-  const handleFilterChange = (key: string, value: string) => {
-    setFilters(prev => ({ ...prev, [key]: value === "all" ? "" : value }))
+  const handleFilterChange = (key: keyof FilterState, value: string) => {
+    if (key === "q") {
+      setFilters(prev => ({ ...prev, q: value }))
+      return
+    }
+    setFilters(prev => ({
+      ...prev,
+      [key]: value === "all" ? undefined : value,
+    }))
   }
 
   const toggleSearchMode = () => {
@@ -53,7 +92,7 @@ export function VenueFilters({ initialValues }: VenueFiltersProps) {
       if (isSearchMode) {
         return { ...prev, q: "" }
       }
-      return { ...prev, type: "", district: "", capacity: "" }
+      return { ...prev, type: undefined, district: undefined, capacity: undefined }
     })
     setIsSearchMode(prev => !prev)
   }
@@ -103,7 +142,7 @@ export function VenueFilters({ initialValues }: VenueFiltersProps) {
                   <Calendar className="h-4 w-4 text-white" />
                 </span>
                 <Select
-                  value={filters.type || undefined}
+                  value={filters.type}
                   onValueChange={(value) => handleFilterChange("type", value)}
                 >
                   <SelectTrigger className="!w-full h-12 rounded-2xl border-2 border-blue-700 bg-white text-base text-black focus:border-black">
@@ -125,7 +164,7 @@ export function VenueFilters({ initialValues }: VenueFiltersProps) {
                   <Users className="h-4 w-4 text-white" />
                 </span>
                 <Select
-                  value={filters.capacity || undefined}
+                  value={filters.capacity}
                   onValueChange={(value) => handleFilterChange("capacity", value)}
                 >
                   <SelectTrigger className="!w-full h-12 rounded-2xl border-2 border-green-700 bg-white text-base text-black focus:border-black">
@@ -147,7 +186,7 @@ export function VenueFilters({ initialValues }: VenueFiltersProps) {
                   <MapPin className="h-4 w-4 text-white" />
                 </span>
                 <Select
-                  value={filters.district || undefined}
+                  value={filters.district}
                   onValueChange={(value) => handleFilterChange("district", value)}
                 >
                   <SelectTrigger className="!w-full h-12 rounded-2xl border-2 border-amber-700 bg-white text-base text-black focus:border-black">
@@ -179,7 +218,7 @@ export function VenueFilters({ initialValues }: VenueFiltersProps) {
                   <Calendar className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
                 </span>
                 <Select
-                  value={filters.type || undefined}
+                  value={filters.type}
                   onValueChange={(value) => handleFilterChange("type", value)}
                 >
                   <SelectTrigger className="!w-full h-12 rounded-2xl border-2 border-blue-600 bg-white text-base text-black focus:border-black">
@@ -201,7 +240,7 @@ export function VenueFilters({ initialValues }: VenueFiltersProps) {
                   <Users className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
                 </span>
                 <Select
-                  value={filters.capacity || undefined}
+                  value={filters.capacity}
                   onValueChange={(value) => handleFilterChange("capacity", value)}
                 >
                   <SelectTrigger className="!w-full h-12 rounded-2xl border-2 border-green-600 bg-white text-base text-black focus:border-black">
@@ -223,7 +262,7 @@ export function VenueFilters({ initialValues }: VenueFiltersProps) {
                   <MapPin className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
                 </span>
                 <Select
-                  value={filters.district || undefined}
+                  value={filters.district}
                   onValueChange={(value) => handleFilterChange("district", value)}
                 >
                   <SelectTrigger className="!w-full h-12 rounded-2xl border-2 border-orange-600 bg-white text-base text-black focus:border-black">

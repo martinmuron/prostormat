@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 
@@ -35,6 +35,7 @@ export function VenueBroadcastPage() {
     contactPhone: '',
     contactName: session?.user?.name || ''
   })
+  const today = useMemo(() => new Date().toISOString().split('T')[0], [])
 
   if (status === 'loading') {
     return (
@@ -170,11 +171,12 @@ export function VenueBroadcastPage() {
                   <input
                     type="date"
                     id="eventDate"
-                    name="eventDate"
-                    value={formData.eventDate}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                  />
+                  name="eventDate"
+                  value={formData.eventDate}
+                  onChange={handleChange}
+                  min={today}
+                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                />
                 </div>
 
                 <div>

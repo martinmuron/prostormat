@@ -25,7 +25,7 @@ export function UserDashboard({ data }: UserDashboardProps) {
   const tabs = [
     { id: 'overview', label: 'Přehled', icon: Building },
     { id: 'requests', label: 'Aktivní poptávky', icon: Calendar },
-    { id: 'broadcasts', label: 'Odeslané poptávky', icon: Send },
+    { id: 'broadcasts', label: 'Odeslané poptávky prostorům', icon: Send },
   ]
 
   const activeRequestCount = userRequests.filter((request) => request.status === "active").length
@@ -98,7 +98,7 @@ export function UserDashboard({ data }: UserDashboardProps) {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-caption text-gray-500 mb-1">Odeslané poptávky</p>
+                <p className="text-caption text-gray-500 mb-1">Odeslané poptávky prostorům</p>
                 <p className="text-title-2 text-black">{stats.totalBroadcasts}</p>
               </div>
               <div className="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center">
@@ -114,7 +114,7 @@ export function UserDashboard({ data }: UserDashboardProps) {
         <Card className="bg-white">
           <CardHeader>
             <div className="flex items-center justify-between">
-              <CardTitle className="text-gray-900">Nedávné aktivní poptávky</CardTitle>
+              <CardTitle className="text-gray-900">Aktivní poptávky na Event Boardu</CardTitle>
               <Button 
                 size="sm" 
                 className="bg-blue-600 hover:bg-blue-700 text-white"
@@ -189,7 +189,7 @@ export function UserDashboard({ data }: UserDashboardProps) {
         <Card className="bg-white">
           <CardHeader>
             <div className="flex items-center justify-between">
-              <CardTitle className="text-gray-900">Nedávné odeslané poptávky</CardTitle>
+              <CardTitle className="text-gray-900">Odeslané poptávky prostorům</CardTitle>
               <Button 
                 size="sm" 
                 className="bg-green-600 hover:bg-green-700 text-white"

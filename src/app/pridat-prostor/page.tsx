@@ -1,8 +1,10 @@
 "use client"
 
-import { useState, useEffect, useRef, useMemo } from "react"
+import { useState, useEffect, useRef, useMemo, useCallback } from "react"
 import type { FocusEvent, MouseEvent } from "react"
-import { useRouter } from "next/navigation"
+import Link from "next/link"
+import { Suspense } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
 import { useSession } from "next-auth/react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -23,13 +25,13 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { VENUE_TYPES, LOCATION_OPTIONS } from "@/types"
-import { 
-  Upload, 
-  X, 
-  MapPin, 
-  Users, 
-  Palette, 
-  Phone, 
+import {
+  Upload,
+  X,
+  MapPin,
+  Users,
+  Palette,
+  Phone,
   Video,
   CheckCircle,
   AlertCircle,
@@ -39,6 +41,7 @@ import {
   ArrowRight,
   Plus
 } from "lucide-react"
+import { trackGA4Payment, trackGA4LocationRegistration } from "@/lib/ga4-tracking"
 
 // Form input types (before validation)
 interface VenueFormInputs {
@@ -127,8 +130,13 @@ const AMENITIES_OPTIONS = [
   "Výtah",
   "Bezbariérový přístup",
   "Zvuková technika",
-  "Scéna/pódium",
+  "Scéna / Stage",
   "Projektory",
+  "Profesionální osvětlení",
+  "Taneční parket",
+  "Parkování pro hosty",
+  "Event koordinátor na místě",
+  "Hybridní streaming",
   "Bezpečnostní systém",
   "Šatna",
   "Kuchyně"
@@ -168,8 +176,20 @@ interface NameLookupResult {
   error?: string
 }
 
-export default function AddVenuePage() {
+interface PrefillVenueData {
+  name: string
+  slug: string
+  status: string
+  manager?: {
+    id: string
+    name: string | null
+    email: string | null
+  } | null
+}
+
+function AddVenuePageContent() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const { data: session, status } = useSession()
   const [currentStep, setCurrentStep] = useState<FormStep>('form')
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -203,7 +223,11 @@ export default function AddVenuePage() {
   })
   const nameLookupTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const nameDropdownHideTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const prefillRequestRef = useRef<string | null>(null)
   const [isNameFieldFocused, setIsNameFieldFocused] = useState(false)
+  const [isPrefillingExistingVenue, setIsPrefillingExistingVenue] = useState(false)
+  const [prefillError, setPrefillError] = useState<string | null>(null)
+  const [hasPrefilledFromExisting, setHasPrefilledFromExisting] = useState(false)
 
   const {
     register,
@@ -234,10 +258,188 @@ export default function AddVenuePage() {
 
   const videoUrl = watch("videoUrl")
   const musicAfter10 = watch("musicAfter10")
+  const selectedDistrict = watch("district")
+  const selectedVenueType = watch("venueType")
   const isYouTubeUrlValid = isValidYouTubeUrl(videoUrl || "")
   const watchedName = watch("name")
   const watchedAddress = watch("address")
   const trimmedName = (watchedName ?? "").trim()
+
+  const prefillExistingVenueData = useCallback(async (venueId: string): Promise<PrefillVenueData | null> => {
+    prefillRequestRef.current = venueId
+    setPrefillError(null)
+    setHasPrefilledFromExisting(false)
+    setIsPrefillingExistingVenue(true)
+
+    try {
+      const response = await fetch(`/api/venues/claim-data/${venueId}`)
+      if (!response.ok) {
+        throw new Error(`Failed to fetch claim data for venue ${venueId}`)
+      }
+
+      const data: {
+        name?: string
+        slug: string
+        status: string
+        description?: string
+        address?: string
+        district?: string
+        capacitySeated?: number | null
+        capacityStanding?: number | null
+        venueType?: string
+        contactEmail?: string
+        contactPhone?: string
+        websiteUrl?: string
+        instagramUrl?: string
+        videoUrl?: string
+        musicAfter10?: boolean
+        amenities?: string[]
+        manager?: {
+          id: string | null
+          name: string | null
+          email: string | null
+        } | null
+      } = await response.json()
+
+      if (prefillRequestRef.current !== venueId) {
+        return null
+      }
+
+      if (data.name) {
+        setValue("name", data.name, {
+          shouldDirty: true,
+          shouldTouch: true,
+          shouldValidate: true,
+        })
+      }
+
+      setValue("description", data.description ?? "", {
+        shouldDirty: Boolean(data.description),
+        shouldTouch: true,
+        shouldValidate: false,
+      })
+      setValue("address", data.address ?? "", {
+        shouldDirty: Boolean(data.address),
+        shouldTouch: true,
+        shouldValidate: false,
+      })
+      setValue("district", data.district ?? "", {
+        shouldDirty: Boolean(data.district),
+        shouldTouch: true,
+        shouldValidate: false,
+      })
+      setValue("capacitySeated", data.capacitySeated != null ? String(data.capacitySeated) : "", {
+        shouldDirty: data.capacitySeated != null,
+        shouldTouch: true,
+        shouldValidate: false,
+      })
+      setValue("capacityStanding", data.capacityStanding != null ? String(data.capacityStanding) : "", {
+        shouldDirty: data.capacityStanding != null,
+        shouldTouch: true,
+        shouldValidate: false,
+      })
+      setValue("venueType", data.venueType ?? "", {
+        shouldDirty: Boolean(data.venueType),
+        shouldTouch: true,
+        shouldValidate: false,
+      })
+      setValue("contactEmail", data.contactEmail ?? "", {
+        shouldDirty: Boolean(data.contactEmail),
+        shouldTouch: true,
+        shouldValidate: false,
+      })
+      setValue("contactPhone", data.contactPhone ?? "", {
+        shouldDirty: Boolean(data.contactPhone),
+        shouldTouch: true,
+        shouldValidate: false,
+      })
+      setValue("websiteUrl", data.websiteUrl ?? "", {
+        shouldDirty: Boolean(data.websiteUrl),
+        shouldTouch: true,
+        shouldValidate: false,
+      })
+      setValue("instagramUrl", data.instagramUrl ?? "", {
+        shouldDirty: Boolean(data.instagramUrl),
+        shouldTouch: true,
+        shouldValidate: false,
+      })
+      setValue("videoUrl", data.videoUrl ?? "", {
+        shouldDirty: Boolean(data.videoUrl),
+        shouldTouch: true,
+        shouldValidate: false,
+      })
+      setValue("musicAfter10", Boolean(data.musicAfter10), {
+        shouldDirty: true,
+        shouldTouch: true,
+        shouldValidate: false,
+      })
+
+      if (Array.isArray(data.amenities)) {
+        setAmenities(data.amenities)
+      } else {
+        setAmenities([])
+      }
+
+      setHasPrefilledFromExisting(true)
+
+      return {
+        name: data.name ?? "",
+        slug: data.slug,
+        status: data.status,
+        manager: data.manager && data.manager.id
+          ? {
+              id: data.manager.id,
+              name: data.manager.name,
+              email: data.manager.email,
+            }
+          : null,
+      }
+    } catch (error) {
+      console.error("Failed to prefill existing venue data:", error)
+      if (prefillRequestRef.current === venueId) {
+        setPrefillError("Nepodařilo se načíst údaje existujícího prostoru. Zkuste to prosím znovu.")
+      }
+      return null
+    } finally {
+      if (prefillRequestRef.current === venueId) {
+        setIsPrefillingExistingVenue(false)
+      }
+    }
+  }, [setValue, setAmenities])
+
+  const claimVenueIdParam = searchParams?.get("claimVenueId")
+
+  useEffect(() => {
+    if (!claimVenueIdParam) {
+      prefillRequestRef.current = null
+      return
+    }
+
+    if (claimInfo?.id === claimVenueIdParam && hasPrefilledFromExisting) {
+      return
+    }
+
+    setSubmissionMode('claim')
+    setIsNameFieldFocused(false)
+    void (async () => {
+      const data = await prefillExistingVenueData(claimVenueIdParam)
+      if (!data) return
+
+      setClaimInfo({
+        id: claimVenueIdParam,
+        name: data.name,
+        slug: data.slug,
+        status: data.status,
+        manager: data.manager
+          ? {
+              id: data.manager.id,
+              name: data.manager.name,
+              email: data.manager.email,
+            }
+          : undefined,
+      })
+    })()
+  }, [claimVenueIdParam, claimInfo?.id, hasPrefilledFromExisting, prefillExistingVenueData])
 
   useEffect(() => {
     const name = (watchedName ?? "").trim()
@@ -408,6 +610,7 @@ export default function AddVenuePage() {
     setPendingSubmission(null)
     setShowClaimDialog(false)
     setIsNameFieldFocused(false)
+    void prefillExistingVenueData(suggestion.id)
   }
 
   const handleAddNewSelection = () => {
@@ -421,6 +624,10 @@ export default function AddVenuePage() {
     setPendingSubmission(null)
     setShowClaimDialog(false)
     setIsNameFieldFocused(false)
+    prefillRequestRef.current = null
+    setPrefillError(null)
+    setHasPrefilledFromExisting(false)
+    setIsPrefillingExistingVenue(false)
   }
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -613,6 +820,22 @@ export default function AddVenuePage() {
   }
 
   const handlePaymentSuccess = () => {
+    // Track payment in GA4
+    if (formData) {
+      trackGA4Payment({
+        value: 12000,
+        currency: 'CZK',
+        venue_name: formData.name,
+        subscription: true,
+      })
+
+      // Track location registration in GA4
+      trackGA4LocationRegistration({
+        venue_name: formData.name,
+        mode: formData.mode || 'new',
+      })
+    }
+
     setCurrentStep('success')
   }
 
@@ -774,29 +997,18 @@ export default function AddVenuePage() {
               <CreditCard className="h-5 w-5 text-orange-600 mt-0.5 flex-shrink-0" />
               <div>
                 <p className="text-sm sm:text-callout text-orange-800 font-medium mb-1">
-                  Poplatek za přidání prostoru: 12,000 CZK
+                  Poplatek za přidání prostoru: 12,000 CZK / rok
                 </p>
                 <p className="text-sm text-orange-700">
-                  Po vyplnění formuláře budete přesměrováni na bezpečnou platbu kartou.
+                  Po vyplnění formuláře budete přesměrováni na bezpečnou platbu kartou. Více informací najdete na{" "}
+                  <Link href="/ceny" className="font-medium text-orange-900 underline decoration-dotted">
+                    stránce ceníku
+                  </Link>
+                  .
                 </p>
               </div>
             </div>
           </div>
-          {claimInfo && submissionMode === 'claim' && (
-            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 sm:p-4 mt-4">
-              <div className="flex items-start gap-2">
-                <AlertCircle className="h-5 w-5 text-yellow-600 mt-0.5 flex-shrink-0" />
-                <div>
-                  <p className="text-sm sm:text-callout text-yellow-800 font-medium mb-1">
-                    Prostor &quot;{claimInfo.name}&quot; již na platformě máme.
-                  </p>
-                  <p className="text-sm text-yellow-700">
-                    Pokračováním odešlete žádost o převzetí existujícího listingu. Po schválení vám prostor přiřadíme k úpravám.
-                  </p>
-                </div>
-              </div>
-            </div>
-          )}
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 sm:space-y-8">
@@ -1030,6 +1242,37 @@ export default function AddVenuePage() {
                 )}
               </div>
 
+              {claimInfo && submissionMode === 'claim' && (
+                <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-3 sm:p-4">
+                  <div className="flex items-start gap-2">
+                    <AlertCircle className="h-5 w-5 text-yellow-600 mt-0.5 flex-shrink-0" />
+                    <div>
+                      <p className="text-sm sm:text-callout text-yellow-800 font-medium mb-1">
+                        Prostor &quot;{claimInfo.name}&quot; již na platformě máme.
+                      </p>
+                      <p className="text-sm text-yellow-700">
+                        Pokračováním odešlete žádost o převzetí existujícího listingu. Po schválení vám prostor přiřadíme k úpravám.
+                      </p>
+                      {isPrefillingExistingVenue && (
+                        <p className="text-sm text-yellow-700 mt-2">
+                          Načítáme údaje z existujícího listingu…
+                        </p>
+                      )}
+                      {!isPrefillingExistingVenue && hasPrefilledFromExisting && (
+                        <p className="text-sm text-yellow-700 mt-2">
+                          Formulář jsme předvyplnili aktuálními informacemi. Zkontrolujte je prosím a upravte podle potřeby.
+                        </p>
+                      )}
+                      {prefillError && (
+                        <p className="text-sm text-red-600 mt-2">
+                          {prefillError}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
+
               <div>
                 <label className="block text-sm sm:text-callout font-medium text-black mb-2">
                   Popis prostoru *
@@ -1066,7 +1309,16 @@ export default function AddVenuePage() {
                 <label className="block text-sm sm:text-callout font-medium text-black mb-2">
                   Městská část *
                 </label>
-                <Select onValueChange={(value) => setValue("district", value)} defaultValue="">
+                <Select
+                  value={selectedDistrict || undefined}
+                  onValueChange={(value) =>
+                    setValue("district", value, {
+                      shouldDirty: true,
+                      shouldTouch: true,
+                      shouldValidate: false,
+                    })
+                  }
+                >
                   <SelectTrigger className="h-11 sm:h-12">
                     <SelectValue placeholder="Vyberte městskou část" />
                   </SelectTrigger>
@@ -1087,7 +1339,16 @@ export default function AddVenuePage() {
                 <label className="block text-sm sm:text-callout font-medium text-black mb-2">
                   Typ prostoru *
                 </label>
-                <Select onValueChange={(value) => setValue("venueType", value)} defaultValue="">
+                <Select
+                  value={selectedVenueType || undefined}
+                  onValueChange={(value) =>
+                    setValue("venueType", value, {
+                      shouldDirty: true,
+                      shouldTouch: true,
+                      shouldValidate: false,
+                    })
+                  }
+                >
                   <SelectTrigger className="h-11 sm:h-12">
                     <SelectValue placeholder="Vyberte typ prostoru" />
                   </SelectTrigger>
@@ -1437,4 +1698,12 @@ export default function AddVenuePage() {
       </div>
     </div>
   )
-} 
+}
+
+export default function AddVenuePage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-white" />}>
+      <AddVenuePageContent />
+    </Suspense>
+  )
+}

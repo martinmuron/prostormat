@@ -132,6 +132,22 @@ export default function RootLayout({
           }}
         />
 
+        {/* Google Analytics 4 Configuration */}
+        <Script
+          id="ga4-config"
+          strategy="afterInteractive"
+          type="text/plain"
+          data-cookieconsent="marketing"
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', 'G-5KYL3YYZL2');
+            `,
+          }}
+        />
+
         {/* Meta Pixel Code */}
         <Script
           id="meta-pixel"

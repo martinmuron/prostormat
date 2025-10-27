@@ -4,6 +4,7 @@ import { z } from "zod"
 import { db } from "@/lib/db"
 import { sendWelcomeEmail } from "@/lib/email-service"
 import { trackRegistration } from "@/lib/meta-conversions-api"
+import { trackGA4ServerRegistration } from "@/lib/ga4-server-tracking"
 
 const registerSchema = z.object({
   name: z.string().min(2, "Jméno musí mít alespoň 2 znaky"),
@@ -74,6 +75,19 @@ export async function POST(request: Request) {
       }, request)
     } catch (metaError) {
       console.error('Failed to track Meta registration event:', metaError)
+      // Continue anyway - registration was successful
+    }
+
+    // Track registration event in GA4 (don't block on failure)
+    try {
+      await trackGA4ServerRegistration({
+        userId: user.id,
+        email: user.email,
+        method: 'email',
+        request,
+      })
+    } catch (ga4Error) {
+      console.error('Failed to track GA4 registration event:', ga4Error)
       // Continue anyway - registration was successful
     }
 

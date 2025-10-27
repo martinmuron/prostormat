@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent } from "@/components/ui/card"
+import { trackGA4Registration } from "@/lib/ga4-tracking"
 
 export function RegisterPage() {
   const router = useRouter()
@@ -51,6 +52,12 @@ export function RegisterPage() {
       })
 
       if (response.ok) {
+        // Track registration in GA4
+        trackGA4Registration({
+          email: formData.email,
+          method: 'email'
+        })
+
         await new Promise((resolve) => setTimeout(resolve, 500))
 
         const result = await signIn("credentials", {
@@ -60,7 +67,7 @@ export function RegisterPage() {
         })
 
         if (result?.ok) {
-          router.push("/dashboard")
+          router.push("/prostory")
         } else {
           setError("Účet byl vytvořen, ale automatické přihlášení se nezdařilo. Přihlaste se prosím ručně.")
         }

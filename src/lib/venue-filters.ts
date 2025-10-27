@@ -66,6 +66,7 @@ export function buildVenueWhereClause({
   includeSubvenues = false,
 }: FilterParams): Prisma.VenueWhereInput {
   const where: Prisma.VenueWhereInput = {}
+  const andConditions: Prisma.VenueWhereInput[] = []
 
   if (!includeSubvenues) {
     where.parentId = null
@@ -84,11 +85,13 @@ export function buildVenueWhereClause({
 
   if (q && q.trim().length > 0) {
     const term = q.trim()
-    where.OR = [
-      { name: { contains: term, mode: 'insensitive' } },
-      { description: { contains: term, mode: 'insensitive' } },
-      { address: { contains: term, mode: 'insensitive' } },
-    ]
+    andConditions.push({
+      OR: [
+        { name: { contains: term, mode: 'insensitive' } },
+        { description: { contains: term, mode: 'insensitive' } },
+        { address: { contains: term, mode: 'insensitive' } },
+      ],
+    })
   }
 
   if (type && type !== 'all') {
@@ -96,17 +99,25 @@ export function buildVenueWhereClause({
   }
 
   if (district && district !== 'all') {
-    where.address = {
-      contains: district,
-      mode: 'insensitive',
-    }
+    const normalized = district.trim()
+    andConditions.push({
+      OR: [
+        { district: { equals: normalized, mode: 'insensitive' } },
+        { district: { contains: normalized, mode: 'insensitive' } },
+        { address: { contains: normalized, mode: 'insensitive' } },
+      ],
+    })
   }
 
   if (capacity && capacity !== 'all') {
     const condition = CAPACITY_CONDITIONS[capacity]
     if (condition) {
-      Object.assign(where, condition)
+      andConditions.push(condition)
     }
+  }
+
+  if (andConditions.length > 0) {
+    where.AND = andConditions
   }
 
   return where

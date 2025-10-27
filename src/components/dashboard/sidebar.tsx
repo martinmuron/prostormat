@@ -28,6 +28,7 @@ import {
   PanelLeftClose,
   Sparkles,
   Zap,
+  BadgePercent,
 } from "lucide-react"
 
 type DashboardNavItem = {
@@ -108,6 +109,11 @@ function buildNavigation(userRole: string): DashboardNavItem[] {
         name: "Email statistiky",
         href: "/admin/email-flow",
         icon: BarChart2,
+      },
+      {
+        name: "Ceník",
+        href: "/admin/pricing",
+        icon: BadgePercent,
       },
       {
         name: "Blog",
@@ -201,7 +207,7 @@ export function DashboardMobileNav({ userRole }: DashboardMobileNavProps) {
   const [open, setOpen] = useState(false)
 
   return (
-    <div className="sticky top-0 z-40 border-b border-gray-200 bg-white shadow-sm md:hidden">
+    <div className="sticky top-14 z-40 border-b border-gray-200 bg-white shadow-sm sm:top-16 md:hidden">
       <div className="flex items-center justify-between px-4 py-3">
         <Link href="/dashboard" className="flex items-center gap-2">
           <Logo variant="black" size="sm" href={null} className="h-6 w-auto" />

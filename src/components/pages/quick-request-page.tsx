@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { useSession } from "next-auth/react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
@@ -13,6 +13,7 @@ import { LoginModal } from "@/components/auth/login-modal"
 import { EVENT_TYPES, LOCATION_OPTIONS } from "@/types"
 import { Clock, Send, Zap, CheckCircle } from "lucide-react"
 import { PageHero } from "@/components/layout/page-hero"
+import { trackGA4BulkFormSubmit } from "@/lib/ga4-tracking"
 
 interface QuickRequestFormData {
   eventType: string
@@ -50,6 +51,7 @@ export function QuickRequestPage() {
   const [isSuccess, setIsSuccess] = useState(false)
   const [pendingCount, setPendingCount] = useState(0)
   const [showLoginModal, setShowLoginModal] = useState(false)
+  const today = useMemo(() => new Date().toISOString().split('T')[0], [])
   
   const [formData, setFormData] = useState<QuickRequestFormData>({
     eventType: "",
@@ -99,6 +101,15 @@ export function QuickRequestPage() {
 
       if (response.ok) {
         const data = await response.json()
+
+        // Track bulk form submission in GA4
+        trackGA4BulkFormSubmit({
+          event_type: formData.eventType,
+          guest_count: formData.guestCount,
+          location: formData.locationPreference,
+          budget_range: formData.budgetRange,
+        })
+
         setIsSuccess(true)
         setPendingCount(data.pendingCount || 0)
       } else {
@@ -259,7 +270,7 @@ export function QuickRequestPage() {
                     onChange={(e) => handleInputChange('eventDate', e.target.value)}
                     onFocus={handleInputFocus}
                     className={errors.eventDate ? 'border-red-300' : ''}
-                    min={new Date().toISOString().split('T')[0]}
+                    min={today}
                     placeholder="Vyberte datum akce"
                   />
                   {errors.eventDate && <p className="text-sm text-red-600 mt-1">{errors.eventDate}</p>}

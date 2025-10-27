@@ -206,6 +206,162 @@ export function generatePasswordResetEmail(resetLink: string) {
   return { subject, html, text }
 }
 
+interface VenueInquiryAdminNotificationData {
+  inquiryId: string
+  submittedAt: Date
+  venue: {
+    id: string
+    name: string
+    slug: string
+    paid: boolean
+    status: string
+  }
+  inquiry: {
+    customerName: string
+    customerEmail: string
+    customerPhone?: string | null
+    eventDate?: Date | string | null
+    guestCount?: number | null
+    message?: string | null
+  }
+}
+
+export function generateVenueInquiryAdminNotificationEmail(data: VenueInquiryAdminNotificationData) {
+  const { inquiryId, submittedAt, venue, inquiry } = data
+  const detailUrl = `https://prostormat.cz/dashboard/venue-inquiries/${inquiryId}`
+  const formattedSubmitted = submittedAt.toLocaleString("cs-CZ")
+  const formattedEventDate = inquiry.eventDate
+    ? new Date(inquiry.eventDate).toLocaleDateString("cs-CZ")
+    : "Neuvedeno"
+  const membershipLabel = venue.paid ? "Placené členství" : "Bez členství"
+
+  const subject = `Nový dotaz na prostor ${venue.name}`
+
+  const html = `
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>${subject}</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 0; background: #f8fafc; color: #0f172a; }
+    .wrapper { max-width: 640px; margin: 0 auto; padding: 24px; }
+    .card { background: #ffffff; border-radius: 18px; box-shadow: 0 18px 38px rgba(15, 23, 42, 0.12); overflow: hidden; }
+    .header { background: #0f172a; color: #ffffff; padding: 32px 36px; }
+    .header h1 { margin: 0; font-size: 24px; }
+    .header p { margin: 12px 0 0 0; font-size: 14px; opacity: 0.85; }
+    .content { padding: 36px; }
+    .section { margin-bottom: 28px; padding: 24px; border-radius: 16px; border: 1px solid #e2e8f0; background: #f8fafc; }
+    .section h3 { margin-top: 0; font-size: 16px; margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.08em; color: #475569; }
+    .detail { margin-bottom: 10px; }
+    .label { display: block; font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; color: #94a3b8; margin-bottom: 4px; }
+    .value { font-size: 16px; font-weight: 600; color: #0f172a; }
+    .badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 999px; font-weight: 600; font-size: 13px; }
+    .badge.paid { background: #dcfce7; color: #166534; }
+    .badge.unpaid { background: #fee2e2; color: #991b1b; }
+    .cta { text-align: center; margin: 32px 0 0 0; }
+    .cta a { display: inline-block; padding: 14px 32px; background: #2563eb; color: #ffffff; text-decoration: none; border-radius: 999px; font-weight: 600; font-size: 15px; }
+    .footer { padding: 20px 36px 28px 36px; background: #f8fafc; color: #475569; font-size: 13px; text-align: center; line-height: 1.6; }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="card">
+      <div class="header">
+        <h1>Nový dotaz na prostor ${venue.name}</h1>
+        <p>Odesláno ${formattedSubmitted}</p>
+      </div>
+      <div class="content">
+        <div class="section">
+          <h3>Prostor</h3>
+          <div class="detail">
+            <span class="label">Název</span>
+            <span class="value">${venue.name}</span>
+          </div>
+          <div class="detail">
+            <span class="label">Stav členství</span>
+            <span class="badge ${venue.paid ? "paid" : "unpaid"}">${membershipLabel}</span>
+          </div>
+          <div class="detail">
+            <span class="label">Stav prostoru</span>
+            <span class="value">${venue.status}</span>
+          </div>
+        </div>
+
+        <div class="section">
+          <h3>Kontakt zákazníka</h3>
+          <div class="detail">
+            <span class="label">Jméno</span>
+            <span class="value">${inquiry.customerName}</span>
+          </div>
+          <div class="detail">
+            <span class="label">E-mail</span>
+            <span class="value"><a href="mailto:${inquiry.customerEmail}">${inquiry.customerEmail}</a></span>
+          </div>
+          ${inquiry.customerPhone ? `
+          <div class="detail">
+            <span class="label">Telefon</span>
+            <span class="value"><a href="tel:${inquiry.customerPhone}">${inquiry.customerPhone}</a></span>
+          </div>` : ""}
+        </div>
+
+        <div class="section">
+          <h3>Detaily akce</h3>
+          <div class="detail">
+            <span class="label">Datum akce</span>
+            <span class="value">${formattedEventDate}</span>
+          </div>
+          <div class="detail">
+            <span class="label">Počet hostů</span>
+            <span class="value">${inquiry.guestCount ?? "Neuvedeno"}</span>
+          </div>
+          <div class="detail">
+            <span class="label">Zpráva</span>
+            <span class="value">${inquiry.message ? inquiry.message.replace(/\n/g, "<br />") : "Bez zprávy"}</span>
+          </div>
+        </div>
+
+        <div class="cta">
+          <a href="${detailUrl}">Otevřít celou poptávku</a>
+        </div>
+      </div>
+      <div class="footer">
+        Prostormat · Interní notifikace poptávky<br />
+        Kontrolujte prosím členství provozovatele před předáním detailů klientovi.
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+`
+
+  const text = `
+Nový dotaz na prostor ${venue.name}
+Odesláno: ${formattedSubmitted}
+
+Prostor:
+- Název: ${venue.name}
+- Stav členství: ${membershipLabel}
+- Stav prostoru: ${venue.status}
+
+Kontakt zákazníka:
+- Jméno: ${inquiry.customerName}
+- Email: ${inquiry.customerEmail}
+${inquiry.customerPhone ? `- Telefon: ${inquiry.customerPhone}` : ""}
+
+Detaily akce:
+- Datum: ${formattedEventDate}
+- Počet hostů: ${inquiry.guestCount ?? "Neuvedeno"}
+- Zpráva: ${inquiry.message ?? "Bez zprávy"}
+
+Plné znění poptávky: ${detailUrl}
+`
+
+  return { subject, html, text }
+}
+
+
 
 export function generateQuickRequestVenueNotificationEmail(data: QuickRequestVenueNotificationData) {
   const { venueName, venueSlug, broadcastId, quickRequest } = data

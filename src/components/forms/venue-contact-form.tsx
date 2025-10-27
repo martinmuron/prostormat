@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { useSession } from "next-auth/react"
 import Link from "next/link"
+import { trackGA4LokaceSubmit } from "@/lib/ga4-tracking"
 
 const contactFormSchema = z.object({
   name: z.string().min(2, "Jméno je povinné"),
@@ -30,11 +31,13 @@ export function VenueContactForm({ venueId, venueName }: VenueContactFormProps) 
   const { data: session } = useSession()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
+  const today = useMemo(() => new Date().toISOString().split('T')[0], [])
 
   const {
     register,
     handleSubmit,
     formState: { errors },
+    setValue,
     reset,
   } = useForm<ContactFormData>({
     resolver: zodResolver(contactFormSchema),
@@ -43,6 +46,12 @@ export function VenueContactForm({ venueId, venueName }: VenueContactFormProps) 
       email: session?.user?.email || "",
     },
   })
+
+  useEffect(() => {
+    if (session?.user?.email) {
+      setValue("email", session.user.email, { shouldDirty: false, shouldValidate: true })
+    }
+  }, [session?.user?.email, setValue])
 
   const onSubmit = async (data: ContactFormData) => {
     setIsSubmitting(true)
@@ -60,6 +69,14 @@ export function VenueContactForm({ venueId, venueName }: VenueContactFormProps) 
       })
 
       if (response.ok) {
+        // Track venue inquiry submission in GA4
+        trackGA4LokaceSubmit({
+          venue_name: venueName,
+          venue_id: venueId,
+          guest_count: data.guestCount,
+          event_date: data.eventDate,
+        })
+
         setIsSubmitted(true)
         reset()
       } else {
@@ -146,6 +163,7 @@ export function VenueContactForm({ venueId, venueName }: VenueContactFormProps) 
             <Input
               type="date"
               {...register("eventDate")}
+              min={today}
             />
           </div>
 

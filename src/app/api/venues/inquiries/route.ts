@@ -5,6 +5,9 @@ import { db } from "@/lib/db"
 import { authOptions } from "@/lib/auth"
 import { randomUUID } from "crypto"
 import { trackLokaceSubmit } from "@/lib/meta-conversions-api"
+import { trackGA4ServerLead } from "@/lib/ga4-server-tracking"
+import { resend, FROM_EMAIL } from "@/lib/resend"
+import { generateVenueInquiryAdminNotificationEmail } from "@/lib/email-templates"
 
 const inquirySchema = z.object({
   venueId: z.string(),
@@ -26,7 +29,14 @@ export async function POST(request: Request) {
     // Check if venue exists
     const venue = await db.venue.findUnique({
       where: { id: validatedData.venueId },
-      select: { id: true, name: true, contactEmail: true }
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        paid: true,
+        status: true,
+        contactEmail: true,
+      }
     })
 
     if (!venue) {
@@ -63,6 +73,55 @@ export async function POST(request: Request) {
     } catch (metaError) {
       console.error('Failed to track Meta lokace submit event:', metaError)
       // Continue anyway - inquiry was successful
+    }
+
+    // Track LokaceSubmit event in GA4 (don't block on failure)
+    try {
+      await trackGA4ServerLead({
+        userId: session?.user?.id,
+        formType: 'venue_inquiry',
+        venueName: venue.name,
+        venueId: venue.id,
+        guestCount: validatedData.guestCount || undefined,
+        email: validatedData.email,
+        request,
+      })
+    } catch (ga4Error) {
+      console.error('Failed to track GA4 lokace submit event:', ga4Error)
+      // Continue anyway - inquiry was successful
+    }
+
+    // Notify internal team so they can verify venue status before forwarding
+    try {
+      const emailContent = generateVenueInquiryAdminNotificationEmail({
+        inquiryId: inquiry.id,
+        submittedAt: inquiry.createdAt,
+        venue: {
+          id: venue.id,
+          name: venue.name,
+          slug: venue.slug,
+          paid: venue.paid ?? false,
+          status: venue.status,
+        },
+        inquiry: {
+          customerName: validatedData.name,
+          customerEmail: validatedData.email,
+          customerPhone: validatedData.phone,
+          eventDate: validatedData.eventDate,
+          guestCount: validatedData.guestCount || null,
+          message: validatedData.message,
+        },
+      })
+
+      await resend.emails.send({
+        from: FROM_EMAIL,
+        to: ["poptavka@prostormat.cz"],
+        subject: emailContent.subject,
+        html: emailContent.html,
+        text: emailContent.text,
+      })
+    } catch (emailError) {
+      console.error("Failed to send venue inquiry notification email:", emailError)
     }
 
     // TODO: Send email notification to venue manager

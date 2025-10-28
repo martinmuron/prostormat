@@ -154,3 +154,28 @@ data/scraping-progress.json
 data/batches/
 /tmp/supabase-upload.log
 .env*.local
+
+# Playwright test reports and results  
+playwright-report/
+test-results/
+
+# Temporary data exports
+capacity_updates_*.json
+venues_missing_districts.json
+venues_without_capacity.*
+DATABASE_VERIFICATION_QUERIES.sql
+TESTING_SCRIPT.md
+
+# Temporary utility scripts (not part of main codebase)
+scripts/analyze-popup-images.ts
+scripts/check-popup-bar-issues.ts
+scripts/comprehensive-popup-report.ts
+scripts/create-fix-script.ts
+scripts/export-venues-missing-districts.ts
+scripts/export-venues-without-capacity.ts
+scripts/research-venue-capacity.ts
+scripts/update-venue-capacity.ts
+scripts/update-venue-districts.ts
+scripts/upload-venue-images.ts
+scripts/verify-popup-changes.ts
+scripts/README_CAPACITY_UPDATES.md

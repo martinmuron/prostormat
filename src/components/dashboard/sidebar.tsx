@@ -37,100 +37,97 @@ type DashboardNavItem = {
   icon: typeof Home
 }
 
-function buildNavigation(userRole: string): DashboardNavItem[] {
-  const baseNav: DashboardNavItem[] = [
-    {
-      name: "Přehled",
-      href: "/dashboard",
-      icon: Home,
-    },
-  ]
+type DashboardNavGroup = {
+  label: string
+  items: DashboardNavItem[]
+}
+
+function buildNavigation(userRole: string): DashboardNavGroup[] {
+  if (userRole === "admin") {
+    return [
+      {
+        label: "Dashboard",
+        items: [
+          { name: "Přehled", href: "/dashboard", icon: Home },
+          { name: "Statistiky", href: "/dashboard/stats", icon: BarChart3 },
+        ],
+      },
+      {
+        label: "Prostory",
+        items: [
+          { name: "Správa prostorů", href: "/admin/venues", icon: Building },
+          { name: "Homepage výběr", href: "/admin/venues#homepage", icon: Sparkles },
+          { name: "Priority & nabídky", href: "/admin/venues#priority", icon: BadgePercent },
+        ],
+      },
+      {
+        label: "Zákazníci",
+        items: [
+          { name: "Správa uživatelů", href: "/dashboard/users", icon: Users },
+          { name: "Rychlé poptávky", href: "/admin/quick-requests", icon: Zap },
+          { name: "Event Board", href: "/event-board", icon: Calendar },
+        ],
+      },
+      {
+        label: "Komunikace",
+        items: [
+          { name: "E-mail šablony", href: "/admin/email-templates", icon: Mail },
+          { name: "E-mail statistiky", href: "/admin/email-flow", icon: BarChart2 },
+        ],
+      },
+      {
+        label: "Marketing",
+        items: [
+          { name: "Ceník", href: "/admin/pricing", icon: CreditCard },
+          { name: "Blog", href: "/admin/blog", icon: MessageSquare },
+        ],
+      },
+    ]
+  }
 
   if (userRole === "venue_manager") {
     return [
-      ...baseNav,
       {
-        name: "Rychlé poptávky",
-        href: "/admin/quick-requests",
-        icon: Zap,
+        label: "Dashboard",
+        items: [{ name: "Přehled", href: "/dashboard", icon: Home }],
       },
       {
-        name: "Můj prostor",
-        href: "/dashboard/venue",
-        icon: Building,
+        label: "Moje prostory",
+        items: [
+          { name: "Můj prostor", href: "/dashboard/venue", icon: Building },
+          { name: "Přijaté dotazy", href: "/dashboard/inquiries", icon: MessageSquare },
+          { name: "Event Board", href: "/event-board", icon: Calendar },
+        ],
       },
       {
-        name: "Přijaté dotazy",
-        href: "/dashboard/inquiries",
-        icon: MessageSquare,
-      },
-      {
-        name: "Event Board",
-        href: "/event-board",
-        icon: Calendar,
-      },
-      {
-        name: "Prémiové balíčky",
-        href: "/ceny#premium",
-        icon: Sparkles,
-      },
-      {
-        name: "Předplatné",
-        href: "/dashboard/subscription",
-        icon: CreditCard,
+        label: "Nástroje",
+        items: [
+          { name: "Rychlé poptávky", href: "/admin/quick-requests", icon: Zap },
+          { name: "Prémiové balíčky", href: "/ceny#premium", icon: Sparkles },
+          { name: "Předplatné", href: "/dashboard/subscription", icon: CreditCard },
+        ],
       },
     ]
   }
 
-  if (userRole === "admin") {
-    return [
-      ...baseNav,
-      {
-        name: "Uživatelé",
-        href: "/dashboard/users",
-        icon: Users,
-      },
-      {
-        name: "Prostory",
-        href: "/dashboard/venues",
-        icon: Building,
-      },
-      {
-        name: "Statistiky",
-        href: "/dashboard/stats",
-        icon: BarChart3,
-      },
-      {
-        name: "Email nastavení",
-        href: "/admin/email-templates",
-        icon: Mail,
-      },
-      {
-        name: "Email statistiky",
-        href: "/admin/email-flow",
-        icon: BarChart2,
-      },
-      {
-        name: "Ceník",
-        href: "/admin/pricing",
-        icon: BadgePercent,
-      },
-      {
-        name: "Blog",
-        href: "/admin/blog",
-        icon: MessageSquare,
-      },
-    ]
-  }
+  return [
+    {
+      label: "Dashboard",
+      items: [{ name: "Přehled", href: "/dashboard", icon: Home }],
+    },
+  ]
+}
 
-  return baseNav
+function normalizeHref(href: string) {
+  return href.split("#")[0]
 }
 
 function isActiveRoute(pathname: string, href: string) {
-  if (href === "/dashboard") {
-    return pathname === href
+  const normalized = normalizeHref(href)
+  if (normalized === "/dashboard") {
+    return pathname === normalized
   }
-  return pathname === href || pathname.startsWith(`${href}/`)
+  return pathname === normalized || pathname.startsWith(`${normalized}/`)
 }
 
 interface DashboardSidebarProps {
@@ -170,27 +167,38 @@ export function DashboardSidebar({ userRole, initialCollapsed = false }: Dashboa
       </div>
 
       <nav className="flex-1 overflow-y-auto px-3 py-6">
-        <div className="space-y-1.5">
-          {navigation.map((item) => {
-            const active = isActiveRoute(pathname, item.href)
-            return (
-              <Link
-                key={item.name}
-                href={item.href}
-                title={collapsed ? item.name : undefined}
-                className={cn(
-                  "flex items-center rounded-xl text-sm font-medium transition-all",
-                  collapsed ? "justify-center px-0 py-3" : "gap-3 px-4 py-3",
-                  active
-                    ? "bg-black text-white shadow-lg shadow-black/10"
-                    : "text-gray-700 hover:bg-gray-100 hover:text-black"
-                )}
-              >
-                <item.icon className="h-5 w-5 flex-shrink-0" />
-                {!collapsed && <span>{item.name}</span>}
-              </Link>
-            )
-          })}
+        <div className="space-y-6">
+          {navigation.map((group) => (
+            <div key={group.label}>
+              {!collapsed && (
+                <p className="mb-2 ml-2 text-xs font-semibold uppercase tracking-[0.2em] text-gray-500">
+                  {group.label}
+                </p>
+              )}
+              <div className="space-y-1.5">
+                {group.items.map((item) => {
+                  const active = isActiveRoute(pathname, item.href)
+                  return (
+                    <Link
+                      key={item.name}
+                      href={item.href}
+                      title={collapsed ? item.name : undefined}
+                      className={cn(
+                        "flex items-center rounded-xl text-sm font-medium transition-all",
+                        collapsed ? "justify-center px-0 py-3" : "gap-3 px-4 py-3",
+                        active
+                          ? "bg-black text-white shadow-lg shadow-black/10"
+                          : "text-gray-700 hover:bg-gray-100 hover:text-black"
+                      )}
+                    >
+                      <item.icon className="h-5 w-5 flex-shrink-0" />
+                      {!collapsed && <span>{item.name}</span>}
+                    </Link>
+                  )
+                })}
+              </div>
+            </div>
+          ))}
         </div>
       </nav>
     </aside>
@@ -234,27 +242,33 @@ export function DashboardMobileNav({ userRole }: DashboardMobileNavProps) {
               </SheetTitle>
             </SheetHeader>
             <div className="flex-1 overflow-y-auto px-3 py-4">
-              <nav className="space-y-1">
-                {navigation.map((item) => {
-                  const active = isActiveRoute(pathname, item.href)
-
-                  return (
-                    <SheetClose asChild key={item.href}>
-                      <Link
-                        href={item.href}
-                        className={cn(
-                          "flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-colors",
-                          active
-                            ? "bg-black text-white"
-                            : "text-gray-700 hover:bg-gray-100 hover:text-black"
-                        )}
-                      >
-                        <item.icon className="h-5 w-5" />
-                        <span>{item.name}</span>
-                      </Link>
-                    </SheetClose>
-                  )
-                })}
+              <nav className="space-y-4">
+                {navigation.map((group) => (
+                  <div key={group.label} className="space-y-1">
+                    <p className="px-4 text-xs font-semibold uppercase tracking-[0.2em] text-gray-500">
+                      {group.label}
+                    </p>
+                    {group.items.map((item) => {
+                      const active = isActiveRoute(pathname, item.href)
+                      return (
+                        <SheetClose asChild key={item.href}>
+                          <Link
+                            href={item.href}
+                            className={cn(
+                              "flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-colors",
+                              active
+                                ? "bg-black text-white"
+                                : "text-gray-700 hover:bg-gray-100 hover:text-black"
+                            )}
+                          >
+                            <item.icon className="h-5 w-5" />
+                            <span>{item.name}</span>
+                          </Link>
+                        </SheetClose>
+                      )
+                    })}
+                  </div>
+                ))}
               </nav>
             </div>
             <div className="border-t border-gray-200 px-5 py-3 text-xs text-gray-500">

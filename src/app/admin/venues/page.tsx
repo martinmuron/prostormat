@@ -210,7 +210,6 @@ const [updatingPaidId, setUpdatingPaidId] = useState<string | null>(null);
 
   const orderedVenueOptions = useMemo(() => {
     return venues
-      .filter((venue) => Boolean(venue?.id))
       .map((venue) => ({
         id: venue.id,
         name: venue.name || venue.slug || 'Bez názvu',
@@ -372,7 +371,7 @@ const [updatingPaidId, setUpdatingPaidId] = useState<string | null>(null);
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="max-w-7xl mx-auto">
-        <Card className="mb-6">
+        <Card className="mb-6" id="homepage">
           <CardHeader>
             <CardTitle>Homepage prostory</CardTitle>
             <p className="text-sm text-gray-600">
@@ -519,7 +518,7 @@ const [updatingPaidId, setUpdatingPaidId] = useState<string | null>(null);
         </Card>
 
         {/* Results count */}
-        <div className="mb-4">
+        <div className="mb-4" id="priority">
           <p className="text-sm text-gray-600">
             Zobrazeno: {filteredVenues.length} z {venues.length} prostorů
           </p>

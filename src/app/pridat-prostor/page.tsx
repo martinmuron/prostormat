@@ -274,8 +274,16 @@ function AddVenuePageContent() {
     setHasPrefilledFromExisting(false)
     setIsPrefillingExistingVenue(true)
 
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => {
+      controller.abort()
+    }, 10000)
+
     try {
-      const response = await fetch(`/api/venues/claim-data/${venueId}`)
+      const response = await fetch(`/api/venues/claim-data/${venueId}`, {
+        signal: controller.signal,
+        cache: 'no-store',
+      })
       if (!response.ok) {
         throw new Error(`Failed to fetch claim data for venue ${venueId}`)
       }
@@ -400,12 +408,18 @@ function AddVenuePageContent() {
     } catch (error) {
       console.error("Failed to prefill existing venue data:", error)
       if (prefillRequestRef.current === venueId) {
-        setPrefillError("Nepodařilo se načíst údaje existujícího prostoru. Zkuste to prosím znovu.")
+        const message =
+          (error as Error).name === 'AbortError'
+            ? "Načtení údajů trvá déle než obvykle. Zkuste to prosím znovu nebo kontaktujte podporu."
+            : "Nepodařilo se načíst údaje existujícího prostoru. Zkuste to prosím znovu."
+        setPrefillError(message)
       }
       return null
     } finally {
+      clearTimeout(timeoutId)
       if (prefillRequestRef.current === venueId) {
         setIsPrefillingExistingVenue(false)
+        prefillRequestRef.current = null
       }
     }
   }, [setValue, setAmenities])

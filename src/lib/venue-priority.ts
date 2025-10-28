@@ -1,5 +1,9 @@
 export type VenueWithPriority = {
   priority: number | null
+  prioritySource?: string | null
+  homepageSlot?: {
+    position: number | null
+  } | null
 }
 
 type Seed = number
@@ -33,6 +37,7 @@ export function sortVenuesByPriority<T extends VenueWithPriority>(
   const safeSeed = seed >>> 0
   const groupSeeds = [safeSeed + 1, safeSeed + 2, safeSeed + 3, safeSeed + 4]
 
+  const homepagePriority: T[] = []
   const priorityGroups: Record<'p1' | 'p2' | 'p3' | 'none', T[]> = {
     p1: [],
     p2: [],
@@ -41,9 +46,17 @@ export function sortVenuesByPriority<T extends VenueWithPriority>(
   }
 
   for (const venue of venues) {
+    const source =
+      'prioritySource' in venue
+        ? ((venue as { prioritySource?: string | null }).prioritySource ?? null)
+        : null
     switch (venue.priority) {
       case 1:
-        priorityGroups.p1.push(venue)
+        if (source === 'homepage') {
+          homepagePriority.push(venue)
+        } else {
+          priorityGroups.p1.push(venue)
+        }
         break
       case 2:
         priorityGroups.p2.push(venue)
@@ -57,6 +70,21 @@ export function sortVenuesByPriority<T extends VenueWithPriority>(
   }
 
   const ordered: T[] = []
+  if (homepagePriority.length) {
+    const sortedHomepage = [...homepagePriority].sort((a, b) => {
+      const aPosition =
+        (a.homepageSlot && typeof a.homepageSlot.position === 'number'
+          ? a.homepageSlot.position
+          : Number.POSITIVE_INFINITY)
+      const bPosition =
+        (b.homepageSlot && typeof b.homepageSlot.position === 'number'
+          ? b.homepageSlot.position
+          : Number.POSITIVE_INFINITY)
+      return aPosition - bPosition
+    })
+    ordered.push(...sortedHomepage)
+  }
+
   ordered.push(...shuffleWithSeed(priorityGroups.p1, groupSeeds[0]))
   ordered.push(...shuffleWithSeed(priorityGroups.p2, groupSeeds[1]))
   ordered.push(...shuffleWithSeed(priorityGroups.p3, groupSeeds[2]))

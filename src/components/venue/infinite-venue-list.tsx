@@ -15,6 +15,10 @@ interface Venue {
   images: string[]
   status: string
   priority?: number | null
+  prioritySource?: string | null
+  homepageSlot?: {
+    position: number | null
+  } | null
 }
 
 interface InfiniteVenueListProps {

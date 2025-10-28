@@ -93,6 +93,12 @@ async function getInitialVenues(
         images: true,
         status: true,
         priority: true,
+        prioritySource: true,
+        homepageSlot: {
+          select: {
+            position: true,
+          },
+        },
       }
     })
 

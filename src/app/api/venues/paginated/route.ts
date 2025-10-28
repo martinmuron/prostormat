@@ -53,6 +53,12 @@ export async function GET(request: NextRequest) {
         images: true,
         status: true,
         priority: true,
+        prioritySource: true,
+        homepageSlot: {
+          select: {
+            position: true,
+          },
+        },
       },
     })
 

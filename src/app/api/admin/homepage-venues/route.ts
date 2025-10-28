@@ -62,6 +62,12 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
+    const existingHomepageVenues = await prisma.homepageVenue.findMany({
+      select: {
+        venueId: true,
+      },
+    })
+
     const payload = await request.json()
     const { slots } = slotsSchema.parse(payload)
 
@@ -97,15 +103,44 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'One or more selected venues do not exist' }, { status: 400 })
     }
 
-    await prisma.$transaction([
-      prisma.homepageVenue.deleteMany({}),
-      prisma.homepageVenue.createMany({
+    const previousHomepageIds = new Set(existingHomepageVenues.map((item) => item.venueId))
+    const newHomepageIds = new Set(slots.map((slot) => slot.venueId))
+    const removedHomepageIds = Array.from(previousHomepageIds).filter((id) => !newHomepageIds.has(id))
+
+    await prisma.$transaction(async (tx) => {
+      await tx.homepageVenue.deleteMany({})
+      await tx.homepageVenue.createMany({
         data: slots.map((slot) => ({
           position: slot.position,
           venueId: slot.venueId,
         })),
-      }),
-    ])
+      })
+
+      await tx.venue.updateMany({
+        where: {
+          id: { in: Array.from(newHomepageIds) },
+        },
+        data: {
+          priority: 1,
+          prioritySource: 'homepage',
+          isRecommended: true,
+        },
+      })
+
+      if (removedHomepageIds.length) {
+        await tx.venue.updateMany({
+          where: {
+            id: { in: removedHomepageIds },
+            prioritySource: 'homepage',
+          },
+          data: {
+            priority: null,
+            prioritySource: null,
+            isRecommended: false,
+          },
+        })
+      }
+    })
 
     await revalidatePath('/', 'page')
 

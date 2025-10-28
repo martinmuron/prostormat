@@ -18,6 +18,7 @@ import type { VenueType } from "@/types"
 import { MapPin, Users, Instagram } from "lucide-react"
 import { generateVenueSchema, generateBreadcrumbSchema, schemaToJsonLd } from "@/lib/schema-markup"
 import { buildVenueMetaDescription, buildVenueKeywords, absoluteUrl, DEFAULT_OG_IMAGE } from "@/lib/seo"
+import { VenueViewTracker } from "@/components/analytics/venue-view-tracker"
 import { getOptimizedImageUrl } from "@/lib/supabase-images"
 import { authOptions } from "@/lib/auth"
 
@@ -197,6 +198,8 @@ export default async function VenueDetailPage({
   const venue = result.venue
 
   const venueTypeLabel = venue.venueType ? VENUE_TYPES[venue.venueType as VenueType] || venue.venueType : null
+  const viewCategory = venue.venueType ?? null
+  const viewPrice = typeof venue.priority === "number" && venue.priority > 0 ? 12000 : null
 
   const displayAddress = formatDisplayAddress(venue.address)
 
@@ -222,6 +225,12 @@ export default async function VenueDetailPage({
 
   return (
     <div className="min-h-screen bg-white">
+      <VenueViewTracker
+        venueId={venue.id}
+        venueName={venue.name}
+        category={viewCategory}
+        price={viewPrice}
+      />
       {/* Schema.org JSON-LD markup */}
       <script
         type="application/ld+json"

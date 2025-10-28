@@ -6,8 +6,19 @@ import { authOptions } from "@/lib/auth"
 import { randomUUID } from "crypto"
 import { trackLokaceSubmit } from "@/lib/meta-conversions-api"
 import { trackGA4ServerLead } from "@/lib/ga4-server-tracking"
-import { resend, FROM_EMAIL } from "@/lib/resend"
-import { generateVenueInquiryAdminNotificationEmail } from "@/lib/email-templates"
+import { resend, FROM_EMAIL, REPLY_TO_EMAIL } from "@/lib/resend"
+import {
+  generateVenueInquiryAdminNotificationEmail,
+  generateVenueInquiryPaidNotificationEmail,
+  generateVenueInquiryUnpaidNotificationEmail,
+} from "@/lib/email-templates"
+
+const trackingSchema = z.object({
+  eventId: z.string(),
+  clientId: z.string().optional(),
+  fbp: z.string().optional(),
+  fbc: z.string().optional(),
+}).optional()
 
 const inquirySchema = z.object({
   venueId: z.string(),
@@ -19,12 +30,16 @@ const inquirySchema = z.object({
   message: z.string().min(10),
 })
 
+const inquiryPayloadSchema = inquirySchema.extend({
+  tracking: trackingSchema,
+})
+
 export async function POST(request: Request) {
   try {
     const session = await getServerSession(authOptions)
     const body = await request.json()
     
-    const validatedData = inquirySchema.parse(body)
+    const { tracking, ...validatedData } = inquiryPayloadSchema.parse(body)
 
     // Check if venue exists
     const venue = await db.venue.findUnique({
@@ -36,6 +51,7 @@ export async function POST(request: Request) {
         paid: true,
         status: true,
         contactEmail: true,
+        managerId: true,
       }
     })
 
@@ -69,7 +85,9 @@ export async function POST(request: Request) {
         phone: validatedData.phone,
         firstName: firstName,
         lastName: lastNameParts.join(' ') || undefined,
-      }, venue.name, request)
+        fbp: tracking?.fbp,
+        fbc: tracking?.fbc,
+      }, venue.name, request, tracking?.eventId)
     } catch (metaError) {
       console.error('Failed to track Meta lokace submit event:', metaError)
       // Continue anyway - inquiry was successful
@@ -84,6 +102,8 @@ export async function POST(request: Request) {
         venueId: venue.id,
         guestCount: validatedData.guestCount || undefined,
         email: validatedData.email,
+        clientId: tracking?.clientId,
+        eventId: tracking?.eventId,
         request,
       })
     } catch (ga4Error) {
@@ -124,8 +144,66 @@ export async function POST(request: Request) {
       console.error("Failed to send venue inquiry notification email:", emailError)
     }
 
-    // TODO: Send email notification to venue manager
-    // This would integrate with Resend or similar email service
+    // Send notification email directly to the venue
+    try {
+      if (!venue.contactEmail) {
+        console.warn(`Venue ${venue.id} has no contactEmail - skipping notification`)
+      } else {
+        const emailContent = venue.paid
+          ? generateVenueInquiryPaidNotificationEmail({
+              inquiryId: inquiry.id,
+              venueName: venue.name,
+              venueSlug: venue.slug,
+              eventDate: validatedData.eventDate,
+              guestCount: validatedData.guestCount ?? null,
+            })
+          : generateVenueInquiryUnpaidNotificationEmail({
+              inquiryId: inquiry.id,
+              venueName: venue.name,
+              venueSlug: venue.slug,
+              eventDate: validatedData.eventDate,
+              guestCount: validatedData.guestCount ?? null,
+            })
+
+        let emailStatus: "sent" | "failed" = "sent"
+        let errorMessage: string | null = null
+
+        try {
+          await resend.emails.send({
+            from: FROM_EMAIL,
+            replyTo: REPLY_TO_EMAIL,
+            to: venue.contactEmail,
+            subject: emailContent.subject,
+            html: emailContent.html,
+            text: emailContent.text,
+          })
+        } catch (sendError) {
+          emailStatus = "failed"
+          errorMessage = sendError instanceof Error ? sendError.message : "Unknown email error"
+          console.error("Failed to send venue notification email:", sendError)
+        }
+
+        try {
+          await db.emailFlowLog.create({
+            data: {
+              id: randomUUID(),
+              emailType: venue.paid ? "venue_inquiry_paid" : "venue_inquiry_unpaid",
+              recipient: venue.contactEmail,
+              subject: emailContent.subject,
+              status: emailStatus,
+              error: errorMessage,
+              recipientType: "venue_owner",
+              sentBy: session?.user?.id ?? venue.managerId ?? "system",
+            },
+          })
+        } catch (logError) {
+          console.error("Failed to log venue notification email:", logError)
+        }
+      }
+    } catch (emailError) {
+      console.error("Failed to send venue notification email:", emailError)
+      // Continue even if venue email fails
+    }
 
     return NextResponse.json({ success: true, inquiryId: inquiry.id })
   } catch (error) {

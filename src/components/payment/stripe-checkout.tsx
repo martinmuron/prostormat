@@ -11,6 +11,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { CreditCard, Loader2 } from 'lucide-react';
+import type { TrackingContext } from '@/lib/tracking-utils';
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
@@ -22,6 +23,7 @@ interface VenuePaymentData {
   userEmail?: string | null;
   userPhone?: string | null;
   mode?: VenuePaymentMode;
+  tracking?: TrackingContext;
   [key: string]: unknown;
 }
 

@@ -4,6 +4,13 @@ import { sendEmailFromTemplate } from "@/lib/email-service"
 import { trackOrganizaceSubmit } from "@/lib/meta-conversions-api"
 import { trackGA4ServerLead } from "@/lib/ga4-server-tracking"
 
+const trackingSchema = z.object({
+  eventId: z.string(),
+  clientId: z.string().optional(),
+  fbp: z.string().optional(),
+  fbc: z.string().optional(),
+}).optional()
+
 const organizeEventSchema = z.object({
   name: z.string().min(2, "Jméno je povinné"),
   email: z.string().email("Neplatný email"),
@@ -17,10 +24,15 @@ const organizeEventSchema = z.object({
   message: z.string().optional(),
 })
 
+const organizeEventPayloadSchema = organizeEventSchema.extend({
+  tracking: trackingSchema,
+})
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const data = organizeEventSchema.parse(body)
+    const parsed = organizeEventPayloadSchema.parse(body)
+    const { tracking, ...data } = parsed
 
     if (typeof data.guestCount !== 'number' || data.guestCount < 100) {
       return NextResponse.json({
@@ -67,6 +79,8 @@ export async function POST(request: NextRequest) {
           phone: data.phone,
           firstName: firstName,
           lastName: lastNameParts.join(' ') || undefined,
+          fbp: tracking?.fbp,
+          fbc: tracking?.fbc,
         }, {
           eventType: data.eventType,
           guestCount: data.guestCount,
@@ -74,7 +88,7 @@ export async function POST(request: NextRequest) {
           budgetRange: data.budgetRange,
           locationPreference: data.locationPreference,
           company: data.company,
-        }, request)
+        }, request, tracking?.eventId)
       } catch (metaError) {
         console.error('Failed to track Meta organizace submit event:', metaError)
         // Continue anyway - form submission was successful
@@ -89,6 +103,8 @@ export async function POST(request: NextRequest) {
           location: data.locationPreference,
           budgetRange: data.budgetRange,
           email: data.email,
+          clientId: tracking?.clientId,
+          eventId: tracking?.eventId,
           request,
         })
       } catch (ga4Error) {

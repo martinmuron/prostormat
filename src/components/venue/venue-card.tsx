@@ -129,24 +129,14 @@ export function VenueCard({ venue, priority = false, showPriorityBadge = false }
               </div>
             </div>
           )}
-          {showPriorityBadge &&
-            (() => {
-              const priorityLevel = typeof venue.priority === 'number' ? venue.priority : null
-              const badgeLabel =
-                priorityLevel === 1 ? 'TOP PRIORITY' : priorityLevel === 2 ? 'PRIORITY' : 'DOPORUČENO'
-              const badgeClass =
-                priorityLevel === 1
-                  ? 'bg-gradient-to-r from-yellow-300 via-amber-400 to-orange-500 text-black'
-                  : 'bg-gradient-to-r from-orange-500 to-red-500 text-white'
-              return (
-                <div className="absolute top-3 right-3 sm:top-4 sm:right-4">
-                  <span className={`${badgeClass} px-3 py-1 rounded-full text-xs sm:text-sm font-semibold shadow-lg flex items-center gap-1`}>
-                    <Star className="w-3 h-3 sm:w-4 sm:h-4" />
-                    {badgeLabel}
-                  </span>
-                </div>
-              )
-            })()}
+          {showPriorityBadge && typeof venue.priority === 'number' && (
+            <div className="absolute top-3 right-3 sm:top-4 sm:right-4">
+              <span className="bg-gradient-to-r from-yellow-300 via-amber-400 to-orange-500 text-black px-3 py-1 rounded-full text-xs sm:text-sm font-semibold shadow-lg flex items-center gap-1">
+                <Star className="w-3 h-3 sm:w-4 sm:h-4" />
+                Doporučeno
+              </span>
+            </div>
+          )}
           <div className="absolute top-3 right-3 sm:top-4 sm:right-4 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0">
             <div className="w-10 h-10 bg-white/95 rounded-full flex items-center justify-center shadow-lg backdrop-blur-sm">
               <span className="text-sm font-bold text-black">→</span>

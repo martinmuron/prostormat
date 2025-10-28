@@ -82,11 +82,13 @@ const [updatingPaidId, setUpdatingPaidId] = useState<string | null>(null);
 
     // Apply search filter
     if (searchTerm) {
-      filtered = filtered.filter(venue => 
-        venue.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        venue.address.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        venue.prostormat_users.name.toLowerCase().includes(searchTerm.toLowerCase())
-      );
+      const normalizedSearch = searchTerm.toLowerCase();
+      filtered = filtered.filter((venue) => {
+        const nameMatch = venue.name?.toLowerCase().includes(normalizedSearch);
+        const addressMatch = venue.address?.toLowerCase().includes(normalizedSearch);
+        const managerMatch = venue.prostormat_users?.name?.toLowerCase().includes(normalizedSearch);
+        return Boolean(nameMatch || addressMatch || managerMatch);
+      });
     }
 
     // Apply status filter
@@ -206,16 +208,22 @@ const [updatingPaidId, setUpdatingPaidId] = useState<string | null>(null);
     return acc;
   }, {});
 
-  const orderedVenueOptions = useMemo(
-    () =>
-      [...venues].sort((a, b) => a.name.localeCompare(b.name, 'cs-CZ', { sensitivity: 'base' })),
-    [venues]
-  );
+  const orderedVenueOptions = useMemo(() => {
+    return venues
+      .filter((venue) => Boolean(venue?.id))
+      .map((venue) => ({
+        id: venue.id,
+        name: venue.name || venue.slug || 'Bez názvu',
+      }))
+      .sort((a, b) => a.name.localeCompare(b.name, 'cs-CZ', { sensitivity: 'base' }));
+  }, [venues]);
 
   const venueNameMap = useMemo(() => {
     const map = new Map<string, string>();
     venues.forEach((venue) => {
-      map.set(venue.id, venue.name);
+      if (venue?.id) {
+        map.set(venue.id, venue.name || venue.slug || 'Bez názvu');
+      }
     });
     return map;
   }, [venues]);
@@ -597,8 +605,8 @@ const [updatingPaidId, setUpdatingPaidId] = useState<string | null>(null);
                         <div className="flex items-center justify-between">
                           <div>
                             <span className="text-sm font-medium text-gray-700">Majitel: </span>
-                            <span className="text-sm text-gray-900">{venue.prostormat_users.name}</span>
-                            <span className="text-sm text-gray-500 ml-2">({venue.prostormat_users.email})</span>
+                            <span className="text-sm text-gray-900">{venue.prostormat_users?.name || 'Neuvedeno'}</span>
+                            <span className="text-sm text-gray-500 ml-2">({venue.prostormat_users?.email || 'bez emailu'})</span>
                           </div>
                           <div className="text-xs text-gray-500">
                             Vytvořeno {formatDate(venue.createdAt)}

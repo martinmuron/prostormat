@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent } from "@/components/ui/card"
 import { trackGA4Registration } from "@/lib/ga4-tracking"
+import { createTrackingContext } from "@/lib/tracking-utils"
 
 export function RegisterPage() {
   const router = useRouter()
@@ -38,6 +39,7 @@ export function RegisterPage() {
     }
 
     try {
+      const tracking = createTrackingContext()
       const response = await fetch("/api/auth/register", {
         method: "POST",
         headers: {
@@ -46,6 +48,7 @@ export function RegisterPage() {
         body: JSON.stringify({
           email: formData.email,
           password: formData.password,
+          tracking,
         }),
       })
 
@@ -53,7 +56,8 @@ export function RegisterPage() {
         // Track registration in GA4
         trackGA4Registration({
           email: formData.email,
-          method: 'email'
+          method: 'email',
+          tracking,
         })
 
         await new Promise((resolve) => setTimeout(resolve, 500))

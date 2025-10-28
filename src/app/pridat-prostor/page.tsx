@@ -16,6 +16,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { StripeCheckout } from "@/components/payment/stripe-checkout"
+import { createTrackingContext, type TrackingContext } from "@/lib/tracking-utils"
 import {
   Dialog,
   DialogContent,
@@ -117,6 +118,7 @@ interface PaymentData {
   existingVenueName?: string | null
   existingVenueSlug?: string | null
   existingManagerEmail?: string | null
+  tracking?: TrackingContext
   [key: string]: unknown
 }
 
@@ -200,6 +202,8 @@ function AddVenuePageContent() {
   const [paymentError, setPaymentError] = useState<string | null>(null)
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [submissionMode, setSubmissionMode] = useState<'new' | 'claim'>('new')
+  const [upgradeInquiryId, setUpgradeInquiryId] = useState<string | null>(null)
+  const [upgradeVenueSlug, setUpgradeVenueSlug] = useState<string | null>(null)
   const [claimInfo, setClaimInfo] = useState<{
     id: string
     name: string
@@ -409,6 +413,14 @@ function AddVenuePageContent() {
   const claimVenueIdParam = searchParams?.get("claimVenueId")
 
   useEffect(() => {
+    const inquiryParam = searchParams?.get("inquiry")
+    setUpgradeInquiryId(inquiryParam && inquiryParam.trim().length > 0 ? inquiryParam.trim() : null)
+
+    const venueParam = searchParams?.get("venue")
+    setUpgradeVenueSlug(venueParam && venueParam.trim().length > 0 ? venueParam.trim() : null)
+  }, [searchParams])
+
+  useEffect(() => {
     if (!claimVenueIdParam) {
       prefillRequestRef.current = null
       return
@@ -439,6 +451,51 @@ function AddVenuePageContent() {
       })
     })()
   }, [claimVenueIdParam, claimInfo?.id, hasPrefilledFromExisting, prefillExistingVenueData])
+
+  useEffect(() => {
+    if (!upgradeVenueSlug) {
+      return
+    }
+
+    if (claimInfo?.slug === upgradeVenueSlug && hasPrefilledFromExisting) {
+      return
+    }
+
+    if (submissionMode !== 'claim') {
+      setSubmissionMode('claim')
+    }
+    setIsNameFieldFocused(false)
+
+    void (async () => {
+      try {
+        const response = await fetch(`/api/venues/claim-data/by-slug/${encodeURIComponent(upgradeVenueSlug)}`)
+        if (!response.ok) {
+          console.warn(`Failed to fetch venue by slug ${upgradeVenueSlug}`)
+          return
+        }
+
+        const data: { id: string } = await response.json()
+        if (!data?.id) {
+          return
+        }
+
+        const prefilled = await prefillExistingVenueData(data.id)
+        if (!prefilled) {
+          return
+        }
+
+        setClaimInfo({
+          id: data.id,
+          name: prefilled.name,
+          slug: prefilled.slug,
+          status: prefilled.status,
+          manager: prefilled.manager ?? undefined,
+        })
+      } catch (error) {
+        console.error('Failed to prefill venue data from slug:', error)
+      }
+    })()
+  }, [upgradeVenueSlug, claimInfo?.slug, hasPrefilledFromExisting, prefillExistingVenueData, submissionMode])
 
   useEffect(() => {
     const name = (watchedName ?? "").trim()
@@ -728,6 +785,8 @@ function AddVenuePageContent() {
     try {
       const uploadedImageUrls = await uploadImages()
 
+      const trackingContext = createTrackingContext()
+
       const submitData: PaymentData = {
         userName: isLoggedIn ? null : validatedData.userName,
         userEmail: isLoggedIn ? session?.user?.email : validatedData.userEmail,
@@ -754,6 +813,7 @@ function AddVenuePageContent() {
         existingVenueName: existingVenueMatch?.name ?? null,
         existingVenueSlug: existingVenueMatch?.slug ?? null,
         existingManagerEmail: existingVenueMatch?.manager?.email ?? null,
+        tracking: trackingContext,
       }
 
       setSubmissionMode(mode)
@@ -820,19 +880,28 @@ function AddVenuePageContent() {
 
   const handlePaymentSuccess = () => {
     // Track payment in GA4
+    const tracking = formData?.tracking as TrackingContext | undefined
+
     if (formData) {
       trackGA4Payment({
         value: 12000,
         currency: 'CZK',
         venue_name: formData.name,
         subscription: true,
+        tracking,
       })
 
       // Track location registration in GA4
       trackGA4LocationRegistration({
         venue_name: formData.name,
         mode: formData.mode || 'new',
+        tracking,
       })
+    }
+
+    if (upgradeInquiryId) {
+      router.push(`/venue-inquiry/${upgradeInquiryId}`)
+      return
     }
 
     setCurrentStep('success')
@@ -1009,6 +1078,25 @@ function AddVenuePageContent() {
             </div>
           </div>
         </div>
+
+        {upgradeInquiryId && (
+          <div className="mb-6 sm:mb-8">
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 sm:p-5">
+              <p className="text-sm sm:text-callout text-blue-900 font-semibold mb-1">
+                Nová poptávka #{upgradeInquiryId}
+              </p>
+              <p className="text-sm text-blue-800">
+                Dokončete upgrade, abyste si zobrazili kontaktní údaje zákazníka. Po úspěšné platbě vás
+                přesměrujeme přímo na detail poptávky.
+              </p>
+              {claimInfo?.name && (
+                <p className="text-xs text-blue-700 mt-2">
+                  Poptávka se týká prostoru <strong>{claimInfo.name}</strong>.
+                </p>
+              )}
+            </div>
+          </div>
+        )}
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 sm:space-y-8">
           <Dialog open={showClaimDialog} onOpenChange={setShowClaimDialog}>

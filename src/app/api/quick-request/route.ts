@@ -10,6 +10,13 @@ import { generateQuickRequestInternalNotificationEmail } from "@/lib/email-templ
 import { trackBulkFormSubmit } from "@/lib/meta-conversions-api"
 import { trackGA4ServerLead } from "@/lib/ga4-server-tracking"
 
+const trackingSchema = z.object({
+  eventId: z.string(),
+  clientId: z.string().optional(),
+  fbp: z.string().optional(),
+  fbc: z.string().optional(),
+}).optional()
+
 const quickRequestSchema = z.object({
   eventType: z.string().min(1, "Event type is required"),
   eventDate: z.string().min(1, "Event date is required"),
@@ -21,6 +28,10 @@ const quickRequestSchema = z.object({
   contactName: z.string().min(2, "Contact name is required"),
   contactEmail: z.string().email("Valid email is required"),
   contactPhone: z.string().optional(),
+})
+
+const payloadSchema = quickRequestSchema.extend({
+  tracking: trackingSchema,
 })
 
 type VenueMatch = {
@@ -131,7 +142,7 @@ export async function POST(request: Request) {
   try {
     const session = await getServerSession(authOptions)
     const body = await request.json()
-    const validatedData = quickRequestSchema.parse(body)
+    const { tracking, ...validatedData } = payloadSchema.parse(body)
 
     // Find matching venues
     const matchingVenues = await findMatchingVenues({
@@ -223,12 +234,14 @@ export async function POST(request: Request) {
         phone: validatedData.contactPhone,
         firstName: firstName,
         lastName: lastNameParts.join(' ') || undefined,
+        fbp: tracking?.fbp,
+        fbc: tracking?.fbc,
       }, {
         eventType: validatedData.eventType,
         guestCount: typeof validatedData.guestCount === 'number' ? validatedData.guestCount : Number(validatedData.guestCount) || undefined,
         locationPreference: validatedData.locationPreference,
         budgetRange: validatedData.budgetRange,
-      }, request)
+      }, request, tracking?.eventId)
     } catch (metaError) {
       console.error('Failed to track Meta bulk form submit event:', metaError)
       // Continue anyway - request was successful
@@ -244,6 +257,8 @@ export async function POST(request: Request) {
         location: validatedData.locationPreference,
         budgetRange: validatedData.budgetRange,
         email: validatedData.contactEmail,
+        clientId: tracking?.clientId,
+        eventId: tracking?.eventId,
         request,
       })
     } catch (ga4Error) {

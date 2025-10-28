@@ -6,6 +6,7 @@ import { nanoid } from 'nanoid';
 import { resend } from '@/lib/resend';
 import { trackLocationRegistration, trackPayment } from '@/lib/meta-conversions-api';
 import { trackGA4ServerPayment, trackGA4ServerLocationRegistration } from '@/lib/ga4-server-tracking';
+import { sanitizeTrackingContext } from '@/lib/tracking-utils';
 
 export async function POST(request: NextRequest) {
   try {
@@ -59,6 +60,7 @@ export async function POST(request: NextRequest) {
 
     // Parse venue data
     const venueData = JSON.parse(paymentRecord.venueData);
+    const tracking = sanitizeTrackingContext(venueData.tracking);
 
     // Create or update user account first
     const normalizedName = typeof venueData.userName === 'string' ? venueData.userName.trim() : null;
@@ -246,7 +248,9 @@ export async function POST(request: NextRequest) {
           phone: normalizedPhone || undefined,
           firstName: firstName || undefined,
           lastName: lastNameParts.join(' ') || undefined,
-        }, existingVenue.name, request);
+          fbp: tracking?.fbp,
+          fbc: tracking?.fbc,
+        }, existingVenue.name, request, tracking?.eventId);
       } catch (metaError) {
         console.error('Failed to track Meta location registration event (claim):', metaError);
       }
@@ -258,6 +262,8 @@ export async function POST(request: NextRequest) {
           venueName: existingVenue.name,
           venueId: existingVenue.id,
           mode: 'claim',
+          clientId: tracking?.clientId,
+          eventId: tracking?.eventId,
           request,
         });
       } catch (ga4Error) {
@@ -272,7 +278,9 @@ export async function POST(request: NextRequest) {
           phone: normalizedPhone || undefined,
           firstName: firstName || undefined,
           lastName: lastNameParts.join(' ') || undefined,
-        }, paymentIntent.amount / 100, 'CZK', request);
+          fbp: tracking?.fbp,
+          fbc: tracking?.fbc,
+        }, paymentIntent.amount / 100, 'CZK', request, tracking?.eventId);
       } catch (metaError) {
         console.error('Failed to track Meta payment event (claim):', metaError);
       }
@@ -287,6 +295,8 @@ export async function POST(request: NextRequest) {
           venueName: existingVenue.name,
           venueId: existingVenue.id,
           subscription: true,
+          clientId: tracking?.clientId,
+          eventId: tracking?.eventId,
           request,
         });
       } catch (ga4Error) {
@@ -450,7 +460,9 @@ export async function POST(request: NextRequest) {
         phone: normalizedPhone || undefined,
         firstName: firstName || undefined,
         lastName: lastNameParts.join(' ') || undefined,
-      }, venueData.name, request);
+        fbp: tracking?.fbp,
+        fbc: tracking?.fbc,
+      }, venueData.name, request, tracking?.eventId);
     } catch (metaError) {
       console.error('Failed to track Meta location registration event (new):', metaError);
     }
@@ -462,6 +474,8 @@ export async function POST(request: NextRequest) {
         venueName: venueData.name,
         venueId: venueId,
         mode: 'new',
+        clientId: tracking?.clientId,
+        eventId: tracking?.eventId,
         request,
       });
     } catch (ga4Error) {
@@ -476,7 +490,9 @@ export async function POST(request: NextRequest) {
         phone: normalizedPhone || undefined,
         firstName: firstName || undefined,
         lastName: lastNameParts.join(' ') || undefined,
-      }, paymentIntent.amount / 100, 'CZK', request);
+        fbp: tracking?.fbp,
+        fbc: tracking?.fbc,
+      }, paymentIntent.amount / 100, 'CZK', request, tracking?.eventId);
     } catch (metaError) {
       console.error('Failed to track Meta payment event (new):', metaError);
     }
@@ -491,6 +507,8 @@ export async function POST(request: NextRequest) {
         venueName: venueData.name,
         venueId: venueId,
         subscription: true,
+        clientId: tracking?.clientId,
+        eventId: tracking?.eventId,
         request,
       });
     } catch (ga4Error) {

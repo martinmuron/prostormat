@@ -14,6 +14,7 @@ import { EVENT_TYPES, PRAGUE_DISTRICTS, BUDGET_RANGES } from '@/types'
 import { CheckCircle, ClipboardList, Clock } from 'lucide-react'
 import { PageHero } from '@/components/layout/page-hero'
 import { trackGA4OrganizaceSubmit } from '@/lib/ga4-tracking'
+import { createTrackingContext } from '@/lib/tracking-utils'
 
 const formSchema = z.object({
   name: z.string().min(2, 'Zadejte vaše jméno'),
@@ -44,10 +45,14 @@ export function OrganizeEventPage() {
   const onSubmit = async (values: FormValues) => {
     setIsSubmitting(true)
     try {
+      const tracking = createTrackingContext()
       const res = await fetch('/api/organize-event', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(values)
+        body: JSON.stringify({
+          ...values,
+          tracking,
+        })
       })
 
       if (res.ok) {
@@ -57,6 +62,7 @@ export function OrganizeEventPage() {
           guest_count: values.guestCount,
           budget_range: values.budgetRange,
           location: values.locationPreference,
+          tracking,
         })
 
         setIsSuccess(true)

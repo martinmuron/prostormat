@@ -14,6 +14,7 @@ import { EVENT_TYPES, LOCATION_OPTIONS } from "@/types"
 import { Clock, Send, Zap, CheckCircle } from "lucide-react"
 import { PageHero } from "@/components/layout/page-hero"
 import { trackGA4BulkFormSubmit } from "@/lib/ga4-tracking"
+import { createTrackingContext } from "@/lib/tracking-utils"
 
 interface QuickRequestFormData {
   eventType: string
@@ -91,12 +92,16 @@ export function QuickRequestPage() {
     setIsSubmitting(true)
     
     try {
+      const tracking = createTrackingContext()
       const response = await fetch('/api/quick-request', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          ...formData,
+          tracking,
+        }),
       })
 
       if (response.ok) {
@@ -108,6 +113,7 @@ export function QuickRequestPage() {
           guest_count: formData.guestCount,
           location: formData.locationPreference,
           budget_range: formData.budgetRange,
+          tracking,
         })
 
         setIsSuccess(true)

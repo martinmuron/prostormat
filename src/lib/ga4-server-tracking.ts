@@ -112,6 +112,7 @@ type RegistrationPayload = {
   email?: string
   method?: string
   clientId?: string
+  eventId?: string
   request?: Request
 }
 
@@ -126,6 +127,7 @@ type LeadPayload = {
   venueName?: string
   venueId?: string
   clientId?: string
+  eventId?: string
   request?: Request
 }
 
@@ -139,6 +141,7 @@ type PaymentPayload = {
   subscription?: boolean
   email?: string
   clientId?: string
+  eventId?: string
   request?: Request
 }
 
@@ -149,6 +152,7 @@ type LocationRegistrationPayload = {
   mode?: "new" | "claim"
   email?: string
   clientId?: string
+  eventId?: string
   request?: Request
 }
 
@@ -171,6 +175,7 @@ export async function trackGA4ServerRegistration(data: RegistrationPayload) {
         name: "sign_up",
         params: {
           method: data.method || "email",
+          event_id: data.eventId,
         },
       },
     ],
@@ -193,6 +198,7 @@ export async function trackGA4ServerLead(data: LeadPayload) {
           budget_range: data.budgetRange,
           venue_name: data.venueName,
           venue_id: data.venueId,
+          event_id: data.eventId,
         },
       },
     ],
@@ -214,6 +220,7 @@ export async function trackGA4ServerPayment(data: PaymentPayload) {
           venue_name: data.venueName,
           venue_id: data.venueId,
           subscription: data.subscription ?? false,
+          event_id: data.eventId,
         },
       },
     ],
@@ -232,6 +239,7 @@ export async function trackGA4ServerLocationRegistration(data: LocationRegistrat
           venue_id: data.venueId,
           venue_name: data.venueName,
           registration_mode: data.mode || "new",
+          event_id: data.eventId,
         },
       },
     ],

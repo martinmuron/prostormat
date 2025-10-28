@@ -206,6 +206,197 @@ export function generatePasswordResetEmail(resetLink: string) {
   return { subject, html, text }
 }
 
+function formatInquiryDate(date: Date | string | null) {
+  if (!date) return "Datum dle dohody"
+  const parsed = date instanceof Date ? date : new Date(date)
+  if (Number.isNaN(parsed.getTime())) return "Datum dle dohody"
+  return parsed.toLocaleDateString("cs-CZ", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  })
+}
+
+function formatGuestCount(guestCount: number | null | undefined) {
+  if (typeof guestCount === "number" && guestCount > 0) {
+    return `${guestCount} hostů`
+  }
+  return "Počet hostů nebyl upřesněn"
+}
+
+const INQUIRY_EMAIL_STYLES = `
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #111827; margin: 0; padding: 0; background: #f9fafb; }
+  .container { max-width: 620px; margin: 0 auto; background: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 40px rgba(15, 23, 42, 0.08); }
+  .header { background: #000; color: #fff; padding: 32px 28px; }
+  .header h1 { margin: 0; font-size: 24px; }
+  .content { padding: 32px 28px; }
+  .teaser { border: 1px solid #e5e7eb; border-radius: 14px; padding: 20px; background: #f8fafc; margin-bottom: 28px; }
+  .teaser h2 { margin: 0 0 12px 0; font-size: 18px; color: #0f172a; }
+  .detail-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; font-size: 15px; }
+  .detail-label { color: #6b7280; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; font-size: 12px; }
+  .detail-value { color: #111827; font-weight: 600; }
+  .cta-button { display: inline-block; padding: 14px 24px; background: #000; color: #fff !important; text-decoration: none; border-radius: 12px; font-weight: 600; text-align: center; letter-spacing: 0.02em; }
+  .footer { padding: 24px 28px 32px; background: #f3f4f6; color: #6b7280; font-size: 13px; text-align: center; }
+  .muted-line { color: #9ca3af; font-weight: 600; letter-spacing: 0.05em; }
+  .note { margin-top: 24px; padding: 16px 18px; border-radius: 12px; font-size: 14px; line-height: 1.5; }
+  .note.paid { background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; }
+  .note.unpaid { background: #fff7ed; color: #c2410c; border: 1px solid #fed7aa; }
+`
+
+function buildInquiryEmailShell(subject: string, bodyHtml: string) {
+  return `
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>${subject}</title>
+  <style>${INQUIRY_EMAIL_STYLES}</style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Prostormat</h1>
+      <p style="margin: 8px 0 0 0; opacity: 0.75;">Automatické upozornění</p>
+    </div>
+    <div class="content">
+      ${bodyHtml}
+    </div>
+    <div class="footer">
+      <p><strong>Prostormat</strong> – Platforma pro hledání event prostorů</p>
+      <p><a href="mailto:info@prostormat.cz" style="color:#111827;">info@prostormat.cz</a> · <a href="https://prostormat.cz" style="color:#111827;">prostormat.cz</a></p>
+    </div>
+  </div>
+</body>
+</html>
+`
+}
+
+interface VenueInquiryEmailData {
+  inquiryId: string
+  venueName: string
+  venueSlug: string
+  eventDate: Date | string | null
+  guestCount: number | null
+}
+
+export function generateVenueInquiryPaidNotificationEmail(data: VenueInquiryEmailData) {
+  const subject = `Máte novou poptávku na ${data.venueName}`
+  const detailUrl = `https://prostormat.cz/venue-inquiry/${encodeURIComponent(data.inquiryId)}`
+  const eventDate = formatInquiryDate(data.eventDate)
+  const guestCount = formatGuestCount(data.guestCount)
+
+  const htmlBody = `
+    <p style="margin:0 0 20px 0;">Dobrý den,</p>
+    <p style="margin:0 0 24px 0;">obdrželi jste novou poptávku na prostor <strong>${data.venueName}</strong>. Zákazník čeká na vaši odpověď.</p>
+    <div class="teaser">
+      <h2>Klíčové informace</h2>
+      <div class="detail-row">
+        <span class="detail-label">Datum akce</span>
+        <span class="detail-value">${eventDate}</span>
+      </div>
+      <div class="detail-row" style="margin-bottom:0;">
+        <span class="detail-label">Počet hostů</span>
+        <span class="detail-value">${guestCount}</span>
+      </div>
+    </div>
+    <p style="margin:0 0 28px 0;">Kliknutím na tlačítko níže zobrazíte celou poptávku včetně kontaktních údajů zákazníka a můžete mu odpovědět.</p>
+    <div style="text-align:center; margin-bottom:32px;">
+      <a href="${detailUrl}" class="cta-button">Zobrazit celé znění poptávky</a>
+    </div>
+    <div class="note paid">
+      <strong>Jste předplatitelem Prostormat.</strong><br />
+      Všechny kontaktní údaje zákazníka jsou k dispozici ihned po kliknutí na tlačítko.
+    </div>
+  `
+
+  const plainText = [
+    `Máte novou poptávku na ${data.venueName}`,
+    ``,
+    `Datum akce: ${eventDate}`,
+    `Počet hostů: ${guestCount}`,
+    ``,
+    `Zobrazit celé znění poptávky: ${detailUrl}`,
+    ``,
+    `Po kliknutí uvidíte kompletní kontaktní údaje a můžete zákazníka ihned kontaktovat.`,
+    ``,
+    `--`,
+    `Prostormat`,
+    `prostormat.cz`,
+  ].join("\n")
+
+  return {
+    subject,
+    html: buildInquiryEmailShell(subject, htmlBody),
+    text: plainText,
+  }
+}
+
+export function generateVenueInquiryUnpaidNotificationEmail(data: VenueInquiryEmailData) {
+  const subject = `Máte novou poptávku na ${data.venueName}`
+  const upgradeUrl = `https://prostormat.cz/pridat-prostor?inquiry=${encodeURIComponent(data.inquiryId)}&venue=${encodeURIComponent(data.venueSlug)}`
+  const eventDate = formatInquiryDate(data.eventDate)
+  const guestCount = formatGuestCount(data.guestCount)
+
+  const htmlBody = `
+    <p style="margin:0 0 20px 0;">Dobrý den,</p>
+    <p style="margin:0 0 24px 0;">přišla vám nová poptávka na prostor <strong>${data.venueName}</strong>. Kontaktní údaje zákazníků jsou dostupné pouze pro předplatitele.</p>
+    <div class="teaser">
+      <h2>Klíčové informace</h2>
+      <div class="detail-row">
+        <span class="detail-label">Datum akce</span>
+        <span class="detail-value">${eventDate}</span>
+      </div>
+      <div class="detail-row" style="margin-bottom:16px;">
+        <span class="detail-label">Počet hostů</span>
+        <span class="detail-value">${guestCount}</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Jméno</span>
+        <span class="muted-line">████████████</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Email</span>
+        <span class="muted-line">████████████</span>
+      </div>
+      <div class="detail-row" style="margin-bottom:0;">
+        <span class="detail-label">Telefon</span>
+        <span class="muted-line">████████████</span>
+      </div>
+    </div>
+    <p style="margin:0 0 28px 0;">Pro získání kompletních kontaktních údajů zákazníka stačí dokončit upgrade vašeho profilu.</p>
+    <div style="text-align:center; margin-bottom:32px;">
+      <a href="${upgradeUrl}" class="cta-button">Upgrade a zobrazení kontaktních údajů</a>
+    </div>
+    <div class="note unpaid">
+      <strong>Vaše členství je momentálně bezplatné.</strong><br />
+      Po dokončení upgradu získáte přístup ke všem poptávkám včetně kontaktů na zákazníky.
+    </div>
+  `
+
+  const plainText = [
+    `Máte novou poptávku na ${data.venueName}`,
+    ``,
+    `Datum akce: ${eventDate}`,
+    `Počet hostů: ${guestCount}`,
+    `Kontaktní údaje jsou dostupné po upgradu.`,
+    ``,
+    `Zobrazit, jak poptávka vypadá a přejít na upgrade: ${upgradeUrl}`,
+    ``,
+    `Po dokončení předplatného získáte všechny kontakty okamžitě.`,
+    ``,
+    `--`,
+    `Prostormat`,
+    `prostormat.cz`,
+  ].join("\n")
+
+  return {
+    subject,
+    html: buildInquiryEmailShell(subject, htmlBody),
+    text: plainText,
+  }
+}
+
 interface VenueInquiryAdminNotificationData {
   inquiryId: string
   submittedAt: Date

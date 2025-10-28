@@ -6,6 +6,13 @@ import { sendWelcomeEmail } from "@/lib/email-service"
 import { trackRegistration } from "@/lib/meta-conversions-api"
 import { trackGA4ServerRegistration } from "@/lib/ga4-server-tracking"
 
+const trackingSchema = z.object({
+  eventId: z.string(),
+  clientId: z.string().optional(),
+  fbp: z.string().optional(),
+  fbc: z.string().optional(),
+}).optional()
+
 const registerSchema = z.object({
   email: z.string().email("Neplatná e-mailová adresa"),
   password: z.string().min(6, "Heslo musí mít alespoň 6 znaků"),
@@ -13,10 +20,14 @@ const registerSchema = z.object({
   phone: z.string().optional().nullable(),
 })
 
+const payloadSchema = registerSchema.extend({
+  tracking: trackingSchema,
+})
+
 export async function POST(request: Request) {
   try {
     const body = await request.json()
-    const validatedData = registerSchema.parse(body)
+    const { tracking, ...validatedData } = payloadSchema.parse(body)
 
     // Check if user already exists
     const existingUser = await db.user.findUnique({
@@ -68,7 +79,9 @@ export async function POST(request: Request) {
     try {
       await trackRegistration({
         email: user.email,
-      }, request)
+        fbp: tracking?.fbp,
+        fbc: tracking?.fbc,
+      }, request, tracking?.eventId)
     } catch (metaError) {
       console.error('Failed to track Meta registration event:', metaError)
       // Continue anyway - registration was successful
@@ -80,6 +93,8 @@ export async function POST(request: Request) {
         userId: user.id,
         email: user.email,
         method: 'email',
+        clientId: tracking?.clientId,
+        eventId: tracking?.eventId,
         request,
       })
     } catch (ga4Error) {

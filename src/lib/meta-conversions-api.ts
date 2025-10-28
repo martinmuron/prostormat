@@ -26,6 +26,7 @@ interface MetaEvent {
   userData: UserData
   customData?: Record<string, unknown>
   actionSource: 'website' | 'email' | 'app'
+  eventId?: string
 }
 
 type BulkFormData = {
@@ -100,17 +101,21 @@ export async function sendMetaEvent(event: MetaEvent): Promise<{ success: boolea
 
     const url = `https://graph.facebook.com/${API_VERSION}/${META_PIXEL_ID}/events?access_token=${META_ACCESS_TOKEN}`
 
+    const baseEvent: Record<string, unknown> = {
+      event_name: event.eventName,
+      event_time: event.eventTime,
+      event_source_url: event.eventSourceUrl,
+      user_data: prepareUserData(event.userData),
+      custom_data: event.customData,
+      action_source: event.actionSource,
+    }
+
+    if (event.eventId) {
+      baseEvent.event_id = event.eventId
+    }
+
     const payload = {
-      data: [
-        {
-          event_name: event.eventName,
-          event_time: event.eventTime,
-          event_source_url: event.eventSourceUrl,
-          user_data: prepareUserData(event.userData),
-          custom_data: event.customData,
-          action_source: event.actionSource,
-        },
-      ],
+      data: [baseEvent],
     }
 
     const response = await fetch(url, {
@@ -138,7 +143,7 @@ export async function sendMetaEvent(event: MetaEvent): Promise<{ success: boolea
 
 // Helper functions for specific events
 
-export async function trackRegistration(userData: UserData, request?: Request) {
+export async function trackRegistration(userData: UserData, request?: Request, eventId?: string) {
   return sendMetaEvent({
     eventName: 'Registration',
     eventTime: Math.floor(Date.now() / 1000),
@@ -149,10 +154,11 @@ export async function trackRegistration(userData: UserData, request?: Request) {
       clientUserAgent: request?.headers.get('user-agent') || undefined,
     },
     actionSource: 'website',
+    eventId,
   })
 }
 
-export async function trackLocationRegistration(userData: UserData, venueName: string, request?: Request) {
+export async function trackLocationRegistration(userData: UserData, venueName: string, request?: Request, eventId?: string) {
   return sendMetaEvent({
     eventName: 'LocationRegistration',
     eventTime: Math.floor(Date.now() / 1000),
@@ -166,10 +172,11 @@ export async function trackLocationRegistration(userData: UserData, venueName: s
       venue_name: venueName,
     },
     actionSource: 'website',
+    eventId,
   })
 }
 
-export async function trackPayment(userData: UserData, amount: number, currency: string, request?: Request) {
+export async function trackPayment(userData: UserData, amount: number, currency: string, request?: Request, eventId?: string) {
   return sendMetaEvent({
     eventName: 'Payment',
     eventTime: Math.floor(Date.now() / 1000),
@@ -184,10 +191,11 @@ export async function trackPayment(userData: UserData, amount: number, currency:
       currency: currency,
     },
     actionSource: 'website',
+    eventId,
   })
 }
 
-export async function trackPageView(userData: UserData, pageUrl: string, request?: Request) {
+export async function trackPageView(userData: UserData, pageUrl: string, request?: Request, eventId?: string) {
   return sendMetaEvent({
     eventName: 'PageView',
     eventTime: Math.floor(Date.now() / 1000),
@@ -198,10 +206,11 @@ export async function trackPageView(userData: UserData, pageUrl: string, request
       clientUserAgent: request?.headers.get('user-agent') || undefined,
     },
     actionSource: 'website',
+    eventId,
   })
 }
 
-export async function trackBulkFormSubmit(userData: UserData, formData: BulkFormData, request?: Request) {
+export async function trackBulkFormSubmit(userData: UserData, formData: BulkFormData, request?: Request, eventId?: string) {
   return sendMetaEvent({
     eventName: 'BulkFormSubmit',
     eventTime: Math.floor(Date.now() / 1000),
@@ -217,10 +226,11 @@ export async function trackBulkFormSubmit(userData: UserData, formData: BulkForm
       location: formData.locationPreference,
     },
     actionSource: 'website',
+    eventId,
   })
 }
 
-export async function trackOrganizaceSubmit(userData: UserData, formData: OrganizaceFormData, request?: Request) {
+export async function trackOrganizaceSubmit(userData: UserData, formData: OrganizaceFormData, request?: Request, eventId?: string) {
   return sendMetaEvent({
     eventName: 'OrganizaceSubmit',
     eventTime: Math.floor(Date.now() / 1000),
@@ -232,10 +242,11 @@ export async function trackOrganizaceSubmit(userData: UserData, formData: Organi
     },
     customData: formData,
     actionSource: 'website',
+    eventId,
   })
 }
 
-export async function trackLokaceSubmit(userData: UserData, venueName: string, request?: Request) {
+export async function trackLokaceSubmit(userData: UserData, venueName: string, request?: Request, eventId?: string) {
   return sendMetaEvent({
     eventName: 'LokaceSubmit',
     eventTime: Math.floor(Date.now() / 1000),
@@ -249,5 +260,6 @@ export async function trackLokaceSubmit(userData: UserData, venueName: string, r
       venue_name: venueName,
     },
     actionSource: 'website',
+    eventId,
   })
 }

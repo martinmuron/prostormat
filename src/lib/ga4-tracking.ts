@@ -1,3 +1,5 @@
+import type { TrackingContext } from "@/lib/tracking-utils"
+
 // Google Analytics 4 Event Tracking Library
 // All events fire automatically to GA4 Measurement ID: G-5KYL3YYZL2
 
@@ -16,20 +18,25 @@ type GA4EventParams = {
  * Core function to send events to GA4 via gtag
  * Works automatically with GTM container GTM-TRGRXRXV
  */
-export function trackGA4Event(eventName: string, params?: GA4EventParams) {
+export function trackGA4Event(eventName: string, params?: GA4EventParams, tracking?: { eventId?: string }) {
   if (typeof window === 'undefined') return
 
   // Wait for gtag to be available (GTM loads it)
+  const eventParams = params ? { ...params } : {}
+  if (tracking?.eventId) {
+    ;(eventParams as Record<string, unknown>).event_id = tracking.eventId
+  }
+
   if (window.gtag) {
-    window.gtag('event', eventName, params)
-    console.log('[GA4] Event tracked:', eventName, params)
+    window.gtag('event', eventName, eventParams)
+    console.log('[GA4] Event tracked:', eventName, eventParams)
   } else if (window.dataLayer) {
     // Fallback: push to dataLayer directly
     window.dataLayer.push({
       event: eventName,
-      ...params,
+      ...eventParams,
     })
-    console.log('[GA4] Event pushed to dataLayer:', eventName, params)
+    console.log('[GA4] Event pushed to dataLayer:', eventName, eventParams)
   } else {
     console.warn('[GA4] gtag not available yet, event not tracked:', eventName)
   }
@@ -42,10 +49,11 @@ export function trackGA4Event(eventName: string, params?: GA4EventParams) {
 export function trackGA4Registration(data: {
   email?: string
   method?: string
+  tracking?: TrackingContext
 }) {
   trackGA4Event('sign_up', {
     method: data.method || 'email',
-  })
+  }, { eventId: data.tracking?.eventId })
 }
 
 /**
@@ -59,6 +67,7 @@ export function trackGA4Payment(data: {
   venue_name?: string
   venue_id?: string
   subscription?: boolean
+  tracking?: TrackingContext
 }) {
   trackGA4Event('purchase', {
     transaction_id: data.transaction_id,
@@ -67,7 +76,7 @@ export function trackGA4Payment(data: {
     venue_name: data.venue_name,
     venue_id: data.venue_id,
     subscription: data.subscription || false,
-  })
+  }, { eventId: data.tracking?.eventId })
 }
 
 /**
@@ -78,12 +87,13 @@ export function trackGA4LocationRegistration(data: {
   venue_name: string
   venue_id?: string
   mode?: 'new' | 'claim'
+  tracking?: TrackingContext
 }) {
   trackGA4Event('location_registration', {
     venue_name: data.venue_name,
     venue_id: data.venue_id,
     registration_mode: data.mode || 'new',
-  })
+  }, { eventId: data.tracking?.eventId })
 }
 
 /**
@@ -95,6 +105,7 @@ export function trackGA4BulkFormSubmit(data: {
   guest_count?: string | number
   location?: string
   budget_range?: string
+  tracking?: TrackingContext
 }) {
   trackGA4Event('generate_lead', {
     form_type: 'bulk_request',
@@ -103,7 +114,7 @@ export function trackGA4BulkFormSubmit(data: {
     location: data.location,
     budget_range: data.budget_range,
     currency: 'CZK',
-  })
+  }, { eventId: data.tracking?.eventId })
 }
 
 /**
@@ -115,6 +126,7 @@ export function trackGA4OrganizaceSubmit(data: {
   guest_count?: number
   budget_range?: string
   location?: string
+  tracking?: TrackingContext
 }) {
   trackGA4Event('generate_lead', {
     form_type: 'organizace',
@@ -123,7 +135,7 @@ export function trackGA4OrganizaceSubmit(data: {
     budget_range: data.budget_range,
     location: data.location,
     currency: 'CZK',
-  })
+  }, { eventId: data.tracking?.eventId })
 }
 
 /**
@@ -136,6 +148,7 @@ export function trackGA4LokaceSubmit(data: {
   venue_slug?: string
   guest_count?: number
   event_date?: string
+  tracking?: TrackingContext
 }) {
   trackGA4Event('generate_lead', {
     form_type: 'venue_inquiry',
@@ -144,17 +157,17 @@ export function trackGA4LokaceSubmit(data: {
     venue_slug: data.venue_slug,
     guest_count: data.guest_count,
     event_date: data.event_date,
-  })
+  }, { eventId: data.tracking?.eventId })
 }
 
 /**
  * Track when user views pricing page
  * GA4 custom event
  */
-export function trackGA4ViewPricing() {
+export function trackGA4ViewPricing(tracking?: TrackingContext) {
   trackGA4Event('view_pricing', {
     page_location: window.location.href,
-  })
+  }, { eventId: tracking?.eventId })
 }
 
 /**
@@ -165,6 +178,7 @@ export function trackGA4BeginCheckout(data: {
   venue_name?: string
   value: number
   currency: string
+  tracking?: TrackingContext
 }) {
   trackGA4Event('begin_checkout', {
     venue_name: data.venue_name,
@@ -178,7 +192,7 @@ export function trackGA4BeginCheckout(data: {
         quantity: 1,
       },
     ],
-  })
+  }, { eventId: data.tracking?.eventId })
 }
 
 /**
@@ -190,19 +204,16 @@ export function trackGA4VenueSearch(data: {
   venue_type?: string
   district?: string
   capacity?: string
+  tracking?: TrackingContext
 }) {
   trackGA4Event('search', {
     search_term: data.search_term || 'filter',
     venue_type: data.venue_type,
     district: data.district,
     capacity: data.capacity,
-  })
+  }, { eventId: data.tracking?.eventId })
 }
 
-/**
- * Track venue detail page view
- * GA4 recommended event: view_item
- */
 export function trackGA4ViewVenue(data: {
   venue_name: string
   venue_id: string
@@ -211,6 +222,7 @@ export function trackGA4ViewVenue(data: {
   capacity_seated?: number
   capacity_standing?: number
   paid?: boolean
+  tracking?: TrackingContext
 }) {
   trackGA4Event('view_item', {
     items: [
@@ -229,5 +241,5 @@ export function trackGA4ViewVenue(data: {
     capacity_seated: data.capacity_seated,
     capacity_standing: data.capacity_standing,
     is_paid: data.paid,
-  })
+  }, { eventId: data.tracking?.eventId })
 }

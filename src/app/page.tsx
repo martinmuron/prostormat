@@ -172,7 +172,7 @@ async function FeaturedVenues() {
           key={venue.id}
           venue={venue}
           priority={index < 6}
-          showPriorityBadge={typeof venue.priority === 'number'}
+          showPriorityBadge
         />
       ))}
     </div>
@@ -356,10 +356,10 @@ export default function HomePage() {
           <ScrollReveal>
             <div className="text-center mb-12">
               <h2 className="text-3xl sm:text-4xl font-bold text-black mb-4">
-                Vybrané prostory
+                Doporučené prostory
               </h2>
               <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                Ručně vybrané prostory, které chceme aktuálně ukázat návštěvníkům
+                Speciálně doporučené prostory, které momentálně zdůrazňujeme našim návštěvníkům
               </p>
             </div>
           </ScrollReveal>

@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { useSession } from "next-auth/react"
 import Link from "next/link"
 import { trackGA4LokaceSubmit } from "@/lib/ga4-tracking"
+import { createTrackingContext } from "@/lib/tracking-utils"
 
 const contactFormSchema = z.object({
   name: z.string().min(2, "Jméno je povinné"),
@@ -56,6 +57,7 @@ export function VenueContactForm({ venueId, venueName }: VenueContactFormProps) 
   const onSubmit = async (data: ContactFormData) => {
     setIsSubmitting(true)
     try {
+      const tracking = createTrackingContext()
       const response = await fetch("/api/venues/inquiries", {
         method: "POST",
         headers: {
@@ -65,6 +67,7 @@ export function VenueContactForm({ venueId, venueName }: VenueContactFormProps) 
           ...data,
           venueId,
           eventDate: data.eventDate ? new Date(data.eventDate) : null,
+          tracking,
         }),
       })
 
@@ -75,6 +78,7 @@ export function VenueContactForm({ venueId, venueName }: VenueContactFormProps) 
           venue_id: venueId,
           guest_count: data.guestCount,
           event_date: data.eventDate,
+          tracking,
         })
 
         setIsSubmitted(true)

@@ -76,6 +76,7 @@ export default function RootLayout({
   const organizationSchema = generateOrganizationSchema()
   const webSiteSchema = generateWebSiteSchema()
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const metaPixelId = process.env.META_PIXEL_ID || '796426231881929'
   let supabaseOrigin: string | null = null
 
   if (supabaseUrl) {
@@ -164,7 +165,7 @@ export default function RootLayout({
               t.src=v;s=b.getElementsByTagName(e)[0];
               s.parentNode.insertBefore(t,s)}(window, document,'script',
               'https://connect.facebook.net/en_US/fbevents.js');
-              fbq('init', '24691302657204918');
+              fbq('init', '${metaPixelId}');
               fbq('track', 'PageView');
             `,
           }}
@@ -188,7 +189,7 @@ export default function RootLayout({
             height="1"
             width="1"
             style={{ display: 'none' }}
-            src="https://www.facebook.com/tr?id=24691302657204918&ev=PageView&noscript=1"
+            src={`https://www.facebook.com/tr?id=${metaPixelId}&ev=PageView&noscript=1`}
             alt=""
           />
         </noscript>

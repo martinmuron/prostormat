@@ -3,7 +3,7 @@
 ## ✅ Completed Setup
 
 ### 1. Environment Variables
-- ✅ `META_PIXEL_ID`: 24691302657204918
+- ✅ `META_PIXEL_ID`: 796426231881929
 - ✅ `META_PIXEL_ACCESS_TOKEN`: Added to all environments (production, preview, development)
 - ✅ Verified no `\n` characters in values
 
@@ -97,7 +97,7 @@ curl -X POST http://localhost:3000/api/quick-request \
 ```
 
 ### Verify Events in Meta Events Manager
-1. Go to https://business.facebook.com/events_manager2/list/pixel/24691302657204918
+1. Go to https://business.facebook.com/events_manager2/list/pixel/796426231881929
 2. Click "Test Events" tab
 3. Look for your test events
 4. Check data received

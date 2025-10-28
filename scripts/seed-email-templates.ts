@@ -34,6 +34,46 @@ const emailTemplates = [
     isActive: true
   },
   {
+    templateKey: 'verify_email',
+    name: 'Potvrzení e-mailové adresy',
+    subject: 'Potvrďte svou e-mailovou adresu pro Prostormat',
+    description: 'Odesláno po registraci, obsahuje odkaz pro potvrzení e-mailu',
+    variables: ['{{name}}', '{{verificationLink}}'],
+    htmlContent: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; background-color: #f9fafb;">
+        <div style="background-color: white; border-radius: 12px; padding: 32px; box-shadow: 0 10px 25px rgba(15, 23, 42, 0.1); border: 1px solid rgba(148, 163, 184, 0.2);">
+          <h1 style="color: #0f172a; margin-bottom: 16px; font-size: 24px;">Potvrďte prosím svůj e-mail, {{name}}</h1>
+          <p style="color: #334155; font-size: 16px; margin: 16px 0;">Abychom vám mohli posílat důležité informace o vašem účtu a nových poptávkách, musíme ověřit vaši e-mailovou adresu.</p>
+          <div style="margin: 28px 0; text-align: center;">
+            <a href="{{verificationLink}}" style="background-color: #1d4ed8; color: white; padding: 14px 28px; border-radius: 999px; text-decoration: none; font-weight: 600; display: inline-block;">
+              Potvrdit e-mailovou adresu
+            </a>
+          </div>
+          <p style="color: #334155; font-size: 16px; margin: 16px 0;">Pokud tlačítko nefunguje, zkopírujte následující odkaz do adresního řádku prohlížeče:</p>
+          <p style="word-break: break-word; color: #1d4ed8; font-size: 14px;">{{verificationLink}}</p>
+          <p style="color: #64748b; font-size: 14px;">Pokud jste si účet na Prostormatu nevytvořil/a, tento e-mail můžete ignorovat.</p>
+          <div style="color: #64748b; font-size: 14px; margin-top: 32px; text-align: center;">
+            Prostormat · Největší katalog event prostorů v Praze<br />
+            prostormat.cz · info@prostormat.cz
+          </div>
+        </div>
+      </div>
+    `,
+    textContent: `Ahoj {{name}},
+
+potvrď prosím svou e-mailovou adresu, aby byl tvůj účet na Prostormatu aktivní.
+
+Potvrzení dokončíš kliknutím na tento odkaz:
+{{verificationLink}}
+
+Pokud jsi si účet nevytvořil/a, můžeš tento e-mail ignorovat.
+
+--
+Prostormat · Největší katalog event prostorů v Praze
+prostormat.cz | info@prostormat.cz`,
+    isActive: true
+  },
+  {
     templateKey: 'welcome_location_owner',
     name: 'Vítací email pro majitele prostorů',
     subject: 'Vítejte v Prostormatu - Začněte nabízet své prostory!',
@@ -149,6 +189,13 @@ const emailTriggers = [
     description: 'Odesláno při registraci nového běžného uživatele',
     templateKey: 'welcome_user',
     isEnabled: false
+  },
+  {
+    triggerKey: 'user_email_verification',
+    name: 'Potvrzení e-mailu uživatele',
+    description: 'Odesláno uživateli po registraci s odkazem pro potvrzení e-mailu',
+    templateKey: 'verify_email',
+    isEnabled: true
   },
   {
     triggerKey: 'venue_manager_registration',

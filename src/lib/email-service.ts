@@ -1,3 +1,4 @@
+import { ensureEmailDataSeeded } from '@/lib/email-admin'
 import { db } from '@/lib/db'
 import { FROM_EMAIL, REPLY_TO_EMAIL, resend } from '@/lib/resend'
 
@@ -17,23 +18,50 @@ export async function sendEmailFromTemplate({
   variables,
   checkTrigger
 }: SendEmailFromTemplateParams) {
+  let seedingAttempted = false
+  const ensureSeededData = async () => {
+    if (seedingAttempted) {
+      return
+    }
+    await ensureEmailDataSeeded()
+    seedingAttempted = true
+  }
+
   try {
     // Check if trigger is enabled (if specified)
     if (checkTrigger) {
-      const trigger = await db.emailTrigger.findUnique({
+      let trigger = await db.emailTrigger.findUnique({
         where: { triggerKey: checkTrigger }
       })
 
-      if (!trigger || !trigger.isEnabled) {
+      if (!trigger) {
+        await ensureSeededData()
+        trigger = await db.emailTrigger.findUnique({
+          where: { triggerKey: checkTrigger }
+        })
+      }
+
+      if (!trigger) {
+        throw new Error(`Email trigger "${checkTrigger}" not found`)
+      }
+
+      if (!trigger.isEnabled) {
         console.log(`Email trigger "${checkTrigger}" is disabled, skipping email`)
         return { success: false, reason: 'trigger_disabled' }
       }
     }
 
     // Get template from database
-    const template = await db.emailTemplate.findUnique({
+    let template = await db.emailTemplate.findUnique({
       where: { templateKey }
     })
+
+    if (!template) {
+      await ensureSeededData()
+      template = await db.emailTemplate.findUnique({
+        where: { templateKey }
+      })
+    }
 
     if (!template) {
       throw new Error(`Email template "${templateKey}" not found`)

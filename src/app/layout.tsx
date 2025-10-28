@@ -116,26 +116,17 @@ export default function RootLayout({
           strategy="beforeInteractive"
         />
 
-        {/* Google Tag Manager */}
+        {/* Google Ads (gtag.js) - Loads the gtag library */}
         <Script
-          id="gtm-script"
+          src="https://www.googletagmanager.com/gtag/js?id=AW-17685324076"
           strategy="afterInteractive"
           type="text/plain"
           data-cookieconsent="marketing"
-          dangerouslySetInnerHTML={{
-            __html: `
-              (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-              new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-              j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-              'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-              })(window,document,'script','dataLayer','GTM-TRGRXRXV');
-            `,
-          }}
         />
 
-        {/* Google Analytics 4 Configuration */}
+        {/* Google Ads & Analytics Configuration */}
         <Script
-          id="ga4-config"
+          id="gtag-config"
           strategy="afterInteractive"
           type="text/plain"
           data-cookieconsent="marketing"
@@ -144,6 +135,11 @@ export default function RootLayout({
               window.dataLayer = window.dataLayer || [];
               function gtag(){dataLayer.push(arguments);}
               gtag('js', new Date());
+
+              // Configure Google Ads
+              gtag('config', 'AW-17685324076');
+
+              // Configure Google Analytics 4
               gtag('config', 'G-5KYL3YYZL2');
             `,
           }}
@@ -172,16 +168,6 @@ export default function RootLayout({
         />
       </head>
       <body className={GeistSans.className}>
-        {/* Google Tag Manager (noscript) */}
-        <noscript data-cookieconsent="marketing">
-          <iframe
-            src="https://www.googletagmanager.com/ns.html?id=GTM-TRGRXRXV"
-            height="0"
-            width="0"
-            style={{ display: 'none', visibility: 'hidden' }}
-          />
-        </noscript>
-
         {/* Meta Pixel (noscript) */}
         <noscript data-cookieconsent="marketing">
           {/* eslint-disable-next-line @next/next/no-img-element */}

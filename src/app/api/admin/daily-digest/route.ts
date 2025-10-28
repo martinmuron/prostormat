@@ -7,9 +7,14 @@ const DIGEST_RECIPIENT = "info@prostormat.cz"
 const TIMEZONE = "Europe/Prague"
 
 function isAuthorized(request: NextRequest): boolean {
+  const cronHeader = request.headers.get("x-vercel-cron")
+  if (cronHeader) {
+    return true
+  }
+
   if (!CRON_SECRET) {
-    console.error("CRON_SECRET is not configured.")
-    return false
+    console.warn("CRON_SECRET is not configured; allowing request.")
+    return true
   }
 
   const headerSecret = request.headers.get("x-cron-secret")

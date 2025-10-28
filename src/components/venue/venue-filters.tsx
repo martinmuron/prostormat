@@ -1,12 +1,19 @@
 'use client'
 
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { VENUE_TYPES, PRAGUE_DISTRICTS, CAPACITY_RANGES } from "@/types"
 import { Search, MapPin, Users, Calendar } from "lucide-react"
+
+interface VenueSuggestion {
+  id: string
+  name: string
+  slug: string
+  district?: string | null
+}
 
 interface VenueFiltersProps {
   initialValues: {
@@ -42,6 +49,11 @@ export function VenueFilters({ initialValues }: VenueFiltersProps) {
     }
   })
   const [isSearchMode, setIsSearchMode] = useState(Boolean(initialValues.q))
+  const [suggestions, setSuggestions] = useState<VenueSuggestion[]>([])
+  const [isFetchingSuggestions, setIsFetchingSuggestions] = useState(false)
+  const [suggestionsOpen, setSuggestionsOpen] = useState(false)
+  const [activeSuggestionContext, setActiveSuggestionContext] = useState<'desktop' | 'mobile' | null>(null)
+  const suggestionHideTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   useEffect(() => {
     const hasSearch = Boolean(initialValues.q)
@@ -95,7 +107,114 @@ export function VenueFilters({ initialValues }: VenueFiltersProps) {
       return { ...prev, type: undefined, district: undefined, capacity: undefined }
     })
     setIsSearchMode(prev => !prev)
+    setSuggestions([])
+    setSuggestionsOpen(false)
+    setActiveSuggestionContext(null)
   }
+
+  useEffect(() => {
+    const trimmed = filters.q.trim()
+    if (trimmed.length === 0) {
+      setSuggestions([])
+      setSuggestionsOpen(false)
+      return
+    }
+
+    const controller = new AbortController()
+    const timeout = setTimeout(async () => {
+      try {
+        setIsFetchingSuggestions(true)
+        const response = await fetch(`/api/venues/suggestions?q=${encodeURIComponent(trimmed)}`, {
+          signal: controller.signal,
+          cache: 'no-store',
+        })
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch suggestions')
+        }
+
+        const data: { venues: VenueSuggestion[] } = await response.json()
+        setSuggestions(data.venues ?? [])
+        if (activeSuggestionContext) {
+          setSuggestionsOpen(true)
+        }
+      } catch (error) {
+        if (!controller.signal.aborted) {
+          console.error('Failed to load venue suggestions:', error)
+        }
+      } finally {
+        if (!controller.signal.aborted) {
+          setIsFetchingSuggestions(false)
+        }
+      }
+    }, 200)
+
+    return () => {
+      controller.abort()
+      clearTimeout(timeout)
+    }
+  }, [filters.q, activeSuggestionContext])
+
+  const closeSuggestionsDelayed = useCallback(() => {
+    if (suggestionHideTimeoutRef.current) {
+      clearTimeout(suggestionHideTimeoutRef.current)
+    }
+    suggestionHideTimeoutRef.current = setTimeout(() => {
+      setSuggestionsOpen(false)
+      setActiveSuggestionContext(null)
+    }, 120)
+  }, [])
+
+  const handleSuggestionFocus = useCallback((context: 'desktop' | 'mobile') => {
+    if (suggestionHideTimeoutRef.current) {
+      clearTimeout(suggestionHideTimeoutRef.current)
+      suggestionHideTimeoutRef.current = null
+    }
+    setActiveSuggestionContext(context)
+    if (filters.q.trim().length > 0) {
+      setSuggestionsOpen(true)
+    }
+  }, [filters.q])
+
+  const handleSuggestionSelect = useCallback((suggestion: VenueSuggestion) => {
+    setFilters(prev => ({ ...prev, q: suggestion.name }))
+    setSuggestionsOpen(false)
+    setActiveSuggestionContext(null)
+    router.push(`/prostory/${suggestion.slug}`)
+  }, [router])
+
+  const renderSuggestions = useMemo(() => {
+    if (!suggestionsOpen) {
+      return null
+    }
+
+    return (
+      <div className="absolute left-0 right-0 top-full mt-2 rounded-xl border border-gray-200 bg-white shadow-lg z-30">
+        <div className="max-h-64 overflow-y-auto py-2">
+          {isFetchingSuggestions ? (
+            <div className="px-4 py-3 text-sm text-gray-500">Načítám výsledky…</div>
+          ) : suggestions.length === 0 ? (
+            <div className="px-4 py-3 text-sm text-gray-500">Žádné prostory neodpovídají hledání.</div>
+          ) : (
+            suggestions.map((suggestion) => (
+              <button
+                key={suggestion.id}
+                type="button"
+                onClick={() => handleSuggestionSelect(suggestion)}
+                onMouseDown={(event) => event.preventDefault()}
+                className="w-full px-4 py-3 text-left text-sm hover:bg-gray-50 focus:bg-gray-50 transition-colors"
+              >
+                <div className="font-medium text-gray-900">{suggestion.name}</div>
+                {suggestion.district && (
+                  <div className="text-xs text-gray-500">{suggestion.district}</div>
+                )}
+              </button>
+            ))
+          )}
+        </div>
+      </div>
+    )
+  }, [suggestionsOpen, isFetchingSuggestions, suggestions, handleSuggestionSelect])
 
   return (
     <form onSubmit={handleSubmit}>
@@ -113,9 +232,12 @@ export function VenueFilters({ initialValues }: VenueFiltersProps) {
               <Input
                 value={filters.q}
                 onChange={(e) => handleFilterChange("q", e.target.value)}
+                onFocus={() => handleSuggestionFocus('desktop')}
+                onBlur={closeSuggestionsDelayed}
                 className="h-12 rounded-2xl border-2 border-gray-700 bg-white text-base shadow-sm transition-all focus:border-black"
                 placeholder="Například: Praha, Karlín, loft..."
               />
+              {activeSuggestionContext === 'desktop' && renderSuggestions}
             </div>
             <Button
               type="submit"
@@ -216,12 +338,17 @@ export function VenueFilters({ initialValues }: VenueFiltersProps) {
                 <span className="inline-flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-gray-800 rounded-xl flex-shrink-0">
                   <Search className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
                 </span>
-                <Input
-                  value={filters.q}
-                  onChange={(e) => handleFilterChange("q", e.target.value)}
-                  placeholder="Hledat podle názvu"
-                  className="h-11 sm:h-12 rounded-2xl border-2 border-gray-300 bg-white text-base"
-                />
+                <div className="relative flex-1">
+                  <Input
+                    value={filters.q}
+                    onChange={(e) => handleFilterChange("q", e.target.value)}
+                    onFocus={() => handleSuggestionFocus('mobile')}
+                    onBlur={closeSuggestionsDelayed}
+                    placeholder="Hledat podle názvu"
+                    className="h-11 sm:h-12 rounded-2xl border-2 border-gray-300 bg-white text-base"
+                  />
+                  {activeSuggestionContext === 'mobile' && renderSuggestions}
+                </div>
               </div>
 
               <div className="flex items-center gap-3">

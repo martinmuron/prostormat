@@ -126,6 +126,7 @@ export function AdminVenueEditForm({ venue }: AdminVenueEditFormProps) {
   const [paymentDate, setPaymentDate] = useState("")
   const [isMarkingPaid, setIsMarkingPaid] = useState(false)
   const [paymentNotes, setPaymentNotes] = useState("")
+  const [approvingClaimId, setApprovingClaimId] = useState<string | null>(null)
   const pendingClaims = venue.claims ?? []
 
   const [formData, setFormData] = useState<AdminVenueFormState>({
@@ -210,6 +211,35 @@ export function AdminVenueEditForm({ venue }: AdminVenueEditFormProps) {
       setErrorMessage(error instanceof Error ? error.message : "Nepodařilo se označit prostor jako zaplacený")
     } finally {
       setIsMarkingPaid(false)
+    }
+  }
+
+  const handleApproveClaim = async (claimId: string) => {
+    setApprovingClaimId(claimId)
+    setSuccessMessage("")
+    setErrorMessage("")
+
+    try {
+      const response = await fetch(`/api/admin/venue-claims/${claimId}/approve`, {
+        method: "POST",
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || "Nepodařilo se schválit žádost o převzetí.")
+      }
+
+      setSuccessMessage(data.message || "Žádost o převzetí byla schválena.")
+      router.refresh()
+    } catch (error) {
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : "Nepodařilo se schválit žádost o převzetí."
+      )
+    } finally {
+      setApprovingClaimId(null)
     }
   }
 
@@ -743,6 +773,14 @@ export function AdminVenueEditForm({ venue }: AdminVenueEditFormProps) {
                                 </div>
                               </div>
                               <div className="mt-3 flex flex-wrap gap-2">
+                                <Button
+                                  type="button"
+                                  size="sm"
+                                  onClick={() => handleApproveClaim(claim.id)}
+                                  disabled={approvingClaimId === claim.id}
+                                >
+                                  {approvingClaimId === claim.id ? 'Schvalujeme...' : 'Schválit převzetí'}
+                                </Button>
                                 {claim.claimant?.email && (
                                   <Button
                                     type="button"

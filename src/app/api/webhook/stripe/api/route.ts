@@ -1,9 +1,14 @@
+import type Stripe from 'stripe';
 import { NextRequest, NextResponse } from 'next/server';
+
 import { stripe, isStripeConfigured, determinePriorityLevelFromSubscription } from '@/lib/stripe';
 import { prisma } from '@/lib/prisma';
 import { resend } from '@/lib/resend';
 import { nanoid } from 'nanoid';
-import type Stripe from 'stripe';
+import {
+  processVenuePayment,
+  PaymentProcessingInProgressError,
+} from '@/lib/payments/process-venue-payment';
 
 const getCurrentPeriodEndDate = (subscription: Stripe.Subscription): Date | null => {
   const unix = (subscription as Stripe.Subscription & { current_period_end?: number }).current_period_end;
@@ -103,6 +108,32 @@ export async function POST(request: NextRequest) {
 
   try {
     switch (event.type) {
+      case 'payment_intent.succeeded':
+        try {
+          await processVenuePayment({
+            paymentIntent: event.data.object as Stripe.PaymentIntent,
+            request,
+            source: 'webhook',
+          });
+        } catch (processingError) {
+          if (processingError instanceof PaymentProcessingInProgressError) {
+            console.log(
+              `Payment intent ${event.data.object.id} is already being processed`
+            );
+          } else {
+            throw processingError;
+          }
+        }
+        break;
+
+      case 'payment_intent.payment_failed':
+        await handleOneOffPaymentFailed(event.data.object as Stripe.PaymentIntent);
+        break;
+
+      case 'payment_intent.canceled':
+        await handleOneOffPaymentCanceled(event.data.object as Stripe.PaymentIntent);
+        break;
+
       case 'customer.subscription.created':
         await handleSubscriptionCreated(event.data.object);
         break;
@@ -134,6 +165,88 @@ export async function POST(request: NextRequest) {
       { error: 'Webhook processing failed' },
       { status: 500 }
     );
+  }
+}
+
+async function handleOneOffPaymentFailed(paymentIntent: Stripe.PaymentIntent) {
+  console.log('Payment failed:', paymentIntent.id);
+
+  try {
+    await prisma.paymentIntent.updateMany({
+      where: {
+        stripePaymentIntentId: paymentIntent.id,
+        status: {
+          notIn: ['completed'],
+        },
+      },
+      data: {
+        status: 'failed',
+      },
+    });
+
+    const paymentRecord = await prisma.paymentIntent.findUnique({
+      where: {
+        stripePaymentIntentId: paymentIntent.id,
+      },
+    });
+
+    if (paymentRecord) {
+      try {
+        const venueData = JSON.parse(paymentRecord.venueData);
+
+        await resend.emails.send({
+          from: 'Prostormat <noreply@prostormat.cz>',
+          to: paymentRecord.userEmail,
+          subject: '❌ Platba se nezdařila - Prostormat',
+          html: `
+            <h2>Platba se nezdařila</h2>
+            <p>Bohužel se nezdařila platba za přidání prostoru "<strong>${venueData.name}</strong>" na platformu Prostormat.</p>
+            
+            <h3>Co můžete udělat?</h3>
+            <ul>
+              <li>🔄 Zkuste platbu znovu s jinou kartou</li>
+              <li>💳 Zkontrolujte, zda máte na kartě dostatek prostředků</li>
+              <li>🏦 Kontaktujte svou banku ohledně případného blokování platby</li>
+              <li>📧 Napište nám na info@prostormat.cz pro pomoc</li>
+            </ul>
+            
+            <p><a href="https://prostormat.cz/pridat-prostor" style="background-color: #000; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block; margin-top: 16px;">Zkusit znovu</a></p>
+            
+            <p>S pozdravem,<br>Tým Prostormat</p>
+          `,
+        });
+      } catch (emailError) {
+        console.error('Failed to send payment failed email:', emailError);
+      }
+    }
+
+    console.log(`Payment ${paymentIntent.id} marked as failed`);
+  } catch (error) {
+    console.error('Error handling payment failed:', error);
+    throw error;
+  }
+}
+
+async function handleOneOffPaymentCanceled(paymentIntent: Stripe.PaymentIntent) {
+  console.log('Payment canceled:', paymentIntent.id);
+
+  try {
+    await prisma.paymentIntent.updateMany({
+      where: {
+        stripePaymentIntentId: paymentIntent.id,
+        status: {
+          notIn: ['completed'],
+        },
+      },
+      data: {
+        status: 'canceled',
+      },
+    });
+
+    console.log(`Payment ${paymentIntent.id} marked as canceled`);
+  } catch (error) {
+    console.error('Error handling payment canceled:', error);
+    throw error;
   }
 }
 

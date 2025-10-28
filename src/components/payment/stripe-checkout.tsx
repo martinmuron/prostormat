@@ -163,7 +163,9 @@ function PaymentForm({ venueData, onPaymentSuccess, onPaymentError }: PaymentFor
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <CreditCard className="h-5 w-5" />
-          {isClaimSubmission ? 'Odeslat žádost o převzetí - 12,000 CZK/rok' : 'Aktivovat předplatné - 12,000 CZK/rok'}
+          {isClaimSubmission
+            ? 'Odeslat žádost o převzetí - 12,000 CZK + DPH / rok'
+            : 'Aktivovat předplatné - 12,000 CZK + DPH / rok'}
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -210,11 +212,11 @@ function PaymentForm({ venueData, onPaymentSuccess, onPaymentError }: PaymentFor
                   ? `Žádost o převzetí "${venueData.name}"`
                   : `Roční předplatné pro "${venueData.name}"`}
               </span>
-              <span className="font-medium">12,000 CZK/rok</span>
+              <span className="font-medium">12,000 CZK + DPH / rok</span>
             </div>
               <div className="flex justify-between text-sm mt-1 pt-2 border-t border-gray-300">
                 <span className="font-medium">První platba (12 měsíců):</span>
-                <span className="font-bold text-lg">12,000 CZK</span>
+                <span className="font-bold text-lg">12,000 CZK + DPH</span>
               </div>
               <div className="text-xs text-gray-500 mt-2">
                 <p>🔄 Předplatné se automaticky obnoví za rok</p>
@@ -235,7 +237,7 @@ function PaymentForm({ venueData, onPaymentSuccess, onPaymentError }: PaymentFor
               ) : (
                 isClaimSubmission
                   ? 'Aktivovat předplatné a požádat o převzetí'
-                  : 'Aktivovat roční předplatné (12,000 CZK)'
+                  : 'Aktivovat roční předplatné (12,000 CZK + DPH)'
               )}
             </Button>
           </form>
@@ -243,7 +245,7 @@ function PaymentForm({ venueData, onPaymentSuccess, onPaymentError }: PaymentFor
           <div className="text-xs text-gray-500 text-center space-y-1">
             <p>🔒 Platba je zabezpečena službou Stripe</p>
             <p>📧 Po úspěšné platbě obdržíte potvrzení emailem</p>
-            <p>⏳ Váš prostor bude předán ke schválení administrátorem</p>
+            <p>⏳ Náš tým vše ručně ověří a do 24 hodin se vám ozveme</p>
           </div>
         </div>
       </CardContent>

@@ -1,8 +1,13 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { stripe, isStripeConfigured } from '@/lib/stripe';
-import { prisma } from '@/lib/prisma';
-import { resend } from '@/lib/resend';
 import type Stripe from 'stripe';
+import { NextRequest, NextResponse } from 'next/server';
+
+import { prisma } from '@/lib/prisma';
+import {
+  PaymentProcessingInProgressError,
+  processVenuePayment,
+} from '@/lib/payments/process-venue-payment';
+import { resend } from '@/lib/resend';
+import { isStripeConfigured, stripe } from '@/lib/stripe';
 
 export async function POST(request: NextRequest) {
   // Check if Stripe is configured
@@ -42,7 +47,21 @@ export async function POST(request: NextRequest) {
   try {
     switch (event.type) {
       case 'payment_intent.succeeded':
-        await handlePaymentSucceeded(event.data.object);
+        try {
+          await processVenuePayment({
+            paymentIntent: event.data.object as Stripe.PaymentIntent,
+            request,
+            source: 'webhook',
+          });
+        } catch (processingError) {
+          if (processingError instanceof PaymentProcessingInProgressError) {
+            console.log(
+              `Payment intent ${event.data.object.id} is already being processed`
+            );
+          } else {
+            throw processingError;
+          }
+        }
         break;
 
       case 'payment_intent.payment_failed':
@@ -67,51 +86,16 @@ export async function POST(request: NextRequest) {
   }
 }
 
-async function handlePaymentSucceeded(paymentIntent: Stripe.PaymentIntent) {
-  console.log('Payment succeeded:', paymentIntent.id);
-
-  try {
-    // Update payment status in database
-    await prisma.paymentIntent.update({
-      where: {
-        stripePaymentIntentId: paymentIntent.id,
-      },
-      data: {
-        status: 'succeeded',
-      },
-    });
-
-    // TODO: Fix EmailFlowLog model - temporarily disabled for deployment
-    // Log successful payment webhook
-    // await prisma.emailFlowLog.create({
-    //   data: {
-    //     id: nanoid(),
-    //     emailType: 'stripe_webhook_payment_succeeded',
-    //     recipient: 'system',
-    //     subject: `Payment succeeded: ${paymentIntent.id}`,
-    //     status: 'processed',
-    //     recipientType: 'system',
-    //     sentBy: 'stripe_webhook',
-    //     createdAt: new Date(),
-    //   },
-    // })
-    console.log('Payment webhook processed successfully (email logging temporarily disabled)');
-
-    console.log(`Payment ${paymentIntent.id} marked as succeeded`);
-  } catch (error) {
-    console.error('Error handling payment succeeded:', error);
-    throw error;
-  }
-}
-
 async function handlePaymentFailed(paymentIntent: Stripe.PaymentIntent) {
   console.log('Payment failed:', paymentIntent.id);
 
   try {
-    // Update payment status in database
-    await prisma.paymentIntent.update({
+    await prisma.paymentIntent.updateMany({
       where: {
         stripePaymentIntentId: paymentIntent.id,
+        status: {
+          notIn: ['completed'],
+        },
       },
       data: {
         status: 'failed',
@@ -183,10 +167,12 @@ async function handlePaymentCanceled(paymentIntent: Stripe.PaymentIntent) {
   console.log('Payment canceled:', paymentIntent.id);
 
   try {
-    // Update payment status in database
-    await prisma.paymentIntent.update({
+    await prisma.paymentIntent.updateMany({
       where: {
         stripePaymentIntentId: paymentIntent.id,
+        status: {
+          notIn: ['completed'],
+        },
       },
       data: {
         status: 'canceled',

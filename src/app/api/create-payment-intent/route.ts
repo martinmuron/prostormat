@@ -78,6 +78,12 @@ export async function POST(request: NextRequest) {
           ...venueData,
           subscriptionId: subscription.id,
           customerId: customer.id,
+          stripeAmount: typeof paymentIntent.amount === 'number'
+            ? paymentIntent.amount
+            : null,
+          stripeCurrency: paymentIntent.currency
+            ? paymentIntent.currency.toUpperCase()
+            : VENUE_PAYMENT_CONFIG.currency.toUpperCase(),
         }),
         userEmail: venueData.userEmail,
         status: 'pending',

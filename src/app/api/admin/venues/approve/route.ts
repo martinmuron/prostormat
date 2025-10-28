@@ -168,9 +168,86 @@ export async function GET() {
       })
     );
 
+    const pendingClaims = await prisma.venueClaim.findMany({
+      where: { status: 'pending' },
+      include: {
+        venue: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+            address: true,
+            manager: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+              },
+            },
+          },
+        },
+        claimant: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            phone: true,
+            createdAt: true,
+          },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    const claimsWithPayments = await Promise.all(
+      pendingClaims.map(async (claim) => {
+        const payment = await prisma.paymentIntent.findFirst({
+          where: {
+            venueClaimId: claim.id,
+            status: 'completed',
+          },
+        });
+
+        let paymentInfo: {
+          amount?: number | null;
+          currency?: string | null;
+          paymentCompletedAt?: Date | null;
+          stripePaymentIntentId?: string | null;
+        } | null = null;
+
+        if (payment) {
+          const parsed = payment.venueData ? JSON.parse(payment.venueData) : {};
+          const amount =
+            typeof parsed?.stripeAmount === 'number'
+              ? parsed.stripeAmount
+              : null;
+          const currency =
+            typeof parsed?.stripeCurrency === 'string'
+              ? parsed.stripeCurrency
+              : null;
+
+          paymentInfo = {
+            amount,
+            currency,
+            paymentCompletedAt: payment.paymentCompletedAt,
+            stripePaymentIntentId: payment.stripePaymentIntentId,
+          };
+        }
+
+        return {
+          ...claim,
+          payment: paymentInfo,
+        };
+      })
+    );
+
     return NextResponse.json({
       venues: venuesWithPayments,
-      count: venuesWithPayments.length,
+      claims: claimsWithPayments,
+      counts: {
+        venues: venuesWithPayments.length,
+        claims: claimsWithPayments.length,
+      },
     });
 
   } catch (error) {

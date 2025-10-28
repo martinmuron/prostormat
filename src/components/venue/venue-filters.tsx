@@ -119,9 +119,8 @@ export function VenueFilters({ initialValues }: VenueFiltersProps) {
             </div>
             <Button
               type="submit"
-              className="w-full md:w-auto h-12 rounded-xl bg-blue-600 px-8 text-base font-semibold text-white shadow-md transition-all hover:bg-blue-700 flex items-center justify-center gap-2 flex-shrink-0"
+              className="w-full md:w-auto h-12 rounded-xl bg-blue-600 px-8 text-base font-semibold text-white shadow-md transition-all hover:bg-blue-700 flex items-center justify-center flex-shrink-0"
             >
-              <Search className="w-5 h-5" />
               Najít ideální místo
             </Button>
           </div>
@@ -205,7 +204,7 @@ export function VenueFilters({ initialValues }: VenueFiltersProps) {
 
               <Button
                 type="submit"
-                className="h-12 rounded-xl bg-blue-600 px-8 text-base font-semibold text-white shadow-md transition-all hover:bg-blue-700 flex-shrink-0"
+                className="h-12 rounded-xl bg-blue-600 px-8 text-base font-semibold text-white shadow-md transition-all hover:bg-blue-700 flex items-center justify-center flex-shrink-0"
               >
                 Najít ideální místo
               </Button>
@@ -213,6 +212,18 @@ export function VenueFilters({ initialValues }: VenueFiltersProps) {
 
             {/* Mobile layout - vertical stack */}
             <div className="flex flex-col gap-4 md:hidden">
+              <div className="flex items-center gap-3">
+                <span className="inline-flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-gray-800 rounded-xl flex-shrink-0">
+                  <Search className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
+                </span>
+                <Input
+                  value={filters.q}
+                  onChange={(e) => handleFilterChange("q", e.target.value)}
+                  placeholder="Hledat podle názvu"
+                  className="h-11 sm:h-12 rounded-2xl border-2 border-gray-300 bg-white text-base"
+                />
+              </div>
+
               <div className="flex items-center gap-3">
                 <span className="inline-flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-blue-600 rounded-xl flex-shrink-0">
                   <Calendar className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
@@ -281,9 +292,8 @@ export function VenueFilters({ initialValues }: VenueFiltersProps) {
 
               <Button
                 type="submit"
-                className="w-full h-12 rounded-xl bg-blue-600 text-base font-semibold text-white shadow-md transition-all hover:bg-blue-700 flex items-center justify-center gap-2"
+                className="w-full h-12 rounded-xl bg-blue-600 text-base font-semibold text-white shadow-md transition-all hover:bg-blue-700 flex items-center justify-center"
               >
-                <Search className="w-5 h-5" />
                 Najít ideální místo
               </Button>
             </div>

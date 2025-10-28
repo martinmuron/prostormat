@@ -34,6 +34,21 @@ const nextConfig = {
     loader: 'custom',
     loaderFile: './src/lib/image-loader.js',
   },
+  async redirects() {
+    return [
+      {
+        source: '/:path*',
+        has: [
+          {
+            type: 'host',
+            value: 'www.prostormat.cz',
+          },
+        ],
+        destination: 'https://prostormat.cz/:path*',
+        permanent: true, // 301 redirect
+      },
+    ]
+  },
 }
 
 module.exports = nextConfig

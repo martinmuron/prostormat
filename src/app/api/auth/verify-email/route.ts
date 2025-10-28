@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
 import { consumeEmailVerificationToken } from "@/lib/email-verification"
+import type { ConsumeEmailVerificationTokenResult } from "@/lib/email-verification"
 import { sendWelcomeEmail } from "@/lib/email-service"
 
 const schema = z.object({
@@ -29,12 +30,13 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: true })
     }
 
-    const errorMessages: Record<typeof result.status, string> = {
+    type VerificationErrorStatus = Exclude<ConsumeEmailVerificationTokenResult["status"], "verified">
+
+    const errorMessages = {
       expired: "Odkaz pro ověření e-mailu vypršel. Požádejte o nový.",
       not_found: "Nesprávný ověřovací odkaz.",
       user_not_found: "Uživatel pro tento odkaz nebyl nalezen.",
-      verified: "", // Unused but satisfies type check
-    }
+    } satisfies Record<VerificationErrorStatus, string>
 
     const message = errorMessages[result.status] || "Nelze ověřit e-mail."
 
@@ -49,4 +51,3 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Došlo k chybě při ověřování e-mailu." }, { status: 500 })
   }
 }
-

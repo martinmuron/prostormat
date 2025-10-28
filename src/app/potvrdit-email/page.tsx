@@ -1,12 +1,18 @@
 import VerifyEmailPage from "@/components/pages/auth/verify-email-page"
 
-interface VerifyEmailPageProps {
-  searchParams: {
-    token?: string
-  }
+type SearchParams = {
+  token?: string | string[]
 }
 
-export default function VerifyEmail({ searchParams }: VerifyEmailPageProps) {
-  return <VerifyEmailPage token={searchParams.token} />
+export default async function VerifyEmail({
+  searchParams,
+}: {
+  searchParams: Promise<SearchParams>
+}) {
+  const params = await searchParams
+  const tokenParam = params?.token
+  const token = Array.isArray(tokenParam) ? tokenParam[0] : tokenParam
+
+  return <VerifyEmailPage token={token} />
 }
 

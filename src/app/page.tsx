@@ -190,7 +190,8 @@ async function FeaturedVenues() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
       {venues.map((venue, index) => {
-        const shouldHighlight = homepageHighlightSet.has(venue.id) || typeof venue.priority === 'number'
+        const shouldHighlight =
+          homepageHighlightSet.has(venue.id) || venue.priority === 1
 
         return (
           <VenueCard

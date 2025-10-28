@@ -125,13 +125,16 @@ export function InfiniteVenueList({
   return (
     <>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
-        {venues.map((venue) => (
-          <VenueCard
-            key={venue.id}
-            venue={venue}
-            showPriorityBadge={typeof venue.priority === 'number'}
-          />
-        ))}
+        {venues.map((venue) => {
+          const highlight = venue.priority === 1 || venue.prioritySource === 'homepage'
+          return (
+            <VenueCard
+              key={venue.id}
+              venue={venue}
+              showPriorityBadge={highlight}
+            />
+          )
+        })}
       </div>
 
       {/* Loading indicator */}

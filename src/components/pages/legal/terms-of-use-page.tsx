@@ -116,10 +116,10 @@ export function TermsOfUsePage() {
                       Tyto podmínky použití jsou účinné od 1. ledna 2024.
                     </p>
                     <p className="text-gray-600 text-sm mt-2">
-                      Future Developments s.r.o., IČO: 12345678
+                      Future Developments s.r.o., IČO: 03472451
                     </p>
                     <p className="text-gray-600 text-sm">
-                      Adresa: Rybná 716/24, Staré Město, 110 00 Praha (virtuální adresa)
+                      Adresa: Rybná 716/24, Staré Město, 110 00 Praha (virtuální kancelář)
                     </p>
                     <p className="text-gray-600 text-sm">
                       Kontakt: info@prostormat.cz

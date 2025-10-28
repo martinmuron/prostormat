@@ -56,9 +56,9 @@ export function PrivacyPolicyPage() {
                     <p className="text-gray-700 mb-2">
                       <strong>Future Developments s.r.o.</strong>
                     </p>
-                    <p className="text-gray-700 mb-2">IČO: 12345678</p>
+                    <p className="text-gray-700 mb-2">IČO: 03472451</p>
                     <p className="text-gray-700 mb-2">Adresa: Rybná 716/24, Staré Město, 110 00 Praha</p>
-                    <p className="text-gray-700 mb-2">Jedná se o virtuální adresu.</p>
+                    <p className="text-gray-700 mb-2">(virtuální kancelář)</p>
                     <p className="text-gray-700">Email: info@prostormat.cz</p>
                   </div>
 

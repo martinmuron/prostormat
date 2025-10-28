@@ -38,11 +38,38 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
 
   const [loginError, setLoginError] = useState("")
   const [registerError, setRegisterError] = useState("")
+  const [registerSuccess, setRegisterSuccess] = useState("")
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
     setLoginError("")
+
+    async function isEmailVerified(email: string) {
+      try {
+        const response = await fetch("/api/auth/email-status", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email }),
+        })
+
+        if (!response.ok) {
+          return null
+        }
+
+        const data = await response.json()
+        if (!data.exists) {
+          return null
+        }
+
+        return Boolean(data.emailVerified)
+      } catch (statusError) {
+        console.error("Failed to check email verification status:", statusError)
+        return null
+      }
+    }
 
     try {
       const result = await signIn("credentials", {
@@ -52,7 +79,16 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
       })
 
       if (result?.error) {
-        setLoginError("Neplatné přihlašovací údaje")
+        if (result.error === "EMAIL_NOT_VERIFIED") {
+          setLoginError("Váš e-mail zatím není ověřen. Zkontrolujte prosím schránku a klikněte na ověřovací odkaz.")
+        } else {
+          const verified = loginData.email ? await isEmailVerified(loginData.email) : null
+          if (verified === false) {
+            setLoginError("Váš e-mail zatím není ověřen. Zkontrolujte prosím schránku a klikněte na ověřovací odkaz.")
+          } else {
+            setLoginError("Neplatné přihlašovací údaje")
+          }
+        }
       } else {
         onSuccess?.()
         onClose()
@@ -70,6 +106,7 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
     e.preventDefault()
     setIsLoading(true)
     setRegisterError("")
+    setRegisterSuccess("")
 
     if (registerData.password !== registerData.confirmPassword) {
       setRegisterError("Hesla se neshodují")
@@ -90,20 +127,12 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
       })
 
       if (response.ok) {
-        // Auto login after successful registration
-        const result = await signIn("credentials", {
-          email: registerData.email,
-          password: registerData.password,
-          redirect: false,
+        setRegisterSuccess("Skoro hotovo! Poslali jsme vám e-mail s potvrzením registrace. Dokončete prosím ověření kliknutím na odkaz v e-mailu.")
+        setRegisterData({
+          email: "",
+          password: "",
+          confirmPassword: "",
         })
-
-        if (result?.error) {
-          setRegisterError("Registrace proběhla úspěšně, ale nepodařilo se přihlásit")
-        } else {
-          onSuccess?.()
-          onClose()
-          router.refresh()
-        }
       } else {
         const errorData = await response.json()
         setRegisterError(errorData.error || "Došlo k chybě při registraci")
@@ -282,6 +311,9 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
 
               {registerError && (
                 <p className="text-sm text-red-600 text-center">{registerError}</p>
+              )}
+              {registerSuccess && (
+                <p className="text-sm text-green-600 text-center">{registerSuccess}</p>
               )}
 
               <Button

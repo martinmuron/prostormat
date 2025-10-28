@@ -54,6 +54,10 @@ export const authOptions: NextAuthOptions = {
           return null
         }
 
+        if (!user.emailVerified) {
+          throw new Error("EMAIL_NOT_VERIFIED")
+        }
+
         if (user.role === "venue_manager") {
           const now = new Date()
           const hasActiveSubscription = await db.venue.findFirst({

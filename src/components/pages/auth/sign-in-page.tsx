@@ -28,6 +28,32 @@ function SignInForm() {
     setIsLoading(true)
     setError("")
 
+    async function isEmailVerified(address: string) {
+      try {
+        const response = await fetch("/api/auth/email-status", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email: address }),
+        })
+
+        if (!response.ok) {
+          return null
+        }
+
+        const data = await response.json()
+        if (!data.exists) {
+          return null
+        }
+
+        return Boolean(data.emailVerified)
+      } catch (statusError) {
+        console.error("Failed to check email verification status:", statusError)
+        return null
+      }
+    }
+
     try {
       const result = await signIn("credentials", {
         email,
@@ -36,7 +62,16 @@ function SignInForm() {
       })
 
       if (result?.error) {
-        setError("Neplatné přihlašovací údaje")
+        if (result.error === "EMAIL_NOT_VERIFIED") {
+          setError("Váš e-mail zatím není ověřen. Zkontrolujte prosím schránku a klikněte na ověřovací odkaz.")
+        } else {
+          const verified = email ? await isEmailVerified(email) : null
+          if (verified === false) {
+            setError("Váš e-mail zatím není ověřen. Zkontrolujte prosím schránku a klikněte na ověřovací odkaz.")
+          } else {
+            setError("Neplatné přihlašovací údaje")
+          }
+        }
       } else {
         router.push(callbackUrl)
       }
@@ -153,4 +188,3 @@ export function SignInPage() {
 }
 
 export default SignInPage
-

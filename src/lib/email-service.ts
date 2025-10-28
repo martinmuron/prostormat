@@ -91,6 +91,22 @@ export async function isEmailTriggerEnabled(triggerKey: string): Promise<boolean
 }
 
 /**
+ * Send verification email prompting the user to confirm address
+ */
+export async function sendVerificationEmail(params: { name: string; email: string; verificationLink: string }) {
+  const { name, email, verificationLink } = params
+  return sendEmailFromTemplate({
+    templateKey: 'verify_email',
+    to: email,
+    variables: {
+      name: name || email,
+      verificationLink,
+    },
+    checkTrigger: 'user_email_verification',
+  })
+}
+
+/**
  * Send welcome email to new user
  * Now uses database template - editable from admin dashboard!
  */

@@ -2,9 +2,13 @@ import { NextResponse } from "next/server"
 import bcrypt from "bcryptjs"
 import { z } from "zod"
 import { db } from "@/lib/db"
-import { sendWelcomeEmail } from "@/lib/email-service"
+import { sendVerificationEmail } from "@/lib/email-service"
 import { trackRegistration } from "@/lib/meta-conversions-api"
 import { trackGA4ServerRegistration } from "@/lib/ga4-server-tracking"
+import {
+  buildEmailVerificationUrl,
+  createEmailVerificationToken,
+} from "@/lib/email-verification"
 
 const trackingSchema = z.object({
   eventId: z.string(),
@@ -52,8 +56,8 @@ export async function POST(request: Request) {
         email: validatedData.email,
         password: hashedPassword,
         role: "user", // All registrations are "user" role
-        company: null,
-        phone: null,
+        company: validatedData.company ?? null,
+        phone: validatedData.phone ?? null,
       },
       select: {
         id: true,
@@ -63,15 +67,26 @@ export async function POST(request: Request) {
       },
     })
 
-    // Send welcome email (don't block registration if email fails)
+    // Create verification token (don't block registration on failure)
+    let verificationUrl: string | null = null
     try {
-      await sendWelcomeEmail({
-        name: user.name || user.email,
-        email: user.email,
-        role: user.role
-      })
+      const verificationToken = await createEmailVerificationToken(user.email)
+      verificationUrl = buildEmailVerificationUrl(verificationToken.token)
+    } catch (tokenError) {
+      console.error("Failed to create verification token:", tokenError)
+    }
+
+    // Send verification email (best-effort)
+    try {
+      if (verificationUrl) {
+        await sendVerificationEmail({
+          name: user.name || user.email,
+          email: user.email,
+          verificationLink: verificationUrl,
+        })
+      }
     } catch (emailError) {
-      console.error('Failed to send welcome email:', emailError)
+      console.error('Failed to send verification email:', emailError)
       // Continue anyway - registration was successful
     }
 
@@ -102,10 +117,13 @@ export async function POST(request: Request) {
       // Continue anyway - registration was successful
     }
 
-    return NextResponse.json({
-      success: true,
-      user,
-    })
+    return NextResponse.json(
+      {
+        success: true,
+        requiresEmailConfirmation: true,
+      },
+      { status: 201 }
+    )
   } catch (error) {
     console.error("Registration error:", error)
     

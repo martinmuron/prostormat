@@ -1,9 +1,7 @@
 'use client'
 
 import { useState } from "react"
-import { signIn } from "next-auth/react"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent } from "@/components/ui/card"
@@ -11,8 +9,6 @@ import { trackGA4Registration } from "@/lib/ga4-tracking"
 import { createTrackingContext } from "@/lib/tracking-utils"
 
 export function RegisterPage() {
-  const router = useRouter()
-
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -20,11 +16,13 @@ export function RegisterPage() {
   })
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
+  const [successMessage, setSuccessMessage] = useState("")
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
     setError("")
+    setSuccessMessage("")
 
     if (formData.password !== formData.confirmPassword) {
       setError("Hesla se neshodují")
@@ -60,19 +58,12 @@ export function RegisterPage() {
           tracking,
         })
 
-        await new Promise((resolve) => setTimeout(resolve, 500))
-
-        const result = await signIn("credentials", {
-          email: formData.email,
-          password: formData.password,
-          redirect: false,
+        setSuccessMessage("Skoro hotovo! Poslali jsme vám e-mail s potvrzením registrace. Dokončete prosím ověření kliknutím na odkaz v e-mailu.")
+        setFormData({
+          email: "",
+          password: "",
+          confirmPassword: "",
         })
-
-        if (result?.ok) {
-          router.push("/prostory")
-        } else {
-          setError("Účet byl vytvořen, ale automatické přihlášení se nezdařilo. Přihlaste se prosím ručně.")
-        }
       } else {
         const data = await response.json()
         setError(data.error || "Došlo k chybě při registraci")
@@ -97,6 +88,12 @@ export function RegisterPage() {
 
         <Card>
           <CardContent className="pt-4 sm:pt-6 p-4 sm:p-6">
+            {successMessage && (
+              <div className="bg-green-50 border border-green-200 rounded-xl p-3 sm:p-4 mb-4 sm:mb-6">
+                <p className="text-sm sm:text-callout text-green-700">{successMessage}</p>
+              </div>
+            )}
+
             {error && (
               <div className="bg-red-50 border border-red-200 rounded-xl p-3 sm:p-4 mb-4 sm:mb-6">
                 <p className="text-sm sm:text-callout text-red-600">{error}</p>

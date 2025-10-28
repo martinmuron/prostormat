@@ -1355,8 +1355,9 @@ function AddVenuePageContent() {
                         Pokračováním odešlete žádost o převzetí existujícího listingu. Po schválení vám prostor přiřadíme k úpravám.
                       </p>
                       {isPrefillingExistingVenue && (
-                        <p className="text-sm text-yellow-700 mt-2">
-                          Načítáme údaje z existujícího listingu…
+                        <p className="text-sm text-yellow-700 mt-2 flex items-center gap-2">
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                          <span>Načítáme údaje z existujícího listingu…</span>
                         </p>
                       )}
                       {!isPrefillingExistingVenue && hasPrefilledFromExisting && (

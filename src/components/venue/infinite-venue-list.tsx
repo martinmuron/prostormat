@@ -125,7 +125,7 @@ export function InfiniteVenueList({
           <VenueCard
             key={venue.id}
             venue={venue}
-            showPriorityBadge
+            showPriorityBadge={typeof venue.priority === 'number'}
           />
         ))}
       </div>

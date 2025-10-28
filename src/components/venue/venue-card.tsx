@@ -129,7 +129,7 @@ export function VenueCard({ venue, priority = false, showPriorityBadge = false }
               </div>
             </div>
           )}
-          {showPriorityBadge && typeof venue.priority === 'number' && (
+          {showPriorityBadge && (
             <div className="absolute top-3 right-3 sm:top-4 sm:right-4">
               <span className="bg-gradient-to-r from-yellow-300 via-amber-400 to-orange-500 text-black px-3 py-1 rounded-full text-xs sm:text-sm font-semibold shadow-lg flex items-center gap-1">
                 <Star className="w-3 h-3 sm:w-4 sm:h-4" />

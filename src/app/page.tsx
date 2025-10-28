@@ -29,12 +29,18 @@ const featuredVenueSelect = {
 
 type FeaturedVenue = Prisma.VenueGetPayload<{ select: typeof featuredVenueSelect }>
 
-async function getFeaturedVenues() {
+type FeaturedVenuesResult = {
+  venues: FeaturedVenue[]
+  homepageHighlightedIds: string[]
+}
+
+async function getFeaturedVenues(): Promise<FeaturedVenuesResult> {
   try {
     const visibleStatuses = ['published', 'active']
 
     const desiredCount = 12
     const selected: FeaturedVenue[] = []
+    const homepageHighlighted = new Set<string>()
     const seen = new Set<string>()
 
     const topPriorityVenues = await db.venue.findMany({
@@ -55,7 +61,10 @@ async function getFeaturedVenues() {
       seen.add(venue.id)
       selected.push(venue)
       if (selected.length === desiredCount) {
-        return selected
+        return {
+          venues: selected,
+          homepageHighlightedIds: [],
+        }
       }
     }
 
@@ -91,6 +100,7 @@ async function getFeaturedVenues() {
         if (seen.has(venue.id)) continue
         seen.add(venue.id)
         selected.push(venue)
+        homepageHighlighted.add(venue.id)
       }
     }
 
@@ -116,10 +126,21 @@ async function getFeaturedVenues() {
       }
     }
 
-    return selected.slice(0, desiredCount)
+    const finalSelection = selected.slice(0, desiredCount)
+    const homepageHighlightedIds = finalSelection
+      .filter((venue) => homepageHighlighted.has(venue.id))
+      .map((venue) => venue.id)
+
+    return {
+      venues: finalSelection,
+      homepageHighlightedIds,
+    }
   } catch (error) {
     console.error("Error fetching prostormat_venues:", error)
-    return []
+    return {
+      venues: [],
+      homepageHighlightedIds: [],
+    }
   }
 }
 
@@ -150,7 +171,8 @@ function VenueCardSkeleton() {
 }
 
 async function FeaturedVenues() {
-  const venues = await getFeaturedVenues()
+  const { venues, homepageHighlightedIds } = await getFeaturedVenues()
+  const homepageHighlightSet = new Set(homepageHighlightedIds)
 
   if (venues.length === 0) {
     return (
@@ -167,14 +189,18 @@ async function FeaturedVenues() {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-      {venues.map((venue, index) => (
-        <VenueCard
-          key={venue.id}
-          venue={venue}
-          priority={index < 6}
-          showPriorityBadge
-        />
-      ))}
+      {venues.map((venue, index) => {
+        const shouldHighlight = homepageHighlightSet.has(venue.id) || typeof venue.priority === 'number'
+
+        return (
+          <VenueCard
+            key={venue.id}
+            venue={venue}
+            priority={index < 6}
+            showPriorityBadge={shouldHighlight}
+          />
+        )
+      })}
     </div>
   )
 }

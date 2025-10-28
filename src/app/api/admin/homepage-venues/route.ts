@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
@@ -105,6 +106,8 @@ export async function POST(request: Request) {
         })),
       }),
     ])
+
+    await revalidatePath('/', 'page')
 
     return NextResponse.json({ success: true })
   } catch (error) {

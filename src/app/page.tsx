@@ -488,7 +488,7 @@ export default function HomePage() {
                     Jak začít?
                   </h3>
                   <p className="text-gray-600">
-                    Tři jednoduché kroky k novým klientům
+                    Čtyři jednoduché kroky k novým klientům
                   </p>
                 </div>
               
@@ -498,22 +498,31 @@ export default function HomePage() {
                     1
                   </div>
                   <p className="text-gray-700 font-medium">
-                    Vytvořte profil s fotografiemi a detaily
+                    Vyplňte kontaktní údaje a základní informace o prostoru
                   </p>
                 </div>
-                
+
                 <div className="flex items-center space-x-4">
                   <div className="flex-shrink-0 w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
                     2
                   </div>
                   <p className="text-gray-700 font-medium">
-                    Získávejte poptávky od organizátorů
+                    Ozveme se vám a společně projdeme váš profil
                   </p>
                 </div>
-                
+
                 <div className="flex items-center space-x-4">
                   <div className="flex-shrink-0 w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
                     3
+                  </div>
+                  <p className="text-gray-700 font-medium">
+                    Získávejte poptávky od organizátorů
+                  </p>
+                </div>
+
+                <div className="flex items-center space-x-4">
+                  <div className="flex-shrink-0 w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                    4
                   </div>
                   <p className="text-gray-700 font-medium">
                     Reagujte na nabídky a uzavírejte obchody

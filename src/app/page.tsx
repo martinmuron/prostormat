@@ -446,7 +446,7 @@ export default function HomePage() {
                       Přidejte prostor
                     </h3>
                     <p className="text-gray-600">
-                      Vytvořte profil vašeho prostoru s fotografiemi a všemi detaily.
+                      Vyplňte kontaktní údaje, základní parametry a odešlete žádost – o zbytek se postará náš tým.
                     </p>
                   </div>
                 </div>

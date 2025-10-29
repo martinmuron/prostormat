@@ -10,6 +10,7 @@ import {
   MessageSquare,
   TrendingUp
 } from "lucide-react"
+import { VenueLeadStats, type VenueLeadStat } from "@/components/admin/venue-lead-stats"
 
 async function getStats() {
   try {
@@ -108,6 +109,43 @@ async function getStats() {
   }
 }
 
+async function getVenueLeadStats(): Promise<VenueLeadStat[]> {
+  try {
+    const venues = await db.venue.findMany({
+      where: {
+        parentId: null,
+      },
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        status: true,
+        _count: {
+          select: {
+            inquiries: true,
+            broadcastLogs: true,
+          },
+        },
+      },
+      orderBy: {
+        name: "asc",
+      },
+    })
+
+    return venues.map((venue) => ({
+      id: venue.id,
+      name: venue.name,
+      slug: venue.slug,
+      status: venue.status,
+      inquiryCount: venue._count.inquiries,
+      quickRequestCount: venue._count.broadcastLogs,
+    }))
+  } catch (error) {
+    console.error("Error fetching venue lead stats:", error)
+    return []
+  }
+}
+
 export default async function StatsPage() {
   const session = await getServerSession(authOptions)
 
@@ -115,7 +153,10 @@ export default async function StatsPage() {
     redirect("/dashboard")
   }
 
-  const stats = await getStats()
+  const [stats, venueLeadStats] = await Promise.all([
+    getStats(),
+    getVenueLeadStats(),
+  ])
 
   if (!stats) {
     return (
@@ -263,6 +304,8 @@ export default async function StatsPage() {
           </CardContent>
         </Card>
       </div>
+
+      <VenueLeadStats venues={venueLeadStats} />
     </div>
   )
 }

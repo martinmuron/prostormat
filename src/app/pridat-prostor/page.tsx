@@ -256,6 +256,7 @@ function AddVenuePageContent() {
     formState: { errors },
     setValue,
     watch,
+    getValues,
   } = useForm<VenueFormInputs>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -266,15 +267,30 @@ function AddVenuePageContent() {
 
   // Check authentication status and pre-fill user data
   useEffect(() => {
-    if (status === 'loading') return
-
-    if (session?.user) {
-      setIsLoggedIn(true)
-      // Pre-fill available user data
-      if (session.user.email) setValue('userEmail', session.user.email)
-      // Phone is not available in session, will be handled in form data preparation
+    if (status === 'loading') {
+      return
     }
-  }, [session, status, setValue])
+
+    const userEmail = session?.user?.email
+    if (!session?.user) {
+      return
+    }
+
+    setIsLoggedIn(true)
+
+    if (userEmail) {
+      setValue('userEmail', userEmail)
+
+      const currentContactEmail = (getValues('contactEmail') ?? '').trim()
+      if (currentContactEmail.length === 0) {
+        setValue('contactEmail', userEmail, {
+          shouldDirty: false,
+          shouldTouch: false,
+        })
+      }
+    }
+    // Phone is not available in session, will be handled in form data preparation
+  }, [session, status, setValue, getValues])
 
   const videoUrl = watch("videoUrl")
   const musicAfter10 = watch("musicAfter10")

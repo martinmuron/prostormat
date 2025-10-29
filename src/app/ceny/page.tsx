@@ -46,7 +46,7 @@ export default async function PricingPage() {
             <br className="hidden sm:block" /> pro váš prostor
           </>
         }
-        subtitle="Bez skrytých poplatků. Bez provizí z rezervací. Pouze roční předplatné za maximální viditelnost vašeho prostoru."
+        subtitle="Bez skrytých poplatků. Bez provizí z rezervací. Roční předplatné 12 000 Kč + DPH za maximální viditelnost vašeho prostoru."
       />
 
       {/* Pricing Section */}
@@ -64,7 +64,7 @@ export default async function PricingPage() {
                   </h2>
                   <div className="mb-4">
                     <span className="text-5xl sm:text-6xl font-black text-black">12 000</span>
-                    <span className="text-title-3 text-gray-600 ml-2">Kč / rok</span>
+                    <span className="text-title-3 text-gray-600 ml-2">Kč + DPH / rok</span>
                   </div>
                   <p className="text-body text-gray-600 font-medium">
                     Kompletní přístup k platformě na celý rok

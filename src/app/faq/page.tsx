@@ -6,7 +6,7 @@ import { generateFaqSchema, schemaToJsonLd } from "@/lib/schema-markup"
 
 export const metadata: Metadata = {
   title: "FAQ: Kompletní průvodce Prostormat – 34 odpovědí | Prostormat",
-  description: "Kompletní průvodce Prostormat: Event Board, full-service organizace akcí, ceník pro majitele (12 000 Kč/rok), prémiové balíčky, připravované AI funkce, platby a další. Bez provizí, transparentní ceny.",
+  description: "Kompletní průvodce Prostormat: Event Board, full-service organizace akcí, ceník pro majitele (12 000 Kč + DPH / rok), prémiové balíčky, připravované AI funkce, platby a další. Bez provizí, transparentní ceny.",
   keywords: [
     "FAQ prostormat",
     "event board jak funguje",
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "FAQ: Kompletní průvodce Prostormat – 34 odpovědí",
-    description: "Vše o Event Boardu, full-service organizaci, cenících pro majitele (12K/rok), prémiových balíčcích Priority & Top Priority i připravovaných AI funkcích. Bez provizí.",
+    description: "Vše o Event Boardu, full-service organizaci, cenících pro majitele (12K + DPH / rok), prémiových balíčcích Priority & Top Priority i připravovaných AI funkcích. Bez provizí.",
     url: "https://prostormat.cz/faq",
     siteName: "Prostormat",
     images: [...DEFAULT_OG_IMAGES],

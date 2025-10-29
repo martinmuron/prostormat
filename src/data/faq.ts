@@ -53,19 +53,19 @@ export const faqSections: FAQSection[] = [
     items: [
       {
         question: "Kolik stojí přidání prostoru na Prostormat?",
-        answer: "Roční předplatné stojí 12 000 Kč. Zahrnuje: kompletní profil prostoru s fotogalerií, neomezené dotazy od klientů, přístup k poptávkám na Event Boardu, automatické notifikace o relevantních poptávkách, email podporu. Předplatné se automaticky obnovuje každý rok, můžete jej ale kdykoliv zrušit bez sankcí."
+        answer: "Roční předplatné stojí 12 000 Kč + DPH. Zahrnuje: kompletní profil prostoru s fotogalerií, neomezené dotazy od klientů, přístup k poptávkám na Event Boardu, automatické notifikace o relevantních poptávkách, email podporu. Předplatné se automaticky obnovuje každý rok, můžete jej ale kdykoliv zrušit bez sankcí."
       },
       {
         question: "Jak mohu přidat svůj prostor?",
-        answer: "Klikněte na „Přidat prostor“ v hlavním menu. Vyplňte formulář s informacemi o prostoru (název, adresa, kapacita, vybavení, fotografie, kontaktní údaje). Po vyplnění budete přesměrováni na bezpečnou platbu kartou (12 000 Kč/rok). Náš tým váš prostor zkontroluje do 24–48 hodin a po schválení bude zveřejněn."
+        answer: "Klikněte na „Přidat prostor“ v hlavním menu. Vyplňte formulář s informacemi o prostoru (název, adresa, kapacita, vybavení, fotografie, kontaktní údaje). Po vyplnění budete přesměrováni na bezpečnou platbu kartou (12 000 Kč + DPH / rok). Náš tým váš prostor zkontroluje do 24–48 hodin a po schválení bude zveřejněn."
       },
       {
-        question: "Co je zahrnuto v základním předplatném (12 000 Kč/rok)?",
+        question: "Co je zahrnuto v základním předplatném (12 000 Kč + DPH / rok)?",
         answer: "V základním předplatném získáte: veřejný profil s neomezeným počtem fotografií a videem, zobrazení ve výsledcích vyhledávání podle parametrů, přístup k Event Boardu – vidíte plné kontakty organizátorů, emailové notifikace při nových relevantních poptávkách, možnost upravovat profil kdykoliv, podporu přes email a účast v našem newsletter marketingu."
       },
       {
         question: "Co jsou prémiové balíčky Priority a Top Priority?",
-        answer: "Priority (7 000 Kč/rok): Váš prostor se zobrazuje mezi prvními 24 prostory ve všech výsledcích vyhledávání a filtrů. Statisticky získáte až o 70 % více poptávek.\n\nTop Priority (14 000 Kč/rok): Váš prostor je mezi prvními 12 v katalogu a získává umístění na homepage. Statisticky přináší až o 135 % více poptávek. Limit je pouze 12 prostor – pokud je vyprodáno, můžete se zapsat na waiting list.\n\nObě varianty zahrnují newsletter marketing Prostormat."
+        answer: "Priority (7 000 Kč + DPH / rok): Váš prostor se zobrazuje mezi prvními 24 prostory ve všech výsledcích vyhledávání a filtrů. Statisticky získáte až o 70 % více poptávek.\n\nTop Priority (14 000 Kč + DPH / rok): Váš prostor je mezi prvními 12 v katalogu a získává umístění na homepage. Statisticky přináší až o 135 % více poptávek. Limit je pouze 12 prostor – pokud je vyprodáno, můžete se zapsat na waiting list.\n\nObě varianty zahrnují newsletter marketing Prostormat."
       },
       {
         question: "Co je Event Board a proč je důležitý pro mě jako majitele prostoru?",
@@ -173,7 +173,7 @@ export const faqSections: FAQSection[] = [
       },
       {
         question: "Účtujete provize z rezervací?",
-        answer: "Ne, Prostormat NEÚČTUJE PROVIZE. Organizátoři si domlouvají cenu a podmínky přímo s majiteli prostor. Náš byznys model je založený na předplatném od majitelů prostor (12 000 Kč/rok), ne na provizích. To znamená transparentní ceny bez skrytých poplatků."
+        answer: "Ne, Prostormat NEÚČTUJE PROVIZE. Organizátoři si domlouvají cenu a podmínky přímo s majiteli prostor. Náš byznys model je založený na předplatném od majitelů prostor (12 000 Kč + DPH / rok), ne na provizích. To znamená transparentní ceny bez skrytých poplatků."
       }
     ]
   }

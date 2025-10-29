@@ -491,7 +491,7 @@ export default function VenueApprovalPage() {
                                     claim.payment.amount,
                                     (claim.payment.currency || "CZK").toUpperCase()
                                   )
-                                : "12,000 CZK"}
+                                : "12,000 CZK + DPH"}
                             </span>
                           </div>
                           {claim.payment.paymentCompletedAt && (

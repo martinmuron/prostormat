@@ -979,8 +979,8 @@ function AddVenuePageContent() {
             </h1>
             <p className="text-gray-600">
               {isClaimSubmission
-                ? `Platba 12,000 CZK odešle žádost o převzetí listingu "${formData.name}".`
-                : `Dokončete platbu 12,000 CZK pro přidání prostoru "${formData.name}" na platformu.`}
+                ? `Platba 12,000 CZK + DPH odešle žádost o převzetí listingu "${formData.name}".`
+                : `Dokončete platbu 12,000 CZK + DPH pro přidání prostoru "${formData.name}" na platformu.`}
             </p>
           </div>
 

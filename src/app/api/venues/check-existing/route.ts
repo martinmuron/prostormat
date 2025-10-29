@@ -125,6 +125,14 @@ export async function POST(request: Request) {
       suggestions: similarVenues,
     })
   } catch (error) {
+    if (error instanceof z.ZodError) {
+      console.warn('Invalid payload for venue existence check:', error.flatten())
+      return NextResponse.json(
+        { error: 'Invalid request data' },
+        { status: 400 }
+      )
+    }
+
     console.error('Error checking venue existence:', error)
     return NextResponse.json({ error: 'Failed to check venue' }, { status: 500 })
   }

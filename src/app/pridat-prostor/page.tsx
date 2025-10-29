@@ -694,12 +694,21 @@ function AddVenuePageContent() {
 
   const checkExistingVenue = async (name: string, address: string) => {
     try {
+      const payload: { name: string; address?: string } = {
+        name: name.trim(),
+      }
+
+      const normalizedAddress = address.trim()
+      if (normalizedAddress.length >= 3) {
+        payload.address = normalizedAddress
+      }
+
       const response = await fetch('/api/venues/check-existing', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ name, address }),
+        body: JSON.stringify(payload),
       })
 
       if (response.ok) {

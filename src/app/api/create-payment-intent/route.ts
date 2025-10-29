@@ -57,15 +57,31 @@ export async function POST(request: NextRequest) {
 
     // Get the payment intent from the subscription's latest invoice
     const latestInvoice = subscription.latest_invoice;
-    if (!latestInvoice || typeof latestInvoice === 'string') {
+    if (!latestInvoice) {
       throw new Error('Failed to get invoice from subscription');
     }
 
-    const invoice = latestInvoice as Stripe.Invoice & {
+    type InvoiceWithPaymentIntent = Stripe.Invoice & {
       payment_intent?: Stripe.PaymentIntent | string | null;
     };
-    const paymentIntent = invoice.payment_intent ?? null;
-    if (!paymentIntent || typeof paymentIntent === 'string') {
+
+    const invoice: InvoiceWithPaymentIntent =
+      typeof latestInvoice === 'string'
+        ? (await stripe.invoices.retrieve(latestInvoice, {
+            expand: ['payment_intent'],
+          })) as InvoiceWithPaymentIntent
+        : (latestInvoice as InvoiceWithPaymentIntent);
+
+    const rawPaymentIntent = invoice.payment_intent ?? null;
+    let paymentIntent: Stripe.PaymentIntent | null = null;
+
+    if (rawPaymentIntent && typeof rawPaymentIntent !== 'string') {
+      paymentIntent = rawPaymentIntent;
+    } else if (typeof rawPaymentIntent === 'string') {
+      paymentIntent = await stripe.paymentIntents.retrieve(rawPaymentIntent);
+    }
+
+    if (!paymentIntent) {
       throw new Error('Failed to get payment intent from invoice');
     }
 

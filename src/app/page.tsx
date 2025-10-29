@@ -43,31 +43,6 @@ async function getFeaturedVenues(): Promise<FeaturedVenuesResult> {
     const homepageHighlighted = new Set<string>()
     const seen = new Set<string>()
 
-    const topPriorityVenues = await db.venue.findMany({
-      where: {
-        priority: 1,
-        status: { in: visibleStatuses },
-        parentId: null,
-      },
-      orderBy: {
-        updatedAt: 'desc',
-      },
-      take: desiredCount,
-      select: featuredVenueSelect,
-    })
-
-    for (const venue of topPriorityVenues) {
-      if (seen.has(venue.id)) continue
-      seen.add(venue.id)
-      selected.push(venue)
-      if (selected.length === desiredCount) {
-        return {
-          venues: selected,
-          homepageHighlightedIds: [],
-        }
-      }
-    }
-
     const homepageVenues = await db.homepageVenue.findMany({
       select: {
         venueId: true,
@@ -101,6 +76,31 @@ async function getFeaturedVenues(): Promise<FeaturedVenuesResult> {
         seen.add(venue.id)
         selected.push(venue)
         homepageHighlighted.add(venue.id)
+        if (selected.length === desiredCount) {
+          break
+        }
+      }
+    }
+
+    if (selected.length < desiredCount) {
+      const topPriorityVenues = await db.venue.findMany({
+        where: {
+          priority: 1,
+          status: { in: visibleStatuses },
+          parentId: null,
+          id: { notIn: Array.from(seen) },
+        },
+        orderBy: {
+          updatedAt: 'desc',
+        },
+        take: desiredCount - selected.length,
+        select: featuredVenueSelect,
+      })
+
+      for (const venue of topPriorityVenues) {
+        if (seen.has(venue.id)) continue
+        seen.add(venue.id)
+        selected.push(venue)
       }
     }
 

@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { Building2, CheckCircle, ClipboardList, Loader2, Mail, Phone, ShieldCheck, X } from "lucide-react"
+import { CheckCircle, ClipboardList, Loader2, Mail, Phone, ShieldCheck, X } from "lucide-react"
 import { createTrackingContext, type TrackingContext } from "@/lib/tracking-utils"
 import { trackGA4VenueLead } from "@/lib/ga4-tracking"
 
@@ -491,20 +491,6 @@ function AddVenuePageInner() {
           </Card>
 
           <div className="space-y-4">
-            <Card className="border-gray-200">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-base text-gray-900">
-                  <Building2 className="h-5 w-5" />
-                  Jak proces funguje
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3 text-sm text-gray-600">
-                <p>Každý nový listing i převzetí existujícího prostoru ručně ověřujeme. Do 24 hodin vám dáme vědět, jaké jsou další kroky.</p>
-                <p>Po potvrzení od nás obdržíte fakturační podklady a domluvíme detail zveřejnění. Aktivaci provedeme manuálně v systému.</p>
-                <p>Máte otázky? Napište nám na <a href="mailto:info@prostormat.cz" className="font-medium text-gray-900 underline">info@prostormat.cz</a>.</p>
-              </CardContent>
-            </Card>
-
             <Card className="border-gray-200">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-base text-gray-900">

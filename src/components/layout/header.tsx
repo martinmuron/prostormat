@@ -13,6 +13,7 @@ import { User, Menu, LogOut, Plus, Instagram } from "lucide-react"
 const navLinks = [
   { href: "/", label: "Úvod" },
   { href: "/prostory", label: "Prostory" },
+  { href: "/pridat-prostor", label: "Přidat prostor" },
   { href: "/event-board", label: "Event Board" },
   { href: "/rychla-poptavka", label: "Rychlá poptávka" },
   { href: "/organizace-akce", label: "Organizace akce" },
@@ -36,16 +37,16 @@ export function Header() {
 
         <div className="flex items-center gap-2 sm:gap-3">
           <div className="hidden items-center gap-2 md:flex">
+            <Link href="/pridat-prostor">
+              <Button size="sm" className="rounded-full bg-black px-4 text-white transition hover:bg-gray-800">
+                <Plus className="mr-1 h-4 w-4" />
+                Přidat prostor
+              </Button>
+            </Link>
             {status === "loading" ? (
               <Skeleton className="h-8 w-8 rounded-full" />
             ) : session ? (
               <>
-                <Link href="/pridat-prostor">
-                  <Button size="sm" className="rounded-full bg-black px-4 text-white transition hover:bg-gray-800">
-                    <Plus className="mr-1 h-4 w-4" />
-                    Přidat prostor
-                  </Button>
-                </Link>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" size="sm" className="rounded-full p-2">
@@ -94,14 +95,12 @@ export function Header() {
           </div>
 
           <div className="flex items-center gap-2">
-            {session && (
-              <Link href="/pridat-prostor" className="md:hidden">
-                <Button size="sm" className="rounded-full bg-black p-2 text-white transition hover:bg-gray-800">
-                  <Plus className="h-4 w-4" />
-                  <span className="sr-only">Přidat prostor</span>
-                </Button>
-              </Link>
-            )}
+            <Link href="/pridat-prostor" className="md:hidden">
+              <Button size="sm" className="rounded-full bg-black p-2 text-white transition hover:bg-gray-800">
+                <Plus className="h-4 w-4" />
+                <span className="sr-only">Přidat prostor</span>
+              </Button>
+            </Link>
 
             <Link
               href="https://www.instagram.com/prostormatcz"

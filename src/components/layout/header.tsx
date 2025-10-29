@@ -50,7 +50,14 @@ export function Header() {
               </Button>
             </Link>
             {status === "loading" ? (
-              <Skeleton className="h-8 w-8 rounded-full" />
+              <>
+                <Button variant="ghost" size="sm" className="rounded-full text-gray-400" disabled>
+                  Načítám…
+                </Button>
+                <Button size="sm" className="rounded-full bg-gray-200 text-gray-500" disabled>
+                  …
+                </Button>
+              </>
             ) : session ? (
               <>
                 <DropdownMenu>

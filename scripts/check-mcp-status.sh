@@ -25,33 +25,11 @@ fi
 
 echo -e "\n${BLUE}1. Stripe Integration${NC}"
 echo "------------------------"
-
-# Check Stripe environment variables
-if [ -n "$STRIPE_PUBLISHABLE_KEY" ] && [ -n "$STRIPE_SECRET_KEY" ] && [ -n "$STRIPE_WEBHOOK_SECRET" ]; then
-    echo -e "✅ Environment variables: ${GREEN}OK${NC}"
+echo -e "⚠️  Stripe platby jsou aktuálně ${YELLOW}pozastavené${NC}. Vše probíhá ručně mimo platformu."
+if [ -f "src/app/api/venue-submissions/route.ts" ]; then
+    echo -e "✅ Nový endpoint pro manuální žádosti: ${GREEN}OK${NC}"
 else
-    echo -e "❌ Environment variables: ${RED}MISSING${NC}"
-fi
-
-# Check Stripe packages
-if npm list stripe >/dev/null 2>&1; then
-    STRIPE_VERSION=$(npm list stripe --depth=0 2>/dev/null | grep stripe@ | sed 's/.*stripe@//')
-    echo -e "✅ Stripe SDK: ${GREEN}v${STRIPE_VERSION}${NC}"
-else
-    echo -e "❌ Stripe SDK: ${RED}NOT INSTALLED${NC}"
-fi
-
-# Check payment endpoints
-if [ -f "src/app/api/create-payment-intent/route.ts" ]; then
-    echo -e "✅ Payment Intent API: ${GREEN}CONFIGURED${NC}"
-else
-    echo -e "❌ Payment Intent API: ${RED}MISSING${NC}"
-fi
-
-if [ -f "src/app/api/webhooks/stripe/route.ts" ]; then
-    echo -e "✅ Stripe Webhook: ${GREEN}CONFIGURED${NC}"
-else
-    echo -e "❌ Stripe Webhook: ${RED}MISSING${NC}"
+    echo -e "❌ Endpoint /api/venue-submissions: ${RED}MISSING${NC}"
 fi
 
 echo -e "\n${BLUE}2. Supabase Integration${NC}"

@@ -126,6 +126,7 @@ type LeadPayload = {
   email?: string
   venueName?: string
   venueId?: string
+  packageType?: string
   clientId?: string
   eventId?: string
   request?: Request
@@ -198,6 +199,7 @@ export async function trackGA4ServerLead(data: LeadPayload) {
           budget_range: data.budgetRange,
           venue_name: data.venueName,
           venue_id: data.venueId,
+          package_type: data.packageType,
           event_id: data.eventId,
         },
       },

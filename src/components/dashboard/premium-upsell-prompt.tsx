@@ -77,15 +77,15 @@ export function PremiumUpsellPrompt() {
           <div>
             <p className="text-sm font-semibold text-gray-900">Získejte více poptávek</p>
             <p className="mt-1 text-xs text-gray-600">
-              Priority a Top Priority balíčky přinášejí až o 135 % více poptávek a zahrnují newsletter marketing.
+              Vyplňte krátkou žádost a náš tým s vámi projde Priority nebo Top Priority balíčky individuálně.
             </p>
           </div>
         </div>
 
         <div className="mt-4 space-y-2">
-          <Link href="/ceny#premium">
+          <Link href="/dashboard/priority">
             <Button className="w-full rounded-2xl bg-black text-white hover:bg-gray-900">
-              Prozkoumat balíčky
+              Zažádat o Priority
             </Button>
           </Link>
           <button

@@ -53,11 +53,11 @@ export const faqSections: FAQSection[] = [
     items: [
       {
         question: "Kolik stojí přidání prostoru na Prostormat?",
-        answer: "Roční předplatné stojí 12 000 Kč + DPH. Zahrnuje: kompletní profil prostoru s fotogalerií, neomezené dotazy od klientů, přístup k poptávkám na Event Boardu, automatické notifikace o relevantních poptávkách, email podporu. Předplatné se automaticky obnovuje každý rok, můžete jej ale kdykoliv zrušit bez sankcí."
+        answer: "Roční předplatné stojí 12 000 Kč + DPH. Zahrnuje: kompletní profil prostoru s fotogalerií, neomezené dotazy od klientů, přístup k poptávkám na Event Boardu, automatické notifikace o relevantních poptávkách a email podporu. Každé předplatné spravujeme ručně – před vypršením vás kontaktujeme a domluvíme prodloužení."
       },
       {
         question: "Jak mohu přidat svůj prostor?",
-        answer: "Klikněte na „Přidat prostor“ v hlavním menu. Vyplňte formulář s informacemi o prostoru (název, adresa, kapacita, vybavení, fotografie, kontaktní údaje). Po vyplnění budete přesměrováni na bezpečnou platbu kartou (12 000 Kč + DPH / rok). Náš tým váš prostor zkontroluje do 24–48 hodin a po schválení bude zveřejněn."
+        answer: "Klikněte na „Přidat prostor“ v hlavním menu a vyplňte krátký formulář (společnost, název prostoru, IČO, kontakty). Náš tým se vám do 24 hodin ozve, ověří informace a domluví ruční aktivaci včetně fakturace (12 000 Kč + DPH / rok)."
       },
       {
         question: "Co je zahrnuto v základním předplatném (12 000 Kč + DPH / rok)?",
@@ -65,7 +65,7 @@ export const faqSections: FAQSection[] = [
       },
       {
         question: "Co jsou prémiové balíčky Priority a Top Priority?",
-        answer: "Priority (7 000 Kč + DPH / rok): Váš prostor se zobrazuje mezi prvními 24 prostory ve všech výsledcích vyhledávání a filtrů. Statisticky získáte až o 70 % více poptávek.\n\nTop Priority (14 000 Kč + DPH / rok): Váš prostor je mezi prvními 12 v katalogu a získává umístění na homepage. Statisticky přináší až o 135 % více poptávek. Limit je pouze 12 prostor – pokud je vyprodáno, můžete se zapsat na waiting list.\n\nObě varianty zahrnují newsletter marketing Prostormat."
+        answer: "Priority (7 000 Kč + DPH / rok) a Top Priority (14 000 Kč + DPH / rok) aktivujeme ručně po domluvě. Vyplňte žádost v administraci nebo nám napište a domluvíme individuální plán. Priority umisťuje prostor na přední pozice ve vyhledávání, Top Priority přidává viditelnost na homepage. Počet Top Priority slotů je omezený."
       },
       {
         question: "Co je Event Board a proč je důležitý pro mě jako majitele prostoru?",
@@ -93,7 +93,7 @@ export const faqSections: FAQSection[] = [
       },
       {
         question: "Jak funguje automatické obnovení předplatného?",
-        answer: "Předplatné se automaticky obnovuje každý rok, aby váš prostor zůstal viditelný bez přerušení. Měsíc před obnovením vám pošleme připomínku emailem. Platbu můžete zrušit kdykoliv v nastavení účtu – klikněte na „Zrušit předplatné“ a budete mít přístup do konce zaplaceného období. Žádné sankce ani skryté poplatky."
+        answer: "Předplatné řešíme fakturou na 12 měsíců dopředu. Před vypršením kontaktujeme správce listingu a domluvíme prodloužení. Pokud nechcete pokračovat, stačí nám dát vědět a profil po uplynutí zaplaceného období skryjeme."
       },
       {
         question: "Mohu získat refundaci (vrácení peněz)?",
@@ -148,7 +148,7 @@ export const faqSections: FAQSection[] = [
       },
       {
         question: "Co se stane, když nezaplatím obnovení předplatného?",
-        answer: "Pokud platba obnovení selže, váš profil zůstane aktivní ještě 7 dní a pošleme vám připomínku emailem. Po 7 dnech se profil automaticky skryje (nebude viditelný ve vyhledávání ani na Event Boardu). Data zůstanou zachovaná – jakmile obnovíte platbu, prostor se okamžitě znovu zveřejní."
+        answer: "Pokud se rozhodnete prodloužení nerealizovat, profil po vypršení uhrazeného období ručně skryjeme. Všechna data zůstanou uložena – kdykoliv můžete požádat o znovuaktivaci, stačí nás kontaktovat."
       }
     ]
   },

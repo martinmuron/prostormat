@@ -37,6 +37,11 @@ type BulkFormData = {
 }
 
 type OrganizaceFormData = Record<string, unknown>
+type VenueLeadData = {
+  submissionType: string
+  venueName?: string
+  packageType?: string | null
+}
 
 // Hash user data for privacy (required by Meta)
 function hashData(data: string): string {
@@ -224,6 +229,26 @@ export async function trackBulkFormSubmit(userData: UserData, formData: BulkForm
       event_type: formData.eventType,
       guest_count: formData.guestCount,
       location: formData.locationPreference,
+    },
+    actionSource: 'website',
+    eventId,
+  })
+}
+
+export async function trackVenueLead(userData: UserData, formData: VenueLeadData, request?: Request, eventId?: string) {
+  return sendMetaEvent({
+    eventName: 'Lead',
+    eventTime: Math.floor(Date.now() / 1000),
+    eventSourceUrl: request?.url || 'https://www.prostormat.cz/pridat-prostor',
+    userData: {
+      ...userData,
+      clientIpAddress: request?.headers.get('x-forwarded-for') || request?.headers.get('x-real-ip') || undefined,
+      clientUserAgent: request?.headers.get('user-agent') || undefined,
+    },
+    customData: {
+      submission_type: formData.submissionType,
+      venue_name: formData.venueName,
+      package_type: formData.packageType,
     },
     actionSource: 'website',
     eventId,

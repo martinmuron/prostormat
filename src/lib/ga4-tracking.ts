@@ -117,6 +117,20 @@ export function trackGA4BulkFormSubmit(data: {
   }, { eventId: data.tracking?.eventId })
 }
 
+export function trackGA4VenueLead(data: {
+  submissionType: 'new' | 'claim' | 'priority_interest'
+  venueName?: string
+  packageType?: string
+  tracking?: TrackingContext
+}) {
+  trackGA4Event('generate_lead', {
+    form_type: 'add_venue',
+    event_type: data.submissionType,
+    venue_name: data.venueName,
+    package_type: data.packageType,
+  }, { eventId: data.tracking?.eventId })
+}
+
 /**
  * Track event organization form submission
  * GA4 recommended event: generate_lead

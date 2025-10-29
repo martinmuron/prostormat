@@ -79,8 +79,8 @@ export default async function PricingPage() {
                     'Přístup k požadavkům na akce',
                     'Přístup do Event Boardu',
                     'Email podpora',
-                    'Automatické obnovení každý rok',
-                    'Zrušení kdykoliv bez sankcí'
+                    'Ruční onboarding a schválení do 24 hodin',
+                    'Fakturace na 12 měsíců dopředu'
                   ].map((feature, index) => (
                     <div key={index} className="flex items-center gap-3">
                       <div className="w-6 h-6 bg-black rounded-full flex items-center justify-center flex-shrink-0">
@@ -94,12 +94,12 @@ export default async function PricingPage() {
                 {/* Subscription Info */}
                 <div className="bg-blue-50 border border-blue-200 rounded-2xl p-6 mb-8">
                   <div className="flex items-start gap-3">
-                    <div className="text-blue-600 text-2xl">🔄</div>
+                    <div className="text-blue-600 text-2xl">🤝</div>
                     <div>
-                      <h4 className="font-semibold text-blue-900 mb-2">Automatické obnovení</h4>
+                      <h4 className="font-semibold text-blue-900 mb-2">Ruční aktivace</h4>
                       <p className="text-sm text-blue-800 leading-relaxed">
-                        Předplatné se automaticky obnoví každý rok, aby váš prostor zůstal vždy viditelný.
-                        Můžete kdykoliv zrušit v nastavení vašeho účtu bez jakýchkoliv sankcí nebo poplatků.
+                        Vyplníte formulář a do 24 hodin vás kontaktujeme. Projdeme společně detaily listingu a pošleme fakturaci.
+                        Před vypršením období se ozveme s možností prodloužení.
                       </p>
                     </div>
                   </div>
@@ -181,7 +181,14 @@ export default async function PricingPage() {
                   <span className="text-4xl font-black text-black">7 000</span>
                   <span className="text-lg text-gray-600 ml-2">Kč / rok</span>
                 </div>
-                <div className="mt-auto" />
+                <div className="mt-auto space-y-3">
+                  <p className="text-sm text-gray-500 text-center">Aktivaci balíčku řešíme individuálně po odeslání žádosti.</p>
+                  <Link href="/dashboard/priority" className="block">
+                    <Button className="w-full bg-black text-white hover:bg-gray-900">
+                      Zažádat o Priority
+                    </Button>
+                  </Link>
+                </div>
               </div>
             </ScrollReveal>
 
@@ -217,12 +224,24 @@ export default async function PricingPage() {
                   <span className="text-4xl font-black">14 000</span>
                   <span className="text-lg text-gray-300 ml-2">Kč / rok</span>
                 </div>
-                <div className="mt-auto relative z-10">
+                <div className="mt-auto relative z-10 space-y-3">
                   {topPrioritySoldOut ? (
                     <p className="text-center text-sm text-gray-200">
-                      Už máte Top Priority? Napište nám a přidáme vás na waiting list.
+                      Balíček je vyprodaný – zanechte nám kontakt a zařadíme vás na waiting list.
                     </p>
-                  ) : null}
+                  ) : (
+                    <p className="text-center text-sm text-gray-200">
+                      Individuálně domlouváme s ohledem na limit 12 pozic.
+                    </p>
+                  )}
+                  <Link href="/dashboard/priority" className="block">
+                    <Button
+                      className={`w-full ${topPrioritySoldOut ? 'bg-gray-500 cursor-not-allowed text-gray-200' : 'bg-white text-black hover:bg-gray-200'}`}
+                      disabled={topPrioritySoldOut}
+                    >
+                      {topPrioritySoldOut ? 'Zapsat na waiting list' : 'Zažádat o Top Priority'}
+                    </Button>
+                  </Link>
                 </div>
               </div>
             </ScrollReveal>

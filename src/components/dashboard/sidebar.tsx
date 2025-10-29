@@ -103,8 +103,8 @@ function buildNavigation(userRole: string): DashboardNavGroup[] {
         label: "Nástroje",
         items: [
           { name: "Rychlé poptávky", href: "/admin/quick-requests", icon: Zap },
-          { name: "Prémiové balíčky", href: "/ceny#premium", icon: Sparkles },
-          { name: "Předplatné", href: "/dashboard/subscription", icon: CreditCard },
+          { name: "Priority & viditelnost", href: "/dashboard/priority", icon: Sparkles },
+          { name: "Ceník", href: "/ceny", icon: CreditCard },
         ],
       },
     ]

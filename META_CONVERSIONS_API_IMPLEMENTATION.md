@@ -24,16 +24,22 @@
 **Triggers**: When bulk form is submitted on `/rychla-poptavka`
 **Data sent**: Email, phone, name, event type, guest count, location
 
-#### ✅ LocationRegistration Event
-**File**: `/src/app/api/confirm-payment/route.ts`
+#### ✅ Lead Event (Venue Submission)
+**File**: `/src/app/api/venue-submissions/route.ts`
 **Status**: IMPLEMENTED
-**Triggers**: When someone adds or claims a venue location
+**Triggers**: Když někdo odešle žádost o přidání/claim prostoru nebo Priority balíček
+**Data sent**: Email, telefon, jméno, typ žádosti, název prostoru/balíčku
+
+#### 🗃️ Legacy LocationRegistration Event
+**File**: `/src/app/api/confirm-payment/route.ts`
+**Status**: LEGACY IMPLEMENTATION (Stripe flow)
+**Triggers**: Historicky při dokončení platby Stripe
 **Data sent**: Email, phone, first name, last name, venue name
 
-#### ✅ Payment Event
+#### 🗃️ Legacy Payment Event
 **File**: `/src/app/api/confirm-payment/route.ts`
-**Status**: IMPLEMENTED
-**Triggers**: When a Stripe payment is completed
+**Status**: LEGACY IMPLEMENTATION (Stripe flow)
+**Triggers**: Historicky při dokončení Stripe platby
 **Data sent**: Email, phone, first name, last name, amount, currency
 
 #### ✅ OrganizaceSubmit Event

@@ -1,29 +1,19 @@
 {
   "mcpServers": {
-    "prostormat-stripe": {
-      "description": "Prostormat Stripe payment processing",
+    "prostormat-submissions": {
+      "description": "Prostormat manual venue submission processing",
       "endpoints": {
-        "createPaymentIntent": {
-          "url": "/api/create-payment-intent",
+        "submitVenueRequest": {
+          "url": "/api/venue-submissions",
           "method": "POST",
-          "description": "Create payment intent for venue submission (12,000 CZK)"
-        },
-        "confirmPayment": {
-          "url": "/api/confirm-payment", 
-          "method": "POST",
-          "description": "Confirm payment and create venue + user account"
-        },
-        "webhook": {
-          "url": "/api/webhooks/stripe",
-          "method": "POST", 
-          "description": "Handle Stripe webhook events"
+          "description": "Uloží žádost o přidání/claim prostoru nebo zájem o Priority balíček"
         }
       },
       "capabilities": [
-        "payment_processing",
-        "venue_creation",
-        "user_account_creation",
-        "email_notifications"
+        "venue_submission_tracking",
+        "claim_management",
+        "priority_interest_tracking",
+        "manual_follow_up_notifications"
       ]
     },
     
@@ -76,15 +66,10 @@
 
   "integrations": {
     "stripe": {
-      "apiVersion": "2025-07-30.basil",
-      "webhookEndpoint": "https://prostormat.cz/api/webhooks/stripe",
-      "webhookEvents": [
-        "payment_intent.succeeded",
-        "payment_intent.payment_failed", 
-        "payment_intent.canceled"
-      ]
+      "status": "disabled",
+      "notes": "Stripe billing dočasně pozastaveno – platby řešíme manuálně mimo platformu"
     },
-    
+
     "supabase": {
       "projectRef": "your-project-ref",
       "features": [
@@ -110,15 +95,13 @@
     "venue_submission": {
       "steps": [
         "User fills venue form",
-        "Stripe creates payment intent",
-        "User completes payment",
-        "Webhook confirms payment", 
-        "User account created in Supabase",
-        "Venue created with pending status",
-        "Admin email sent",
-        "User confirmation email sent"
+        "Žádost je uložena do tabulky venue_submissions",
+        "Tým Prostormat kontaktuje uživatele a domluví fakturaci",
+        "Admin ručně označí venue jako zaplacené",
+        "Venue je schváleno a zveřejněno",
+        "Potvrzení odchází emailem"
       ],
-      "services": ["stripe", "supabase", "vercel"]
+      "services": ["supabase", "vercel"]
     },
 
     "venue_approval": {

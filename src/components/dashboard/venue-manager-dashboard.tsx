@@ -163,7 +163,7 @@ export function VenueManagerDashboard({ data }: VenueManagerDashboardProps) {
           Vítejte zpět, {user.email}!
         </h1>
         <p className="text-body text-gray-600">
-          Správa vašich event prostorů a předplatného
+          Správa vašich event prostorů a spolupráce s Prostormat týmem
         </p>
       </div>
 
@@ -224,7 +224,7 @@ export function VenueManagerDashboard({ data }: VenueManagerDashboardProps) {
           <div className="flex items-center justify-between">
             <CardTitle className="text-gray-900 flex items-center">
               <CreditCard className="h-5 w-5 mr-2 text-blue-600" />
-              Stav předplatného
+              Stav spolupráce
             </CardTitle>
             <Badge variant="default" className={subscriptionBadgeClass}>
               {subscriptionStatusLabel}
@@ -235,12 +235,12 @@ export function VenueManagerDashboard({ data }: VenueManagerDashboardProps) {
           {subscriptionDetails.length === 0 ? (
             <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
               <p className="text-sm text-gray-700">
-                Momentálně nemáte žádné prostory s aktivním předplatným.
+                Momentálně nemáte žádné prostory s aktivním předplatným. Ozvěte se nám a připravíme ruční aktivaci i fakturaci.
               </p>
-              <Link href="/dashboard/subscription">
+              <Link href="mailto:info@prostormat.cz">
                 <Button className="bg-blue-600 hover:bg-blue-700 text-white">
                   <Settings className="h-4 w-4 mr-2" />
-                  Aktivovat předplatné
+                  Kontaktovat tým Prostormat
                 </Button>
               </Link>
             </div>
@@ -295,10 +295,10 @@ export function VenueManagerDashboard({ data }: VenueManagerDashboardProps) {
                     +{subscriptionDetails.length - 3} dalších prostorů s předplatným
                   </p>
                 )}
-                <Link href="/dashboard/subscription">
+                <Link href="mailto:info@prostormat.cz">
                   <Button className="bg-blue-600 hover:bg-blue-700 text-white w-full">
                     <Settings className="h-4 w-4 mr-2" />
-                    Spravovat předplatné
+                    Domluvit další kroky
                   </Button>
                 </Link>
               </div>

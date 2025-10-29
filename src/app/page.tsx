@@ -221,8 +221,8 @@ export default function HomePage() {
           
           <div className="animate-slide-up" style={{ animationDelay: '0.2s' }}>
             <p className="text-xl sm:text-2xl text-gray-700 mb-12 max-w-3xl mx-auto leading-relaxed font-light">
-              Objevte tisíce jedinečných prostorů v Praze pro vaše akce, oslavy a události. 
-              Od intimních setkání po velké konference.
+              Objevte stovky ověřených prostorů v Praze – od intimních setkání až po velké konference.
+              Každý listing naši kurátoři osobně prověřují.
             </p>
           </div>
           

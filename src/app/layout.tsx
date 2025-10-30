@@ -152,7 +152,12 @@ export default function RootLayout({
           data-cookieconsent="marketing"
           dangerouslySetInnerHTML={{
             __html: `
-              window.gtag_report_conversion = function(url) {
+              window.reportGoogleAdsConversion = function(config, url) {
+                if (!config || !config.send_to) {
+                  console.warn('Missing Google Ads conversion configuration');
+                  return false;
+                }
+
                 var callback = function () {
                   if (typeof url !== 'undefined') {
                     window.location = url;
@@ -161,16 +166,24 @@ export default function RootLayout({
 
                 if (typeof gtag === 'function') {
                   gtag('event', 'conversion', {
-                    'send_to': 'AW-17685324076/zK4hCKTLpbUbEKzCgvFB',
-                    'value': 1.0,
-                    'currency': 'CZK',
-                    'event_callback': callback
+                    'send_to': config.send_to,
+                    'value': typeof config.value === 'number' ? config.value : 0,
+                    'currency': config.currency || 'CZK',
+                    'event_callback': callback,
                   });
                 } else {
                   console.warn('gtag is not available when attempting to report conversion');
                 }
 
                 return false;
+              };
+
+              window.gtag_report_conversion = function(url) {
+                return window.reportGoogleAdsConversion({
+                  send_to: 'AW-17685324076/zK4hCKTLpbUbEKzCgvFB',
+                  value: 1.0,
+                  currency: 'CZK',
+                }, url);
               };
             `,
           }}

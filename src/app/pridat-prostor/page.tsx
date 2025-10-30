@@ -15,6 +15,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { CheckCircle, ClipboardList, Loader2, Mail, Phone, X } from "lucide-react"
 import { createTrackingContext, type TrackingContext } from "@/lib/tracking-utils"
 import { trackGA4VenueLead } from "@/lib/ga4-tracking"
+import { fireGoogleAdsVenueSubmissionConversion } from "@/lib/google-ads"
 
 const submissionSchema = z.object({
   companyName: z.string().min(2, "Název společnosti musí mít alespoň 2 znaky"),
@@ -263,6 +264,10 @@ function AddVenuePageInner() {
         venueName: payload.venueName,
         tracking,
       })
+
+      if (currentSubmissionType === 'claim' || currentSubmissionType === 'new') {
+        fireGoogleAdsVenueSubmissionConversion()
+      }
 
       setSubmissionState({
         type: currentSubmissionType,

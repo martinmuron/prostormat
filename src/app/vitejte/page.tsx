@@ -26,14 +26,18 @@ export default async function VerifiedWelcomePage() {
           <p className="mt-4 text-base sm:text-lg text-slate-600 leading-relaxed">
             Jsme rádi, že jste s námi. Váš účet je aktivní a připravený na první akci.
             Vyberte si další krok – můžete rovnou procházet prostory nebo poslat rychlou poptávku
-            na desítky ověřených míst současně.
+            na stovky ověřených míst současně s jedním kliknutím.
           </p>
 
           <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <Button asChild size="lg" className="rounded-xl">
+            <Button asChild size="lg" className="rounded-xl bg-black hover:bg-gray-900 text-white">
               <Link href="/prostory">Procházet prostory</Link>
             </Button>
-            <Button asChild variant="outline" size="lg" className="rounded-xl border-slate-200">
+            <Button
+              asChild
+              size="lg"
+              className="rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white"
+            >
               <Link href="/rychla-poptavka">Poslat rychlou poptávku</Link>
             </Button>
           </div>

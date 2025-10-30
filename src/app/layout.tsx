@@ -145,6 +145,37 @@ export default function RootLayout({
           }}
         />
 
+        <Script
+          id="google-ads-conversion"
+          strategy="afterInteractive"
+          type="text/plain"
+          data-cookieconsent="marketing"
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.gtag_report_conversion = function(url) {
+                var callback = function () {
+                  if (typeof url !== 'undefined') {
+                    window.location = url;
+                  }
+                };
+
+                if (typeof gtag === 'function') {
+                  gtag('event', 'conversion', {
+                    'send_to': 'AW-17685324076/zK4hCKTLpbUbEKzCgvFB',
+                    'value': 1.0,
+                    'currency': 'CZK',
+                    'event_callback': callback
+                  });
+                } else {
+                  console.warn('gtag is not available when attempting to report conversion');
+                }
+
+                return false;
+              };
+            `,
+          }}
+        />
+
         {/* Meta Pixel Code */}
         <Script
           id="meta-pixel"

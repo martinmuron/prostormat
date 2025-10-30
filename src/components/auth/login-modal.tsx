@@ -12,6 +12,7 @@ import { LogIn, UserPlus, Mail, Lock, Eye, EyeOff } from "lucide-react"
 import { trackGA4Registration } from "@/lib/ga4-tracking"
 import { createTrackingContext } from "@/lib/tracking-utils"
 import { trackMetaRegistration } from "@/lib/meta-pixel"
+import { fireGoogleAdsRegistrationConversion } from "@/lib/google-ads"
 
 interface LoginModalProps {
   isOpen: boolean
@@ -138,6 +139,7 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
           tracking,
         })
         trackMetaRegistration(tracking)
+        fireGoogleAdsRegistrationConversion()
         setRegisterSuccess("Skoro hotovo! Poslali jsme vám e-mail s potvrzením registrace. Dokončete prosím ověření kliknutím na odkaz v e-mailu.")
         setRegisterData({
           email: "",

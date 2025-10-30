@@ -8,6 +8,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { trackGA4Registration } from "@/lib/ga4-tracking"
 import { trackMetaRegistration } from "@/lib/meta-pixel"
 import { createTrackingContext } from "@/lib/tracking-utils"
+import { fireGoogleAdsRegistrationConversion } from "@/lib/google-ads"
 
 export function RegisterPage() {
   const [formData, setFormData] = useState({
@@ -59,6 +60,7 @@ export function RegisterPage() {
           tracking,
         })
         trackMetaRegistration(tracking)
+        fireGoogleAdsRegistrationConversion()
 
         setSuccessMessage("Skoro hotovo! Poslali jsme vám e-mail s potvrzením registrace. Dokončete prosím ověření kliknutím na odkaz v e-mailu.")
         setFormData({

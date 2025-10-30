@@ -159,9 +159,37 @@ export function PrivacyPolicyPage() {
                     změnou, zničením nebo ztrátou. Používáme šifrované spojení (SSL/TLS) a pravidelně aktualizujeme bezpečnostní opatření.
                   </p>
 
-                  <h2 className="text-2xl font-bold text-gray-900 mb-6">10. Cookies</h2>
+                  <h2 className="text-2xl font-bold text-gray-900 mb-6">10. Cookies a obdobné technologie</h2>
+                  <p className="text-gray-700 mb-4">
+                    Web Prostormat.cz používá cookies a obdobné technologie výhradně v souladu se zákonem č. 127/2005 Sb.
+                    (tzv. ZEK) a obecně závaznými předpisy o ochraně osobních údajů (GDPR). Jakékoliv ukládání nebo
+                    získávání informací z&nbsp;vašeho zařízení, které není nezbytné pro technické fungování webu,
+                    provádíme pouze na základě vašeho předem uděleného souhlasu prostřednictvím cookie lišty.
+                  </p>
+                  <p className="text-gray-700 mb-4">
+                    V rámci cookie lišty můžete svůj souhlas kdykoli udělit, odmítnout nebo odvolat. Bez vašeho souhlasu
+                    nespouštíme žádné analytické ani marketingové nástroje a data se nepředávají třetím stranám pro tyto účely.
+                  </p>
+                  <div className="bg-gray-50 rounded-xl p-6 mb-6">
+                    <p className="text-gray-700 font-semibold mb-3">Kategorie, které používáme:</p>
+                    <ul className="list-disc pl-6 space-y-2 text-gray-700">
+                      <li>
+                        <strong>Nezbytné cookies</strong> – zajišťují chod webu (např. udržení přihlášení, zabezpečení).
+                        Tyto soubory se ukládají i bez souhlasu, protože bez nich by web nefungoval.
+                      </li>
+                      <li>
+                        <strong>Analytické a statistické cookies</strong> – pomáhají nám porozumět, jak je web využíván.
+                        Aktivujeme je pouze v případě, že nám udělíte souhlas.
+                      </li>
+                      <li>
+                        <strong>Marketingové cookies</strong> – využíváme je pro měření konverzí a cílení reklamy
+                        (například Meta Pixel, Google Ads). Spouštíme je výhradně po vašem souhlasu.
+                      </li>
+                    </ul>
+                  </div>
                   <p className="text-gray-700 mb-6">
-                    Naše webová stránka používá cookies pro zlepšení funkčnosti a uživatelského zážitku. Podrobné informace naleznete v naší Cookie Policy.
+                    Konfiguraci preferencí můžete kdykoli změnit prostřednictvím odkazu „Nastavení cookies“ v patičce webu.
+                    Více technických podrobností naleznete v samostatných Zásadách používání cookies.
                   </p>
 
                   <h2 className="text-2xl font-bold text-gray-900 mb-6">11. Změny zásad</h2>
@@ -171,7 +199,7 @@ export function PrivacyPolicyPage() {
 
                   <div className="bg-gray-50 rounded-xl p-6 mt-8">
                     <p className="text-gray-600 text-sm">
-                      Tyto zásady ochrany osobních údajů jsou účinné od 1. ledna 2024.
+                      Tyto zásady ochrany osobních údajů jsou účinné od 1. února 2025.
                     </p>
                     <p className="text-gray-600 text-sm mt-2">
                       Pro dotazy ohledně zpracování osobních údajů nás kontaktujte na:

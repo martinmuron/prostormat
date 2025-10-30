@@ -348,6 +348,78 @@ function AddVenuePageInner() {
                     <label className="block text-sm font-medium text-gray-700 mb-1">Název prostoru *</label>
                     <Input placeholder="Název, pod kterým je prostor vedený" {...register('locationTitle')} />
                     {errors.locationTitle && <p className="mt-1 text-xs text-red-600">{errors.locationTitle.message}</p>}
+                    {nameLookupResult.status !== 'idle' && (
+                      <div className="mt-3 space-y-3">
+                        {nameLookupResult.status === 'checking' && (
+                          <div className="flex items-center gap-2 text-sm text-gray-500">
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                            Ověřujeme, jestli už prostor existuje…
+                          </div>
+                        )}
+
+                        {nameLookupResult.match && !claimInfo && (
+                          <Alert className="border-yellow-200 bg-yellow-50">
+                            <AlertTitle>Našli jsme shodný prostor</AlertTitle>
+                            <AlertDescription>
+                              <div className="mt-2 flex flex-col gap-2">
+                                <div className="text-sm text-yellow-800">
+                                  Zdá se, že prostor &quot;{nameLookupResult.match.name}&quot; už v Prostormatu existuje. Pokud jste jeho správcem, můžete požádat o převzetí listingu.
+                                </div>
+                                <div className="flex gap-2">
+                                  <Button
+                                    type="button"
+                                    size="sm"
+                                    onClick={() => selectClaim(nameLookupResult.match!)}
+                                    className="bg-yellow-600 hover:bg-yellow-700 text-white"
+                                  >
+                                    Chci převzít listing
+                                  </Button>
+                                  <Link href={`/prostory/${nameLookupResult.match.slug}`} target="_blank" rel="noopener noreferrer">
+                                    <Button type="button" size="sm" variant="outline">Zobrazit detail</Button>
+                                  </Link>
+                                </div>
+                              </div>
+                            </AlertDescription>
+                          </Alert>
+                        )}
+
+                        {nameLookupResult.suggestions.length > 0 && !claimInfo && (
+                          <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
+                            <p className="mb-3 text-sm font-medium text-gray-700">Podobné prostory v databázi</p>
+                            <div className="space-y-3">
+                              {nameLookupResult.suggestions.map((suggestion) => (
+                                <div
+                                  key={suggestion.id}
+                                  className="flex flex-col gap-1 rounded-md border border-gray-200 bg-white p-3 sm:flex-row sm:items-center sm:justify-between"
+                                >
+                                  <div>
+                                    <p className="text-sm font-semibold text-gray-900">{suggestion.name}</p>
+                                    {suggestion.manager?.email && (
+                                      <p className="text-xs text-gray-500">Aktuální správce: {suggestion.manager.email}</p>
+                                    )}
+                                  </div>
+                                  <div className="flex gap-2">
+                                    <Button type="button" size="sm" variant="outline" onClick={() => selectClaim(suggestion)}>
+                                      Chci převzít
+                                    </Button>
+                                    <Link href={`/prostory/${suggestion.slug}`} target="_blank" rel="noopener noreferrer">
+                                      <Button type="button" size="sm" variant="ghost">Detail</Button>
+                                    </Link>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {nameLookupResult.status === 'error' && (
+                          <Alert variant="destructive">
+                            <AlertTitle>Ověření se nezdařilo</AlertTitle>
+                            <AlertDescription>{nameLookupResult.error}</AlertDescription>
+                          </Alert>
+                        )}
+                      </div>
+                    )}
                   </div>
 
                   <div>
@@ -380,72 +452,6 @@ function AddVenuePageInner() {
                     {errors.additionalInfo && <p className="mt-1 text-xs text-red-600">{errors.additionalInfo.message}</p>}
                   </div>
                 </div>
-
-                {nameLookupResult.status !== 'idle' && (
-                  <div className="space-y-4">
-                    {nameLookupResult.status === 'checking' && (
-                      <div className="flex items-center gap-2 text-sm text-gray-500">
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                        Ověřujeme, jestli už prostor existuje…
-                      </div>
-                    )}
-
-                    {nameLookupResult.match && !claimInfo && (
-                      <Alert className="border-yellow-200 bg-yellow-50">
-                        <AlertTitle>Našli jsme shodný prostor</AlertTitle>
-                        <AlertDescription>
-                          <div className="mt-2 flex flex-col gap-2">
-                            <div className="text-sm text-yellow-800">
-                              Zdá se, že prostor &quot;{nameLookupResult.match.name}&quot; už v Prostormatu existuje. Pokud jste jeho správcem, můžete požádat o převzetí listingu.
-                            </div>
-                            <div className="flex gap-2">
-                              <Button type="button" size="sm" onClick={() => selectClaim(nameLookupResult.match!)} className="bg-yellow-600 hover:bg-yellow-700 text-white">
-                                Chci převzít listing
-                              </Button>
-                              <Link href={`/prostory/${nameLookupResult.match.slug}`} target="_blank" rel="noopener noreferrer">
-                                <Button type="button" size="sm" variant="outline">Zobrazit detail</Button>
-                              </Link>
-                            </div>
-                          </div>
-                        </AlertDescription>
-                      </Alert>
-                    )}
-
-                    {nameLookupResult.suggestions.length > 0 && !claimInfo && (
-                      <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
-                        <p className="mb-3 text-sm font-medium text-gray-700">Podobné prostory v databázi</p>
-                        <div className="space-y-3">
-                          {nameLookupResult.suggestions.map((suggestion) => (
-                            <div key={suggestion.id} className="flex flex-col gap-1 rounded-md border border-gray-200 bg-white p-3 sm:flex-row sm:items-center sm:justify-between">
-                              <div>
-                                <p className="text-sm font-semibold text-gray-900">{suggestion.name}</p>
-                                {suggestion.manager?.email && (
-                                  <p className="text-xs text-gray-500">Aktuální správce: {suggestion.manager.email}</p>
-                                )}
-                              </div>
-                              <div className="flex gap-2">
-                                <Button type="button" size="sm" variant="outline" onClick={() => selectClaim(suggestion)}>
-                                  Chci převzít
-                                </Button>
-                                <Link href={`/prostory/${suggestion.slug}`} target="_blank" rel="noopener noreferrer">
-                                  <Button type="button" size="sm" variant="ghost">Detail</Button>
-                                </Link>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
-                    {nameLookupResult.status === 'error' && (
-                      <Alert variant="destructive">
-                        <AlertTitle>Ověření se nezdařilo</AlertTitle>
-                        <AlertDescription>{nameLookupResult.error}</AlertDescription>
-                      </Alert>
-                    )}
-                  </div>
-                )}
-
                 {claimInfo && (
                   <Alert className="border-blue-200 bg-blue-50">
                     <AlertTitle>Převzetí existujícího prostoru</AlertTitle>
@@ -523,8 +529,8 @@ function AddVenuePageInner() {
                   <a href="mailto:info@prostormat.cz" className="flex items-center gap-2 text-sm font-medium text-gray-900">
                     <Mail className="h-4 w-4" /> info@prostormat.cz
                   </a>
-                  <a href="tel:+420775377773" className="flex items-center gap-2 text-sm font-medium text-gray-900">
-                    <Phone className="h-4 w-4" /> +420 775 377 773
+                  <a href="tel:+420775654639" className="flex items-center gap-2 text-sm font-medium text-gray-900">
+                    <Phone className="h-4 w-4" /> 775-654-639
                   </a>
                 </div>
               </CardContent>

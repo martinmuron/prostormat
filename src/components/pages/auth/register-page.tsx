@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent } from "@/components/ui/card"
 import { trackGA4Registration } from "@/lib/ga4-tracking"
+import { trackMetaRegistration } from "@/lib/meta-pixel"
 import { createTrackingContext } from "@/lib/tracking-utils"
 
 export function RegisterPage() {
@@ -57,6 +58,7 @@ export function RegisterPage() {
           method: 'email',
           tracking,
         })
+        trackMetaRegistration(tracking)
 
         setSuccessMessage("Skoro hotovo! Poslali jsme vám e-mail s potvrzením registrace. Dokončete prosím ověření kliknutím na odkaz v e-mailu.")
         setFormData({

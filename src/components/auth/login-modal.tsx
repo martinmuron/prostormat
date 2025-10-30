@@ -9,6 +9,9 @@ import { Label } from "@/components/ui/label"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { LogIn, UserPlus, Mail, Lock, Eye, EyeOff } from "lucide-react"
+import { trackGA4Registration } from "@/lib/ga4-tracking"
+import { createTrackingContext } from "@/lib/tracking-utils"
+import { trackMetaRegistration } from "@/lib/meta-pixel"
 
 interface LoginModalProps {
   isOpen: boolean
@@ -115,6 +118,7 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
     }
 
     try {
+      const tracking = createTrackingContext()
       const response = await fetch("/api/auth/register", {
         method: "POST",
         headers: {
@@ -123,10 +127,17 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
         body: JSON.stringify({
           email: registerData.email,
           password: registerData.password,
+          tracking,
         }),
       })
 
       if (response.ok) {
+        trackGA4Registration({
+          email: registerData.email,
+          method: "email",
+          tracking,
+        })
+        trackMetaRegistration(tracking)
         setRegisterSuccess("Skoro hotovo! Poslali jsme vám e-mail s potvrzením registrace. Dokončete prosím ověření kliknutím na odkaz v e-mailu.")
         setRegisterData({
           email: "",

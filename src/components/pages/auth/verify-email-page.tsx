@@ -16,6 +16,7 @@ export function VerifyEmailPage({ token }: VerifyEmailPageProps) {
   const router = useRouter()
   const [status, setStatus] = useState<VerificationStatus>("idle")
   const [message, setMessage] = useState<string>("")
+  const [redirecting, setRedirecting] = useState(false)
 
   useEffect(() => {
     async function verifyEmail() {
@@ -38,10 +39,25 @@ export function VerifyEmailPage({ token }: VerifyEmailPageProps) {
         })
 
         if (response.ok) {
+          const data = await response.json().catch(() => ({}))
+          const friendlyName =
+            typeof data?.user?.name === "string" && data.user.name.trim().length > 0
+              ? data.user.name
+              : typeof data?.user?.email === "string"
+                ? data.user.email
+                : null
           setStatus("success")
-          setMessage("E-mail byl úspěšně ověřen. Nyní se můžete přihlásit.")
-          // Refresh session state for good measure
+          setMessage(
+            friendlyName
+              ? `E-mail byl úspěšně ověřen. Vítej zpět, ${friendlyName}! Přihlašujeme vás...`
+              : "E-mail byl úspěšně ověřen. Přihlašujeme vás..."
+          )
+          setRedirecting(true)
           router.refresh()
+          router.prefetch("/vitejte")
+          setTimeout(() => {
+            router.replace("/vitejte")
+          }, 1000)
         } else {
           const data = await response.json().catch(() => ({}))
           setStatus("error")
@@ -86,9 +102,11 @@ export function VerifyEmailPage({ token }: VerifyEmailPageProps) {
             {!isLoading && status === "success" && (
               <div className="space-y-4 text-center">
                 <p className="text-sm text-green-600">{message}</p>
-                <Button asChild className="w-full">
-                  <Link href="/prihlaseni">Přejít na přihlášení</Link>
-                </Button>
+                {redirecting && (
+                  <div className="text-xs text-gray-500">
+                    Přesměrováváme vás na dashboard...
+                  </div>
+                )}
               </div>
             )}
 
@@ -113,4 +131,3 @@ export function VerifyEmailPage({ token }: VerifyEmailPageProps) {
 }
 
 export default VerifyEmailPage
-

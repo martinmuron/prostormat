@@ -208,6 +208,9 @@ export function QuickRequestPage() {
               Vaši poptávku jsme přijali a náš tým ji manuálně zkontroluje. 
               Po schválení ji odešleme {pendingCount} vybraným prostorům a potvrdíme vám to emailem.
             </p>
+            <p className="text-base text-gray-600 mb-10 max-w-xl mx-auto">
+              Současně jsme vaši poptávku zveřejnili na Event Boardu, aby vás mohli kontaktovat i další ověření provozovatelé prostorů.
+            </p>
             
             <div className="space-y-4 sm:space-y-0 sm:space-x-4 sm:flex sm:justify-center">
               <Link href="/dashboard">
@@ -439,6 +442,9 @@ export function QuickRequestPage() {
                 </Button>
                 <p className="text-sm text-gray-500 text-center mt-3">
                   Poptávka bude odeslána pouze prostorům, které odpovídají vašim kritériím
+                </p>
+                <p className="text-xs text-gray-500 text-center mt-2">
+                  Odesláním také automaticky vytvoříte poptávku na Event Boardu, aby se vám mohly ozvat další prostory.
                 </p>
               </div>
             </form>

@@ -9,6 +9,7 @@ import { resend } from "@/lib/resend"
 import { generateQuickRequestInternalNotificationEmail } from "@/lib/email-templates"
 import { trackBulkFormSubmit } from "@/lib/meta-conversions-api"
 import { trackGA4ServerLead } from "@/lib/ga4-server-tracking"
+import { EVENT_TYPES } from "@/types"
 
 const trackingSchema = z.object({
   eventId: z.string(),
@@ -46,6 +47,14 @@ type VenueMatch = {
     name: string | null
     email: string | null
   } | null
+}
+
+const QUICK_REQUEST_GUEST_LABELS: Record<string, string> = {
+  "1-25": "1-25 hostů",
+  "26-50": "26-50 hostů",
+  "51-100": "51-100 hostů",
+  "101-200": "101-200 hostů",
+  "200+": "200+ hostů",
 }
 
 // Helper function to extract guest count range
@@ -196,6 +205,71 @@ export async function POST(request: Request) {
       })),
     })
 
+    let eventRequestId: string | null = null
+
+    try {
+      const fallbackAdmin = session?.user?.id
+        ? null
+        : await db.user.findFirst({
+            where: { role: "admin" },
+            select: { id: true },
+          })
+
+      const eventRequestUserId = session?.user?.id ?? fallbackAdmin?.id
+
+      if (eventRequestUserId) {
+        const guestCountInfo = parseGuestCount(validatedData.guestCount)
+        const guestCountNumeric = Number.isFinite(guestCountInfo.min) ? guestCountInfo.min : null
+        const eventTypeLabel =
+          EVENT_TYPES[validatedData.eventType as keyof typeof EVENT_TYPES] || validatedData.eventType
+        const guestRangeLabel =
+          QUICK_REQUEST_GUEST_LABELS[validatedData.guestCount] ||
+          (guestCountNumeric ? `${guestCountNumeric}+ hostů` : "Neuvedeno")
+        const locationLabel =
+          validatedData.locationPreference === "Celá Praha"
+            ? "Praha"
+            : validatedData.locationPreference || "Bez lokality"
+
+        const eventBoardTitle = `Rychlá poptávka: ${eventTypeLabel} · ${guestRangeLabel} · ${locationLabel}`
+
+        const descriptionParts = [
+          validatedData.message?.trim() || null,
+          validatedData.requirements?.trim()
+            ? `Požadavky: ${validatedData.requirements.trim()}`
+            : null,
+          "Tato poptávka vznikla přes formulář Rychlá poptávka a byla automaticky zveřejněna na Event Boardu.",
+        ].filter(Boolean)
+
+        const eventRequest = await db.eventRequest.create({
+          data: {
+            id: randomUUID(),
+            userId: eventRequestUserId,
+            title: eventBoardTitle,
+            description: descriptionParts.join("\n\n"),
+            eventType: validatedData.eventType,
+            eventDate: new Date(validatedData.eventDate),
+            guestCount: guestCountNumeric,
+            budgetRange: validatedData.budgetRange || null,
+            locationPreference: validatedData.locationPreference || null,
+            requirements: validatedData.requirements || null,
+            contactName: validatedData.contactName,
+            contactEmail: validatedData.contactEmail,
+            contactPhone: validatedData.contactPhone || null,
+            status: "active",
+            expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+          },
+        })
+
+        eventRequestId = eventRequest.id
+      } else {
+        console.warn(
+          "[Quick Request] Unable to determine user for Event Board entry – no session or admin fallback found"
+        )
+      }
+    } catch (eventBoardError) {
+      console.error("Failed to create Event Board request from quick request:", eventBoardError)
+    }
+
     const summaryEmail = generateQuickRequestInternalNotificationEmail({
       broadcastId: broadcast.id,
       quickRequest: {
@@ -269,6 +343,7 @@ export async function POST(request: Request) {
     return NextResponse.json({
       success: true,
       broadcastId: broadcast.id,
+      eventRequestId,
       pendingCount: matchingVenues.length,
       message: "Vaše poptávka byla předána týmu Prostormat. Po schválení ji odešleme relevantním prostorům."
     })

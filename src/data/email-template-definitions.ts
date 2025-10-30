@@ -31,7 +31,7 @@ export const emailTemplateDefinitions: EmailTemplateDefinition[] = [
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; }
-    .container { max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9fafb; }
+    .container { max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9fafb; width: 100%; }
     .content { background-color: white; border-radius: 8px; padding: 30px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
     h1 { color: #1f2937; margin-bottom: 20px; font-size: 24px; }
     p { color: #4b5563; font-size: 16px; line-height: 1.6; margin: 16px 0; }
@@ -133,12 +133,22 @@ prostormat.cz`,
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body { font-family: Arial, sans-serif; line-height: 1.6; color: #111827; margin: 0; padding: 0; background-color: #f9fafb; }
-    .container { max-width: 600px; margin: 0 auto; padding: 24px; }
+    .container { max-width: 600px; margin: 0 auto; padding: 24px; width: 100%; }
     .card { background-color: #ffffff; border-radius: 12px; padding: 32px; box-shadow: 0 10px 25px rgba(15, 23, 42, 0.1); border: 1px solid rgba(148, 163, 184, 0.2); }
     h1 { color: #0f172a; margin-bottom: 16px; font-size: 24px; }
     p { color: #334155; font-size: 16px; margin: 16px 0; }
     .cta { margin: 28px 0; text-align: center; }
-    .cta a { background-color: #1d4ed8; color: #ffffff !important; padding: 14px 28px; border-radius: 999px; text-decoration: none; font-weight: 600; display: inline-block; }
+    .cta a {
+      background-color: #1d4ed8;
+      color: #ffffff !important;
+      padding: 16px 24px;
+      border-radius: 999px;
+      text-decoration: none;
+      font-weight: 600;
+      display: block;
+      width: 100%;
+      box-sizing: border-box;
+    }
     .cta a:hover { background-color: #2563eb; }
     .footer { color: #64748b; font-size: 14px; margin-top: 32px; text-align: center; }
     @media only screen and (max-width: 600px) {
@@ -146,7 +156,10 @@ prostormat.cz`,
       .card { padding: 24px !important; }
       h1 { font-size: 22px !important; }
       p { font-size: 15px !important; }
-      .cta a { width: 100%; }
+      .cta a {
+        width: 100% !important;
+        padding: 16px !important;
+      }
     }
   </style>
 </head>
@@ -196,22 +209,25 @@ prostormat.cz | info@prostormat.cz`,
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background-color: #f9fafb; }
-    .email-container { max-width: 600px; margin: 0 auto; padding: 20px; }
+    .email-container { max-width: 600px; margin: 0 auto; padding: 20px; width: 100%; }
     .card { background-color: white; border-radius: 12px; padding: 32px; box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08); border: 1px solid rgba(15, 23, 42, 0.08); }
     h1 { color: #111827; margin-bottom: 20px; font-size: 28px; }
     p { color: #4b5563; font-size: 16px; margin: 16px 0; }
     ul { color: #4b5563; font-size: 16px; margin: 20px 0; padding-left: 24px; }
     ul li { margin: 12px 0; }
     .cta-button {
-      display: inline-block;
+      display: block;
       background-color: #111827;
       color: white !important;
-      padding: 14px 24px;
+      padding: 16px 24px;
       text-decoration: none;
       border-radius: 8px;
       font-weight: 600;
       margin: 24px 0;
       transition: all 0.2s ease;
+      width: 100%;
+      box-sizing: border-box;
+      text-align: center;
     }
     .cta-button:hover { background-color: #1f2937; }
     .highlight { background-color: #f3f4f6; border-radius: 8px; padding: 20px; margin: 24px 0; }
@@ -319,14 +335,19 @@ info@prostormat.cz | +420 739 808 918
     <title>Děkujeme za přidání prostoru, {{name}}!</title>
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background-color: #f8f9fa; }
-        .container { max-width: 600px; margin: 0 auto; background: white; }
+        .container { max-width: 600px; margin: 0 auto; background: white; width: 100%; }
         .header { background: #000; color: white; padding: 30px; text-align: center; }
         .content { padding: 40px 30px; }
-        .cta-button { display: inline-block; background: #000; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 600; margin: 20px 0; }
+        .cta-button { display: block; background: #000; color: white; padding: 14px 24px; text-decoration: none; border-radius: 6px; font-weight: 600; margin: 24px 0; width: 100%; box-sizing: border-box; text-align: center; }
         .footer { background: #f8f9fa; padding: 20px 30px; text-align: center; color: #6c757d; font-size: 14px; }
         .highlight { background: #e8f5e8; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #16a34a; }
         .next-steps { background: #f0f8ff; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #007bff; }
         .contact-info { background: #fff3cd; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #ffc107; }
+        @media only screen and (max-width: 600px) {
+          .header { padding: 24px !important; }
+          .content { padding: 28px 20px !important; }
+          .cta-button { padding: 16px !important; font-size: 16px !important; }
+        }
     </style>
 </head>
 <body>
@@ -416,14 +437,20 @@ prostormat.cz | info@prostormat.cz`,
     <title>Děkujeme za vaši zprávu, {{name}}!</title>
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background-color: #f8f9fa; }
-        .container { max-width: 600px; margin: 0 auto; background: white; }
+        .container { max-width: 600px; margin: 0 auto; background: white; width: 100%; }
         .header { background: #000; color: white; padding: 30px; text-align: center; }
         .content { padding: 40px 30px; }
-        .cta-button { display: inline-block; background: #000; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 600; margin: 20px 0; }
+        .cta-button { display: block; background: #000; color: white; padding: 14px 24px; text-decoration: none; border-radius: 6px; font-weight: 600; margin: 24px 0 0 0; width: 100%; box-sizing: border-box; text-align: center; }
+        .cta-button.cta-alt { background: #f8f9fa; color: #000; border: 2px solid #000; }
         .footer { background: #f8f9fa; padding: 20px 30px; text-align: center; color: #6c757d; font-size: 14px; }
         .highlight { background: #e8f5e8; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #16a34a; }
         .response-time { background: #fff3cd; padding: 15px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #ffc107; }
         .contact-info { background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0; }
+        @media only screen and (max-width: 600px) {
+          .header { padding: 24px !important; }
+          .content { padding: 28px 20px !important; }
+          .cta-button { padding: 16px !important; font-size: 16px !important; }
+        }
     </style>
 </head>
 <body>
@@ -456,13 +483,9 @@ prostormat.cz | info@prostormat.cz`,
                 <li>📱 <strong>Sledovat nás na sociálních sítích</strong> - Nejnovější aktuality</li>
             </ul>
 
-            <div style="margin: 30px 0;">
-                <a href="https://prostormat.cz/prostory" class="cta-button">
-                    Prohlédnout prostory
-                </a>
-                <a href="https://prostormat.cz/faq" class="cta-button" style="background: #f8f9fa; color: #000; border: 2px solid #000; margin-left: 10px;">
-                    Zobrazit FAQ
-                </a>
+            <div style="margin: 30px 0 0 0;">
+                <a href="https://prostormat.cz/prostory" class="cta-button">Prohlédnout prostory</a>
+                <a href="https://prostormat.cz/faq" class="cta-button cta-alt">Zobrazit FAQ</a>
             </div>
 
             <div class="contact-info">
@@ -519,11 +542,15 @@ prostormat.cz | info@prostormat.cz`,
     <title>Nová zpráva z kontaktního formuláře</title>
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background-color: #f8f9fa; }
-        .container { max-width: 600px; margin: 0 auto; background: white; }
+        .container { max-width: 600px; margin: 0 auto; background: white; width: 100%; }
         .header { background: #000; color: white; padding: 30px; text-align: center; }
         .content { padding: 40px 30px; }
         .message-box { background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #2196f3; }
         .footer { background: #f8f9fa; padding: 20px 30px; text-align: center; color: #6c757d; font-size: 14px; }
+        @media only screen and (max-width: 600px) {
+          .header { padding: 24px !important; }
+          .content { padding: 28px 20px !important; }
+        }
     </style>
 </head>
 <body>
@@ -585,13 +612,18 @@ Tento email byl automaticky vygenerován z kontaktního formuláře na webu.`,
   <title>Děkujeme – postaráme se o vaši akci</title>
   <style>
     body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #111; margin:0; }
-    .container { max-width: 600px; margin: 0 auto; background: #fff; }
+    .container { max-width: 600px; margin: 0 auto; background: #fff; width: 100%; }
     .header { background: #000; color: #fff; padding: 28px 24px; }
     .content { padding: 32px 24px; }
-    .cta { display: inline-block; background: #000; color: #fff; padding: 12px 20px; border-radius: 10px; text-decoration: none; font-weight: 600; }
+    .cta { display: block; background: #000; color: #fff !important; padding: 14px 24px; border-radius: 10px; text-decoration: none; font-weight: 600; text-align: center; width: 100%; box-sizing: border-box; }
     .muted { color: #555; }
     .note { background: #fff3cd; padding: 16px; border-radius: 10px; border-left: 4px solid #f59e0b; }
     .footer { padding: 20px 24px; color: #666; background: #f7f7f7; font-size: 14px; }
+    @media only screen and (max-width: 600px) {
+      .header { padding: 24px 20px !important; }
+      .content { padding: 28px 20px !important; }
+      .cta { padding: 16px !important; font-size: 16px !important; }
+    }
   </style>
   </head>
   <body>
@@ -708,12 +740,17 @@ Pozn.: Vzhledem k vysoké poptávce aktuálně přijímáme pouze akce pro 30+ o
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #111; margin:0; }
-    .container { max-width: 600px; margin: 0 auto; background: #fff; }
+    .container { max-width: 600px; margin: 0 auto; background: #fff; width: 100%; }
     .header { background: #000; color: #fff; padding: 28px 24px; }
     .content { padding: 32px 24px; }
-    .cta { display: inline-block; background: #000; color: #fff; padding: 12px 20px; border-radius: 10px; text-decoration: none; font-weight: 600; }
+    .cta { display: block; background: #000; color: #fff !important; padding: 14px 24px; border-radius: 10px; text-decoration: none; font-weight: 600; text-align: center; width: 100%; box-sizing: border-box; }
     .muted { color: #555; }
     .footer { padding: 20px 24px; color: #666; background: #f7f7f7; font-size: 14px; }
+    @media only screen and (max-width: 600px) {
+      .header { padding: 24px 20px !important; }
+      .content { padding: 28px 20px !important; }
+      .cta { padding: 16px !important; font-size: 16px !important; }
+    }
   </style>
 </head>
 <body>
@@ -752,7 +789,7 @@ Klikněte na odkaz pro obnovení hesla (platný 60 minut):
     description: 'Odesláno majiteli prostoru při novém dotazu',
     variables: ['{{venueName}}', '{{contactName}}', '{{contactEmail}}', '{{contactPhone}}', '{{message}}', '{{eventDate}}', '{{guestCount}}'],
     htmlContent: `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9fafb;">
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9fafb; width: 100%;">
         <div style="background-color: white; border-radius: 8px; padding: 30px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
           <h1 style="color: #1f2937; margin-bottom: 20px;">Nový dotaz na prostor</h1>
           <p style="color: #4b5563; font-size: 16px; line-height: 1.6;">
@@ -768,8 +805,8 @@ Klikněte na odkaz pro obnovení hesla (platný 60 minut):
             <p style="color: #4b5563; margin: 8px 0;"><strong>Zpráva:</strong></p>
             <p style="color: #4b5563; margin: 8px 0;">{{message}}</p>
           </div>
-          <div style="margin: 30px 0;">
-            <a href="mailto:{{contactEmail}}" style="background-color: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">
+          <div style="margin: 30px 0 0 0;">
+            <a href="mailto:{{contactEmail}}" style="background-color: #3b82f6; color: white; padding: 14px 24px; text-decoration: none; border-radius: 6px; display: block; width: 100%; box-sizing: border-box; text-align: center;">
               Odpovědět na email
             </a>
           </div>
@@ -786,7 +823,7 @@ Klikněte na odkaz pro obnovení hesla (platný 60 minut):
     description: 'Odesláno majiteli prostoru při shodě s veřejnou poptávkou',
     variables: ['{{venueName}}', '{{eventType}}', '{{eventDate}}', '{{guestCount}}', '{{budgetRange}}', '{{locationPreference}}', '{{contactName}}', '{{contactEmail}}', '{{contactPhone}}', '{{description}}'],
     htmlContent: `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9fafb;">
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9fafb; width: 100%;">
         <div style="background-color: white; border-radius: 8px; padding: 30px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
           <h1 style="color: #1f2937; margin-bottom: 20px;">Nová poptávka pro váš prostor!</h1>
           <p style="color: #4b5563; font-size: 16px; line-height: 1.6;">
@@ -807,8 +844,8 @@ Klikněte na odkaz pro obnovení hesla (platný 60 minut):
             <p style="color: #4b5563; margin: 8px 0;"><strong>Email:</strong> {{contactEmail}}</p>
             <p style="color: #4b5563; margin: 8px 0;"><strong>Telefon:</strong> {{contactPhone}}</p>
           </div>
-          <div style="margin: 30px 0;">
-            <a href="mailto:{{contactEmail}}" style="background-color: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">
+          <div style="margin: 30px 0 0 0;">
+            <a href="mailto:{{contactEmail}}" style="background-color: #3b82f6; color: white; padding: 14px 24px; text-decoration: none; border-radius: 6px; display: block; width: 100%; box-sizing: border-box; text-align: center;">
               Kontaktovat klienta
             </a>
           </div>
@@ -846,12 +883,12 @@ Klikněte na odkaz pro obnovení hesla (platný 60 minut):
     .value { font-size: 17px; font-weight: 600; color: #0f172a; }
     .note { margin: 32px 0 12px 0; font-size: 15px; color: #475569; line-height: 1.6; }
     .cta { text-align: center; margin: 28px 0 10px 0; }
-    .cta a { display: inline-block; padding: 14px 32px; border-radius: 999px; background: #1d4ed8; color: #ffffff; font-weight: 600; text-decoration: none; font-size: 16px; }
+    .cta a { display: block; padding: 16px 32px; border-radius: 999px; background: #1d4ed8; color: #ffffff; font-weight: 600; text-decoration: none; font-size: 16px; width: 100%; box-sizing: border-box; }
     .footer { padding: 24px 36px 30px 36px; background: #f8fafc; color: #475569; font-size: 13px; text-align: center; line-height: 1.6; }
     @media (max-width: 600px) {
       body { padding: 16px; }
       .header, .content { padding: 28px 24px; }
-      .cta a { width: 100%; }
+      .cta a { padding: 16px !important; }
     }
   </style>
 </head>

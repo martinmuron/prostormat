@@ -3,6 +3,8 @@ import { z } from "zod"
 import { consumeEmailVerificationToken } from "@/lib/email-verification"
 import type { ConsumeEmailVerificationTokenResult } from "@/lib/email-verification"
 import { sendWelcomeEmail } from "@/lib/email-service"
+import { authOptions } from "@/lib/auth"
+import { encode } from "next-auth/jwt"
 
 const schema = z.object({
   token: z.string().min(1),
@@ -16,6 +18,28 @@ export async function POST(request: Request) {
     const result = await consumeEmailVerificationToken(token)
 
     if (result.status === "verified") {
+      const secret = authOptions.secret || process.env.NEXTAUTH_SECRET
+
+      if (!secret) {
+        console.error("NEXTAUTH_SECRET is not set. Cannot create session after verification.")
+      }
+
+      let sessionToken: string | null = null
+
+      if (secret) {
+        const maxAge = authOptions.session?.maxAge ?? 30 * 24 * 60 * 60
+        sessionToken = await encode({
+          token: {
+            name: result.user.name || result.user.email,
+            email: result.user.email,
+            sub: result.user.id,
+            role: result.user.role,
+          },
+          secret,
+          maxAge,
+        })
+      }
+
       try {
         await sendWelcomeEmail({
           name: result.user.name || result.user.email,
@@ -27,7 +51,34 @@ export async function POST(request: Request) {
         // Continue even if the welcome email fails
       }
 
-      return NextResponse.json({ success: true })
+      const response = NextResponse.json({
+        success: true,
+        user: {
+          id: result.user.id,
+          email: result.user.email,
+          name: result.user.name,
+          role: result.user.role,
+        },
+      })
+
+      if (sessionToken) {
+        const cookieName =
+          process.env.NODE_ENV === "production"
+            ? "__Secure-next-auth.session-token"
+            : "next-auth.session-token"
+
+        const maxAge = authOptions.session?.maxAge ?? 30 * 24 * 60 * 60
+
+        response.cookies.set(cookieName, sessionToken, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "lax",
+          path: "/",
+          maxAge,
+        })
+      }
+
+      return response
     }
 
     type VerificationErrorStatus = Exclude<ConsumeEmailVerificationTokenResult["status"], "verified">

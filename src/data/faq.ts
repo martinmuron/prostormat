@@ -140,11 +140,11 @@ export const faqSections: FAQSection[] = [
     items: [
       {
         question: "Jak mohu platit?",
-        answer: "Platby probíhají bezpečně online kartou přes Stripe. Přijímáme všechny běžné platební karty (Visa, Mastercard, American Express). Po dokončení platby obdržíte potvrzení emailem a fakturu."
+        answer: "Aktuálně platby řešíme manuálně. Po potvrzení spolupráce vám vystavíme (zálohovou) fakturu a platba probíhá bankovním převodem se splatností. Pokud preferujete jiný postup, domluvíme se individuálně."
       },
       {
         question: "Dostanu fakturu?",
-        answer: "Ano, fakturu obdržíte automaticky emailem ihned po dokončení platby. Pokud potřebujete fakturu s jinými údaji (IČO, DIČ firmy), kontaktujte nás na info@prostormat.cz a my fakturu přepošleme."
+        answer: "Ano, ke každému předplatnému vystavujeme daňový doklad a posíláme ho emailem po domluvě. Fakturační údaje (IČO, DIČ, sídlo) vám nastavíme přesně podle potřeby – stačí nám je poslat."
       },
       {
         question: "Co se stane, když nezaplatím obnovení předplatného?",

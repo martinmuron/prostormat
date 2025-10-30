@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { CheckCircle, ClipboardList, Loader2, Mail, Phone, ShieldCheck, X } from "lucide-react"
+import { CheckCircle, ClipboardList, Loader2, Mail, Phone, X } from "lucide-react"
 import { createTrackingContext, type TrackingContext } from "@/lib/tracking-utils"
 import { trackGA4VenueLead } from "@/lib/ga4-tracking"
 
@@ -497,23 +497,6 @@ function AddVenuePageInner() {
           </Card>
 
           <div className="space-y-4">
-            <Card className="border-gray-200">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-base text-gray-900">
-                  <ShieldCheck className="h-5 w-5" />
-                  Co od nás získáte
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3 text-sm text-gray-600">
-                <ul className="list-disc space-y-2 pl-5">
-                  <li>Roční zveřejnění na Prostormatu s ruční podporou onboarding týmu</li>
-                  <li>Možnost převzít existující listing po ověření oprávněnosti</li>
-                  <li>Přístup do administrace k úpravám fotek, popisů a kontaktů</li>
-                  <li>Žádné provize z rezervací – pouze roční předplatné 12 000 Kč + DPH</li>
-                </ul>
-              </CardContent>
-            </Card>
-
             <Card className="border-gray-200">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-base text-gray-900">

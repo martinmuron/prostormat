@@ -2,7 +2,7 @@
 
 import { Suspense, useCallback, useEffect, useMemo, useState } from "react"
 import Link from "next/link"
-import { useRouter, useSearchParams } from "next/navigation"
+import { useSearchParams } from "next/navigation"
 import { useSession } from "next-auth/react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -59,7 +59,6 @@ interface SubmissionState {
 
 function AddVenuePageInner() {
   const { data: session, status } = useSession()
-  const router = useRouter()
   const searchParams = useSearchParams()
 
   const [claimInfo, setClaimInfo] = useState<InlineVenueMatch | null>(null)
@@ -304,17 +303,11 @@ function AddVenuePageInner() {
             </CardHeader>
             <CardContent className="space-y-4 text-center text-green-900">
               <p>
-                Děkujeme! Brzy se vám ozveme na uvedený kontakt a domluvíme další kroky. Prostor: <strong>{submissionState.venueName}</strong>
+                Děkujeme! Vaši žádost jsme úspěšně přijali. Ozveme se vám do 24 hodin na uvedený kontakt s dalšími kroky. Prostor: <strong>{submissionState.venueName}</strong>
               </p>
               <p className="text-sm text-green-800">
-                Náš tým manuálně ověří informace a zašle vám fakturační podklady i přístup do administrace.
+                Náš tým nejprve manuálně ověří informace a poté vám zašle všechny potřebné detaily.
               </p>
-              <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
-                <Button onClick={() => router.push('/dashboard')} className="bg-green-600 hover:bg-green-700 text-white">
-                  Přejít do administrace
-                </Button>
-                <Button variant="outline" onClick={() => router.push('/')}>Zpět na hlavní stránku</Button>
-              </div>
             </CardContent>
           </Card>
         </div>

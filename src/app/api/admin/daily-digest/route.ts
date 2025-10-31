@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
+import { randomUUID } from "crypto"
 import { db } from "@/lib/db"
 import { resend, FROM_EMAIL } from "@/lib/resend"
 
@@ -95,6 +96,12 @@ export async function GET(request: NextRequest) {
   }
 
   try {
+    // Get admin user for logging system emails
+    const adminUser = await db.user.findFirst({
+      where: { role: 'admin' },
+      select: { id: true },
+    })
+
     const [users, payingVenues, quickRequests] = await Promise.all([
       db.user.count(),
       db.venue.count({ where: { paid: true } }),
@@ -106,18 +113,55 @@ export async function GET(request: NextRequest) {
 
     const html = renderDigestHtml(stats, now)
     const text = renderDigestText(stats, now)
+    const subject = `Denní přehled Prostormat – ${formatDate(now)}`
 
-    await resend.emails.send({
-      from: FROM_EMAIL,
-      to: DIGEST_RECIPIENT,
-      subject: `Denní přehled Prostormat – ${formatDate(now)}`,
-      html,
-      text,
-    })
+    let emailStatus = 'failed'
+    let emailError: string | null = null
 
-    return NextResponse.json({ success: true, stats })
+    try {
+      const emailResult = await resend.emails.send({
+        from: FROM_EMAIL,
+        to: DIGEST_RECIPIENT,
+        subject,
+        html,
+        text,
+      })
+
+      if (emailResult.data?.id) {
+        emailStatus = 'sent'
+      }
+    } catch (sendError) {
+      console.error("Failed to send daily digest email:", sendError)
+      emailError = sendError instanceof Error ? sendError.message : "Unknown error"
+      throw sendError
+    } finally {
+      // Track email send attempt in Email Flow system
+      if (adminUser) {
+        try {
+          await db.emailFlowLog.create({
+            data: {
+              id: randomUUID(),
+              emailType: 'daily_digest',
+              recipient: DIGEST_RECIPIENT,
+              subject,
+              status: emailStatus,
+              error: emailError,
+              recipientType: 'admin',
+              sentBy: adminUser.id,
+            },
+          })
+        } catch (logError) {
+          console.error('Failed to log daily digest email:', logError)
+        }
+      }
+    }
+
+    return NextResponse.json({ success: true, stats, emailSent: emailStatus === 'sent' })
   } catch (error) {
     console.error("Failed to send daily digest:", error)
-    return NextResponse.json({ error: "Failed to send daily digest" }, { status: 500 })
+    return NextResponse.json({
+      error: "Failed to send daily digest",
+      details: error instanceof Error ? error.message : "Unknown error"
+    }, { status: 500 })
   }
 }

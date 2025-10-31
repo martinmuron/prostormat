@@ -140,6 +140,14 @@ export async function POST(request: NextRequest) {
 
     const nameParts = splitContactName(body.contactName)
 
+    // Get admin user for logging system emails
+    const adminUser = await prisma.user.findFirst({
+      where: { role: 'admin' },
+      select: { id: true },
+    })
+
+    const logSentBy = userId || adminUser?.id
+
     // Send email notification to admin
     try {
       const emailContent = generateVenueSubmissionNotificationEmail({
@@ -165,7 +173,7 @@ export async function POST(request: NextRequest) {
         text: emailContent.text,
       })
 
-      if (emailResult.data?.id) {
+      if (emailResult.data?.id && logSentBy) {
         // Track in Email Flow system
         try {
           await prisma.emailFlowLog.create({
@@ -177,7 +185,7 @@ export async function POST(request: NextRequest) {
               status: 'sent',
               error: null,
               recipientType: 'admin',
-              sentBy: userId ?? 'system',
+              sentBy: logSentBy,
             },
           })
         } catch (logError) {
@@ -189,21 +197,23 @@ export async function POST(request: NextRequest) {
       const emailError = error instanceof Error ? error.message : 'Unknown error'
 
       // Track failed email in Email Flow system
-      try {
-        await prisma.emailFlowLog.create({
-          data: {
-            id: randomUUID(),
-            emailType: 'venue_submission_notification',
-            recipient: 'info@prostormat.cz',
-            subject: `Nová žádost: ${submissionType}`,
-            status: 'failed',
-            error: emailError,
-            recipientType: 'admin',
-            sentBy: userId ?? 'system',
-          },
-        })
-      } catch (logError) {
-        console.error('Failed to log email failure:', logError)
+      if (logSentBy) {
+        try {
+          await prisma.emailFlowLog.create({
+            data: {
+              id: randomUUID(),
+              emailType: 'venue_submission_notification',
+              recipient: 'info@prostormat.cz',
+              subject: `Nová žádost: ${submissionType}`,
+              status: 'failed',
+              error: emailError,
+              recipientType: 'admin',
+              sentBy: logSentBy,
+            },
+          })
+        } catch (logError) {
+          console.error('Failed to log email failure:', logError)
+        }
       }
     }
 

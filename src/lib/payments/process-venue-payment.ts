@@ -794,7 +794,7 @@ export async function processVenuePayment({
   if (submissionMode === 'claim') {
     try {
       await resend.emails.send({
-        from: 'Prostormat <noreply@prostormat.cz>',
+        from: 'Prostormat <info@prostormat.cz>',
         to: userEmail,
         subject:
           '✅ Předplatné aktivováno - žádost o převzetí čeká na schválení administrátorem',
@@ -825,7 +825,7 @@ export async function processVenuePayment({
 
     try {
       await resend.emails.send({
-        from: 'Prostormat <noreply@prostormat.cz>',
+        from: 'Prostormat <info@prostormat.cz>',
         to: 'info@prostormat.cz',
         subject: '🔔 Nová žádost o převzetí listingu čeká na kontrolu',
         html: `
@@ -848,7 +848,7 @@ export async function processVenuePayment({
   // New venue messaging
   try {
     await resend.emails.send({
-      from: 'Prostormat <noreply@prostormat.cz>',
+      from: 'Prostormat <info@prostormat.cz>',
       to: userEmail,
       subject: '✅ Předplatné aktivováno - váš prostor čeká na schválení',
       html: `
@@ -878,7 +878,7 @@ export async function processVenuePayment({
 
   try {
     await resend.emails.send({
-      from: 'Prostormat <noreply@prostormat.cz>',
+      from: 'Prostormat <info@prostormat.cz>',
       to: 'info@prostormat.cz',
       subject: '🔔 Nový prostor čeká na ruční schválení',
       html: `

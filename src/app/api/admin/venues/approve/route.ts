@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
 
     try {
       await resend.emails.send({
-        from: 'Prostormat <noreply@prostormat.cz>',
+        from: 'Prostormat <info@prostormat.cz>',
         to: venue.manager.email!,
         subject: emailSubject,
         html: `

@@ -300,7 +300,7 @@ export async function POST(request: Request) {
 
     try {
       await resend.emails.send({
-        from: 'Prostormat <noreply@prostormat.cz>',
+        from: 'Prostormat <info@prostormat.cz>',
         to: 'poptavka@prostormat.cz',
         subject: summaryEmail.subject,
         html: summaryEmail.html,

@@ -121,7 +121,7 @@ async function handlePaymentFailed(paymentIntent: Stripe.PaymentIntent) {
 
       try {
         await resend.emails.send({
-          from: 'Prostormat <noreply@prostormat.cz>',
+          from: 'Prostormat <info@prostormat.cz>',
           to: paymentRecord.userEmail,
           subject: emailSubject,
           html: `

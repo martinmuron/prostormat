@@ -129,7 +129,7 @@ export async function POST(request: NextRequest) {
 
     try {
       await resend.emails.send({
-        from: 'Prostormat <noreply@prostormat.cz>',
+        from: 'Prostormat <info@prostormat.cz>',
         to: user.email,
         subject: ownerEmailSubject,
         html: `
@@ -199,7 +199,7 @@ export async function POST(request: NextRequest) {
 
     try {
       await resend.emails.send({
-        from: 'Prostormat <noreply@prostormat.cz>',
+        from: 'Prostormat <info@prostormat.cz>',
         to: 'info@prostormat.cz',
         subject: adminEmailSubject,
         html: `

@@ -113,7 +113,7 @@ export async function POST(request: NextRequest) {
     if (!approvalResult.alreadyApproved && approvalResult.claim.claimant?.email) {
       try {
         await resend.emails.send({
-          from: 'Prostormat <noreply@prostormat.cz>',
+          from: 'Prostormat <info@prostormat.cz>',
           to: approvalResult.claim.claimant.email,
           subject: '🎉 Převzetí prostoru bylo schváleno',
           html: `

@@ -196,7 +196,7 @@ async function handleOneOffPaymentFailed(paymentIntent: Stripe.PaymentIntent) {
         const venueData = JSON.parse(paymentRecord.venueData);
 
         await resend.emails.send({
-          from: 'Prostormat <noreply@prostormat.cz>',
+          from: 'Prostormat <info@prostormat.cz>',
           to: paymentRecord.userEmail,
           subject: '❌ Platba se nezdařila - Prostormat',
           html: `
@@ -489,7 +489,7 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
       if (subscriptionRecord.venue.manager?.email) {
         try {
           await resend.emails.send({
-            from: 'Prostormat <noreply@prostormat.cz>',
+            from: 'Prostormat <info@prostormat.cz>',
             to: subscriptionRecord.venue.manager.email,
             subject: '⚠️ Předplatné bylo zrušeno - Prostormat',
             html: `
@@ -584,7 +584,7 @@ async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
           const isRenewal = invoice.billing_reason === 'subscription_cycle';
 
           await resend.emails.send({
-            from: 'Prostormat <noreply@prostormat.cz>',
+            from: 'Prostormat <info@prostormat.cz>',
             to: subscriptionRecord.venue.manager.email,
             subject: isRenewal
               ? '✅ Předplatné bylo obnoveno - Prostormat'
@@ -666,7 +666,7 @@ async function handleInvoicePaymentFailed(invoice: Stripe.Invoice) {
       // Send payment failed notification
       try {
         await resend.emails.send({
-          from: 'Prostormat <noreply@prostormat.cz>',
+          from: 'Prostormat <info@prostormat.cz>',
           to: subscriptionRecord.venue.manager.email,
           subject: '❌ Platba předplatného se nezdařila - Prostormat',
           html: `

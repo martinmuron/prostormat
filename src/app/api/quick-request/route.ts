@@ -10,6 +10,7 @@ import { generateQuickRequestInternalNotificationEmail } from "@/lib/email-templ
 import { trackBulkFormSubmit } from "@/lib/meta-conversions-api"
 import { trackGA4ServerLead } from "@/lib/ga4-server-tracking"
 import { EVENT_TYPES } from "@/types"
+import { getSafeSentByUserId } from "@/lib/email-helpers"
 
 const trackingSchema = z.object({
   eventId: z.string(),
@@ -292,13 +293,44 @@ export async function POST(request: Request) {
       })),
     })
 
-    await resend.emails.send({
-      from: 'Prostormat <noreply@prostormat.cz>',
-      to: 'poptavka@prostormat.cz',
-      subject: summaryEmail.subject,
-      html: summaryEmail.html,
-      text: summaryEmail.text,
-    })
+    // Send admin notification email with tracking
+    const adminUserId = await getSafeSentByUserId(session?.user?.id)
+    let adminEmailStatus: 'sent' | 'failed' = 'sent'
+    let adminEmailError: string | null = null
+
+    try {
+      await resend.emails.send({
+        from: 'Prostormat <noreply@prostormat.cz>',
+        to: 'poptavka@prostormat.cz',
+        subject: summaryEmail.subject,
+        html: summaryEmail.html,
+        text: summaryEmail.text,
+      })
+    } catch (emailError) {
+      adminEmailStatus = 'failed'
+      adminEmailError = emailError instanceof Error ? emailError.message : 'Unknown error'
+      console.error('Failed to send quick request admin notification:', emailError)
+    }
+
+    // Track admin notification email
+    if (adminUserId) {
+      try {
+        await db.emailFlowLog.create({
+          data: {
+            id: randomUUID(),
+            emailType: 'quick_request_admin_notification',
+            recipient: 'poptavka@prostormat.cz',
+            subject: summaryEmail.subject,
+            status: adminEmailStatus,
+            error: adminEmailError,
+            recipientType: 'admin',
+            sentBy: adminUserId,
+          },
+        })
+      } catch (logError) {
+        console.error('Failed to log quick request admin email:', logError)
+      }
+    }
 
     // Track bulk form submission in Meta (don't block on failure)
     try {

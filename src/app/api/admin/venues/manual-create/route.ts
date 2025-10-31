@@ -4,6 +4,7 @@ import { authOptions } from '@/lib/auth'
 import { db } from '@/lib/db'
 import { nanoid } from 'nanoid'
 import { resend } from '@/lib/resend'
+import { getSafeSentByUserId } from '@/lib/email-helpers'
 
 export async function POST(request: NextRequest) {
   try {
@@ -122,11 +123,15 @@ export async function POST(request: NextRequest) {
     }
 
     // Send notification email to venue owner
+    const ownerEmailSubject = '✅ Váš prostor byl přidán na Prostormat'
+    let ownerEmailStatus: 'sent' | 'failed' = 'sent'
+    let ownerEmailError: string | null = null
+
     try {
       await resend.emails.send({
         from: 'Prostormat <noreply@prostormat.cz>',
         to: user.email,
-        subject: '✅ Váš prostor byl přidán na Prostormat',
+        subject: ownerEmailSubject,
         html: `
           <h2>Váš prostor byl úspěšně přidán!</h2>
           <p>Dobrý den,</p>
@@ -161,15 +166,42 @@ export async function POST(request: NextRequest) {
         `,
       })
     } catch (emailError) {
+      ownerEmailStatus = 'failed'
+      ownerEmailError = emailError instanceof Error ? emailError.message : 'Unknown error'
       console.error('Failed to send venue creation email:', emailError)
     }
 
+    // Track venue owner email
+    const ownerEmailSentBy = await getSafeSentByUserId(session?.user?.id)
+    if (ownerEmailSentBy) {
+      try {
+        await db.emailFlowLog.create({
+          data: {
+            id: nanoid(),
+            emailType: 'manual_venue_creation_owner_notification',
+            recipient: user.email,
+            subject: ownerEmailSubject,
+            status: ownerEmailStatus,
+            error: ownerEmailError,
+            recipientType: 'venue_owner',
+            sentBy: ownerEmailSentBy,
+          },
+        })
+      } catch (logError) {
+        console.error('Failed to log venue owner email:', logError)
+      }
+    }
+
     // Send notification to admin
+    const adminEmailSubject = '🔧 Manuálně vytvořený prostor'
+    let adminEmailStatus: 'sent' | 'failed' = 'sent'
+    let adminEmailError: string | null = null
+
     try {
       await resend.emails.send({
         from: 'Prostormat <noreply@prostormat.cz>',
         to: 'info@prostormat.cz',
-        subject: '🔧 Manuálně vytvořený prostor',
+        subject: adminEmailSubject,
         html: `
           <h2>Byl manuálně vytvořen nový prostor</h2>
           <p><strong>Prostor:</strong> ${name}</p>
@@ -183,7 +215,30 @@ export async function POST(request: NextRequest) {
         `,
       })
     } catch (emailError) {
+      adminEmailStatus = 'failed'
+      adminEmailError = emailError instanceof Error ? emailError.message : 'Unknown error'
       console.error('Failed to send admin notification:', emailError)
+    }
+
+    // Track admin notification email
+    const adminEmailSentBy = await getSafeSentByUserId(session?.user?.id)
+    if (adminEmailSentBy) {
+      try {
+        await db.emailFlowLog.create({
+          data: {
+            id: nanoid(),
+            emailType: 'manual_venue_creation_admin_notification',
+            recipient: 'info@prostormat.cz',
+            subject: adminEmailSubject,
+            status: adminEmailStatus,
+            error: adminEmailError,
+            recipientType: 'admin',
+            sentBy: adminEmailSentBy,
+          },
+        })
+      } catch (logError) {
+        console.error('Failed to log admin notification email:', logError)
+      }
     }
 
     return NextResponse.json({

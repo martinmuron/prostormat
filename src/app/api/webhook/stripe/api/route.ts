@@ -5,6 +5,7 @@ import { stripe, isStripeConfigured, determinePriorityLevelFromSubscription } fr
 import { prisma } from '@/lib/prisma';
 import { resend } from '@/lib/resend';
 import { nanoid } from 'nanoid';
+import { getAdminUserIdForSystemEmails } from '@/lib/email-helpers';
 import {
   processVenuePayment,
   PaymentProcessingInProgressError,
@@ -345,18 +346,21 @@ async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
     }
 
     // Log subscription creation
-    await prisma.emailFlowLog.create({
-      data: {
-        id: nanoid(),
-        emailType: 'stripe_webhook_subscription_created',
-        recipient: customerEmail,
-        subject: `Subscription created: ${subscription.id}`,
-        status: 'processed',
-        recipientType: 'venue_owner',
-        sentBy: 'stripe_webhook',
-        createdAt: new Date(),
-      },
-    });
+    const adminUserId = await getAdminUserIdForSystemEmails()
+    if (adminUserId) {
+      await prisma.emailFlowLog.create({
+        data: {
+          id: nanoid(),
+          emailType: 'stripe_webhook_subscription_created',
+          recipient: customerEmail,
+          subject: `Subscription created: ${subscription.id}`,
+          status: 'processed',
+          recipientType: 'venue_owner',
+          sentBy: adminUserId,
+          createdAt: new Date(),
+        },
+      })
+    }
   } catch (error) {
     console.error('Error handling subscription created:', error);
     throw error;
@@ -508,18 +512,21 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
           });
 
           // Log email
-          await prisma.emailFlowLog.create({
-            data: {
-              id: nanoid(),
-              emailType: 'subscription_cancelled',
-              recipient: subscriptionRecord.venue.manager.email,
-              subject: 'Předplatné bylo zrušeno - Prostormat',
-              status: 'sent',
-              recipientType: 'venue_owner',
-              sentBy: 'stripe_webhook',
-              createdAt: new Date(),
-            },
-          });
+          const adminUserId = await getAdminUserIdForSystemEmails()
+          if (adminUserId) {
+            await prisma.emailFlowLog.create({
+              data: {
+                id: nanoid(),
+                emailType: 'subscription_cancelled',
+                recipient: subscriptionRecord.venue.manager.email,
+                subject: 'Předplatné bylo zrušeno - Prostormat',
+                status: 'sent',
+                recipientType: 'venue_owner',
+                sentBy: adminUserId,
+                createdAt: new Date(),
+              },
+            })
+          }
         } catch (emailError) {
           console.error('Failed to send subscription cancelled email:', emailError);
         }
@@ -602,20 +609,23 @@ async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
           });
 
           // Log email
-          await prisma.emailFlowLog.create({
-            data: {
-              id: nanoid(),
-              emailType: isRenewal ? 'subscription_renewed' : 'subscription_payment_success',
-              recipient: subscriptionRecord.venue.manager.email,
-              subject: isRenewal
-                ? 'Předplatné bylo obnoveno - Prostormat'
-                : 'Platba proběhla úspěšně - Prostormat',
-              status: 'sent',
-              recipientType: 'venue_owner',
-              sentBy: 'stripe_webhook',
-              createdAt: new Date(),
-            },
-          });
+          const adminUserId = await getAdminUserIdForSystemEmails()
+          if (adminUserId) {
+            await prisma.emailFlowLog.create({
+              data: {
+                id: nanoid(),
+                emailType: isRenewal ? 'subscription_renewed' : 'subscription_payment_success',
+                recipient: subscriptionRecord.venue.manager.email,
+                subject: isRenewal
+                  ? 'Předplatné bylo obnoveno - Prostormat'
+                  : 'Platba proběhla úspěšně - Prostormat',
+                status: 'sent',
+                recipientType: 'venue_owner',
+                sentBy: adminUserId,
+                createdAt: new Date(),
+              },
+            })
+          }
         } catch (emailError) {
           console.error('Failed to send payment success email:', emailError);
         }
@@ -680,18 +690,21 @@ async function handleInvoicePaymentFailed(invoice: Stripe.Invoice) {
         });
 
         // Log email
-        await prisma.emailFlowLog.create({
-          data: {
-            id: nanoid(),
-            emailType: 'subscription_payment_failed',
-            recipient: subscriptionRecord.venue.manager.email,
-            subject: 'Platba předplatného se nezdařila - Prostormat',
-            status: 'sent',
-            recipientType: 'venue_owner',
-            sentBy: 'stripe_webhook',
-            createdAt: new Date(),
-          },
-        });
+        const adminUserId = await getAdminUserIdForSystemEmails()
+        if (adminUserId) {
+          await prisma.emailFlowLog.create({
+            data: {
+              id: nanoid(),
+              emailType: 'subscription_payment_failed',
+              recipient: subscriptionRecord.venue.manager.email,
+              subject: 'Platba předplatného se nezdařila - Prostormat',
+              status: 'sent',
+              recipientType: 'venue_owner',
+              sentBy: adminUserId,
+              createdAt: new Date(),
+            },
+          })
+        }
       } catch (emailError) {
         console.error('Failed to send payment failed email:', emailError);
       }

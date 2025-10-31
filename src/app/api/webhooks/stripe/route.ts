@@ -8,6 +8,8 @@ import {
 } from '@/lib/payments/process-venue-payment';
 import { resend } from '@/lib/resend';
 import { isStripeConfigured, stripe } from '@/lib/stripe';
+import { nanoid } from 'nanoid';
+import { getAdminUserIdForSystemEmails } from '@/lib/email-helpers';
 
 export async function POST(request: NextRequest) {
   // Check if Stripe is configured
@@ -113,15 +115,19 @@ async function handlePaymentFailed(paymentIntent: Stripe.PaymentIntent) {
       const venueData = JSON.parse(paymentRecord.venueData);
 
       // Send payment failed notification
+      const emailSubject = '❌ Platba se nezdařila - Prostormat'
+      let emailStatus: 'sent' | 'failed' = 'sent'
+      let emailError: string | null = null
+
       try {
         await resend.emails.send({
           from: 'Prostormat <noreply@prostormat.cz>',
           to: paymentRecord.userEmail,
-          subject: '❌ Platba se nezdařila - Prostormat',
+          subject: emailSubject,
           html: `
             <h2>Platba se nezdařila</h2>
             <p>Bohužel se nezdařila platba za přidání prostoru "<strong>${venueData.name}</strong>" na platformu Prostormat.</p>
-            
+
             <h3>Co můžete udělat?</h3>
             <ul>
               <li>🔄 Zkuste platbu znovu s jinou kartou</li>
@@ -129,30 +135,37 @@ async function handlePaymentFailed(paymentIntent: Stripe.PaymentIntent) {
               <li>🏦 Kontaktujte svou banku ohledně případného blokování platby</li>
               <li>📧 Napište nám na info@prostormat.cz pro pomoc</li>
             </ul>
-            
+
             <p><a href="https://prostormat.cz/pridat-prostor" style="background-color: #000; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block; margin-top: 16px;">Zkusit znovu</a></p>
-            
+
             <p>S pozdravem,<br>Tým Prostormat</p>
           `,
         });
+      } catch (sendError) {
+        emailStatus = 'failed'
+        emailError = sendError instanceof Error ? sendError.message : 'Unknown error'
+        console.error('Failed to send payment failed email:', sendError);
+      }
 
-        // TODO: Fix EmailFlowLog model - temporarily disabled for deployment
-        // Log the email
-        // await prisma.emailFlowLog.create({
-        //   data: {
-        //     id: nanoid(),
-        //     emailType: 'payment_failed_notification',
-        //     recipient: payment.user_email,
-        //     subject: 'Platba se nezdařila - Prostormat',
-        //     status: 'sent',
-        //     recipientType: 'venue_owner',
-        //     sentBy: 'stripe_webhook',
-        //     createdAt: new Date(),
-        //   },
-        // });
-        console.log('Payment failed email sent (logging temporarily disabled)');
-      } catch (emailError) {
-        console.error('Failed to send payment failed email:', emailError);
+      // Track payment failed email
+      const adminUserId = await getAdminUserIdForSystemEmails()
+      if (adminUserId) {
+        try {
+          await prisma.emailFlowLog.create({
+            data: {
+              id: nanoid(),
+              emailType: 'payment_failed_notification',
+              recipient: paymentRecord.userEmail,
+              subject: emailSubject,
+              status: emailStatus,
+              error: emailError,
+              recipientType: 'venue_owner',
+              sentBy: adminUserId,
+            },
+          });
+        } catch (logError) {
+          console.error('Failed to log payment failed email:', logError)
+        }
       }
     }
 

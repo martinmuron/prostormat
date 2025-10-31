@@ -7,6 +7,7 @@ import { randomUUID } from "crypto"
 import { trackLokaceSubmit } from "@/lib/meta-conversions-api"
 import { trackGA4ServerLead } from "@/lib/ga4-server-tracking"
 import { resend, FROM_EMAIL, REPLY_TO_EMAIL } from "@/lib/resend"
+import { getSafeSentByUserId } from "@/lib/email-helpers"
 import {
   generateVenueInquiryAdminNotificationEmail,
   generateVenueInquiryPaidNotificationEmail,
@@ -112,6 +113,8 @@ export async function POST(request: Request) {
     }
 
     // Notify internal team so they can verify venue status before forwarding
+    const adminUserId = await getSafeSentByUserId(session?.user?.id)
+
     try {
       const emailContent = generateVenueInquiryAdminNotificationEmail({
         inquiryId: inquiry.id,
@@ -133,13 +136,42 @@ export async function POST(request: Request) {
         },
       })
 
-      await resend.emails.send({
-        from: FROM_EMAIL,
-        to: ["poptavka@prostormat.cz"],
-        subject: emailContent.subject,
-        html: emailContent.html,
-        text: emailContent.text,
-      })
+      let adminEmailStatus: 'sent' | 'failed' = 'sent'
+      let adminEmailError: string | null = null
+
+      try {
+        await resend.emails.send({
+          from: FROM_EMAIL,
+          to: ["poptavka@prostormat.cz"],
+          subject: emailContent.subject,
+          html: emailContent.html,
+          text: emailContent.text,
+        })
+      } catch (sendError) {
+        adminEmailStatus = 'failed'
+        adminEmailError = sendError instanceof Error ? sendError.message : 'Unknown error'
+        console.error("Failed to send venue inquiry notification email:", sendError)
+      }
+
+      // Track admin notification email
+      if (adminUserId) {
+        try {
+          await db.emailFlowLog.create({
+            data: {
+              id: randomUUID(),
+              emailType: 'venue_inquiry_admin_notification',
+              recipient: 'poptavka@prostormat.cz',
+              subject: emailContent.subject,
+              status: adminEmailStatus,
+              error: adminEmailError,
+              recipientType: 'admin',
+              sentBy: adminUserId,
+            },
+          })
+        } catch (logError) {
+          console.error("Failed to log admin notification email:", logError)
+        }
+      }
     } catch (emailError) {
       console.error("Failed to send venue inquiry notification email:", emailError)
     }
@@ -183,21 +215,25 @@ export async function POST(request: Request) {
           console.error("Failed to send venue notification email:", sendError)
         }
 
-        try {
-          await db.emailFlowLog.create({
-            data: {
-              id: randomUUID(),
-              emailType: venue.paid ? "venue_inquiry_paid" : "venue_inquiry_unpaid",
-              recipient: venue.contactEmail,
-              subject: emailContent.subject,
-              status: emailStatus,
-              error: errorMessage,
-              recipientType: "venue_owner",
-              sentBy: session?.user?.id ?? venue.managerId ?? "system",
-            },
-          })
-        } catch (logError) {
-          console.error("Failed to log venue notification email:", logError)
+        const sentByUserId = await getSafeSentByUserId(session?.user?.id, venue.managerId ?? undefined)
+
+        if (sentByUserId) {
+          try {
+            await db.emailFlowLog.create({
+              data: {
+                id: randomUUID(),
+                emailType: venue.paid ? "venue_inquiry_paid" : "venue_inquiry_unpaid",
+                recipient: venue.contactEmail,
+                subject: emailContent.subject,
+                status: emailStatus,
+                error: errorMessage,
+                recipientType: "venue_owner",
+                sentBy: sentByUserId,
+              },
+            })
+          } catch (logError) {
+            console.error("Failed to log venue notification email:", logError)
+          }
         }
       }
     } catch (emailError) {

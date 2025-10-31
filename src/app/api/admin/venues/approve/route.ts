@@ -3,6 +3,8 @@ import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { resend } from '@/lib/resend';
+import { nanoid } from 'nanoid';
+import { getSafeSentByUserId } from '@/lib/email-helpers';
 
 export async function POST(request: NextRequest) {
   try {
@@ -53,15 +55,19 @@ export async function POST(request: NextRequest) {
     });
 
     // Send approval notification email to venue owner
+    const emailSubject = '🎉 Váš prostor byl schválen!'
+    let emailStatus: 'sent' | 'failed' = 'sent'
+    let emailError: string | null = null
+
     try {
       await resend.emails.send({
         from: 'Prostormat <noreply@prostormat.cz>',
         to: venue.manager.email!,
-        subject: '🎉 Váš prostor byl schválen!',
+        subject: emailSubject,
         html: `
           <h2>Gratulujeme! Váš prostor byl schválen</h2>
           <p>Dobrá zpráva! Váš prostor "<strong>${venue.name}</strong>" byl úspěšně schválen a je nyní zveřejněn na platformě Prostormat.</p>
-          
+
           <h3>Co to znamená pro vás?</h3>
           <ul>
             <li>✅ Váš prostor je nyní viditelný pro všechny uživatele</li>
@@ -69,7 +75,7 @@ export async function POST(request: NextRequest) {
             <li>📊 Máte přístup k statistikám ve svém dashboardu</li>
             <li>📧 Budete dostávat notifikace o nových poptávkách</li>
           </ul>
-          
+
           <h3>Další kroky:</h3>
           <ol>
             <li><a href="https://prostormat.cz/prihlaseni">Přihlaste se do svého účtu</a></li>
@@ -77,40 +83,42 @@ export async function POST(request: NextRequest) {
             <li>Nastavte si notifikace pro nové poptávky</li>
             <li>Začněte přijímat první rezervace!</li>
           </ol>
-          
+
           <p><a href="https://prostormat.cz/prostory/${venue.slug}" style="background-color: #000; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block; margin-top: 16px;">Zobrazit váš prostor</a></p>
-          
+
           <p>Děkujeme, že jste se k nám přidali!<br>Tým Prostormat</p>
-          
+
           <hr style="margin: 24px 0; border: none; border-top: 1px solid #e5e7eb;">
           <p style="font-size: 14px; color: #6b7280;">
             Pokud máte jakékoli dotazy, neváhejte nás kontaktovat na <a href="mailto:info@prostormat.cz">info@prostormat.cz</a>
           </p>
         `,
       });
+    } catch (sendError) {
+      emailStatus = 'failed'
+      emailError = sendError instanceof Error ? sendError.message : 'Unknown error'
+      console.error('Failed to send approval email:', sendError);
+    }
 
-      // Log the email (skip for now due to model issues)
+    // Track venue approval email
+    const sentByUserId = await getSafeSentByUserId(session?.user?.id)
+    if (sentByUserId) {
       try {
-        // await prisma.emailFlowLog.create({
-        //   data: {
-        //     id: nanoid(),
-        //     emailType: 'venue_approval_confirmation',
-        //     recipient: venue.manager.email!,
-        //     subject: 'Váš prostor byl schválen!',
-        //     status: 'sent',
-        //     recipientType: 'venue_owner',
-        //     sentBy: 'system', // We don't have admin user ID here
-        //     createdAt: new Date(),
-        //   },
-        // });
-        console.log('Email sent successfully (logging temporarily disabled)');
+        await prisma.emailFlowLog.create({
+          data: {
+            id: nanoid(),
+            emailType: 'venue_approval_confirmation',
+            recipient: venue.manager.email!,
+            subject: emailSubject,
+            status: emailStatus,
+            error: emailError,
+            recipientType: 'venue_owner',
+            sentBy: sentByUserId,
+          },
+        });
       } catch (logError) {
-        console.error('Failed to log email:', logError);
+        console.error('Failed to log venue approval email:', logError);
       }
-
-    } catch (emailError) {
-      console.error('Failed to send approval email:', emailError);
-      // Don't fail the approval if email fails
     }
 
     return NextResponse.json({

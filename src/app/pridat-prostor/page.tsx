@@ -305,9 +305,6 @@ function AddVenuePageInner() {
               <p>
                 Děkujeme! Vaši žádost jsme úspěšně přijali. Ozveme se vám do 24 hodin na uvedený kontakt s dalšími kroky. Prostor: <strong>{submissionState.venueName}</strong>
               </p>
-              <p className="text-sm text-green-800">
-                Náš tým nejprve manuálně ověří informace a poté vám zašle všechny potřebné detaily.
-              </p>
             </CardContent>
           </Card>
         </div>

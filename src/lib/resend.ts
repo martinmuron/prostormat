@@ -6,5 +6,5 @@ if (!process.env.RESEND_API_KEY) {
 
 export const resend = new Resend(process.env.RESEND_API_KEY || 'dummy-key')
 
-export const FROM_EMAIL = 'Prostormat <noreply@prostormat.cz>'
+export const FROM_EMAIL = 'Prostormat <info@prostormat.cz>'
 export const REPLY_TO_EMAIL = 'info@prostormat.cz'

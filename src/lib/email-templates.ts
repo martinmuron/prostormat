@@ -1456,3 +1456,180 @@ Detail správy: ${adminUrl}
 
   return { subject, html, text }
 }
+
+interface VenueSubmissionNotificationData {
+  submissionType: 'new' | 'claim' | 'priority_interest'
+  companyName?: string
+  locationTitle?: string
+  ico?: string
+  contactName: string
+  contactEmail: string
+  contactPhone: string
+  additionalInfo?: string
+  venueName?: string
+  existingVenueId?: string
+  submissionId: string
+}
+
+export function generateVenueSubmissionNotificationEmail(data: VenueSubmissionNotificationData) {
+  const submissionTypeLabel =
+    data.submissionType === 'claim' ? 'Převzetí existujícího prostoru' :
+    data.submissionType === 'priority_interest' ? 'Zájem o prioritní balíček' :
+    'Přidání nového prostoru'
+
+  const subject = `Nová žádost: ${submissionTypeLabel} - ${data.contactName}`
+
+  const adminUrl = `https://prostormat.cz/admin/venue-submissions/${data.submissionId}`
+
+  const html = `
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      line-height: 1.6;
+      color: #1e293b;
+      margin: 0;
+      padding: 0;
+      background-color: #f8fafc;
+    }
+    .container {
+      max-width: 600px;
+      margin: 40px auto;
+      background: white;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .header {
+      background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+      color: white;
+      padding: 32px;
+      text-align: center;
+    }
+    .badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.2);
+      padding: 6px 12px;
+      border-radius: 16px;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+    .section {
+      padding: 24px 32px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .section:last-of-type {
+      border-bottom: none;
+    }
+    .section h3 {
+      margin: 0 0 16px 0;
+      color: #0f172a;
+      font-size: 16px;
+      font-weight: 600;
+    }
+    .detail {
+      display: flex;
+      padding: 8px 0;
+      font-size: 14px;
+    }
+    .detail span:first-child {
+      font-weight: 600;
+      color: #475569;
+      min-width: 140px;
+    }
+    .detail span:last-child {
+      color: #1e293b;
+      flex: 1;
+    }
+    .cta {
+      padding: 24px 32px;
+      text-align: center;
+      background: #f8fafc;
+    }
+    .cta a {
+      display: inline-block;
+      background: #0f172a;
+      color: white;
+      padding: 12px 24px;
+      text-decoration: none;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 14px;
+    }
+    .cta a:hover {
+      background: #1e293b;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="badge">${submissionTypeLabel}</div>
+      <h2 style="margin: 16px 0 8px 0; font-size: 24px;">${data.venueName ?? data.locationTitle ?? 'Nová žádost'}</h2>
+      <p style="margin: 0; color: rgba(255,255,255,0.9);">Nová žádost o přidání/převzetí prostoru</p>
+    </div>
+
+    ${data.submissionType !== 'priority_interest' ? `
+    <div class="section">
+      <h3>Informace o prostoru</h3>
+      <div class="detail"><span>Společnost:</span> <span>${data.companyName ?? '-'}</span></div>
+      <div class="detail"><span>Název prostoru:</span> <span>${data.locationTitle ?? '-'}</span></div>
+      <div class="detail"><span>IČO:</span> <span>${data.ico ?? '-'}</span></div>
+      ${data.existingVenueId ? `<div class="detail"><span>ID existujícího prostoru:</span> <span>${data.existingVenueId}</span></div>` : ''}
+    </div>
+    ` : ''}
+
+    <div class="section">
+      <h3>Kontaktní údaje</h3>
+      <div class="detail"><span>Jméno:</span> <span>${data.contactName}</span></div>
+      <div class="detail"><span>Email:</span> <span><a href="mailto:${data.contactEmail}" style="color: #2563eb;">${data.contactEmail}</a></span></div>
+      <div class="detail"><span>Telefon:</span> <span>${data.contactPhone}</span></div>
+    </div>
+
+    ${data.additionalInfo ? `
+    <div class="section">
+      <h3>Poznámka</h3>
+      <p style="margin: 0; color: #475569; font-size: 14px;">${data.additionalInfo.replace(/\n/g, '<br>')}</p>
+    </div>
+    ` : ''}
+
+    <div class="cta">
+      <a href="${adminUrl}">Otevřít v administraci</a>
+    </div>
+
+    <p style="margin: 0; padding: 24px 32px; color: #64748b; font-size: 13px; text-align: center;">
+      Pro zpracování žádosti přejděte do administrace a ověřte poskytnuté údaje.
+    </p>
+  </div>
+</body>
+</html>
+`
+
+  const text = `
+Nová žádost: ${submissionTypeLabel}
+
+${data.submissionType !== 'priority_interest' ? `
+Informace o prostoru:
+- Společnost: ${data.companyName ?? '-'}
+- Název prostoru: ${data.locationTitle ?? '-'}
+- IČO: ${data.ico ?? '-'}
+${data.existingVenueId ? `- ID existujícího prostoru: ${data.existingVenueId}` : ''}
+` : ''}
+
+Kontaktní údaje:
+- Jméno: ${data.contactName}
+- Email: ${data.contactEmail}
+- Telefon: ${data.contactPhone}
+
+${data.additionalInfo ? `Poznámka:\n${data.additionalInfo}\n` : ''}
+
+Detail žádosti: ${adminUrl}
+`
+
+  return { subject, html, text }
+}

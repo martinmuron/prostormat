@@ -1,12 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { getServerSession } from 'next-auth'
+import { randomUUID } from 'crypto'
 
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { sanitizeTrackingContext } from '@/lib/tracking-utils'
 import { trackGA4ServerLead } from '@/lib/ga4-server-tracking'
 import { trackVenueLead } from '@/lib/meta-conversions-api'
+import { resend, FROM_EMAIL } from '@/lib/resend'
+import { generateVenueSubmissionNotificationEmail } from '@/lib/email-templates'
 
 function splitContactName(name: string | undefined) {
   if (!name) {
@@ -136,6 +139,73 @@ export async function POST(request: NextRequest) {
     const eventId = tracking?.eventId
 
     const nameParts = splitContactName(body.contactName)
+
+    // Send email notification to admin
+    try {
+      const emailContent = generateVenueSubmissionNotificationEmail({
+        submissionType,
+        companyName: body.companyName,
+        locationTitle: body.locationTitle,
+        ico: body.ico,
+        contactName: body.contactName,
+        contactEmail: body.contactEmail,
+        contactPhone: body.contactPhone,
+        additionalInfo: body.additionalInfo,
+        venueName: payload.venueName ?? undefined,
+        existingVenueId: isClaim ? body.existingVenueId ?? undefined : body.venueId ?? undefined,
+        submissionId: submission.id,
+      })
+
+      const emailResult = await resend.emails.send({
+        from: FROM_EMAIL,
+        to: 'info@prostormat.cz',
+        replyTo: body.contactEmail,
+        subject: emailContent.subject,
+        html: emailContent.html,
+        text: emailContent.text,
+      })
+
+      if (emailResult.data?.id) {
+        // Track in Email Flow system
+        try {
+          await prisma.emailFlowLog.create({
+            data: {
+              id: randomUUID(),
+              emailType: 'venue_submission_notification',
+              recipient: 'info@prostormat.cz',
+              subject: emailContent.subject,
+              status: 'sent',
+              error: null,
+              recipientType: 'admin',
+              sentBy: userId ?? 'system',
+            },
+          })
+        } catch (logError) {
+          console.error('Failed to log venue submission email:', logError)
+        }
+      }
+    } catch (error) {
+      console.error('Failed to send venue submission notification email:', error)
+      const emailError = error instanceof Error ? error.message : 'Unknown error'
+
+      // Track failed email in Email Flow system
+      try {
+        await prisma.emailFlowLog.create({
+          data: {
+            id: randomUUID(),
+            emailType: 'venue_submission_notification',
+            recipient: 'info@prostormat.cz',
+            subject: `Nová žádost: ${submissionType}`,
+            status: 'failed',
+            error: emailError,
+            recipientType: 'admin',
+            sentBy: userId ?? 'system',
+          },
+        })
+      } catch (logError) {
+        console.error('Failed to log email failure:', logError)
+      }
+    }
 
     await Promise.allSettled([
       trackGA4ServerLead({

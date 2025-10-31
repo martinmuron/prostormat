@@ -1485,126 +1485,99 @@ export function generateVenueSubmissionNotificationEmail(data: VenueSubmissionNo
 <!DOCTYPE html>
 <html lang="cs">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>${subject}</title>
   <style>
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      line-height: 1.6;
-      color: #1e293b;
-      margin: 0;
-      padding: 0;
-      background-color: #f8fafc;
-    }
-    .container {
-      max-width: 600px;
-      margin: 40px auto;
-      background: white;
-      border-radius: 8px;
-      overflow: hidden;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    }
-    .header {
-      background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-      color: white;
-      padding: 32px;
-      text-align: center;
-    }
-    .badge {
-      display: inline-block;
-      background: rgba(255,255,255,0.2);
-      padding: 6px 12px;
-      border-radius: 16px;
-      font-size: 13px;
-      font-weight: 600;
-      margin-bottom: 12px;
-    }
-    .section {
-      padding: 24px 32px;
-      border-bottom: 1px solid #e2e8f0;
-    }
-    .section:last-of-type {
-      border-bottom: none;
-    }
-    .section h3 {
-      margin: 0 0 16px 0;
-      color: #0f172a;
-      font-size: 16px;
-      font-weight: 600;
-    }
-    .detail {
-      display: flex;
-      padding: 8px 0;
-      font-size: 14px;
-    }
-    .detail span:first-child {
-      font-weight: 600;
-      color: #475569;
-      min-width: 140px;
-    }
-    .detail span:last-child {
-      color: #1e293b;
-      flex: 1;
-    }
-    .cta {
-      padding: 24px 32px;
-      text-align: center;
-      background: #f8fafc;
-    }
-    .cta a {
-      display: inline-block;
-      background: #0f172a;
-      color: white;
-      padding: 12px 24px;
-      text-decoration: none;
-      border-radius: 6px;
-      font-weight: 600;
-      font-size: 14px;
-    }
-    .cta a:hover {
-      background: #1e293b;
-    }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 0; background: #f8fafc; color: #0f172a; }
+    .wrapper { max-width: 640px; margin: 0 auto; padding: 24px; }
+    .card { background: #ffffff; border-radius: 18px; box-shadow: 0 18px 38px rgba(15, 23, 42, 0.12); overflow: hidden; }
+    .header { background: #0f172a; color: #ffffff; padding: 32px 36px; }
+    .header h1 { margin: 0; font-size: 24px; }
+    .header p { margin: 12px 0 0 0; font-size: 14px; opacity: 0.85; }
+    .badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 999px; font-weight: 600; font-size: 13px; margin-bottom: 12px; background: rgba(255,255,255,0.15); color: #ffffff; }
+    .content { padding: 36px; }
+    .section { margin-bottom: 28px; padding: 24px; border-radius: 16px; border: 1px solid #e2e8f0; background: #f8fafc; }
+    .section:last-of-type { margin-bottom: 0; }
+    .section h3 { margin-top: 0; font-size: 16px; margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.08em; color: #475569; }
+    .detail { margin-bottom: 10px; }
+    .detail:last-of-type { margin-bottom: 0; }
+    .label { display: block; font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; color: #94a3b8; margin-bottom: 4px; }
+    .value { font-size: 16px; font-weight: 600; color: #0f172a; }
+    .value a { color: #2563eb; text-decoration: none; }
+    .value a:hover { text-decoration: underline; }
+    .cta { text-align: center; margin: 32px 0 0 0; }
+    .cta a { display: inline-block; padding: 14px 32px; background: #2563eb; color: #ffffff; text-decoration: none; border-radius: 999px; font-weight: 600; font-size: 15px; }
+    .cta a:hover { background: #1d4ed8; }
+    .footer { padding: 20px 36px 28px 36px; background: #f8fafc; color: #475569; font-size: 13px; text-align: center; line-height: 1.6; }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="header">
-      <div class="badge">${submissionTypeLabel}</div>
-      <h2 style="margin: 16px 0 8px 0; font-size: 24px;">${data.venueName ?? data.locationTitle ?? 'Nová žádost'}</h2>
-      <p style="margin: 0; color: rgba(255,255,255,0.9);">Nová žádost o přidání/převzetí prostoru</p>
-    </div>
+  <div class="wrapper">
+    <div class="card">
+      <div class="header">
+        <div class="badge">${submissionTypeLabel}</div>
+        <h1>${data.venueName ?? data.locationTitle ?? 'Nová žádost'}</h1>
+        <p>Nová žádost o přidání/převzetí prostoru</p>
+      </div>
+      <div class="content">
+        ${data.submissionType !== 'priority_interest' ? `
+        <div class="section">
+          <h3>Informace o prostoru</h3>
+          <div class="detail">
+            <span class="label">Společnost</span>
+            <span class="value">${data.companyName ?? '-'}</span>
+          </div>
+          <div class="detail">
+            <span class="label">Název prostoru</span>
+            <span class="value">${data.locationTitle ?? '-'}</span>
+          </div>
+          <div class="detail">
+            <span class="label">IČO</span>
+            <span class="value">${data.ico ?? '-'}</span>
+          </div>
+          ${data.existingVenueId ? `
+          <div class="detail">
+            <span class="label">ID existujícího prostoru</span>
+            <span class="value">${data.existingVenueId}</span>
+          </div>
+          ` : ''}
+        </div>
+        ` : ''}
 
-    ${data.submissionType !== 'priority_interest' ? `
-    <div class="section">
-      <h3>Informace o prostoru</h3>
-      <div class="detail"><span>Společnost:</span> <span>${data.companyName ?? '-'}</span></div>
-      <div class="detail"><span>Název prostoru:</span> <span>${data.locationTitle ?? '-'}</span></div>
-      <div class="detail"><span>IČO:</span> <span>${data.ico ?? '-'}</span></div>
-      ${data.existingVenueId ? `<div class="detail"><span>ID existujícího prostoru:</span> <span>${data.existingVenueId}</span></div>` : ''}
-    </div>
-    ` : ''}
+        <div class="section">
+          <h3>Kontaktní údaje</h3>
+          <div class="detail">
+            <span class="label">Jméno</span>
+            <span class="value">${data.contactName}</span>
+          </div>
+          <div class="detail">
+            <span class="label">E-mail</span>
+            <span class="value"><a href="mailto:${data.contactEmail}">${data.contactEmail}</a></span>
+          </div>
+          <div class="detail">
+            <span class="label">Telefon</span>
+            <span class="value"><a href="tel:${data.contactPhone}">${data.contactPhone}</a></span>
+          </div>
+        </div>
 
-    <div class="section">
-      <h3>Kontaktní údaje</h3>
-      <div class="detail"><span>Jméno:</span> <span>${data.contactName}</span></div>
-      <div class="detail"><span>Email:</span> <span><a href="mailto:${data.contactEmail}" style="color: #2563eb;">${data.contactEmail}</a></span></div>
-      <div class="detail"><span>Telefon:</span> <span>${data.contactPhone}</span></div>
-    </div>
+        ${data.additionalInfo ? `
+        <div class="section">
+          <h3>Poznámka</h3>
+          <div class="detail">
+            <span class="value" style="font-weight: 400;">${data.additionalInfo.replace(/\n/g, '<br>')}</span>
+          </div>
+        </div>
+        ` : ''}
 
-    ${data.additionalInfo ? `
-    <div class="section">
-      <h3>Poznámka</h3>
-      <p style="margin: 0; color: #475569; font-size: 14px;">${data.additionalInfo.replace(/\n/g, '<br>')}</p>
+        <div class="cta">
+          <a href="${adminUrl}">Otevřít v administraci</a>
+        </div>
+      </div>
+      <div class="footer">
+        Pro zpracování žádosti přejděte do administrace a ověřte poskytnuté údaje.
+      </div>
     </div>
-    ` : ''}
-
-    <div class="cta">
-      <a href="${adminUrl}">Otevřít v administraci</a>
-    </div>
-
-    <p style="margin: 0; padding: 24px 32px; color: #64748b; font-size: 13px; text-align: center;">
-      Pro zpracování žádosti přejděte do administrace a ověřte poskytnuté údaje.
-    </p>
   </div>
 </body>
 </html>

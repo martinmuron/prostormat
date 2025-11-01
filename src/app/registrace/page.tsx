@@ -7,17 +7,6 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "https://prostormat.cz/registrace",
   },
-  robots: {
-    index: false,
-    follow: false,
-    googleBot: {
-      index: false,
-      follow: false,
-      "max-snippet": 0,
-      "max-image-preview": "none",
-      "max-video-preview": 0,
-    },
-  },
 }
 
 export default function RegisterRoute() {

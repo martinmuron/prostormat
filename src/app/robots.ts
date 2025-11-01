@@ -11,7 +11,6 @@ export default function robots(): MetadataRoute.Robots {
           "/admin",
           "/dashboard",
           "/prihlaseni",
-          "/registrace",
           "/zapomenute-heslo",
           "/reset-heslo",
           "/event-board/novy",

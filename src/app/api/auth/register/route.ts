@@ -9,6 +9,9 @@ import {
   buildEmailVerificationUrl,
   createEmailVerificationToken,
 } from "@/lib/email-verification"
+import { resend } from "@/lib/resend"
+import { generateUserRegistrationAdminNotificationEmail } from "@/lib/email-templates"
+import { randomUUID } from "crypto"
 
 const trackingSchema = z.object({
   eventId: z.string(),
@@ -114,6 +117,52 @@ export async function POST(request: Request) {
       })
     } catch (ga4Error) {
       console.error('Failed to track GA4 registration event:', ga4Error)
+      // Continue anyway - registration was successful
+    }
+
+    // Send admin notification email (best-effort)
+    let adminEmailStatus: 'sent' | 'failed' = 'sent'
+    let adminEmailError: string | null = null
+    try {
+      const adminNotification = generateUserRegistrationAdminNotificationEmail({
+        userId: user.id,
+        email: user.email,
+        name: user.name || user.email,
+        company: validatedData.company,
+        phone: validatedData.phone,
+        registeredAt: new Date(),
+      })
+
+      await resend.emails.send({
+        from: 'Prostormat <info@prostormat.cz>',
+        to: 'info@prostormat.cz',
+        subject: adminNotification.subject,
+        html: adminNotification.html,
+        text: adminNotification.text,
+      })
+    } catch (adminEmailError) {
+      adminEmailStatus = 'failed'
+      adminEmailError = adminEmailError instanceof Error ? adminEmailError.message : 'Unknown error'
+      console.error('Failed to send admin registration notification:', adminEmailError)
+      // Continue anyway - registration was successful
+    }
+
+    // Track admin notification in Email Flow Log (best-effort)
+    try {
+      await db.emailFlowLog.create({
+        data: {
+          id: randomUUID(),
+          emailType: 'user_registration_admin_notification',
+          recipient: 'info@prostormat.cz',
+          subject: `Nová registrace uživatele: ${user.email}`,
+          status: adminEmailStatus,
+          error: adminEmailError,
+          recipientType: 'admin',
+          sentBy: user.id,
+        },
+      })
+    } catch (logError) {
+      console.error('Failed to log registration admin notification:', logError)
       // Continue anyway - registration was successful
     }
 

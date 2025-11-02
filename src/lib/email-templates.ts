@@ -1471,6 +1471,120 @@ interface VenueSubmissionNotificationData {
   submissionId: string
 }
 
+// User registration admin notification email template
+interface UserRegistrationAdminNotificationData {
+  userId: string
+  email: string
+  name: string
+  company?: string | null
+  phone?: string | null
+  registeredAt: Date
+}
+
+export function generateUserRegistrationAdminNotificationEmail(data: UserRegistrationAdminNotificationData) {
+  const subject = `Nová registrace uživatele: ${data.email}`
+  const adminUrl = `https://prostormat.cz/admin/users`
+  const registeredAtFormatted = data.registeredAt.toLocaleString('cs-CZ')
+
+  const html = `
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>${subject}</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 0; background: #f8fafc; color: #0f172a; }
+    .wrapper { max-width: 640px; margin: 0 auto; padding: 24px; }
+    .card { background: #ffffff; border-radius: 18px; box-shadow: 0 18px 38px rgba(15, 23, 42, 0.12); overflow: hidden; }
+    .header { background: #0f172a; color: #ffffff; padding: 32px 36px; }
+    .header h1 { margin: 0; font-size: 24px; }
+    .header p { margin: 12px 0 0 0; font-size: 14px; opacity: 0.85; }
+    .badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 999px; font-weight: 600; font-size: 13px; margin-bottom: 12px; background: rgba(34, 197, 94, 0.15); color: #22c55e; }
+    .content { padding: 36px; }
+    .section { margin-bottom: 28px; padding: 24px; border-radius: 16px; border: 1px solid #e2e8f0; background: #f8fafc; }
+    .section:last-of-type { margin-bottom: 0; }
+    .section h3 { margin-top: 0; font-size: 16px; margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.08em; color: #475569; }
+    .detail { margin-bottom: 10px; }
+    .detail:last-of-type { margin-bottom: 0; }
+    .label { display: block; font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; color: #94a3b8; margin-bottom: 4px; }
+    .value { font-size: 16px; font-weight: 600; color: #0f172a; }
+    .value a { color: #2563eb; text-decoration: none; }
+    .value a:hover { text-decoration: underline; }
+    .cta { text-align: center; margin: 32px 0 0 0; }
+    .cta a { display: inline-block; padding: 14px 32px; background: #2563eb; color: #ffffff; text-decoration: none; border-radius: 999px; font-weight: 600; font-size: 15px; }
+    .cta a:hover { background: #1d4ed8; }
+    .footer { padding: 20px 36px 28px 36px; background: #f8fafc; color: #475569; font-size: 13px; text-align: center; line-height: 1.6; }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="card">
+      <div class="header">
+        <div class="badge">✨ Nová registrace</div>
+        <h1>Nový uživatel: ${data.name || data.email}</h1>
+        <p>Zaregistrováno ${registeredAtFormatted}</p>
+      </div>
+      <div class="content">
+        <div class="section">
+          <h3>Informace o uživateli</h3>
+          <div class="detail">
+            <span class="label">ID uživatele</span>
+            <span class="value">${data.userId}</span>
+          </div>
+          <div class="detail">
+            <span class="label">E-mail</span>
+            <span class="value"><a href="mailto:${data.email}">${data.email}</a></span>
+          </div>
+          <div class="detail">
+            <span class="label">Jméno</span>
+            <span class="value">${data.name || '-'}</span>
+          </div>
+          ${data.company ? `
+          <div class="detail">
+            <span class="label">Společnost</span>
+            <span class="value">${data.company}</span>
+          </div>
+          ` : ''}
+          ${data.phone ? `
+          <div class="detail">
+            <span class="label">Telefon</span>
+            <span class="value"><a href="tel:${data.phone}">${data.phone}</a></span>
+          </div>
+          ` : ''}
+          <div class="detail">
+            <span class="label">Datum registrace</span>
+            <span class="value">${registeredAtFormatted}</span>
+          </div>
+        </div>
+
+        <div class="cta">
+          <a href="${adminUrl}">Zobrazit v administraci</a>
+        </div>
+      </div>
+      <div class="footer">
+        Prostormat · Automatická notifikace registrace uživatele
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+`
+
+  const text = `
+Nová registrace uživatele
+
+E-mail: ${data.email}
+Jméno: ${data.name || '-'}
+${data.company ? `Společnost: ${data.company}\n` : ''}${data.phone ? `Telefon: ${data.phone}\n` : ''}Datum registrace: ${registeredAtFormatted}
+ID uživatele: ${data.userId}
+
+Správa uživatelů: ${adminUrl}
+`
+
+  return { subject, html, text }
+}
+
 export function generateVenueSubmissionNotificationEmail(data: VenueSubmissionNotificationData) {
   const submissionTypeLabel =
     data.submissionType === 'claim' ? 'Převzetí existujícího prostoru' :

@@ -88,14 +88,27 @@ export function EmailFlowDashboard() {
   const [broadcasts, setBroadcasts] = useState<BroadcastSummary[]>([])
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [pagination, setPagination] = useState({
+    page: 1,
+    limit: 50,
+    total: 0,
+    totalPages: 0,
+    hasNext: false,
+    hasPrev: false
+  })
 
-  const fetchEmailFlow = useCallback(async () => {
+  const fetchEmailFlow = useCallback(async (page: number = 1) => {
     try {
-      const response = await fetch('/api/admin/email-flow')
+      const response = await fetch(`/api/admin/email-flow?page=${page}&limit=50`)
       if (response.ok) {
         const data = await response.json()
         setEmailLogs(data.logs || [])
         setStats(data.stats || [])
+        if (data.pagination) {
+          setPagination(data.pagination)
+          setCurrentPage(data.pagination.page)
+        }
       }
     } catch (error) {
       console.error('Error fetching email statistics:', error)
@@ -115,20 +128,27 @@ export function EmailFlowDashboard() {
     }
   }, [])
 
-  const fetchAll = useCallback(async () => {
+  const fetchAll = useCallback(async (page: number = 1) => {
     setLoading(true)
-    await Promise.all([fetchEmailFlow(), fetchBroadcastTracking()])
+    await Promise.all([fetchEmailFlow(page), fetchBroadcastTracking()])
     setLoading(false)
     setRefreshing(false)
   }, [fetchBroadcastTracking, fetchEmailFlow])
 
   useEffect(() => {
-    fetchAll()
-  }, [fetchAll])
+    fetchAll(currentPage)
+  }, [fetchAll, currentPage])
 
   const handleRefresh = () => {
     setRefreshing(true)
-    fetchAll()
+    fetchAll(currentPage)
+  }
+
+  const handlePageChange = (newPage: number) => {
+    if (newPage >= 1 && newPage <= pagination.totalPages) {
+      setCurrentPage(newPage)
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    }
   }
 
   const getStatusIcon = (status: string) => {
@@ -296,6 +316,80 @@ export function EmailFlowDashboard() {
                   ))}
                 </tbody>
               </table>
+
+              {/* Pagination Controls */}
+              {pagination.totalPages > 1 && (
+                <div className="mt-6 flex items-center justify-between border-t pt-4">
+                  <div className="text-sm text-gray-600">
+                    Zobrazeno {((pagination.page - 1) * pagination.limit) + 1} - {Math.min(pagination.page * pagination.limit, pagination.total)} z {pagination.total} emailů
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handlePageChange(1)}
+                      disabled={!pagination.hasPrev}
+                    >
+                      První
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handlePageChange(currentPage - 1)}
+                      disabled={!pagination.hasPrev}
+                    >
+                      Předchozí
+                    </Button>
+
+                    {/* Page numbers */}
+                    <div className="flex items-center gap-1">
+                      {Array.from({ length: Math.min(5, pagination.totalPages) }, (_, i) => {
+                        // Show 5 pages centered around current page
+                        let pageNum: number
+                        if (pagination.totalPages <= 5) {
+                          pageNum = i + 1
+                        } else if (currentPage <= 3) {
+                          pageNum = i + 1
+                        } else if (currentPage >= pagination.totalPages - 2) {
+                          pageNum = pagination.totalPages - 4 + i
+                        } else {
+                          pageNum = currentPage - 2 + i
+                        }
+
+                        return (
+                          <Button
+                            key={pageNum}
+                            variant={pageNum === currentPage ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => handlePageChange(pageNum)}
+                            className="min-w-[40px]"
+                          >
+                            {pageNum}
+                          </Button>
+                        )
+                      })}
+                    </div>
+
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handlePageChange(currentPage + 1)}
+                      disabled={!pagination.hasNext}
+                    >
+                      Další
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handlePageChange(pagination.totalPages)}
+                      disabled={!pagination.hasNext}
+                    >
+                      Poslední
+                    </Button>
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </CardContent>

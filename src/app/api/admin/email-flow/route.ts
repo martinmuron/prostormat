@@ -4,18 +4,32 @@ import { authOptions } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { randomUUID } from "crypto"
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
-    
+
     if (!session?.user?.id || session.user.role !== "admin") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    // Get email flow logs (we'll need to create this table)
+    // Parse pagination parameters from URL
+    const { searchParams } = new URL(request.url)
+    const page = parseInt(searchParams.get('page') || '1', 10)
+    const limit = parseInt(searchParams.get('limit') || '50', 10)
+
+    // Ensure valid pagination values
+    const validPage = Math.max(1, page)
+    const validLimit = Math.min(Math.max(1, limit), 100) // Max 100 per page
+    const skip = (validPage - 1) * validLimit
+
+    // Get total count for pagination
+    const totalCount = await db.emailFlowLog.count()
+
+    // Get email flow logs with pagination
     const emailLogs = await db.emailFlowLog.findMany({
       orderBy: { createdAt: 'desc' },
-      take: 100,
+      skip,
+      take: validLimit,
       include: {
         user: {
           select: {
@@ -34,9 +48,20 @@ export async function GET() {
       }
     })
 
+    // Calculate pagination metadata
+    const totalPages = Math.ceil(totalCount / validLimit)
+
     return NextResponse.json({
       logs: emailLogs,
-      stats
+      stats,
+      pagination: {
+        page: validPage,
+        limit: validLimit,
+        total: totalCount,
+        totalPages,
+        hasNext: validPage < totalPages,
+        hasPrev: validPage > 1
+      }
     })
 
   } catch (error) {

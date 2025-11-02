@@ -103,7 +103,6 @@ export function buildVenueWhereClause({
     andConditions.push({
       OR: [
         { district: { equals: normalized, mode: 'insensitive' } },
-        { district: { contains: normalized, mode: 'insensitive' } },
         { address: { contains: normalized, mode: 'insensitive' } },
       ],
     })

@@ -251,69 +251,68 @@ export function AdminVenueEditForm({ venue }: AdminVenueEditFormProps) {
 
     try {
       const trimmedManagerEmail = managerEmail.trim()
-
-      if (!trimmedManagerEmail) {
-        setErrorMessage('Email správce prostoru je povinný')
-        setIsLoading(false)
-        return
-      }
-
-      let resolvedManagerId = formData.managerId
-      const currentManagerEmail = venue.manager?.email || ''
+      let resolvedManagerId: string | null = formData.managerId || null
       let managerCreated = false
 
-      if (trimmedManagerEmail.toLowerCase() !== currentManagerEmail.toLowerCase()) {
-        const userResponse = await fetch(
-          `/api/admin/users/find-by-email?email=${encodeURIComponent(trimmedManagerEmail)}`
-        )
+      if (trimmedManagerEmail) {
+        const currentManagerEmail = venue.manager?.email || ''
 
-        if (userResponse.ok) {
-          const userData = await userResponse.json()
-          resolvedManagerId = userData.user.id
-        } else if (userResponse.status === 404) {
-          if (!managerPassword || managerPassword.length < 8) {
-            setErrorMessage('Pro nového správce zadejte heslo alespoň o 8 znacích')
-            setIsLoading(false)
-            return
-          }
+        if (trimmedManagerEmail.toLowerCase() !== currentManagerEmail.toLowerCase()) {
+          const userResponse = await fetch(
+            `/api/admin/users/find-by-email?email=${encodeURIComponent(trimmedManagerEmail)}`
+          )
 
-          const createResponse = await fetch('/api/admin/users/create-venue-manager', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              email: trimmedManagerEmail,
-              password: managerPassword,
-            }),
-          })
+          if (userResponse.ok) {
+            const userData = await userResponse.json()
+            resolvedManagerId = userData.user.id
+          } else if (userResponse.status === 404) {
+            if (!managerPassword || managerPassword.length < 8) {
+              setErrorMessage('Pro nového správce zadejte heslo alespoň o 8 znacích')
+              setIsLoading(false)
+              return
+            }
 
-          if (createResponse.ok) {
-            const createData = await createResponse.json()
-            resolvedManagerId = createData.user.id
-            setManagerPassword('')
-            managerCreated = true
-          } else if (createResponse.status === 409) {
-            const conflictData = await createResponse.json().catch(() => null)
-            if (conflictData?.userId) {
-              resolvedManagerId = conflictData.userId
+            const createResponse = await fetch('/api/admin/users/create-venue-manager', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                email: trimmedManagerEmail,
+                password: managerPassword,
+              }),
+            })
+
+            if (createResponse.ok) {
+              const createData = await createResponse.json()
+              resolvedManagerId = createData.user.id
+              setManagerPassword('')
+              managerCreated = true
+            } else if (createResponse.status === 409) {
+              const conflictData = await createResponse.json().catch(() => null)
+              if (conflictData?.userId) {
+                resolvedManagerId = conflictData.userId
+              } else {
+                setErrorMessage(conflictData?.error || 'Nepodařilo se vytvořit uživatele.')
+                setIsLoading(false)
+                return
+              }
             } else {
-              setErrorMessage(conflictData?.error || 'Nepodařilo se vytvořit uživatele.')
+              const errorData = await createResponse.json().catch(() => null)
+              setErrorMessage(errorData?.error || 'Nepodařilo se vytvořit nového správce.')
               setIsLoading(false)
               return
             }
           } else {
-            const errorData = await createResponse.json().catch(() => null)
-            setErrorMessage(errorData?.error || 'Nepodařilo se vytvořit nového správce.')
+            const errorText = await userResponse.text()
+            setErrorMessage(errorText || 'Nepodařilo se načíst informace o správci prostoru.')
             setIsLoading(false)
             return
           }
-        } else {
-          const errorText = await userResponse.text()
-          setErrorMessage(errorText || 'Nepodařilo se načíst informace o správci prostoru.')
-          setIsLoading(false)
-          return
         }
+      } else {
+        // No manager email provided - unassign manager
+        resolvedManagerId = null
       }
 
       const payload = {
@@ -724,7 +723,7 @@ export function AdminVenueEditForm({ venue }: AdminVenueEditFormProps) {
                     </div>
 
                     <div>
-                      <Label htmlFor="managerEmail">Email správce prostoru</Label>
+                      <Label htmlFor="managerEmail">Email správce prostoru (volitelné)</Label>
                       <Input
                         id="managerEmail"
                         type="email"
@@ -733,7 +732,7 @@ export function AdminVenueEditForm({ venue }: AdminVenueEditFormProps) {
                         placeholder="manazer@example.com"
                       />
                       <p className="text-xs text-gray-500 mt-1">
-                        Aktuální správce: {venue.manager?.name} ({venue.manager?.email})
+                        {venue.manager?.email ? `Aktuální správce: ${venue.manager?.name || 'Neuvedeno'} (${venue.manager?.email})` : 'Prostor nemá přiřazeného správce'}
                       </p>
                     </div>
 

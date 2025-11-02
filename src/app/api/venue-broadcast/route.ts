@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
     // Find matching venues based on criteria
     const matchingVenues = await db.venue.findMany({
       where: {
-        status: 'active',
+        status: { in: ['published', 'active'] },
         // Add more matching criteria here based on location, capacity, etc.
         ...(locationPreference && {
           address: {

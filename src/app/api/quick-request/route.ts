@@ -79,7 +79,7 @@ async function findMatchingVenues(criteria: {
   const { min: minGuests } = parseGuestCount(criteria.guestCount)
 
   const where: Prisma.VenueWhereInput = {
-    status: 'active',
+    status: { in: ['published', 'active'] },
     contactEmail: { not: null },
   }
 

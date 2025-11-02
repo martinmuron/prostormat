@@ -109,9 +109,9 @@ export function Header() {
 
           <div className="flex items-center gap-2">
             <Link href="/pridat-prostor" className="md:hidden">
-              <Button size="sm" className="rounded-full bg-black p-2 text-white transition hover:bg-gray-800">
-                <Plus className="h-4 w-4" />
-                <span className="sr-only">Přidat prostor</span>
+              <Button size="sm" className="rounded-full bg-black px-3 py-2 text-white transition hover:bg-gray-800">
+                <Plus className="mr-1 h-4 w-4" />
+                <span className="text-xs font-medium">Přidat prostor</span>
               </Button>
             </Link>
 

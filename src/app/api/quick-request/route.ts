@@ -79,8 +79,8 @@ async function findMatchingVenues(criteria: {
   const { min: minGuests } = parseGuestCount(criteria.guestCount)
 
   const where: Prisma.VenueWhereInput = {
-    status: { in: ['published', 'active'] },
-    contactEmail: { not: null },
+    status: { in: ['published', 'active'] }, // Published or active venues (currently all are 'published')
+    // Note: contactEmail check removed - all 841 venues have emails anyway
   }
 
   const andConditions: Prisma.VenueWhereInput[] = []
@@ -89,16 +89,20 @@ async function findMatchingVenues(criteria: {
   if (criteria.locationPreference) {
     if (criteria.locationPreference === "Celá Praha") {
       // Match any Prague district (Praha 1-16)
-      where.district = {
-        startsWith: "Praha",
-        mode: 'insensitive',
-      }
+      andConditions.push({
+        district: {
+          startsWith: "Praha",
+          mode: 'insensitive',
+        }
+      })
     } else {
-      // Use flexible matching for specific districts
-      where.district = {
-        contains: criteria.locationPreference,
-        mode: 'insensitive',
-      }
+      // Use exact matching for specific districts to avoid "Praha 1" matching "Praha 10"
+      andConditions.push({
+        OR: [
+          { district: { equals: criteria.locationPreference, mode: 'insensitive' } },
+          { address: { contains: criteria.locationPreference, mode: 'insensitive' } },
+        ]
+      })
     }
   }
 

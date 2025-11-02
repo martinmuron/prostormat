@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { VENUE_TYPES } from "@/types"
 
-type VenueStatusOption = 'draft' | 'pending' | 'published' | 'hidden' | 'active'
+type VenueStatusOption = 'published' | 'hidden'
 
 interface VenueFormValues {
   id: string
@@ -38,10 +38,10 @@ type VenueFormProps = {
   venue: VenueFormValues
 }
 
-const VENUE_STATUS_OPTIONS: VenueStatusOption[] = ['draft', 'pending', 'published', 'hidden', 'active']
+const VENUE_STATUS_OPTIONS: VenueStatusOption[] = ['published', 'hidden']
 
 const normalizeStatus = (status: string | null | undefined): VenueStatusOption =>
-  VENUE_STATUS_OPTIONS.includes(status as VenueStatusOption) ? (status as VenueStatusOption) : 'draft'
+  VENUE_STATUS_OPTIONS.includes(status as VenueStatusOption) ? (status as VenueStatusOption) : 'published'
 
 export function VenueForm({ venue }: VenueFormProps) {
   const router = useRouter()

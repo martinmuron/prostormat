@@ -63,7 +63,7 @@ async function getDashboardData(userId: string, userRole: string): Promise<Dashb
         favoritedEventRequests: favoritedEventRequests.map(fav => fav.eventRequest),
         stats: {
           totalVenues: venues.length,
-          activeVenues: venues.filter(v => v.status === "active" || v.status === "published").length,
+          activeVenues: venues.filter(v => v.status === "published").length,
           totalInquiries: venues.reduce((sum, venue) => sum + venue._count.inquiries, 0),
           totalFavorites: favoritedEventRequests.length,
         }

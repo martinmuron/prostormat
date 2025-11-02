@@ -60,9 +60,7 @@ export default async function VenuesPage() {
   }
 
   const venues = await getVenues();
-  const publishedVenues = venues.filter(v => v.status === 'published' || v.status === 'active');
-  const draftVenues = venues.filter(v => v.status === 'draft');
-  const pendingVenues = venues.filter(v => v.status === 'pending');
+  const publishedVenues = venues.filter(v => v.status === 'published');
   const hiddenVenues = venues.filter(v => v.status === 'hidden');
 
   return (
@@ -84,8 +82,6 @@ export default async function VenuesPage() {
         <TabsList>
           <TabsTrigger value="all">Všechny ({venues.length})</TabsTrigger>
           <TabsTrigger value="published">Zveřejněné ({publishedVenues.length})</TabsTrigger>
-          <TabsTrigger value="draft">Koncepty ({draftVenues.length})</TabsTrigger>
-          <TabsTrigger value="pending">Čekající ({pendingVenues.length})</TabsTrigger>
           <TabsTrigger value="hidden">Skryté ({hiddenVenues.length})</TabsTrigger>
         </TabsList>
 
@@ -101,22 +97,6 @@ export default async function VenuesPage() {
           <Card>
             <CardContent className="pt-6">
               <DataTable columns={columns} data={publishedVenues} />
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="draft">
-          <Card>
-            <CardContent className="pt-6">
-              <DataTable columns={columns} data={draftVenues} />
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="pending">
-          <Card>
-            <CardContent className="pt-6">
-              <DataTable columns={columns} data={pendingVenues} />
             </CardContent>
           </Card>
         </TabsContent>

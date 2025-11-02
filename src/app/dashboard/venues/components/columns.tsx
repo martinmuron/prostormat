@@ -17,7 +17,7 @@ import Link from "next/link"
 export type Venue = {
   id: string
   name: string
-  status: "draft" | "pending" | "published" | "hidden" | "active"
+  status: "published" | "hidden"
   venueType?: string | null
   address: string
   district?: string | null

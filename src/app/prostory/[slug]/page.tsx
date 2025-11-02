@@ -56,7 +56,7 @@ async function getVenue(slug: string, viewerRole?: string | null) {
         },
         subVenues: {
           where: {
-            status: { in: viewerRole === 'admin' ? ["published", "active", "hidden"] : ["published", "active"] },
+            status: { in: viewerRole === 'admin' ? ["published", "hidden"] : ["published"] },
           },
           select: {
             id: true,
@@ -81,8 +81,8 @@ async function getVenue(slug: string, viewerRole?: string | null) {
     }
 
     const allowedStatuses = viewerRole === 'admin'
-      ? ['published', 'active', 'hidden']
-      : ['published', 'active']
+      ? ['published', 'hidden']
+      : ['published']
 
     if (!allowedStatuses.includes(venue.status)) {
       const restricted = venue.status === 'hidden'

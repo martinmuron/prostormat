@@ -145,7 +145,7 @@ export function AdminVenueEditForm({ venue }: AdminVenueEditFormProps) {
     musicAfter10: !!venue.musicAfter10,
     images: Array.isArray(venue.images) ? venue.images : [],
     amenities: Array.isArray(venue.amenities) ? venue.amenities : [],
-    status: venue.status ?? "draft",
+    status: venue.status ?? "published",
     isRecommended: !!venue.isRecommended,
     priority: typeof venue.priority === "number" ? venue.priority : null,
     prioritySource: venue.prioritySource ?? (typeof venue.priority === "number" ? "manual" : null),

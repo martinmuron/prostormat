@@ -109,7 +109,7 @@ export function VenueEditForm({ venue }: VenueEditFormProps) {
     youtubeUrl: venue.videoUrl ?? "",
     images: Array.isArray(venue.images) ? venue.images : [],
     amenities: Array.isArray(venue.amenities) ? venue.amenities : [],
-    status: venue.status ?? "draft",
+    status: venue.status ?? "published",
     musicAfter10: !!venue.musicAfter10
   })
 

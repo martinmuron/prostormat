@@ -98,7 +98,7 @@ model Venue {
   videoUrl         String?
   youtubeUrl       String?  // YouTube URL
   musicAfter10     Boolean? // Can play music after 22:00
-  status           String   @default("draft") // draft, active, expired, pending, published
+  status           String   @default("published") // published, hidden
   isRecommended    Boolean  @default(false) // Featured/recommended venue
   priority         Int?     // 1 = highest priority, null = no priority
   prioritySource   String?  // subscription | manual

@@ -41,7 +41,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   try {
     const venues = await db.venue.findMany({
       where: {
-        status: { in: ["published", "active"] },
+        status: "published",
         parentId: null,
       },
       select: {

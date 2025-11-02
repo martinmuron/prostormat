@@ -23,7 +23,7 @@ const updateVenueSchema = z.object({
   capacityStanding: z.union([z.string(), z.number()]).optional(),
   amenities: z.array(z.string()).optional(),
   images: z.array(z.string()).optional(),
-  status: z.enum(["draft", "pending", "published", "hidden", "active"]).optional(),
+  status: z.enum(["published", "hidden"]).optional(),
   isRecommended: z.boolean().optional(),
   priority: z.number().int().min(1).max(3).nullable().optional(),
   prioritySource: z.enum(['manual', 'subscription']).nullable().optional(),

@@ -229,9 +229,9 @@ const [updatingPaidId, setUpdatingPaidId] = useState<string | null>(null);
 
   const toggleVenueStatus = async (venueId: string, currentStatus: string) => {
     setUpdatingVenueId(venueId);
-    
-    // Handle both old status values (active) and new ones (published/hidden)
-    const isVisible = currentStatus === 'published' || currentStatus === 'active';
+
+    // Toggle between published and hidden
+    const isVisible = currentStatus === 'published';
     const newStatus = isVisible ? 'hidden' : 'published';
     
     try {
@@ -629,7 +629,7 @@ const [updatingPaidId, setUpdatingPaidId] = useState<string | null>(null);
                     {/* Actions */}
                     <div className="flex flex-col items-center gap-3 min-w-fit">
                       {/* Visibility Toggle */}
-                      {(venue.status === 'published' || venue.status === 'active' || venue.status === 'hidden') && (
+                      {(venue.status === 'published' || venue.status === 'hidden') && (
                         <div className="flex flex-col items-center gap-2">
                           <label className="text-sm font-medium text-gray-700 text-center">
                             Viditelnost
@@ -637,11 +637,11 @@ const [updatingPaidId, setUpdatingPaidId] = useState<string | null>(null);
                           <div className="flex items-center gap-2">
                             <EyeOff className={`h-4 w-4 ${venue.status === 'hidden' ? 'text-red-600' : 'text-gray-400'}`} />
                             <Switch
-                              checked={venue.status === 'published' || venue.status === 'active'}
+                              checked={venue.status === 'published'}
                               onCheckedChange={() => toggleVenueStatus(venue.id, venue.status)}
                               disabled={updatingVenueId === venue.id}
                             />
-                            <Eye className={`h-4 w-4 ${venue.status === 'published' || venue.status === 'active' ? 'text-green-600' : 'text-gray-400'}`} />
+                            <Eye className={`h-4 w-4 ${venue.status === 'published' ? 'text-green-600' : 'text-gray-400'}`} />
                           </div>
                           {updatingVenueId === venue.id && (
                             <Loader2 className="h-3 w-3 animate-spin text-gray-400" />
@@ -737,19 +737,6 @@ const [updatingPaidId, setUpdatingPaidId] = useState<string | null>(null);
                             </span>
                           )}
                         </Button>
-
-                        {venue.status === 'pending' && (
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            asChild
-                            className="w-full"
-                          >
-                            <a href={`/admin/venues/approve`}>
-                              Schválit
-                            </a>
-                          </Button>
-                        )}
                       </div>
                     </div>
                   </div>

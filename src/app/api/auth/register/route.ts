@@ -140,10 +140,10 @@ export async function POST(request: Request) {
         html: adminNotification.html,
         text: adminNotification.text,
       })
-    } catch (adminEmailError) {
+    } catch (sendError) {
       adminEmailStatus = 'failed'
-      adminEmailError = adminEmailError instanceof Error ? adminEmailError.message : 'Unknown error'
-      console.error('Failed to send admin registration notification:', adminEmailError)
+      adminEmailError = sendError instanceof Error ? sendError.message : 'Unknown error'
+      console.error('Failed to send admin registration notification:', sendError)
       // Continue anyway - registration was successful
     }
 

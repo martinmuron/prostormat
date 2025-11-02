@@ -143,8 +143,9 @@ async function findMatchingVenues(criteria: {
   return venues.filter(venue => {
     const standing = venue.capacityStanding ?? 0
     const seated = venue.capacitySeated ?? 0
-    const totalCapacity = standing + seated
-    return totalCapacity >= minGuests
+    // Use max capacity (either standing OR seated) to match database OR query logic
+    const maxCapacity = Math.max(standing, seated)
+    return maxCapacity >= minGuests
   })
 }
 

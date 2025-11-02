@@ -11,11 +11,11 @@ export async function GET() {
       return NextResponse.json({ hasAccess: false })
     }
 
-    // Check if user has at least one active venue (with active status and paid/subscribed)
+    // Check if user has at least one active/published venue (with paid/subscribed status)
     const venues = await db.venue.findMany({
       where: {
         managerId: session.user.id,
-        status: 'active'
+        status: { in: ['active', 'published'] }
       },
       select: {
         id: true,
@@ -28,7 +28,7 @@ export async function GET() {
       }
     })
 
-    // User has access if they have at least one active venue that is either:
+    // User has access if they have at least one active/published venue that is either:
     // 1. Paid (paid === true)
     // 2. Has an active subscription
     const hasAccess = venues.some(venue =>

@@ -1,10 +1,7 @@
-export const dynamic = 'force-dynamic'
-
 import Link from "next/link"
-import { notFound, redirect } from "next/navigation"
+import { notFound } from "next/navigation"
 import type { Metadata } from "next"
 import Image from "next/image"
-import { getServerSession } from "next-auth"
 import { VenueGallery } from "@/components/venue/venue-gallery"
 import { VenueContactForm } from "@/components/forms/venue-contact-form"
 import { HeartButton } from "@/components/venue/heart-button"
@@ -20,12 +17,13 @@ import { generateVenueSchema, generateBreadcrumbSchema, schemaToJsonLd } from "@
 import { buildVenueMetaDescription, buildVenueKeywords, absoluteUrl, DEFAULT_OG_IMAGE } from "@/lib/seo"
 import { VenueViewTracker } from "@/components/analytics/venue-view-tracker"
 import { getOptimizedImageUrl } from "@/lib/supabase-images"
-import { authOptions } from "@/lib/auth"
 import { formatDisplayAddress } from "@/lib/utils"
 
-export const revalidate = 0
+export const revalidate = 3600 // Revalidate every hour
 
-async function getVenue(slug: string, viewerRole?: string | null) {
+const PUBLIC_STATUSES: string[] = ["published", "active"]
+
+async function getVenue(slug: string) {
   try {
     const venue = await db.venue.findUnique({
       where: {
@@ -48,7 +46,7 @@ async function getVenue(slug: string, viewerRole?: string | null) {
         },
         subVenues: {
           where: {
-            status: { in: viewerRole === 'admin' ? ["published", "hidden"] : ["published"] },
+            status: { in: PUBLIC_STATUSES },
           },
           select: {
             id: true,
@@ -72,13 +70,8 @@ async function getVenue(slug: string, viewerRole?: string | null) {
       return { status: 'not_found' }
     }
 
-    const allowedStatuses = viewerRole === 'admin'
-      ? ['published', 'hidden']
-      : ['published']
-
-    if (!allowedStatuses.includes(venue.status)) {
-      const restricted = venue.status === 'hidden'
-      return { status: restricted ? 'hidden' : 'not_found' }
+    if (!PUBLIC_STATUSES.includes(venue.status)) {
+      return { status: 'not_found' }
     }
 
     return { status: 'ok', venue }
@@ -95,8 +88,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>
 }): Promise<Metadata> {
   const { slug } = await params
-  const session = await getServerSession(authOptions)
-  const result = await getVenue(slug, session?.user?.role)
+  const result = await getVenue(slug)
 
   if (result.status !== 'ok') {
     return {
@@ -172,12 +164,7 @@ export default async function VenueDetailPage({
   params: Promise<{ slug: string }>
 }) {
   const { slug } = await params
-  const session = await getServerSession(authOptions)
-  const result = await getVenue(slug, session?.user?.role)
-
-  if (result.status === 'hidden') {
-    redirect('/')
-  }
+  const result = await getVenue(slug)
 
   if (result.status !== 'ok') {
     notFound()

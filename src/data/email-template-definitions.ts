@@ -860,7 +860,7 @@ Klikněte na odkaz pro obnovení hesla (platný 60 minut):
     name: 'Notifikace prostoru - rychlá poptávka',
     subject: '{{guestCount}} hostů - Prostormat poptávka',
     description: 'Email odeslaný majiteli prostoru při nové poptávce přes Prostormat',
-    variables: ['{{venueName}}', '{{eventTitle}}', '{{guestCount}}', '{{eventDate}}', '{{eventType}}', '{{locationPreference}}', '{{detailUrl}}'],
+    variables: ['{{venueName}}', '{{eventTitle}}', '{{guestCount}}', '{{eventDate}}', '{{locationPreference}}', '{{detailUrl}}'],
     htmlContent: `<!DOCTYPE html>
 <html lang="cs">
 <head>
@@ -917,16 +917,12 @@ Klikněte na odkaz pro obnovení hesla (platný 60 minut):
             <span class="value">{{eventDate}}</span>
           </div>
           <div class="detail-row">
-            <span class="label">Typ akce</span>
-            <span class="value">{{eventType}}</span>
-          </div>
-          <div class="detail-row">
             <span class="label">Preferovaná lokalita</span>
             <span class="value">{{locationPreference}}</span>
           </div>
         </div>
         <p class="note">
-          Kompletní detaily (rozpočet, požadavky, kontakt) najdete přímo ve vašem dashboardu.
+          Kompletní detaily (požadavky, kontakt) najdete přímo ve vašem dashboardu.
         </p>
         <div class="cta">
           <a href="{{detailUrl}}">Otevřít poptávku v administraci</a>
@@ -948,7 +944,6 @@ Klikněte na odkaz pro obnovení hesla (platný 60 minut):
 Název akce: {{eventTitle}}
 Počet hostů: {{guestCount}}
 Datum: {{eventDate}}
-Typ akce: {{eventType}}
 Preferovaná lokalita: {{locationPreference}}
 
 Kompletní detaily najdete ve vašem dashboardu:

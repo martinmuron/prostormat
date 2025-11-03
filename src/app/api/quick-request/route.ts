@@ -9,7 +9,6 @@ import { resend } from "@/lib/resend"
 import { generateQuickRequestInternalNotificationEmail } from "@/lib/email-templates"
 import { trackBulkFormSubmit } from "@/lib/meta-conversions-api"
 import { trackGA4ServerLead } from "@/lib/ga4-server-tracking"
-import { EVENT_TYPES } from "@/types"
 import { getSafeSentByUserId } from "@/lib/email-helpers"
 
 const trackingSchema = z.object({
@@ -20,21 +19,23 @@ const trackingSchema = z.object({
 }).optional()
 
 const quickRequestSchema = z.object({
-  eventType: z.string().min(1, "Event type is required"),
   eventDate: z.string().min(1, "Event date is required"),
   guestCount: z.string().min(1, "Guest count is required"),
-  budgetRange: z.string().optional(),
   locationPreference: z.string().min(1, "Location preference is required"),
   requirements: z.string().optional(),
   message: z.string().optional(),
   contactName: z.string().min(2, "Contact name is required"),
   contactEmail: z.string().email("Valid email is required"),
   contactPhone: z.string().optional(),
+  eventType: z.string().optional(),
+  budgetRange: z.string().optional(),
 })
 
 const payloadSchema = quickRequestSchema.extend({
   tracking: trackingSchema,
 })
+
+const QUICK_REQUEST_DEFAULT_EVENT_TYPE = 'rychla-poptavka' as const
 
 type VenueMatch = {
   id: string
@@ -74,7 +75,6 @@ function parseGuestCount(guestCountRange: string): { min: number; max: number | 
 async function findMatchingVenues(criteria: {
   guestCount: string
   locationPreference: string
-  eventType: string
 }): Promise<VenueMatch[]> {
   const { min: minGuests } = parseGuestCount(criteria.guestCount)
 
@@ -141,7 +141,6 @@ async function findMatchingVenues(criteria: {
   console.log(`[Quick Request] Matched ${venues.length} venues for criteria:`, {
     location: criteria.locationPreference,
     minGuests,
-    eventType: criteria.eventType
   })
 
   return venues.filter(venue => {
@@ -163,7 +162,6 @@ export async function POST(request: Request) {
     const matchingVenues = await findMatchingVenues({
       guestCount: validatedData.guestCount,
       locationPreference: validatedData.locationPreference,
-      eventType: validatedData.eventType,
     })
 
     if (matchingVenues.length === 0) {
@@ -172,6 +170,20 @@ export async function POST(request: Request) {
         { status: 404 }
       )
     }
+
+    const guestCountInfo = parseGuestCount(validatedData.guestCount)
+    const guestCountNumeric = Number.isFinite(guestCountInfo.min) ? guestCountInfo.min : null
+    const guestRangeLabel =
+      QUICK_REQUEST_GUEST_LABELS[validatedData.guestCount] ||
+      (guestCountNumeric ? `${guestCountNumeric}+ hostů` : null)
+    const locationLabel =
+      validatedData.locationPreference === "Celá Praha"
+        ? "Praha"
+        : validatedData.locationPreference || null
+    const broadcastTitleParts = [guestRangeLabel, locationLabel].filter(Boolean)
+    const broadcastTitle = broadcastTitleParts.length
+      ? `Rychlá poptávka · ${broadcastTitleParts.join(" · ")}`
+      : "Rychlá poptávka"
 
     const sentVenueIds = matchingVenues.map((venue) => venue.id)
     const isSqlite = process.env.DATABASE_URL?.startsWith("file:")
@@ -184,12 +196,12 @@ export async function POST(request: Request) {
       data: {
         id: randomUUID(),
         userId: session?.user?.id || "anonymous", // Allow anonymous requests
-        title: `Rychlá poptávka - ${validatedData.eventType}`,
+        title: broadcastTitle,
         description: validatedData.message || "Rychlá poptávka prostoru",
-        eventType: validatedData.eventType,
+        eventType: validatedData.eventType || QUICK_REQUEST_DEFAULT_EVENT_TYPE,
         eventDate: new Date(validatedData.eventDate),
-        guestCount: parseInt(validatedData.guestCount.split('-')[0]) || 1, // Take the lower bound
-        budgetRange: validatedData.budgetRange || null,
+        guestCount: guestCountNumeric ?? 1, // Take the lower bound
+        budgetRange: null,
         locationPreference: validatedData.locationPreference,
         requirements: validatedData.requirements || null,
         contactEmail: validatedData.contactEmail,
@@ -224,19 +236,10 @@ export async function POST(request: Request) {
       const eventRequestUserId = session?.user?.id ?? fallbackAdmin?.id
 
       if (eventRequestUserId) {
-        const guestCountInfo = parseGuestCount(validatedData.guestCount)
-        const guestCountNumeric = Number.isFinite(guestCountInfo.min) ? guestCountInfo.min : null
-        const eventTypeLabel =
-          EVENT_TYPES[validatedData.eventType as keyof typeof EVENT_TYPES] || validatedData.eventType
-        const guestRangeLabel =
-          QUICK_REQUEST_GUEST_LABELS[validatedData.guestCount] ||
-          (guestCountNumeric ? `${guestCountNumeric}+ hostů` : "Neuvedeno")
-        const locationLabel =
-          validatedData.locationPreference === "Celá Praha"
-            ? "Praha"
-            : validatedData.locationPreference || "Bez lokality"
-
-        const eventBoardTitle = `Rychlá poptávka: ${eventTypeLabel} · ${guestRangeLabel} · ${locationLabel}`
+        const eventBoardTitleParts = [guestRangeLabel, locationLabel].filter(Boolean)
+        const eventBoardTitle = eventBoardTitleParts.length
+          ? `Rychlá poptávka: ${eventBoardTitleParts.join(" · ")}`
+          : "Rychlá poptávka"
 
         const descriptionParts = [
           validatedData.message?.trim() || null,
@@ -252,10 +255,10 @@ export async function POST(request: Request) {
             userId: eventRequestUserId,
             title: eventBoardTitle,
             description: descriptionParts.join("\n\n"),
-            eventType: validatedData.eventType,
+            eventType: validatedData.eventType || QUICK_REQUEST_DEFAULT_EVENT_TYPE,
             eventDate: new Date(validatedData.eventDate),
             guestCount: guestCountNumeric,
-            budgetRange: validatedData.budgetRange || null,
+            budgetRange: null,
             locationPreference: validatedData.locationPreference || null,
             requirements: validatedData.requirements || null,
             contactName: validatedData.contactName,
@@ -279,10 +282,8 @@ export async function POST(request: Request) {
     const summaryEmail = generateQuickRequestInternalNotificationEmail({
       broadcastId: broadcast.id,
       quickRequest: {
-        eventType: validatedData.eventType,
         eventDate: validatedData.eventDate,
         guestCount: validatedData.guestCount,
-        budgetRange: validatedData.budgetRange,
         locationPreference: validatedData.locationPreference,
         requirements: validatedData.requirements,
         message: validatedData.message,
@@ -352,10 +353,8 @@ export async function POST(request: Request) {
         fbp: tracking?.fbp,
         fbc: tracking?.fbc,
       }, {
-        eventType: validatedData.eventType,
-        guestCount: typeof validatedData.guestCount === 'number' ? validatedData.guestCount : Number(validatedData.guestCount) || undefined,
+        guestCount: guestCountNumeric ?? undefined,
         locationPreference: validatedData.locationPreference,
-        budgetRange: validatedData.budgetRange,
       }, request, tracking?.eventId)
     } catch (metaError) {
       console.error('Failed to track Meta bulk form submit event:', metaError)
@@ -367,10 +366,8 @@ export async function POST(request: Request) {
       await trackGA4ServerLead({
         userId: session?.user?.id,
         formType: 'bulk_request',
-        eventType: validatedData.eventType,
-        guestCount: validatedData.guestCount,
+        guestCount: guestCountNumeric ?? undefined,
         location: validatedData.locationPreference,
-        budgetRange: validatedData.budgetRange,
         email: validatedData.contactEmail,
         clientId: tracking?.clientId,
         eventId: tracking?.eventId,

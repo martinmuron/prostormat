@@ -10,17 +10,15 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Label } from "@/components/ui/label"
 import { LoginModal } from "@/components/auth/login-modal"
-import { EVENT_TYPES, LOCATION_OPTIONS } from "@/types"
+import { LOCATION_OPTIONS } from "@/types"
 import { Clock, Send, Zap, CheckCircle } from "lucide-react"
 import { PageHero } from "@/components/layout/page-hero"
 import { trackGA4BulkFormSubmit } from "@/lib/ga4-tracking"
 import { createTrackingContext } from "@/lib/tracking-utils"
 
 interface QuickRequestFormData {
-  eventType: string
   eventDate: string
   guestCount: string
-  budgetRange: string
   locationPreference: string
   requirements: string
   contactName: string
@@ -37,15 +35,6 @@ const GUEST_COUNT_OPTIONS = [
   { label: "200+ osob", value: "200+" },
 ]
 
-const BUDGET_RANGES = [
-  { label: "Do 50 000 Kč", value: "0-50000" },
-  { label: "50 000 - 100 000 Kč", value: "50000-100000" },
-  { label: "100 000 - 200 000 Kč", value: "100000-200000" },
-  { label: "200 000 - 500 000 Kč", value: "200000-500000" },
-  { label: "500 000+ Kč", value: "500000+" },
-  { label: "Domluvíme se", value: "negotiable" },
-]
-
 export function QuickRequestPage() {
   const { data: session, status } = useSession()
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -55,10 +44,8 @@ export function QuickRequestPage() {
   const today = useMemo(() => new Date().toISOString().split('T')[0], [])
   
   const [formData, setFormData] = useState<QuickRequestFormData>({
-    eventType: "",
     eventDate: "",
     guestCount: "",
-    budgetRange: "",
     locationPreference: "",
     requirements: "",
     contactName: session?.user?.name || "",
@@ -72,7 +59,6 @@ export function QuickRequestPage() {
   const validateForm = () => {
     const newErrors: Partial<QuickRequestFormData> = {}
 
-    if (!formData.eventType) newErrors.eventType = "Vyberte typ akce"
     if (!formData.eventDate) newErrors.eventDate = "Vyberte datum akce"
     if (!formData.guestCount) newErrors.guestCount = "Vyberte počet hostů"
     if (!formData.locationPreference) newErrors.locationPreference = "Vyberte lokalitu"
@@ -109,10 +95,8 @@ export function QuickRequestPage() {
 
         // Track bulk form submission in GA4
         trackGA4BulkFormSubmit({
-          event_type: formData.eventType,
           guest_count: formData.guestCount,
           location: formData.locationPreference,
-          budget_range: formData.budgetRange,
           tracking,
         })
 
@@ -247,27 +231,6 @@ export function QuickRequestPage() {
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Event Details */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Event Type */}
-                <div>
-                  <Label htmlFor="eventType" className="text-sm font-medium text-gray-700 mb-2 block">
-                    Typ akce *
-                  </Label>
-                  <Select value={formData.eventType} onValueChange={(value) => handleInputChange('eventType', value)}>
-                    <SelectTrigger 
-                      className={errors.eventType ? 'border-red-300' : ''}
-                      onFocus={handleInputFocus}
-                    >
-                      <SelectValue placeholder="Vyberte typ akce" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {Object.entries(EVENT_TYPES).map(([key, label]) => (
-                        <SelectItem key={key} value={key}>{label}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  {errors.eventType && <p className="text-sm text-red-600 mt-1">{errors.eventType}</p>}
-                </div>
-
                 {/* Event Date */}
                 <div>
                   <Label htmlFor="eventDate" className="text-sm font-medium text-gray-700 mb-2 block">
@@ -304,23 +267,6 @@ export function QuickRequestPage() {
                     </SelectContent>
                   </Select>
                   {errors.guestCount && <p className="text-sm text-red-600 mt-1">{errors.guestCount}</p>}
-                </div>
-
-                {/* Budget Range */}
-                <div>
-                  <Label htmlFor="budgetRange" className="text-sm font-medium text-gray-700 mb-2 block">
-                    Rozpočet
-                  </Label>
-                  <Select value={formData.budgetRange} onValueChange={(value) => handleInputChange('budgetRange', value)}>
-                    <SelectTrigger onFocus={handleInputFocus}>
-                      <SelectValue placeholder="Vyberte rozpočet (volitelné)" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {BUDGET_RANGES.map(range => (
-                        <SelectItem key={range.value} value={range.value}>{range.label}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
                 </div>
 
                 {/* Location */}

@@ -75,7 +75,6 @@ export async function POST(
     }
 
     const quickRequestPayload = {
-      eventType: broadcast.eventType,
       title: broadcast.title,
       guestCount: broadcast.guestCount,
       eventDate: broadcast.eventDate,

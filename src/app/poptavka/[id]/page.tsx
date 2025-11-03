@@ -137,10 +137,6 @@ export default async function InquiryDetailsPage({ params, searchParams }: PageP
                   Detaily akce
                 </h3>
                 <div className="space-y-3">
-                  <div>
-                    <span className="text-sm font-medium text-gray-700">Typ akce:</span>
-                    <p className="text-gray-900">{broadcast.eventType}</p>
-                  </div>
                   {broadcast.eventDate && (
                     <div>
                       <span className="text-sm font-medium text-gray-700">Datum akce:</span>
@@ -153,12 +149,6 @@ export default async function InquiryDetailsPage({ params, searchParams }: PageP
                     <div>
                       <span className="text-sm font-medium text-gray-700">Počet hostů:</span>
                       <p className="text-gray-900">{broadcast.guestCount}</p>
-                    </div>
-                  )}
-                  {broadcast.budgetRange && (
-                    <div>
-                      <span className="text-sm font-medium text-gray-700">Rozpočet:</span>
-                      <p className="text-gray-900">{broadcast.budgetRange}</p>
                     </div>
                   )}
                   {broadcast.locationPreference && (

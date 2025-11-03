@@ -2,7 +2,6 @@ import { resend, FROM_EMAIL, REPLY_TO_EMAIL } from "@/lib/resend"
 import { generateQuickRequestVenueNotificationEmail } from "@/lib/email-templates"
 
 interface QuickRequestContact {
-  eventType: string
   title?: string | null
   guestCount?: number | null
   eventDate?: Date | string | null
@@ -30,7 +29,6 @@ export async function sendQuickRequestEmailToVenue(
     venueSlug: venue.slug,
     broadcastId,
     quickRequest: {
-      eventType: request.eventType,
       title: request.title,
       guestCount: request.guestCount,
       eventDate: request.eventDate,

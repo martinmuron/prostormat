@@ -556,7 +556,6 @@ Plné znění poptávky: ${detailUrl}
 
 export function generateQuickRequestVenueNotificationEmail(data: QuickRequestVenueNotificationData) {
   const { venueName, venueSlug, broadcastId, quickRequest } = data
-  const eventTypeLabel = EVENT_TYPES[quickRequest.eventType as EventType] || quickRequest.eventType
   const detailUrl = `https://prostormat.cz/poptavka/${broadcastId}?venue=${encodeURIComponent(venueSlug)}`
 
   const eventTitle = (quickRequest.title ?? '').trim() || 'Název akce nebyl uveden'
@@ -648,10 +647,6 @@ export function generateQuickRequestVenueNotificationEmail(data: QuickRequestVen
             <span class="label">Datum</span>
             <span class="value">${eventDateText}</span>
           </div>
-          <div class="detail-row">
-            <span class="label">Typ akce</span>
-            <span class="value">${eventTypeLabel}</span>
-          </div>
           ${locationText
             ? `<div class="detail-row">
             <span class="label">Preferovaná lokalita</span>
@@ -660,7 +655,7 @@ export function generateQuickRequestVenueNotificationEmail(data: QuickRequestVen
             : ''}
         </div>
         <p class="note">
-          Kompletní detaily (rozpočet, požadavky, kontakt) najdete přímo ve vašem dashboardu.
+          Kompletní detaily (požadavky, kontakt) najdete přímo ve vašem dashboardu.
         </p>
         <div class="cta">
           <a href="${detailUrl}">Otevřít poptávku v administraci</a>
@@ -685,7 +680,6 @@ Máte novou poptávku na váš prostor ${venueName}
 Název akce: ${eventTitle}
 Počet hostů: ${guestCountDisplay}
 Datum: ${eventDateText}
-Typ akce: ${eventTypeLabel}
 ${locationText ? `Preferovaná lokalita: ${locationText}\n` : ''}
 
 Kompletní detaily najdete ve vašem dashboardu:
@@ -1331,7 +1325,6 @@ interface QuickRequestVenueNotificationData {
   venueSlug: string
   broadcastId: string
   quickRequest: {
-    eventType: string
     title?: string | null
     guestCount?: number | string | null
     eventDate?: Date | string | null
@@ -1351,10 +1344,8 @@ interface QuickRequestInternalNotificationVenue {
 interface QuickRequestInternalNotificationData {
   broadcastId: string
   quickRequest: {
-    eventType: string
     eventDate?: string
     guestCount?: string
-    budgetRange?: string
     locationPreference?: string
     requirements?: string
     message?: string
@@ -1365,18 +1356,34 @@ interface QuickRequestInternalNotificationData {
   matchingVenues: QuickRequestInternalNotificationVenue[]
 }
 
+const QUICK_REQUEST_INTERNAL_GUEST_LABELS: Record<string, string> = {
+  "1-25": "1-25 hostů",
+  "26-50": "26-50 hostů",
+  "51-100": "51-100 hostů",
+  "101-200": "101-200 hostů",
+  "200+": "200+ hostů",
+}
+
 export function generateQuickRequestInternalNotificationEmail(data: QuickRequestInternalNotificationData) {
   const { quickRequest, matchingVenues, broadcastId } = data
-  const eventTypeLabel = EVENT_TYPES[quickRequest.eventType as EventType] || quickRequest.eventType
   const adminUrl = `https://prostormat.cz/admin/quick-requests?highlight=${broadcastId}`
 
   const matchingCount = matchingVenues.length
+
+  const guestLabel = quickRequest.guestCount
+    ? QUICK_REQUEST_INTERNAL_GUEST_LABELS[quickRequest.guestCount] || quickRequest.guestCount
+    : null
+  const locationLabel = quickRequest.locationPreference || null
+  const subjectDetails = [guestLabel, locationLabel].filter(Boolean).join(' · ')
+  const guestCountDisplay = guestLabel || quickRequest.guestCount || 'Neuvedeno'
 
   const eventDateText = quickRequest.eventDate
     ? new Date(quickRequest.eventDate).toLocaleDateString('cs-CZ')
     : 'Neuvedeno'
 
-  const subject = `Nová rychlá poptávka – ${eventTypeLabel}`
+  const subject = subjectDetails
+    ? `Nová rychlá poptávka – ${subjectDetails}`
+    : 'Nová rychlá poptávka'
 
   const html = `
 <!DOCTYPE html>
@@ -1403,16 +1410,15 @@ export function generateQuickRequestInternalNotificationEmail(data: QuickRequest
   <div class="container">
     <div class="header">
       <div class="badge">⚡ Rychlá poptávka</div>
-      <h2 style="margin: 16px 0 8px 0; font-size: 24px;">${eventTypeLabel}</h2>
+      <h2 style="margin: 16px 0 8px 0; font-size: 24px;">${subjectDetails ? `Rychlá poptávka – ${subjectDetails}` : 'Rychlá poptávka'}</h2>
       <p style="margin: 0; color: #475569;">Máme novou poptávku čekající na manuální odeslání provozovatelům.</p>
     </div>
 
     <div class="section">
       <h3>Detaily poptávky</h3>
       <div class="detail"><span>Datum akce:</span> ${eventDateText}</div>
-      <div class="detail"><span>Počet hostů:</span> ${quickRequest.guestCount || 'Neuvedeno'}</div>
+      <div class="detail"><span>Počet hostů:</span> ${guestCountDisplay}</div>
       <div class="detail"><span>Lokalita:</span> ${quickRequest.locationPreference || 'Neuvedeno'}</div>
-      <div class="detail"><span>Rozpočet:</span> ${quickRequest.budgetRange || 'Neuvedeno'}</div>
       ${quickRequest.requirements ? `<div class="detail"><span>Požadavky:</span> ${quickRequest.requirements}</div>` : ''}
       ${quickRequest.message ? `<div class="detail"><span>Zpráva:</span> ${quickRequest.message}</div>` : ''}
     </div>
@@ -1436,12 +1442,11 @@ export function generateQuickRequestInternalNotificationEmail(data: QuickRequest
 `
 
   const text = `
-Nová rychlá poptávka – ${eventTypeLabel}
+Nová rychlá poptávka${subjectDetails ? ` – ${subjectDetails}` : ''}
 
 Datum akce: ${eventDateText}
-Počet hostů: ${quickRequest.guestCount || 'Neuvedeno'}
+Počet hostů: ${guestCountDisplay}
 Lokalita: ${quickRequest.locationPreference || 'Neuvedeno'}
-Rozpočet: ${quickRequest.budgetRange || 'Neuvedeno'}
 Požadavky: ${quickRequest.requirements || '-'}
 Zpráva: ${quickRequest.message || '-'}
 

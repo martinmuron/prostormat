@@ -214,7 +214,6 @@ export function UserDashboard({ data }: UserDashboardProps) {
             ) : (
               <div className="space-y-4">
                 {broadcasts.slice(0, 3).map((broadcast) => {
-                  const eventTypeLabel = EVENT_TYPES[broadcast.eventType as EventType] || broadcast.eventType
                   return (
                     <div key={broadcast.id} className="border border-gray-200 rounded-xl p-4">
                       <div className="flex items-start justify-between mb-2">
@@ -223,7 +222,6 @@ export function UserDashboard({ data }: UserDashboardProps) {
                           {broadcast.logs.length} prostorů
                         </Badge>
                       </div>
-                      <p className="text-caption text-gray-600 mb-2">{eventTypeLabel}</p>
                       <p className="text-caption text-gray-500">
                         Odesláno {formatDate(new Date(broadcast.createdAt))}
                       </p>
@@ -359,13 +357,11 @@ export function UserDashboard({ data }: UserDashboardProps) {
         ) : (
           <div className="space-y-4">
             {broadcasts.map((broadcast) => {
-              const eventTypeLabel = EVENT_TYPES[broadcast.eventType as EventType] || broadcast.eventType
               return (
                 <div key={broadcast.id} className="border border-gray-200 rounded-xl p-6 hover:shadow-md transition-shadow">
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex-1">
                       <h4 className="text-lg font-medium text-gray-900 mb-2">{broadcast.title}</h4>
-                      <p className="text-gray-600 mb-2">{eventTypeLabel}</p>
                       {broadcast.description && (
                         <p className="text-gray-600 line-clamp-2">{broadcast.description}</p>
                       )}

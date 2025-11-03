@@ -98,11 +98,6 @@ model Venue {
   prioritySource   String? // manual | homepage
   parentId         String?
   managerId        String
-  billingEmail     String?
-  billingName      String?
-  billingAddress   String?
-  taxId            String?
-  vatId            String?
   paid             Boolean   @default(false) // Whether venue has paid offline listing
   paymentDate      DateTime? // When the 12,000 CZK was paid
   expiresAt        DateTime?
@@ -121,6 +116,11 @@ model Venue {
   homepageSlot       HomepageVenue?
   submissionRequests VenueSubmissionRequest[]
 
+  @@index([status, priority, updatedAt])
+  @@index([district, status])
+  @@index([capacityStanding, status])
+  @@index([capacitySeated, status])
+  @@index([status, createdAt])
   @@map("prostormat_venues")
 }
 

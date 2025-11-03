@@ -20,6 +20,7 @@ import { getOptimizedImageUrl } from "@/lib/supabase-images"
 import { formatDisplayAddress } from "@/lib/utils"
 
 export const revalidate = 3600 // Revalidate every hour
+export const dynamicParams = true // Allow on-demand generation of pages
 
 const PUBLIC_STATUSES: string[] = ["published", "active"]
 

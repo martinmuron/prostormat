@@ -3,13 +3,11 @@ import { Suspense } from "react"
 import type { Metadata } from "next"
 import { VenueFilters } from "@/components/venue/venue-filters"
 import { InfiniteVenueList } from "@/components/venue/infinite-venue-list"
-import { db } from "@/lib/db"
-import { buildVenueWhereClause } from "@/lib/venue-filters"
-import { generateOrderSeed, sortVenuesByPriority } from "@/lib/venue-priority"
 import { PageHero } from "@/components/layout/page-hero"
 import { DEFAULT_OG_IMAGE, DEFAULT_OG_IMAGES } from "@/lib/seo"
+import { fetchRandomizedVenuePage, getCurrentSeed } from "@/lib/venue-order"
 
-export const dynamic = "force-dynamic"
+export const revalidate = 300
 
 interface SearchParams {
   q?: string
@@ -64,61 +62,38 @@ export async function generateMetadata({
 
 async function getInitialVenues(
   searchParams: SearchParams,
-  orderSeed: number,
   pageNumber: number,
 ) {
   try {
-    const where = buildVenueWhereClause({
-      q: searchParams.q ?? null,
-      type: searchParams.type ?? null,
-      district: searchParams.district ?? null,
-      capacity: searchParams.capacity ?? null,
-      statuses: PUBLIC_STATUSES,
-      includeSubvenues: false,
-    })
-
-    const venues = await db.venue.findMany({
-      where,
-      select: {
-        id: true,
-        name: true,
-        slug: true,
-        description: true,
-        address: true,
-        district: true,
-        capacitySeated: true,
-        capacityStanding: true,
-        venueType: true,
-        venueTypes: true,
-        images: true,
-        status: true,
-        priority: true,
-        prioritySource: true,
-        homepageSlot: {
-          select: {
-            position: true,
-          },
-        },
-      }
-    })
-
-    const orderedVenues = sortVenuesByPriority(venues, orderSeed)
+    const seed = getCurrentSeed()
     const offset = (pageNumber - 1) * VENUES_PER_PAGE
-    const initialVenues = orderedVenues.slice(offset, offset + VENUES_PER_PAGE)
-    const totalCount = orderedVenues.length
 
-    // Ensure images is always an array
+    const result = await fetchRandomizedVenuePage({
+      filters: {
+        q: searchParams.q ?? null,
+        type: searchParams.type ?? null,
+        district: searchParams.district ?? null,
+        capacity: searchParams.capacity ?? null,
+        statuses: PUBLIC_STATUSES,
+        includeSubvenues: false,
+      },
+      seed,
+      take: VENUES_PER_PAGE,
+      skip: offset,
+    })
+
     return {
-      venues: initialVenues.map(venue => ({
+      seed,
+      venues: result.venues.map((venue) => ({
         ...venue,
-        images: Array.isArray(venue.images) ? venue.images : []
+        images: Array.isArray(venue.images) ? venue.images : [],
       })),
-      totalCount,
-      hasMore: totalCount > offset + initialVenues.length
+      totalCount: result.totalCount,
+      hasMore: result.hasMore,
     }
   } catch (error) {
     console.error("Error fetching prostormat_venues:", error)
-    return { venues: [], totalCount: 0, hasMore: false }
+    return { seed: getCurrentSeed(), venues: [], totalCount: 0, hasMore: false }
   }
 }
 
@@ -145,16 +120,13 @@ function VenueGridSkeleton() {
 
 async function VenueContent({
   searchParams,
-  orderSeed,
   currentPage,
 }: {
   searchParams: SearchParams
-  orderSeed: number
   currentPage: number
 }) {
-  const { venues, totalCount, hasMore } = await getInitialVenues(
+  const { venues, totalCount, hasMore, seed } = await getInitialVenues(
     searchParams,
-    orderSeed,
     currentPage,
   )
 
@@ -180,8 +152,8 @@ async function VenueContent({
         initialVenues={venues}
         searchParams={searchParams}
         hasMore={hasMore}
-        orderSeed={orderSeed}
         initialPage={currentPage}
+        seed={seed}
         includeHidden={false}
       />
       <PaginationLinks
@@ -254,7 +226,6 @@ export default async function VenuesPage({
   searchParams: Promise<SearchParams>
 }) {
   const resolvedSearchParams = await searchParams
-  const orderSeed = generateOrderSeed()
   const currentPage = Math.max(1, Number.parseInt(resolvedSearchParams.page ?? "1", 10) || 1)
 
   const hero = (
@@ -282,7 +253,6 @@ export default async function VenuesPage({
         <Suspense fallback={<VenueGridSkeleton />}>
           <VenueContent
             searchParams={resolvedSearchParams}
-            orderSeed={orderSeed}
             currentPage={currentPage}
           />
         </Suspense>

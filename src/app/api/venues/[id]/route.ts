@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server"
+import { revalidatePath } from "next/cache"
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/lib/auth"
 import { db } from "@/lib/db"
@@ -26,11 +27,6 @@ const updateVenueSchema = z.object({
   priority: z.number().int().min(1).max(3).nullable().optional(),
   prioritySource: z.enum(['manual', 'homepage']).nullable().optional(),
   managerId: z.string().optional(), // Allow admin to assign managers
-  billingEmail: z.union([z.string().email(), z.literal("")]).optional(),
-  billingName: z.string().optional().or(z.literal("")),
-  billingAddress: z.string().optional().or(z.literal("")),
-  taxId: z.string().optional().or(z.literal("")),
-  vatId: z.string().optional().or(z.literal("")),
   expiresAt: z.union([z.string(), z.date(), z.null()]).optional(),
   paid: z.boolean().optional(),
   paymentDate: z.union([z.string(), z.date(), z.null()]).optional(),
@@ -131,11 +127,6 @@ export async function PATCH(
     if (typeof body.priority !== "undefined") updateData.priority = body.priority
     if (typeof body.prioritySource !== "undefined") updateData.prioritySource = body.prioritySource
     if (typeof body.managerId !== "undefined") updateData.managerId = body.managerId
-    if (typeof body.billingEmail !== "undefined") updateData.billingEmail = normalizeString(body.billingEmail)
-    if (typeof body.billingName !== "undefined") updateData.billingName = normalizeString(body.billingName)
-    if (typeof body.billingAddress !== "undefined") updateData.billingAddress = normalizeString(body.billingAddress)
-    if (typeof body.taxId !== "undefined") updateData.taxId = normalizeString(body.taxId)
-    if (typeof body.vatId !== "undefined") updateData.vatId = normalizeString(body.vatId)
     if (typeof body.paid !== "undefined") updateData.paid = body.paid
     if (typeof body.paymentDate !== "undefined") updateData.paymentDate = normalizeDate(body.paymentDate)
     if (typeof body.expiresAt !== "undefined") updateData.expiresAt = normalizeDate(body.expiresAt)
@@ -147,11 +138,6 @@ export async function PATCH(
       delete updateData.priority
       delete updateData.prioritySource
       delete updateData.managerId
-      delete updateData.billingEmail
-      delete updateData.billingName
-      delete updateData.billingAddress
-      delete updateData.taxId
-      delete updateData.vatId
       delete updateData.paid
       delete updateData.paymentDate
       delete updateData.expiresAt
@@ -177,6 +163,12 @@ export async function PATCH(
         updatedAt: new Date(),
       },
     })
+
+    revalidatePath("/prostory", "page")
+    revalidatePath(`/prostory/${updatedVenue.slug}`, "page")
+    if (updatedVenue.prioritySource === "homepage") {
+      revalidatePath("/", "page")
+    }
 
     return NextResponse.json(updatedVenue)
   } catch (error) {

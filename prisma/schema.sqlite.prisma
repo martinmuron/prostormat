@@ -93,11 +93,6 @@ model Venue {
   prioritySource   String? // manual | homepage
   parentId         String?
   managerId        String
-  billingEmail     String?
-  billingName      String?
-  billingAddress   String?
-  taxId            String?
-  vatId            String?
   paid             Boolean   @default(false) // Offline payment status
   paymentDate      DateTime?
   expiresAt        DateTime?

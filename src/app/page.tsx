@@ -8,8 +8,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { db } from "@/lib/db"
 import { Upload, MessageSquare, Euro, ArrowRight, Zap, Clock, Search } from "lucide-react"
 
-// Revalidate homepage data every two minutes
-export const revalidate = 120
+// Fully static homepage; revalidation is triggered from the admin panel when slots change.
+export const revalidate = false
 
 const featuredVenueSelect = {
   id: true,

@@ -19,7 +19,7 @@ import { VenueViewTracker } from "@/components/analytics/venue-view-tracker"
 import { getOptimizedImageUrl } from "@/lib/supabase-images"
 import { formatDisplayAddress } from "@/lib/utils"
 
-export const revalidate = 3600 // Revalidate every hour
+export const revalidate = 1800 // Regenerate at most every 30 minutes; edits trigger on-demand revalidation
 export const dynamicParams = true // Allow on-demand generation of pages
 
 const PUBLIC_STATUSES: string[] = ["published", "active"]

@@ -95,7 +95,7 @@ export default async function EditVenuePage({
       <Tabs defaultValue="details" className="space-y-4">
         <TabsList>
           <TabsTrigger value="details">Detaily prostoru</TabsTrigger>
-          <TabsTrigger value="billing">Fakturace</TabsTrigger>
+          <TabsTrigger value="billing">Předplatné</TabsTrigger>
           <TabsTrigger value="manager">Správce</TabsTrigger>
           <TabsTrigger value="inquiries">Dotazy</TabsTrigger>
         </TabsList>
@@ -114,7 +114,7 @@ export default async function EditVenuePage({
         <TabsContent value="billing">
           <Card>
             <CardHeader>
-              <CardTitle>Fakturační údaje</CardTitle>
+              <CardTitle>Předplatné a platby</CardTitle>
             </CardHeader>
             <CardContent>
               <VenueBilling venue={venue} />

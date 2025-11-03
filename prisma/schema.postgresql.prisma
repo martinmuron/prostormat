@@ -104,11 +104,6 @@ model Venue {
   prioritySource   String? // manual | homepage
   parentId         String?
   managerId        String
-  billingEmail     String?
-  billingName      String?
-  billingAddress   String?
-  taxId            String?
-  vatId            String?
   paid             Boolean   @default(false) // Whether venue has paid offline listing
   paymentDate      DateTime? // When the 12,000 CZK was paid
   expiresAt        DateTime?

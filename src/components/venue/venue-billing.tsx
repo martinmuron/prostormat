@@ -13,24 +13,14 @@ import { Input } from "@/components/ui/input"
 import { Switch } from "@/components/ui/switch"
 
 const billingSchema = z.object({
-  billingEmail: z.string().email("Zadejte platný e-mail").optional().or(z.literal('')),
-  billingName: z.string().optional(),
-  billingAddress: z.string().optional(),
-  taxId: z.string().optional(),
-  vatId: z.string().optional(),
-  expiresAt: z.string().optional(),
   paid: z.boolean().default(false),
   paymentDate: z.string().optional(),
+  expiresAt: z.string().optional(),
 })
 
 type VenueBillingProps = {
   venue: {
     id: string
-    billingEmail?: string | null
-    billingName?: string | null
-    billingAddress?: string | null
-    taxId?: string | null
-    vatId?: string | null
     expiresAt?: Date | null
     paid?: boolean | null
     paymentDate?: Date | null
@@ -44,31 +34,23 @@ export function VenueBilling({ venue }: VenueBillingProps) {
   const form = useForm<BillingFormValues>({
     resolver: zodResolver(billingSchema),
     defaultValues: {
-      billingEmail: venue.billingEmail || "",
-      billingName: venue.billingName || "",
-      billingAddress: venue.billingAddress || "",
-      taxId: venue.taxId || "",
-      vatId: venue.vatId || "",
-      expiresAt: venue.expiresAt ? new Date(venue.expiresAt).toISOString().split('T')[0] : "",
       paid: Boolean(venue.paid),
-      paymentDate: venue.paymentDate ? new Date(venue.paymentDate).toISOString().split('T')[0] : "",
+      paymentDate: venue.paymentDate ? new Date(venue.paymentDate).toISOString().split("T")[0] : "",
+      expiresAt: venue.expiresAt ? new Date(venue.expiresAt).toISOString().split("T")[0] : "",
     },
   })
 
   const paymentDate = form.watch("paymentDate")
 
   useEffect(() => {
-    if (!paymentDate) {
-      return
-    }
+    if (!paymentDate) return
+
     const currentExpires = form.getValues("expiresAt")
-    if (currentExpires) {
-      return
-    }
+    if (currentExpires) return
+
     const baseDate = new Date(paymentDate)
-    if (Number.isNaN(baseDate.getTime())) {
-      return
-    }
+    if (Number.isNaN(baseDate.getTime())) return
+
     const plusYear = new Date(baseDate)
     plusYear.setFullYear(plusYear.getFullYear() + 1)
     form.setValue("expiresAt", plusYear.toISOString().split("T")[0], { shouldDirty: true })
@@ -93,17 +75,17 @@ export function VenueBilling({ venue }: VenueBillingProps) {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          ...values,
-          expiresAt: expiresAtValue,
+          paid: values.paid,
           paymentDate: paymentDateValue,
+          expiresAt: expiresAtValue,
         }),
       })
 
       if (!response.ok) throw new Error("Nepodařilo se uložit změny")
-      toast.success("Fakturační údaje byly aktualizovány")
+      toast.success("Stav předplatného byl aktualizován")
       router.refresh()
     } catch (error) {
-      console.error("Error updating billing:", error)
+      console.error("Error updating subscription status:", error)
       toast.error("Nepodařilo se uložit změny")
     }
   }
@@ -114,92 +96,6 @@ export function VenueBilling({ venue }: VenueBillingProps) {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <FormField
             control={form.control}
-            name="billingEmail"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Fakturační e-mail</FormLabel>
-                <FormControl>
-                  <Input type="email" placeholder="fakturace@example.com" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="billingName"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Firma / Jméno</FormLabel>
-                <FormControl>
-                  <Input placeholder="Název společnosti nebo jméno" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="billingAddress"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Fakturační adresa</FormLabel>
-                <FormControl>
-                  <Input placeholder="Ulice, město, PSČ" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="taxId"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>IČO</FormLabel>
-                <FormControl>
-                  <Input placeholder="12345678" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="vatId"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>DIČ</FormLabel>
-                <FormControl>
-                  <Input placeholder="CZ12345678" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="expiresAt"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Platné do</FormLabel>
-                <FormControl>
-                  <Input type="date" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <FormField
-            control={form.control}
             name="paid"
             render={({ field }) => (
               <FormItem className="flex flex-col space-y-2">
@@ -207,14 +103,11 @@ export function VenueBilling({ venue }: VenueBillingProps) {
                   <div>
                     <FormLabel>Platba přijata</FormLabel>
                     <FormDescription>
-                      Označte, pokud jsme obdrželi platbu offline a prostor má být aktivní.
+                      Označte, pokud jsme obdrželi platbu offline a prostor má mít aktivní zvýraznění.
                     </FormDescription>
                   </div>
                   <FormControl>
-                    <Switch
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
+                    <Switch checked={field.value} onCheckedChange={field.onChange} />
                   </FormControl>
                 </div>
                 <FormMessage />
@@ -232,7 +125,7 @@ export function VenueBilling({ venue }: VenueBillingProps) {
                   <Input type="date" {...field} />
                 </FormControl>
                 <FormDescription>
-                  Kdy klient zaplatil (např. datum úhrady faktury).
+                  Pokud není vyplněno datum platnosti, nastaví se automaticky na rok od data platby.
                 </FormDescription>
                 <FormMessage />
               </FormItem>
@@ -249,7 +142,7 @@ export function VenueBilling({ venue }: VenueBillingProps) {
                   <Input type="date" {...field} />
                 </FormControl>
                 <FormDescription>
-                  Pokud necháte prázdné, nastavíme rok od data platby.
+                  Volitelné datum vypršení předplatného. Vyplňte pouze pokud se liší od automaticky vypočtené hodnoty.
                 </FormDescription>
                 <FormMessage />
               </FormItem>
@@ -257,7 +150,7 @@ export function VenueBilling({ venue }: VenueBillingProps) {
           />
         </div>
 
-        <div className="flex justify-end pt-4">
+        <div className="flex justify-end">
           <Button type="submit">Uložit změny</Button>
         </div>
       </form>

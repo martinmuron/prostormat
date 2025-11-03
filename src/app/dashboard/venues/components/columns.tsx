@@ -24,10 +24,6 @@ export type Venue = {
   contactEmail?: string | null
   contactPhone?: string | null
   contactPerson?: string | null
-  billingEmail?: string | null
-  billingName?: string | null
-  taxId?: string | null
-  vatId?: string | null
   manager: {
     id: string
     name: string | null
@@ -129,11 +125,6 @@ export const columns: ColumnDef<Venue>[] = [
             <Link href={`/prostory/${venue.id}`}>
               <DropdownMenuItem className="cursor-pointer">
                 Zobrazit veřejně
-              </DropdownMenuItem>
-            </Link>
-            <Link href={`/dashboard/venues/${venue.id}/billing`}>
-              <DropdownMenuItem className="cursor-pointer">
-                Fakturace
               </DropdownMenuItem>
             </Link>
             <Link href={`/dashboard/users/${venue.manager?.id}`}>

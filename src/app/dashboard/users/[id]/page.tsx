@@ -145,7 +145,7 @@ export default async function UserProfilePage({
           <TabsTrigger value="venues">Prostory ({user.venues.length})</TabsTrigger>
           <TabsTrigger value="requests">Event Board ({user.eventRequests.length})</TabsTrigger>
           <TabsTrigger value="inquiries">Dotazy ({user.venueInquiries.length})</TabsTrigger>
-          <TabsTrigger value="billing">Fakturace</TabsTrigger>
+          <TabsTrigger value="billing">Předplatné</TabsTrigger>
         </TabsList>
 
         <TabsContent value="venues">
@@ -277,7 +277,7 @@ export default async function UserProfilePage({
         <TabsContent value="billing">
           <Card>
             <CardHeader>
-              <CardTitle>Fakturační informace</CardTitle>
+              <CardTitle>Předplatné</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -302,7 +302,7 @@ export default async function UserProfilePage({
                 
                 {user.venues.length > 0 && (
                   <div className="mt-6">
-                    <h3 className="text-lg font-medium mb-4">Fakturace prostorů</h3>
+                    <h3 className="text-lg font-medium mb-4">Stav předplatného prostorů</h3>
                     <div className="space-y-4">
                       {user.venues.map((venue) => (
                         <div key={venue.id} className="p-4 border rounded-lg">
@@ -315,7 +315,7 @@ export default async function UserProfilePage({
                             </div>
                             <Button variant="outline" size="sm" asChild>
                               <Link href={`/dashboard/venues/${venue.id}`}>
-                                Upravit fakturaci
+                                Spravovat předplatné
                               </Link>
                             </Button>
                           </div>

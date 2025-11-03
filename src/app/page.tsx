@@ -211,43 +211,43 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-white relative overflow-hidden">
       {/* Hero Section */}
-      <section className="relative py-20 sm:py-28 lg:py-36 px-4 sm:px-6 bg-gradient-to-br from-rose-50 via-white to-pink-50">
+      <section className="relative py-16 sm:py-20 lg:py-24 px-4 sm:px-6 bg-gradient-to-br from-rose-50 via-white to-pink-50">
         <div className="max-w-6xl mx-auto relative z-20">
-          <div className="text-center mb-16">
+          <div className="text-center mb-12">
             <div className="animate-slide-up">
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-semibold text-gray-900 mb-8 tracking-tight leading-tight">
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-semibold text-gray-900 mb-6 tracking-tight leading-tight">
                 Najděte perfektní prostor<br className="hidden sm:block" />
                 <span className="sm:hidden"> </span>pro vaši akci
               </h1>
             </div>
 
             <div className="animate-slide-up" style={{ animationDelay: '0.2s' }}>
-              <p className="text-xl sm:text-2xl text-gray-700 mb-4 max-w-3xl mx-auto leading-relaxed font-light">
+              <p className="text-lg sm:text-xl text-gray-700 mb-3 max-w-3xl mx-auto leading-relaxed font-light">
                 Stovky ověřených prostorů v Praze – vyberte si svou cestu:
               </p>
             </div>
           </div>
 
           {/* Two Equal CTAs */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 max-w-5xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6 max-w-5xl mx-auto">
             {/* Rychla Poptavka CTA */}
             <div className="animate-slide-up" style={{ animationDelay: '0.3s' }}>
-              <div className="bg-gradient-to-br from-orange-50 to-red-50 rounded-3xl p-8 border-2 border-orange-200 hover-lift h-full flex flex-col">
+              <div className="bg-gradient-to-br from-orange-50 to-red-50 rounded-3xl p-6 border-2 border-orange-200 hover-lift h-full flex flex-col">
                 <div className="flex-1">
-                  <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl mb-5 bg-orange-500">
-                    <Zap className="w-7 h-7 text-white" />
+                  <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl mb-4 bg-orange-500">
+                    <Zap className="w-6 h-6 text-white" />
                   </div>
-                  <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3">
+                  <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">
                     Rychlá poptávka
                   </h2>
-                  <p className="text-lg text-gray-700 mb-6 leading-relaxed">
+                  <p className="text-base text-gray-700 mb-4 leading-relaxed">
                     Vyplň jeden formulář a prostory se ti ozvou samy! Porovnej nabídky a vyber tu nejlepší.
                   </p>
                 </div>
                 <Link href="/rychla-poptavka" className="block">
                   <Button
                     size="lg"
-                    className="magnetic-button hover-lift w-full px-6 py-4 text-base font-semibold rounded-xl bg-orange-500 text-white hover:bg-orange-600 transition-all duration-200 shadow-lg"
+                    className="magnetic-button hover-lift w-full px-5 py-3 text-base font-semibold rounded-xl bg-orange-500 text-white hover:bg-orange-600 transition-all duration-200 shadow-lg"
                   >
                     <Zap className="w-5 h-5 mr-2" />
                     Zadat poptávku
@@ -258,22 +258,22 @@ export default function HomePage() {
 
             {/* Browse All Venues CTA */}
             <div className="animate-slide-up" style={{ animationDelay: '0.4s' }}>
-              <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-3xl p-8 border-2 border-blue-200 hover-lift h-full flex flex-col">
+              <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-3xl p-6 border-2 border-blue-200 hover-lift h-full flex flex-col">
                 <div className="flex-1">
-                  <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl mb-5 bg-blue-600">
-                    <Search className="w-7 h-7 text-white" />
+                  <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl mb-4 bg-blue-600">
+                    <Search className="w-6 h-6 text-white" />
                   </div>
-                  <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3">
+                  <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">
                     Procházet prostory
                   </h2>
-                  <p className="text-lg text-gray-700 mb-6 leading-relaxed">
+                  <p className="text-base text-gray-700 mb-4 leading-relaxed">
                     Prohlédněte si všechny prostory, porovnejte je a kontaktujte majitele přímo.
                   </p>
                 </div>
                 <Link href="/prostory" className="block">
                   <Button
                     size="lg"
-                    className="magnetic-button hover-lift w-full px-6 py-4 text-base font-semibold rounded-xl bg-blue-600 text-white hover:bg-blue-700 transition-all duration-200 shadow-lg"
+                    className="magnetic-button hover-lift w-full px-5 py-3 text-base font-semibold rounded-xl bg-blue-600 text-white hover:bg-blue-700 transition-all duration-200 shadow-lg"
                   >
                     <Search className="w-5 h-5 mr-2" />
                     Prohlédnout všechny prostory
@@ -284,15 +284,15 @@ export default function HomePage() {
           </div>
 
           {/* Optional: Add prostor owner CTA */}
-          <div className="text-center mt-8 animate-slide-up" style={{ animationDelay: '0.5s' }}>
-            <p className="text-gray-600 mb-3">Vlastníte prostor?</p>
+          <div className="text-center mt-6 animate-slide-up" style={{ animationDelay: '0.5s' }}>
+            <p className="text-sm text-gray-600 mb-2">Vlastníte prostor?</p>
             <Link href="/pridat-prostor">
               <Button
                 variant="outline"
-                size="lg"
-                className="magnetic-button px-6 py-3 text-base font-medium rounded-xl border-2 border-gray-300 text-gray-700 hover:border-black hover:bg-black hover:text-white transition-all duration-200"
+                size="default"
+                className="magnetic-button px-5 py-2 text-sm font-medium rounded-xl border-2 border-gray-300 text-gray-700 hover:border-black hover:bg-black hover:text-white transition-all duration-200"
               >
-                <Upload className="w-5 h-5 mr-2" />
+                <Upload className="w-4 h-4 mr-2" />
                 Přidat prostor
               </Button>
             </Link>

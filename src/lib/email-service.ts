@@ -190,7 +190,7 @@ export async function sendVerificationEmail(
     },
     checkTrigger: 'user_email_verification',
     tracking: {
-      emailType: 'user_email_verification',
+      emailType: 'user_registration_verification',
       recipientType: tracking?.recipientType ?? 'user',
       sentBy: tracking?.sentBy ?? null,
     },
@@ -213,7 +213,7 @@ export async function sendWelcomeEmail(
     },
     checkTrigger: 'user_registration',
     tracking: {
-      emailType: 'welcome_user',
+      emailType: 'welcome_email',
       recipientType: tracking?.recipientType ?? 'user',
       sentBy: tracking?.sentBy ?? null,
     },

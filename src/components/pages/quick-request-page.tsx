@@ -41,6 +41,7 @@ export function QuickRequestPage() {
   const [isSuccess, setIsSuccess] = useState(false)
   const [pendingCount, setPendingCount] = useState(0)
   const [showLoginModal, setShowLoginModal] = useState(false)
+  const [hasPromptedLogin, setHasPromptedLogin] = useState(false)
   const today = useMemo(() => new Date().toISOString().split('T')[0], [])
   
   const [formData, setFormData] = useState<QuickRequestFormData>({
@@ -55,6 +56,13 @@ export function QuickRequestPage() {
   })
 
   const [errors, setErrors] = useState<Partial<QuickRequestFormData>>({})
+
+  const promptLoginIfNeeded = () => {
+    if (!session && status === 'unauthenticated' && !hasPromptedLogin) {
+      setHasPromptedLogin(true)
+      setShowLoginModal(true)
+    }
+  }
 
   const validateForm = () => {
     const newErrors: Partial<QuickRequestFormData> = {}
@@ -116,10 +124,9 @@ export function QuickRequestPage() {
 
   const handleInputChange = (field: keyof QuickRequestFormData, value: string) => {
     if (!session) {
-      setShowLoginModal(true)
-      return
+      promptLoginIfNeeded()
     }
-    
+
     setFormData(prev => ({ ...prev, [field]: value }))
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: undefined }))
@@ -128,7 +135,7 @@ export function QuickRequestPage() {
 
   const handleInputFocus = () => {
     if (!session) {
-      setShowLoginModal(true)
+      promptLoginIfNeeded()
     }
   }
 
@@ -238,6 +245,8 @@ export function QuickRequestPage() {
                   </Label>
                   <Input
                     type="date"
+                    id="eventDate"
+                    name="eventDate"
                     value={formData.eventDate}
                     onChange={(e) => handleInputChange('eventDate', e.target.value)}
                     onFocus={handleInputFocus}
@@ -266,6 +275,7 @@ export function QuickRequestPage() {
                       ))}
                     </SelectContent>
                   </Select>
+                  <input type="hidden" name="guestCount" value={formData.guestCount} />
                   {errors.guestCount && <p className="text-sm text-red-600 mt-1">{errors.guestCount}</p>}
                 </div>
 
@@ -287,6 +297,7 @@ export function QuickRequestPage() {
                       ))}
                     </SelectContent>
                   </Select>
+                  <input type="hidden" name="locationPreference" value={formData.locationPreference} />
                   {errors.locationPreference && <p className="text-sm text-red-600 mt-1">{errors.locationPreference}</p>}
                 </div>
               </div>
@@ -298,6 +309,8 @@ export function QuickRequestPage() {
                 </Label>
                 <Textarea
                   placeholder="Například: catering, zvuková technika, projektor, wifi, parkovací místa..."
+                  id="requirements"
+                  name="requirements"
                   value={formData.requirements}
                   onChange={(e) => handleInputChange('requirements', e.target.value)}
                   onFocus={handleInputFocus}
@@ -312,6 +325,8 @@ export function QuickRequestPage() {
                 </Label>
                 <Textarea
                   placeholder="Představte se a popište svou akci. Čím více informací poskytnete, tím lepší nabídky dostanete..."
+                  id="message"
+                  name="message"
                   value={formData.message}
                   onChange={(e) => handleInputChange('message', e.target.value)}
                   onFocus={handleInputFocus}
@@ -328,6 +343,8 @@ export function QuickRequestPage() {
                       Jméno a příjmení *
                     </Label>
                     <Input
+                      id="contactName"
+                      name="contactName"
                       value={formData.contactName}
                       onChange={(e) => handleInputChange('contactName', e.target.value)}
                       onFocus={handleInputFocus}
@@ -343,6 +360,8 @@ export function QuickRequestPage() {
                     </Label>
                     <Input
                       type="email"
+                      id="contactEmail"
+                      name="contactEmail"
                       value={formData.contactEmail}
                       onChange={(e) => handleInputChange('contactEmail', e.target.value)}
                       onFocus={handleInputFocus}
@@ -357,6 +376,8 @@ export function QuickRequestPage() {
                       Telefon
                     </Label>
                     <Input
+                      id="contactPhone"
+                      name="contactPhone"
                       value={formData.contactPhone}
                       onChange={(e) => handleInputChange('contactPhone', e.target.value)}
                       onFocus={handleInputFocus}

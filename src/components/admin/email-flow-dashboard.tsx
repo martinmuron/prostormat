@@ -63,16 +63,23 @@ interface BroadcastSummary {
 }
 
 const EMAIL_TYPE_LABELS: Record<string, string> = {
-  'welcome_user': 'Vítací email (uživatel)',
+  'welcome_email': 'Vítací email (uživatel)',
+  'welcome_user': 'Vítací email (uživatel)', // legacy alias
   'welcome_location_owner': 'Vítací email (majitel prostoru)',
   'custom_admin': 'Vlastní admin email',
   'venue_broadcast': 'Broadcast prostorům',
+  'venue_broadcast_notification': 'Broadcast prostorům',
   'password_reset': 'Reset hesla',
+  'user_registration_verification': 'Verifikační email (registrace)',
   'contact_form_thank_you': 'Poděkování za kontakt',
   'add_venue_thank_you': 'Poděkování za přidání prostoru',
   'quick_request_venue_notification': 'Rychlá poptávka - notifikace prostoru',
-  'venue_inquiry_paid': 'Poptávka prostoru (placené)',
-  'venue_inquiry_unpaid': 'Poptávka prostoru (neplacené)'
+  'quick_request_admin_notification': 'Rychlá poptávka - interní notifikace',
+  'venue_inquiry_paid_notification': 'Poptávka prostoru (placené)',
+  'venue_inquiry_unpaid_notification': 'Poptávka prostoru (neplacené)',
+  'venue_inquiry_paid': 'Poptávka prostoru (placené)', // legacy alias
+  'venue_inquiry_unpaid': 'Poptávka prostoru (neplacené)',
+  'venue_inquiry_admin_notification': 'Poptávka prostoru - admin notifikace'
 }
 
 const STATUS_LABELS: Record<string, string> = {

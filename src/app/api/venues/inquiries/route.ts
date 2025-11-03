@@ -227,7 +227,7 @@ export async function POST(request: Request) {
             await db.emailFlowLog.create({
               data: {
                 id: randomUUID(),
-                emailType: venue.paid ? "venue_inquiry_paid" : "venue_inquiry_unpaid",
+                emailType: venue.paid ? "venue_inquiry_paid_notification" : "venue_inquiry_unpaid_notification",
                 recipient: venue.contactEmail,
                 subject: emailContent.subject,
                 status: emailStatus,

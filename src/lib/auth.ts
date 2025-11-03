@@ -5,7 +5,19 @@ import CredentialsProvider from "next-auth/providers/credentials"
 import bcrypt from "bcryptjs"
 import { db } from "@/lib/db"
 
+const nextAuthSecret = process.env.NEXTAUTH_SECRET
+const isManagedEnvironment = process.env.VERCEL === "1"
+
+if (!nextAuthSecret) {
+  const message = "NEXTAUTH_SECRET is not set. Define it in your environment before starting the app."
+  if (isManagedEnvironment) {
+    throw new Error(message)
+  }
+  console.warn(`[auth] ${message}`)
+}
+
 export const authOptions: NextAuthOptions = {
+  secret: nextAuthSecret ?? "development-nextauth-secret",
   adapter: PrismaAdapter(db) as Adapter,
   session: {
     strategy: "jwt",

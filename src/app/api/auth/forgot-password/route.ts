@@ -48,7 +48,12 @@ export async function POST(req: Request) {
           to: email,
           variables: {
             resetLink: resetUrl
-          }
+          },
+          tracking: {
+            emailType: 'password_reset',
+            recipientType: 'user',
+            sentBy: user.id,
+          },
         })
       } catch (e) {
         console.error("Failed to send reset email", e)

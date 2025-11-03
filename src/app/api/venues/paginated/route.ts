@@ -25,8 +25,8 @@ export async function GET(request: NextRequest) {
     const session = includeHiddenRequested ? await getServerSession(authOptions) : null
     const visibleStatuses =
       includeHiddenRequested && session?.user?.role === 'admin'
-        ? ['published', 'active', 'hidden']
-        : ['published', 'active']
+        ? ['published', 'hidden']
+        : ['published']
 
     const where = buildVenueWhereClause({
       q: q ?? null,

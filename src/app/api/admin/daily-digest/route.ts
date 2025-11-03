@@ -117,6 +117,7 @@ export async function GET(request: NextRequest) {
 
     let emailStatus = 'failed'
     let emailError: string | null = null
+    let resendEmailId: string | null = null
 
     try {
       const emailResult = await resend.emails.send({
@@ -129,6 +130,7 @@ export async function GET(request: NextRequest) {
 
       if (emailResult.data?.id) {
         emailStatus = 'sent'
+        resendEmailId = emailResult.data.id
       }
     } catch (sendError) {
       console.error("Failed to send daily digest email:", sendError)
@@ -148,6 +150,7 @@ export async function GET(request: NextRequest) {
               error: emailError,
               recipientType: 'admin',
               sentBy: adminUser.id,
+              resendEmailId,
             },
           })
         } catch (logError) {

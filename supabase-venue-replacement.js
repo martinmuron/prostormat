@@ -24,7 +24,6 @@ async function replaceSupabaseVenues() {
     await prisma.$queryRaw`DELETE FROM prostormat_venue_favorites;`
     await prisma.$queryRaw`DELETE FROM prostormat_venue_views;`
     await prisma.$queryRaw`DELETE FROM prostormat_venue_news;`
-    await prisma.$queryRaw`DELETE FROM prostormat_subscriptions;`
     
     // Now remove venues
     const deleteResult = await prisma.$queryRaw`DELETE FROM prostormat_venues;`

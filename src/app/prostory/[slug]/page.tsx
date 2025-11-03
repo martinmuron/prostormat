@@ -21,17 +21,9 @@ import { buildVenueMetaDescription, buildVenueKeywords, absoluteUrl, DEFAULT_OG_
 import { VenueViewTracker } from "@/components/analytics/venue-view-tracker"
 import { getOptimizedImageUrl } from "@/lib/supabase-images"
 import { authOptions } from "@/lib/auth"
+import { formatDisplayAddress } from "@/lib/utils"
 
 export const revalidate = 0
-
-function formatDisplayAddress(address?: string | null) {
-  if (!address) return ""
-  return address
-    .replace(/\b\d{3}\s?\d{2}\b/g, "")
-    .replace(/\s{2,}/g, " ")
-    .replace(/,\s*,/g, ", ")
-    .trim()
-}
 
 async function getVenue(slug: string, viewerRole?: string | null) {
   try {
@@ -466,6 +458,7 @@ export default async function VenueDetailPage({
         <RelatedVenues
           currentVenueId={venue.id}
           venueType={venue.venueType}
+          venueTypes={Array.isArray(venue.venueTypes) ? venue.venueTypes : []}
           address={venue.address}
           district={venue.district}
           maxCapacity={Math.max(Number(venue.capacitySeated) || 0, Number(venue.capacityStanding) || 0)}

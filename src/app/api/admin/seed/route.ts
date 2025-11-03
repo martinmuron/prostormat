@@ -1,16 +1,26 @@
 import { NextResponse } from "next/server"
 import { PrismaClient } from '@prisma/client'
+import { getServerSession } from "next-auth/next"
+import { authOptions } from "@/lib/auth"
 import bcrypt from 'bcryptjs'
 
 const prisma = new PrismaClient()
 
 export async function POST(request: Request) {
   try {
+    const session = await getServerSession(authOptions)
+
+    if (!session?.user || session.user.role !== "admin") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
+
     // Simple password check for security
     const body = await request.json()
     const { password, forceReset } = body
-    
-    if (password !== "prostormat-seed-2025") {
+
+    const expectedPassword = process.env.ADMIN_SEED_PASSWORD ?? "prostormat-seed-2025"
+
+    if (password !== expectedPassword) {
       return NextResponse.json(
         { error: "Invalid password" },
         { status: 401 }

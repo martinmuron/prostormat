@@ -4,6 +4,7 @@ import { z } from "zod"
 import { db } from "@/lib/db"
 import { authOptions } from "@/lib/auth"
 import { randomUUID } from "crypto"
+import { hasActiveVenueAccess } from "@/lib/venue-access"
 
 const eventRequestSchema = z.object({
   title: z.string().min(5),
@@ -21,6 +22,25 @@ const eventRequestSchema = z.object({
 
 export async function GET() {
   try {
+    await db.eventRequest.updateMany({
+      where: {
+        status: "active",
+        expiresAt: {
+          lt: new Date(),
+        },
+      },
+      data: {
+        status: "expired",
+      },
+    })
+
+    let hasVenueAccess = false
+    const session = await getServerSession(authOptions)
+
+    if (session?.user?.id) {
+      hasVenueAccess = await hasActiveVenueAccess(session.user.id)
+    }
+
     const requests = await db.eventRequest.findMany({
       where: {
         status: "active",
@@ -44,8 +64,8 @@ export async function GET() {
         }
       }
     })
-    
-    return NextResponse.json({ requests })
+
+    return NextResponse.json({ requests, hasVenueAccess })
   } catch (error) {
     console.error("Error fetching event requests:", error)
     return NextResponse.json({ error: "Failed to fetch event requests" }, { status: 500 })
@@ -65,6 +85,18 @@ export async function POST(request: Request) {
 
     const body = await request.json()
     const validatedData = eventRequestSchema.parse(body)
+
+    if (validatedData.eventDate) {
+      const now = new Date()
+      const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+
+      if (validatedData.eventDate.getTime() < startOfToday.getTime()) {
+        return NextResponse.json(
+          { error: "Datum akce nemůže být v minulosti" },
+          { status: 400 }
+        )
+      }
+    }
 
     // Create event request
     const eventRequest = await db.eventRequest.create({

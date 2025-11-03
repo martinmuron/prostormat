@@ -37,124 +37,115 @@ export function VenueManagerDashboard({ data }: VenueManagerDashboardProps) {
     hidden: { label: "Skryto", isActive: false },
   }
 
-  type SubscriptionDetail = {
+  type BillingStatus = "active" | "expired" | "unpaid"
+
+  type BillingDetail = {
     venueId: string
     venueName: string
-    status: string
-    renewalDate: Date | null
+    status: BillingStatus
+    paymentDate: Date | null
+    expiresAt: Date | null
   }
 
   const now = new Date()
 
-  const subscriptionDetails: SubscriptionDetail[] = venues
-    .map((venue) => {
-      const hasSubscription = Boolean(venue.subscription || venue.subscriptionId || venue.paid)
+  const billingDetails: BillingDetail[] = venues.map((venue) => {
+    const paymentDate = venue.paymentDate ? new Date(venue.paymentDate) : null
+    const expiresAt = venue.expiresAt ? new Date(venue.expiresAt) : null
 
-      if (!hasSubscription) {
-        return null
+    let status: BillingStatus = "unpaid"
+
+    if (venue.paid) {
+      if (expiresAt && expiresAt.getTime() < now.getTime()) {
+        status = "expired"
+      } else {
+        status = "active"
       }
-
-      const renewalSource = venue.subscription?.currentPeriodEnd ?? venue.expiresAt ?? null
-
-      return {
-        venueId: venue.id,
-        venueName: venue.name ?? "Neznámý prostor",
-        status: venue.subscription?.status ?? (venue.paid ? "active" : "inactive"),
-        renewalDate: renewalSource ? new Date(renewalSource) : null,
-      }
-    })
-    .filter((detail): detail is SubscriptionDetail => detail !== null)
-
-  const activeSubscriptions = subscriptionDetails.filter((detail) => {
-    if (detail.status === "active") {
-      return true
     }
 
-    if (detail.status === "inactive" && detail.renewalDate) {
-      return detail.renewalDate.getTime() >= now.getTime()
+    return {
+      venueId: venue.id,
+      venueName: venue.name ?? "Neznámý prostor",
+      status,
+      paymentDate,
+      expiresAt,
     }
-
-    if (detail.status === "inactive" && !detail.renewalDate) {
-      return true
-    }
-
-    return false
   })
 
-  const pastDueSubscriptions = subscriptionDetails.filter((detail) => detail.status === "past_due")
+  const activePaidVenues = billingDetails.filter((detail) => detail.status === "active")
+  const expiredPaidVenues = billingDetails.filter((detail) => detail.status === "expired")
+  const unpaidVenues = billingDetails.filter((detail) => detail.status === "unpaid")
+  const paidDetails = [...activePaidVenues, ...expiredPaidVenues]
 
-  const nextRenewalDate = subscriptionDetails.reduce<Date | null>((earliest, detail) => {
-    if (!detail.renewalDate) {
+  const nextExpiryDate = activePaidVenues.reduce<Date | null>((earliest, detail) => {
+    if (!detail.expiresAt) {
       return earliest
     }
 
-    if (!earliest || detail.renewalDate.getTime() < earliest.getTime()) {
-      return detail.renewalDate
+    if (!earliest || detail.expiresAt.getTime() < earliest.getTime()) {
+      return detail.expiresAt
     }
 
     return earliest
   }, null)
 
-  const daysUntilNextRenewal = nextRenewalDate
-    ? Math.max(0, Math.ceil((nextRenewalDate.getTime() - now.getTime()) / (24 * 60 * 60 * 1000)))
+  const daysUntilNextExpiry = nextExpiryDate
+    ? Math.max(0, Math.ceil((nextExpiryDate.getTime() - now.getTime()) / (24 * 60 * 60 * 1000)))
     : null
 
-  const subscriptionStatus = (() => {
-    if (activeSubscriptions.length > 0) {
+  const billingSummaryStatus: BillingStatus | "none" = (() => {
+    if (activePaidVenues.length > 0) {
       return "active"
     }
-
-    if (pastDueSubscriptions.length > 0) {
-      return "past_due"
+    if (expiredPaidVenues.length > 0) {
+      return "expired"
     }
-
-    if (subscriptionDetails.length > 0) {
-      return "inactive"
+    if (unpaidVenues.length > 0) {
+      return "unpaid"
     }
-
     return "none"
   })()
 
-  const subscriptionStatusLabel = (() => {
-    switch (subscriptionStatus) {
+  const billingStatusLabel = (() => {
+    switch (billingSummaryStatus) {
       case "active":
-        return "Aktivní"
-      case "past_due":
-        return "Po splatnosti"
-      case "inactive":
-        return "Neaktivní"
+        return "Zaplaceno"
+      case "expired":
+        return "Vyžaduje prodloužení"
+      case "unpaid":
+        return "Nezaplaceno"
       default:
-        return "Žádné předplatné"
+        return "Bez plateb"
     }
   })()
 
-  const subscriptionBadgeClass = (() => {
-    switch (subscriptionStatus) {
+  const billingBadgeClass = (() => {
+    switch (billingSummaryStatus) {
       case "active":
         return "bg-green-100 text-green-800"
-      case "past_due":
+      case "expired":
         return "bg-red-100 text-red-800"
-      case "inactive":
+      case "unpaid":
         return "bg-yellow-100 text-yellow-800"
       default:
         return "bg-gray-100 text-gray-800"
     }
   })()
 
-  const formatSubscriptionStatus = (status: string) => {
+  const formatBillingStatus = (status: BillingStatus) => {
     switch (status) {
       case "active":
-        return "Aktivní"
-      case "past_due":
+        return "Zaplaceno"
+      case "expired":
         return "Po splatnosti"
-      case "canceled":
-        return "Zrušeno"
-      case "inactive":
-        return "Neaktivní"
-      default:
-        return status
+      case "unpaid":
+        return "Nezaplaceno"
     }
+    return "-"
   }
+
+  const hasAnyPaidVenues = billingDetails.some((detail) => detail.status !== "unpaid")
+
 
   return (
     <div>
@@ -168,7 +159,7 @@ export function VenueManagerDashboard({ data }: VenueManagerDashboardProps) {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
         <Card className="bg-white border-l-4 border-l-blue-500">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
@@ -205,12 +196,24 @@ export function VenueManagerDashboard({ data }: VenueManagerDashboardProps) {
           </CardContent>
         </Card>
 
+        <Card className="bg-white border-l-4 border-l-rose-500">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-caption text-gray-500 mb-1">Hostů v poptávkách</p>
+                <p className="text-title-2 text-gray-900">{stats.totalInquiryGuests.toLocaleString("cs-CZ")}</p>
+              </div>
+              <Users className="h-8 w-8 text-rose-500" />
+            </div>
+          </CardContent>
+        </Card>
+
         <Card className="bg-white border-l-4 border-l-orange-500">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-caption text-gray-500 mb-1">Aktivní předplatné</p>
-                <p className="text-title-2 text-gray-900">{activeSubscriptions.length}</p>
+                <p className="text-caption text-gray-500 mb-1">Zaplacené prostory</p>
+                <p className="text-title-2 text-gray-900">{activePaidVenues.length}</p>
               </div>
               <CreditCard className="h-8 w-8 text-orange-500" />
             </div>
@@ -218,7 +221,7 @@ export function VenueManagerDashboard({ data }: VenueManagerDashboardProps) {
         </Card>
       </div>
 
-      {/* Subscription Status */}
+      {/* Billing Status */}
       <Card className="mb-8 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200">
         <CardHeader>
           <div className="flex items-center justify-between">
@@ -226,16 +229,16 @@ export function VenueManagerDashboard({ data }: VenueManagerDashboardProps) {
               <CreditCard className="h-5 w-5 mr-2 text-blue-600" />
               Stav spolupráce
             </CardTitle>
-            <Badge variant="default" className={subscriptionBadgeClass}>
-              {subscriptionStatusLabel}
+            <Badge variant="default" className={billingBadgeClass}>
+              {billingStatusLabel}
             </Badge>
           </div>
         </CardHeader>
         <CardContent>
-          {subscriptionDetails.length === 0 ? (
+          {!hasAnyPaidVenues ? (
             <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
               <p className="text-sm text-gray-700">
-                Momentálně nemáte žádné prostory s aktivním předplatným. Ozvěte se nám a připravíme ruční aktivaci i fakturaci.
+                Zatím nemáme zaznamenanou žádnou přijatou platbu. Dejte nám vědět, až proběhne fakturace, a tým Prostormat prostor aktivuje ručně.
               </p>
               <Link href="mailto:info@prostormat.cz">
                 <Button className="bg-blue-600 hover:bg-blue-700 text-white">
@@ -247,52 +250,52 @@ export function VenueManagerDashboard({ data }: VenueManagerDashboardProps) {
           ) : (
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
               <div>
-                <p className="text-sm text-gray-600 mb-2">Prostory s předplatným</p>
+                <p className="text-sm text-gray-600 mb-2">Zaplacené prostory</p>
                 <p className="text-2xl font-semibold text-gray-900">
-                  {subscriptionDetails.length}
+                  {paidDetails.length}
                 </p>
                 <p className="text-sm text-gray-500">
-                  Aktivních: {activeSubscriptions.length}
+                  Aktivních: {activePaidVenues.length}{expiredPaidVenues.length > 0 ? ` · Po splatnosti: ${expiredPaidVenues.length}` : ""}
                 </p>
               </div>
               <div>
-                <p className="text-sm text-gray-600 mb-2">Nejbližší obnovení</p>
-                {nextRenewalDate ? (
+                <p className="text-sm text-gray-600 mb-2">Nejbližší vypršení</p>
+                {nextExpiryDate ? (
                   <div>
                     <p className="text-lg font-semibold text-gray-900">
-                      {formatDate(nextRenewalDate)}
+                      {formatDate(nextExpiryDate)}
                     </p>
-                    {daysUntilNextRenewal !== null && (
+                    {daysUntilNextExpiry !== null && (
                       <p className="text-sm text-gray-500">
-                        za {daysUntilNextRenewal} dní
+                        za {daysUntilNextExpiry} dní
                       </p>
                     )}
                   </div>
                 ) : (
                   <p className="text-sm text-gray-500">
-                    Zatím nemáme datum další platby
+                    Zatím nemáme datum expirace
                   </p>
                 )}
               </div>
               <div className="space-y-3">
                 <p className="text-sm text-gray-600">Přehled prostorů</p>
                 <div className="space-y-2">
-                  {subscriptionDetails.slice(0, 3).map((detail) => (
+                  {paidDetails.slice(0, 3).map((detail) => (
                     <div
                       key={detail.venueId}
                       className="flex items-center justify-between text-sm text-gray-700"
                     >
                       <span>{detail.venueName}</span>
                       <span className="text-gray-500">
-                        {formatSubscriptionStatus(detail.status)}
-                        {detail.renewalDate ? ` · ${formatDate(detail.renewalDate)}` : ""}
+                        {formatBillingStatus(detail.status)}
+                        {detail.expiresAt ? ` · ${formatDate(detail.expiresAt)}` : ""}
                       </span>
                     </div>
                   ))}
                 </div>
-                {subscriptionDetails.length > 3 && (
+                {paidDetails.length > 3 && (
                   <p className="text-xs text-gray-500">
-                    +{subscriptionDetails.length - 3} dalších prostorů s předplatným
+                    +{paidDetails.length - 3} dalších prostorů s platbou
                   </p>
                 )}
                 <Link href="mailto:info@prostormat.cz">
@@ -425,7 +428,7 @@ export function VenueManagerDashboard({ data }: VenueManagerDashboardProps) {
                     </div>
                   </div>
                 ))}
-                <Link href="/dashboard/inquiries">
+                <Link href="/dashboard/venue-inquiries">
                   <Button variant="secondary" size="sm" className="w-full text-gray-700 border-gray-300 hover:bg-gray-50">
                     Zobrazit všechny dotazy
                   </Button>

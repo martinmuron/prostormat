@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useMemo } from "react"
+import { useState, useEffect, useMemo, useCallback } from "react"
 import Link from "next/link"
 import { useSearchParams } from "next/navigation"
 import { useSession } from "next-auth/react"
@@ -25,7 +25,7 @@ interface EventRequest {
   eventType: string
   eventDate: string
   guestCount: number
-  budget?: number | null
+  budgetRange?: string | null
   locationPreference?: string | null
   requirements?: string | null
   contactName: string
@@ -128,44 +128,35 @@ export default function EventRequestsPage() {
     prostormat_venue_favorites: "all",
   })
 
-  useEffect(() => {
-    fetchRequests()
-    checkVenueAccess()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
-  const checkVenueAccess = async () => {
-    if (!session?.user?.id) {
-      setHasVenueAccess(false)
+  const fetchRequests = useCallback(async () => {
+    if (status === "loading") {
       return
     }
-
-    try {
-      const response = await fetch('/api/user/has-venue-access')
-      if (response.ok) {
-        const data = await response.json()
-        setHasVenueAccess(data.hasAccess)
-      }
-    } catch (error) {
-      console.error('Error checking venue access:', error)
-      setHasVenueAccess(false)
-    }
-  }
-
-  const fetchRequests = async () => {
     try {
       setLoading(true)
       const response = await fetch('/api/event-requests')
       if (response.ok) {
         const data = await response.json()
         setRequests(data.requests || [])
+        if (typeof data.hasVenueAccess === "boolean") {
+          setHasVenueAccess(data.hasVenueAccess)
+        } else if (status !== "authenticated") {
+          setHasVenueAccess(false)
+        }
       }
     } catch (error) {
       console.error('Error fetching requests:', error)
+      if (status !== "authenticated") {
+        setHasVenueAccess(false)
+      }
     } finally {
       setLoading(false)
     }
-  }
+  }, [status])
+
+  useEffect(() => {
+    fetchRequests()
+  }, [fetchRequests])
 
   const filteredRequests = useMemo(() => {
     let filtered = [...requests]
@@ -260,7 +251,7 @@ export default function EventRequestsPage() {
       actions={
         <Link href="/event-board/novy">
           <Button size="lg" className="bg-black text-white hover:bg-gray-800 min-w-[200px] rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl">
-            Přidat poptávku
+            Přidat akci
           </Button>
         </Link>
       }
@@ -502,11 +493,11 @@ export default function EventRequestsPage() {
                         <p className="text-sm font-semibold text-green-900">{request.guestCount} osob</p>
                       </div>
                       
-                      {request.budget && (
+                      {request.budgetRange && (
                         <div className="text-center p-3 bg-amber-50 rounded-xl border border-amber-100">
                           <Euro className="h-5 w-5 text-amber-600 mx-auto mb-1" />
                           <p className="text-xs text-amber-600 font-medium">Rozpočet</p>
-                          <p className="text-sm font-semibold text-amber-900">{request.budget.toLocaleString()} Kč</p>
+                          <p className="text-sm font-semibold text-amber-900">{request.budgetRange}</p>
                         </div>
                       )}
                       

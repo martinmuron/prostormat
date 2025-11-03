@@ -30,9 +30,7 @@
         "prostormat_venues", 
         "prostormat_venue_broadcasts",
         "prostormat_email_flow_logs",
-        "prostormat_payment_intents",
-        "prostormat_event_requests",
-        "prostormat_subscriptions"
+        "prostormat_event_requests"
       ],
       "capabilities": [
         "user_management",
@@ -65,11 +63,6 @@
   },
 
   "integrations": {
-    "stripe": {
-      "status": "disabled",
-      "notes": "Stripe billing dočasně pozastaveno – platby řešíme manuálně mimo platformu"
-    },
-
     "supabase": {
       "projectRef": "your-project-ref",
       "features": [
@@ -116,10 +109,6 @@
   },
 
   "monitoring": {
-    "stripe": {
-      "payments": "Track via Stripe dashboard",
-      "webhooks": "Logged in prostormat_email_flow_logs"
-    },
     "supabase": {
       "database": "11MB current size",
       "backups": "7-day point-in-time recovery",

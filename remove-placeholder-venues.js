@@ -13,9 +13,6 @@ async function removeAllVenues() {
     const deleteInquiries = await prisma.venueInquiry.deleteMany({})
     console.log(`Removed ${deleteInquiries.count} venue inquiries`)
     
-    const deleteSubscriptions = await prisma.subscription.deleteMany({})
-    console.log(`Removed ${deleteSubscriptions.count} subscriptions`)
-    
     // Now remove all venues
     const deleteVenues = await prisma.venue.deleteMany({})
     console.log(`Removed ${deleteVenues.count} venues`)

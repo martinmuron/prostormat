@@ -82,11 +82,14 @@ export async function POST(request: Request) {
     // Send verification email (best-effort)
     try {
       if (verificationUrl) {
-        await sendVerificationEmail({
-          name: user.name || user.email,
-          email: user.email,
-          verificationLink: verificationUrl,
-        })
+        await sendVerificationEmail(
+          {
+            name: user.name || user.email,
+            email: user.email,
+            verificationLink: verificationUrl,
+          },
+          { sentBy: user.id, recipientType: 'user' }
+        )
       }
     } catch (emailError) {
       console.error('Failed to send verification email:', emailError)
@@ -123,6 +126,7 @@ export async function POST(request: Request) {
     // Send admin notification email (best-effort)
     let adminEmailStatus: 'sent' | 'failed' = 'sent'
     let adminEmailError: string | null = null
+    let adminEmailResendId: string | null = null
     try {
       const adminNotification = generateUserRegistrationAdminNotificationEmail({
         userId: user.id,
@@ -133,13 +137,14 @@ export async function POST(request: Request) {
         registeredAt: new Date(),
       })
 
-      await resend.emails.send({
+      const adminEmailResult = await resend.emails.send({
         from: 'Prostormat <info@prostormat.cz>',
         to: 'info@prostormat.cz',
         subject: adminNotification.subject,
         html: adminNotification.html,
         text: adminNotification.text,
       })
+      adminEmailResendId = adminEmailResult.data?.id ?? null
     } catch (sendError) {
       adminEmailStatus = 'failed'
       adminEmailError = sendError instanceof Error ? sendError.message : 'Unknown error'
@@ -159,6 +164,7 @@ export async function POST(request: Request) {
           error: adminEmailError,
           recipientType: 'admin',
           sentBy: user.id,
+          resendEmailId: adminEmailResendId,
         },
       })
     } catch (logError) {

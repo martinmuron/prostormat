@@ -4,8 +4,6 @@ import { authOptions } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { z } from "zod"
 
-const subscriptionStatuses = ["active", "past_due", "canceled", "unpaid"] as const
-
 const updateVenueSchema = z.object({
   name: z.string().min(2).optional(),
   description: z.string().optional().or(z.literal("")),
@@ -26,14 +24,13 @@ const updateVenueSchema = z.object({
   status: z.enum(["published", "hidden"]).optional(),
   isRecommended: z.boolean().optional(),
   priority: z.number().int().min(1).max(3).nullable().optional(),
-  prioritySource: z.enum(['manual', 'subscription']).nullable().optional(),
+  prioritySource: z.enum(['manual', 'homepage']).nullable().optional(),
   managerId: z.string().optional(), // Allow admin to assign managers
   billingEmail: z.union([z.string().email(), z.literal("")]).optional(),
   billingName: z.string().optional().or(z.literal("")),
   billingAddress: z.string().optional().or(z.literal("")),
   taxId: z.string().optional().or(z.literal("")),
   vatId: z.string().optional().or(z.literal("")),
-  subscriptionStatus: z.union([z.enum(subscriptionStatuses), z.literal(""), z.null()]).optional(),
   expiresAt: z.union([z.string(), z.date(), z.null()]).optional(),
   paid: z.boolean().optional(),
   paymentDate: z.union([z.string(), z.date(), z.null()]).optional(),
@@ -139,14 +136,6 @@ export async function PATCH(
     if (typeof body.billingAddress !== "undefined") updateData.billingAddress = normalizeString(body.billingAddress)
     if (typeof body.taxId !== "undefined") updateData.taxId = normalizeString(body.taxId)
     if (typeof body.vatId !== "undefined") updateData.vatId = normalizeString(body.vatId)
-    if (typeof body.subscriptionStatus !== "undefined") {
-      if (typeof body.subscriptionStatus === "string") {
-        const status = body.subscriptionStatus.trim()
-        updateData.subscriptionStatus = status ? status : null
-      } else {
-        updateData.subscriptionStatus = body.subscriptionStatus
-      }
-    }
     if (typeof body.paid !== "undefined") updateData.paid = body.paid
     if (typeof body.paymentDate !== "undefined") updateData.paymentDate = normalizeDate(body.paymentDate)
     if (typeof body.expiresAt !== "undefined") updateData.expiresAt = normalizeDate(body.expiresAt)
@@ -163,7 +152,6 @@ export async function PATCH(
       delete updateData.billingAddress
       delete updateData.taxId
       delete updateData.vatId
-      delete updateData.subscriptionStatus
       delete updateData.paid
       delete updateData.paymentDate
       delete updateData.expiresAt

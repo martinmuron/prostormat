@@ -138,15 +138,17 @@ export async function POST(request: Request) {
 
       let adminEmailStatus: 'sent' | 'failed' = 'sent'
       let adminEmailError: string | null = null
+      let adminEmailResendId: string | null = null
 
       try {
-        await resend.emails.send({
+        const adminEmailResult = await resend.emails.send({
           from: FROM_EMAIL,
           to: ["poptavka@prostormat.cz"],
           subject: emailContent.subject,
           html: emailContent.html,
           text: emailContent.text,
         })
+        adminEmailResendId = adminEmailResult.data?.id ?? null
       } catch (sendError) {
         adminEmailStatus = 'failed'
         adminEmailError = sendError instanceof Error ? sendError.message : 'Unknown error'
@@ -166,6 +168,7 @@ export async function POST(request: Request) {
               error: adminEmailError,
               recipientType: 'admin',
               sentBy: adminUserId,
+              resendEmailId: adminEmailResendId,
             },
           })
         } catch (logError) {
@@ -199,9 +202,10 @@ export async function POST(request: Request) {
 
         let emailStatus: "sent" | "failed" = "sent"
         let errorMessage: string | null = null
+        let venueEmailResendId: string | null = null
 
         try {
-          await resend.emails.send({
+          const venueEmailResult = await resend.emails.send({
             from: FROM_EMAIL,
             replyTo: REPLY_TO_EMAIL,
             to: venue.contactEmail,
@@ -209,6 +213,7 @@ export async function POST(request: Request) {
             html: emailContent.html,
             text: emailContent.text,
           })
+          venueEmailResendId = venueEmailResult.data?.id ?? null
         } catch (sendError) {
           emailStatus = "failed"
           errorMessage = sendError instanceof Error ? sendError.message : "Unknown email error"
@@ -229,6 +234,7 @@ export async function POST(request: Request) {
                 error: errorMessage,
                 recipientType: "venue_owner",
                 sentBy: sentByUserId,
+                resendEmailId: venueEmailResendId,
               },
             })
           } catch (logError) {

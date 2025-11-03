@@ -42,7 +42,6 @@ async function getVenueData(venueId: string) {
         paid: true,
         paymentDate: true,
         expiresAt: true,
-        subscriptionId: true,
         totalViews: true,
         createdAt: true,
         updatedAt: true,

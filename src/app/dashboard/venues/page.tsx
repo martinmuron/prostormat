@@ -41,7 +41,6 @@ async function getVenues() {
       ...venue,
       status: venue.status as VenueRow['status'],
       featured: venue.isRecommended,
-      subscriptionStatus: null,
       expiresAt: null,
       lastBilledAt: null,
     }))

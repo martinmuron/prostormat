@@ -52,9 +52,6 @@ async function removeVenueById(venueId: string, venueName: string, venueSlug: st
     const homepageVenue = await prisma.homepageVenue.deleteMany({ where: { venueId } })
     if (homepageVenue.count > 0) console.log(`  🗑️  Deleted homepage entry`)
 
-    const subscription = await prisma.subscription.deleteMany({ where: { venueId } })
-    if (subscription.count > 0) console.log(`  🗑️  Deleted subscription`)
-
     // Delete images
     await deleteVenueImages(venueSlug)
 

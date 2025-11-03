@@ -159,22 +159,18 @@ export async function GET() {
       orderBy: { createdAt: 'desc' },
     });
 
-    // Get payment information for each venue
-    const venuesWithPayments = await Promise.all(
-      pendingVenues.map(async (venue) => {
-        const payment = await prisma.paymentIntent.findFirst({
-          where: {
-            venueId: venue.id,
-            status: 'completed',
-          },
-        });
-
-        return {
-          ...venue,
-          payment: payment || null,
-        };
-      })
-    );
+    // Attach manual payment information for each venue (if already marked paid)
+    const venuesWithPayments = pendingVenues.map((venue) => ({
+      ...venue,
+      payment: venue.paid
+        ? {
+            amount: null,
+            currency: 'CZK',
+            paymentCompletedAt: venue.paymentDate,
+            reference: null,
+          }
+        : null,
+    }));
 
     const pendingClaims = await prisma.venueClaim.findMany({
       where: { status: 'pending' },
@@ -185,6 +181,9 @@ export async function GET() {
             name: true,
             slug: true,
             address: true,
+            paid: true,
+            paymentDate: true,
+            expiresAt: true,
             manager: {
               select: {
                 id: true,
@@ -207,47 +206,17 @@ export async function GET() {
       orderBy: { createdAt: 'desc' },
     });
 
-    const claimsWithPayments = await Promise.all(
-      pendingClaims.map(async (claim) => {
-        const payment = await prisma.paymentIntent.findFirst({
-          where: {
-            venueClaimId: claim.id,
-            status: 'completed',
-          },
-        });
-
-        let paymentInfo: {
-          amount?: number | null;
-          currency?: string | null;
-          paymentCompletedAt?: Date | null;
-          stripePaymentIntentId?: string | null;
-        } | null = null;
-
-        if (payment) {
-          const parsed = payment.venueData ? JSON.parse(payment.venueData) : {};
-          const amount =
-            typeof parsed?.stripeAmount === 'number'
-              ? parsed.stripeAmount
-              : null;
-          const currency =
-            typeof parsed?.stripeCurrency === 'string'
-              ? parsed.stripeCurrency
-              : null;
-
-          paymentInfo = {
-            amount,
-            currency,
-            paymentCompletedAt: payment.paymentCompletedAt,
-            stripePaymentIntentId: payment.stripePaymentIntentId,
-          };
-        }
-
-        return {
-          ...claim,
-          payment: paymentInfo,
-        };
-      })
-    );
+    const claimsWithPayments = pendingClaims.map((claim) => ({
+      ...claim,
+      payment: claim.venue?.paid
+        ? {
+            amount: null,
+            currency: 'CZK',
+            paymentCompletedAt: claim.venue.paymentDate ?? null,
+            reference: null,
+          }
+        : null,
+    }));
 
     return NextResponse.json({
       venues: venuesWithPayments,

@@ -95,7 +95,7 @@ function buildNavigation(userRole: string): DashboardNavGroup[] {
         label: "Moje prostory",
         items: [
           { name: "Můj prostor", href: "/dashboard/venue", icon: Building },
-          { name: "Přijaté dotazy", href: "/dashboard/inquiries", icon: MessageSquare },
+          { name: "Přijaté dotazy", href: "/dashboard/venue-inquiries", icon: MessageSquare },
           { name: "Event Board", href: "/event-board", icon: Calendar },
         ],
       },

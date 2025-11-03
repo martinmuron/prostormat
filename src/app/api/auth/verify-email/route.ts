@@ -45,6 +45,9 @@ export async function POST(request: Request) {
           name: result.user.name || result.user.email,
           email: result.user.email,
           role: result.user.role,
+        }, {
+          sentBy: result.user.id,
+          recipientType: 'user',
         })
       } catch (emailError) {
         console.error("Failed to send welcome email after verification:", emailError)

@@ -149,6 +149,8 @@ export async function POST(request: NextRequest) {
     const logSentBy = userId || adminUser?.id
 
     // Send email notification to admin
+    let adminEmailResendId: string | null = null
+
     try {
       const emailContent = generateVenueSubmissionNotificationEmail({
         submissionType,
@@ -174,6 +176,7 @@ export async function POST(request: NextRequest) {
       })
 
       if (emailResult.data?.id && logSentBy) {
+        adminEmailResendId = emailResult.data.id
         // Track in Email Flow system
         try {
           await prisma.emailFlowLog.create({
@@ -186,6 +189,7 @@ export async function POST(request: NextRequest) {
               error: null,
               recipientType: 'admin',
               sentBy: logSentBy,
+              resendEmailId: adminEmailResendId,
             },
           })
         } catch (logError) {
@@ -209,6 +213,7 @@ export async function POST(request: NextRequest) {
               error: emailError,
               recipientType: 'admin',
               sentBy: logSentBy,
+              resendEmailId: adminEmailResendId,
             },
           })
         } catch (logError) {

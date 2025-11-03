@@ -22,7 +22,7 @@ Note on structure: this repo is now unified. The single live app is under `src/`
 - **Database**: Supabase (PostgreSQL) with Prisma ORM
 - **Authentication**: NextAuth.js
 - **UI Components**: Custom components with Radix UI primitives
-- **Payments**: Stripe (for venue subscriptions)
+- **Payments**: Manual offline invoicing (no on-site checkout)
 - **Deployment**: Vercel
 
 ## 📦 Installation
@@ -56,9 +56,6 @@ Note on structure: this repo is now unified. The single live app is under `src/`
    GOOGLE_CLIENT_ID=""
    GOOGLE_CLIENT_SECRET=""
    
-   # Stripe
-   STRIPE_PUBLISHABLE_KEY=""
-   STRIPE_SECRET_KEY=""
    ```
 
 4. **Set up the database**:
@@ -83,7 +80,18 @@ The application includes the following main entities:
 - **Venues** (`prostormat_venues`) - Event spaces with details, images, and pricing
 - **Event Requests** (`prostormat_event_requests`) - Public requests with contact information
 - **Venue Inquiries** (`prostormat_venue_inquiries`) - Direct contact forms to venues
-- **Subscriptions** (`prostormat_subscriptions`) - Stripe subscriptions for venue listings
+
+After pulling the repository, run the latest manual SQL migration against your PostgreSQL database to remove legacy Stripe tables and columns:
+
+```bash
+psql "$DATABASE_URL" -f prisma/manual-migrations/20250214_remove_stripe.sql
+```
+
+For local SQLite development you can re-initialise everything with:
+
+```bash
+npm run db:setup:local
+```
 
 All Prisma models use the `@@map()` directive to enforce the `prostormat_` table prefix.
 
@@ -171,7 +179,7 @@ The seed script creates:
 
 ## 📈 Future Enhancements
 
-- Stripe payment integration for venue subscriptions
+- Automated online payments
 - Email notifications with Resend
 - Advanced analytics dashboard
 - Multi-language support

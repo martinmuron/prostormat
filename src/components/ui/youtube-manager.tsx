@@ -39,6 +39,9 @@ export function YouTubeManager({ videoUrl, onVideoChange }: YouTubeManagerProps)
     const patterns = [
       /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/,
       /youtube\.com\/v\/([^&\n?#]+)/,
+      /youtube\.com\/shorts\/([^&\n?#]+)/,
+      /youtube-nocookie\.com\/embed\/([^&\n?#]+)/,
+      /youtube\.com\/live\/([^&\n?#]+)/,
     ];
 
     for (const pattern of patterns) {
@@ -127,13 +130,32 @@ export function YouTubeManager({ videoUrl, onVideoChange }: YouTubeManagerProps)
     onVideoChange('');
   };
 
-  const currentVideoInfo = videoUrl ? 
-    (videoInfo || { 
-      id: extractVideoId(videoUrl),
-      embedUrl: videoUrl.includes('embed') ? videoUrl : `https://www.youtube.com/embed/${extractVideoId(videoUrl)}`,
-      watchUrl: videoUrl.includes('watch') ? videoUrl : `https://www.youtube.com/watch?v=${extractVideoId(videoUrl)}`,
-      thumbnail: `https://img.youtube.com/vi/${extractVideoId(videoUrl)}/hqdefault.jpg`
-    }) : null;
+  const currentVideoInfo = videoUrl ? (() => {
+    const existing = videoInfo
+    if (existing) {
+      return existing
+    }
+
+    const extractedId = extractVideoId(videoUrl)
+    if (!extractedId) {
+      return null
+    }
+
+    const embedUrl = videoUrl.includes('embed')
+      ? videoUrl
+      : `https://www.youtube.com/embed/${extractedId}`
+    const watchUrl = videoUrl.includes('watch')
+      ? videoUrl
+      : `https://www.youtube.com/watch?v=${extractedId}`
+
+    return {
+      id: extractedId,
+      title: 'YouTube Video',
+      embedUrl,
+      watchUrl,
+      thumbnail: `https://img.youtube.com/vi/${extractedId}/hqdefault.jpg`,
+    }
+  })() : null;
 
   return (
     <div className="space-y-4">

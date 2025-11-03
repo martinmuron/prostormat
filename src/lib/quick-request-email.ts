@@ -1,4 +1,4 @@
-import { resend } from "@/lib/resend"
+import { resend, FROM_EMAIL, REPLY_TO_EMAIL } from "@/lib/resend"
 import { generateQuickRequestVenueNotificationEmail } from "@/lib/email-templates"
 
 interface QuickRequestContact {
@@ -39,11 +39,12 @@ export async function sendQuickRequestEmailToVenue(
   })
 
   const emailResult = await resend.emails.send({
-    from: "Prostormat <noreply@prostormat.cz>",
+    from: FROM_EMAIL,
     to: venue.contactEmail,
     subject: emailContent.subject,
     html: emailContent.html,
     text: emailContent.text,
+    replyTo: REPLY_TO_EMAIL,
   })
 
   if (!emailResult.data) {

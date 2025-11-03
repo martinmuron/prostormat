@@ -40,32 +40,49 @@ async function getDashboardData(userId: string, userRole: string): Promise<Dashb
               inquiries: true,
             }
           },
-          subscription: true,
         }
       })
 
       // Fetch favorited event requests
-      const favoritedEventRequests = await db.eventRequestFavorite.findMany({
-        where: { userId },
-        include: {
-          eventRequest: true
-        },
-        orderBy: {
-          createdAt: "desc"
-        },
-        take: 5
-      })
+      const [favoritedEventRequestsResults, totalFavoritesCount, totalInquiryGuestsResult] = await Promise.all([
+        db.eventRequestFavorite.findMany({
+          where: { userId },
+          include: {
+            eventRequest: true
+          },
+          orderBy: {
+            createdAt: "desc"
+          },
+          take: 5
+        }),
+        db.eventRequestFavorite.count({
+          where: { userId }
+        }),
+        db.venueInquiry.aggregate({
+          where: {
+            venue: {
+              managerId: userId,
+            },
+          },
+          _sum: {
+            guestCount: true,
+          },
+        }),
+      ])
+
+      const totalInquiryGuests = totalInquiryGuestsResult._sum.guestCount ?? 0
 
       return {
         kind: 'venue_manager',
         ...baseData,
         venues,
-        favoritedEventRequests: favoritedEventRequests.map(fav => fav.eventRequest),
+        favoritedEventRequests: favoritedEventRequestsResults.map(fav => fav.eventRequest),
         stats: {
           totalVenues: venues.length,
           activeVenues: venues.filter(v => v.status === "published").length,
           totalInquiries: venues.reduce((sum, venue) => sum + venue._count.inquiries, 0),
-          totalFavorites: favoritedEventRequests.length,
+          totalFavorites: totalFavoritesCount,
+          totalInquiryGuests,
         }
       }
     }
@@ -114,59 +131,77 @@ async function getDashboardData(userId: string, userRole: string): Promise<Dashb
     let eventRequests: EventRequestSummary[] = []
     let venueInquiries: VenueInquirySummary[] = []
     let broadcasts: VenueBroadcastSummary[] = []
+    let totalEventRequests = 0
+    let activeEventRequests = 0
+    let totalVenueInquiries = 0
+    let totalBroadcasts = 0
     
     try {
-      const results = await db.eventRequest.findMany({
-        where: { userId },
-        orderBy: { createdAt: "desc" },
-        take: 5,
-      })
+      const [results, totalCount, activeCount] = await Promise.all([
+        db.eventRequest.findMany({
+          where: { userId },
+          orderBy: { createdAt: "desc" },
+          take: 5,
+        }),
+        db.eventRequest.count({ where: { userId } }),
+        db.eventRequest.count({ where: { userId, status: "active" } }),
+      ])
       eventRequests = results
+      totalEventRequests = totalCount
+      activeEventRequests = activeCount
     } catch (error) {
       console.error("Error fetching event requests:", error)
     }
     
     try {
-      const results = await db.venueInquiry.findMany({
-        where: { userId },
-        include: {
-          venue: {
-            select: {
-              id: true,
-              name: true,
-              slug: true,
+      const [results, totalCount] = await Promise.all([
+        db.venueInquiry.findMany({
+          where: { userId },
+          include: {
+            venue: {
+              select: {
+                id: true,
+                name: true,
+                slug: true,
+              }
             }
-          }
-        },
-        orderBy: { createdAt: "desc" },
-        take: 5,
-      })
+          },
+          orderBy: { createdAt: "desc" },
+          take: 5,
+        }),
+        db.venueInquiry.count({ where: { userId } }),
+      ])
       venueInquiries = results
+      totalVenueInquiries = totalCount
     } catch (error) {
       console.error("Error fetching venueInquiry:", error)
     }
     
     try {
-      const results = await db.venueBroadcast.findMany({
-        where: { userId },
-        include: {
-          logs: {
-            include: {
-              venue: {
-                select: {
-                  id: true,
-                  name: true,
-                  slug: true,
-                  contactEmail: true
+      const [results, totalCount] = await Promise.all([
+        db.venueBroadcast.findMany({
+          where: { userId },
+          include: {
+            logs: {
+              include: {
+                venue: {
+                  select: {
+                    id: true,
+                    name: true,
+                    slug: true,
+                    contactEmail: true
+                  }
                 }
               }
             }
-          }
-        },
-        orderBy: { createdAt: "desc" },
-        take: 5,
-      })
+          },
+          orderBy: { createdAt: "desc" },
+          take: 5,
+        }),
+        db.venueBroadcast.count({ where: { userId } }),
+      ])
       broadcasts = results
+      totalBroadcasts = totalCount
     } catch (error) {
       console.error("Error fetching broadcasts:", error)
     }
@@ -178,10 +213,10 @@ async function getDashboardData(userId: string, userRole: string): Promise<Dashb
       venueInquiries,
       broadcasts,
       stats: {
-        activeRequests: eventRequests.filter(r => r.status === "active").length,
-        totalRequests: eventRequests.length,
-        totalInquiries: venueInquiries.length,
-        totalBroadcasts: broadcasts.length,
+        activeRequests: activeEventRequests,
+        totalRequests: totalEventRequests,
+        totalInquiries: totalVenueInquiries,
+        totalBroadcasts: totalBroadcasts,
       }
     }
   } catch (error) {

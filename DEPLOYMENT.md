@@ -47,8 +47,11 @@ In your deployment environment, add these environment variables:
 Use Vercel CLI to set environment variables:
 
 ```bash
+# Add primary database connection
 vercel env add DATABASE_URL production
-vercel env add POSTGRES_PRISMA_URL production
+# Enter: postgres://postgres.PROJECT:PASSWORD@aws-0-us-east-1.pooler.supabase.com:6543/postgres?pgbouncer=true&sslmode=require
+
+# Add Supabase configuration
 vercel env add SUPABASE_URL production
 vercel env add SUPABASE_SERVICE_ROLE_KEY production
 vercel env add NEXT_PUBLIC_SUPABASE_ANON_KEY production
@@ -57,9 +60,11 @@ vercel env add NEXT_PUBLIC_SUPABASE_ANON_KEY production
 
 Required environment variables:
 ```env
-# Database (Supabase)
-DATABASE_URL=postgres://...
-POSTGRES_PRISMA_URL=postgres://...
+# Database Connection (Simplified Strategy)
+# Use Supabase pooler in transaction mode (port 6543) for optimal serverless performance
+DATABASE_URL=postgres://postgres.PROJECT:PASSWORD@aws-0-us-east-1.pooler.supabase.com:6543/postgres?pgbouncer=true&sslmode=require
+
+# Supabase Configuration
 SUPABASE_URL=https://your-project.supabase.co
 SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
@@ -175,9 +180,11 @@ vercel env add NEW_VARIABLE_NAME production
 - Verify TypeScript compilation locally
 
 ### Database Issues
-- Confirm DATABASE_URL is correct
+- Confirm DATABASE_URL is correct and includes `pgbouncer=true` parameter
+- Verify connection uses port 6543 (transaction mode pooler)
 - Check Supabase project status
 - Verify table names use `prostormat_` prefix
+- Note: The pooler is a connection proxy, not a separate database
 
 ### Domain Issues
 - Verify DNS records in Forpsi

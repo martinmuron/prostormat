@@ -61,6 +61,10 @@ function AddVenuePageInner() {
   const { data: session, status } = useSession()
   const searchParams = useSearchParams()
 
+  const venueSlugParam = searchParams?.get("venue") ?? null
+  const inquiryIdParam = searchParams?.get("inquiry") ?? null
+  const comingFromInquiry = Boolean(inquiryIdParam)
+
   const [claimInfo, setClaimInfo] = useState<InlineVenueMatch | null>(null)
   const [nameLookupResult, setNameLookupResult] = useState<NameLookupResult>({
     status: "idle",
@@ -70,6 +74,23 @@ function AddVenuePageInner() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [submissionState, setSubmissionState] = useState<SubmissionState | null>(null)
+
+  const prefilledVenueName = useMemo(() => {
+    if (claimInfo?.name) {
+      return claimInfo.name
+    }
+    if (!venueSlugParam) {
+      return null
+    }
+    try {
+      const decoded = decodeURIComponent(venueSlugParam)
+      const withSpaces = decoded.replace(/-/g, " ").trim()
+      return withSpaces.length > 0 ? withSpaces : decoded
+    } catch {
+      const fallback = venueSlugParam.replace(/-/g, " ").trim()
+      return fallback.length > 0 ? fallback : venueSlugParam
+    }
+  }, [claimInfo, venueSlugParam])
 
   const {
     register,
@@ -147,18 +168,87 @@ function AddVenuePageInner() {
     }
   }, [])
 
+  const fetchClaimVenueSummaryBySlug = useCallback(async (slug: string) => {
+    try {
+      const response = await fetch(`/api/venues/claim-data/by-slug/${encodeURIComponent(slug)}`, {
+        cache: "no-store",
+      })
+      if (!response.ok) {
+        return null
+      }
+
+      const data = await response.json()
+      if (!data?.id || !data?.name) {
+        return null
+      }
+
+      return {
+        id: data.id,
+        name: data.name,
+        slug: data.slug,
+        status: data.status,
+        manager: data.manager ?? null,
+      } satisfies InlineVenueMatch
+    } catch (error) {
+      console.error("Failed to load claim venue summary by slug:", error)
+      return null
+    }
+  }, [])
+
   const tryPreselectClaimVenue = useCallback(async () => {
     const claimIdParam = searchParams?.get("claimVenueId")
-    if (!claimIdParam) {
+    const currentTitle = (getValues("locationTitle") ?? "").trim()
+
+    if (claimIdParam && claimInfo && claimInfo.id === claimIdParam) {
+      if (currentTitle.length === 0 && claimInfo.name) {
+        setValue("locationTitle", claimInfo.name, { shouldValidate: true })
+      }
       return
     }
 
-    const summary = await fetchClaimVenueSummary(claimIdParam)
-    if (summary) {
-      setClaimInfo(summary)
-      setValue("locationTitle", summary.name, { shouldValidate: true })
+    if (!claimIdParam && venueSlugParam && claimInfo && claimInfo.slug === venueSlugParam) {
+      if (currentTitle.length === 0 && claimInfo.name) {
+        setValue("locationTitle", claimInfo.name, { shouldValidate: true })
+      }
+      return
     }
-  }, [searchParams, fetchClaimVenueSummary, setValue])
+
+    if (claimIdParam) {
+      const summary = await fetchClaimVenueSummary(claimIdParam)
+      if (summary) {
+        if (!claimInfo || claimInfo.id !== summary.id) {
+          setClaimInfo(summary)
+        }
+        if (currentTitle.length === 0) {
+          setValue("locationTitle", summary.name, { shouldValidate: true })
+        }
+      }
+      return
+    }
+
+    if (venueSlugParam) {
+      const summary = await fetchClaimVenueSummaryBySlug(venueSlugParam)
+      if (summary) {
+        if (!claimInfo || claimInfo.id !== summary.id) {
+          setClaimInfo(summary)
+        }
+        if (currentTitle.length === 0) {
+          setValue("locationTitle", summary.name, { shouldValidate: true })
+        }
+      } else if (currentTitle.length === 0 && prefilledVenueName) {
+        setValue("locationTitle", prefilledVenueName, { shouldValidate: true })
+      }
+    }
+  }, [
+    fetchClaimVenueSummary,
+    fetchClaimVenueSummaryBySlug,
+    getValues,
+    claimInfo,
+    prefilledVenueName,
+    searchParams,
+    setValue,
+    venueSlugParam,
+  ])
 
   useEffect(() => {
     void tryPreselectClaimVenue()
@@ -332,6 +422,22 @@ function AddVenuePageInner() {
             </CardHeader>
             <CardContent>
               <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
+                {comingFromInquiry && (
+                  <Alert className="border-blue-200 bg-blue-50">
+                    <AlertTitle>Prostor zatím nemá aktivní správu</AlertTitle>
+                    <AlertDescription>
+                      {prefilledVenueName ? (
+                        <span>
+                          Poptávka je propojena s prostorem <strong>{prefilledVenueName}</strong>. Vyplňte formulář
+                          níže a náš tým vám pomůže převzít listing.
+                        </span>
+                      ) : (
+                        "Poptávka je propojena s vaším prostorem. Vyplňte formulář níže a náš tým vám pomůže převzít listing."
+                      )}
+                    </AlertDescription>
+                  </Alert>
+                )}
+
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <div className="sm:col-span-2">
                     <label className="block text-sm font-medium text-gray-700 mb-1">Společnost (s.r.o. / provozovatel) *</label>

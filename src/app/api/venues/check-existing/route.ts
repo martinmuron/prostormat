@@ -1,7 +1,9 @@
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
+import { getServerSession } from 'next-auth/next'
 import { db } from '@/lib/db'
 import { Prisma } from '@prisma/client'
+import { authOptions } from '@/lib/auth'
 
 const checkSchema = z.object({
   name: z.string().min(2),
@@ -26,6 +28,8 @@ export async function POST(request: Request) {
   try {
     const body = await request.json()
     const { name, address } = checkSchema.parse(body)
+    const session = await getServerSession(authOptions)
+    const isAdmin = session?.user?.role === 'admin'
 
     const trimmedName = name.trim()
     const normalizedAddress = address ? normalize(address) : null
@@ -111,18 +115,36 @@ export async function POST(request: Request) {
           })
         : []
 
-    if (!existingVenue) {
+    const sanitizeVenue = <T extends { manager?: { id: string; name: string | null; email: string | null } | null }>(venue: T) => {
+      if (!venue) {
+        return venue
+      }
+
+      if (isAdmin) {
+        return venue
+      }
+
+      return {
+        ...venue,
+        manager: null,
+      }
+    }
+
+    const sanitizedExistingVenue = existingVenue ? sanitizeVenue(existingVenue) : null
+    const sanitizedSuggestions = similarVenues.map((venue) => sanitizeVenue(venue))
+
+    if (!sanitizedExistingVenue) {
       return NextResponse.json({
         exists: false,
         venue: null,
-        suggestions: similarVenues,
+        suggestions: sanitizedSuggestions,
       })
     }
 
     return NextResponse.json({
       exists: true,
-      venue: existingVenue,
-      suggestions: similarVenues,
+      venue: sanitizedExistingVenue,
+      suggestions: sanitizedSuggestions,
     })
   } catch (error) {
     if (error instanceof z.ZodError) {

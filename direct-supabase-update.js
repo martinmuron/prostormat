@@ -27,7 +27,6 @@ async function replaceVenuesDirectly() {
     await client.query('DELETE FROM prostormat_venue_favorites');
     await client.query('DELETE FROM prostormat_venue_views');
     await client.query('DELETE FROM prostormat_venue_news');
-    await client.query('DELETE FROM prostormat_subscriptions');
     
     // Remove venues
     await client.query('DELETE FROM prostormat_venues');

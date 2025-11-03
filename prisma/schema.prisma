@@ -38,14 +38,14 @@ model Session {
 }
 
 model User {
-  id                    String                 @id @default(cuid())
+  id                    String                   @id @default(cuid())
   name                  String?
-  email                 String                 @unique
+  email                 String                   @unique
   emailVerified         DateTime?
   image                 String?
   password              String? // for credential-based auth
   phone                 String?
-  role                  String                 @default("user") // user, venue_manager, admin
+  role                  String                   @default("user") // user, venue_manager, admin
   company               String? // for event organizers
   accounts              Account[]
   sessions              Session[]
@@ -59,7 +59,7 @@ model User {
   passwordResetTokens   PasswordResetToken[]
   venueClaims           VenueClaim[]
   venueSubmissions      VenueSubmissionRequest[]
-  createdAt             DateTime               @default(now())
+  createdAt             DateTime                 @default(now())
 
   @@map("prostormat_users")
 }
@@ -95,11 +95,15 @@ model Venue {
   status           String    @default("draft") // draft, active, expired, pending, published
   isRecommended    Boolean   @default(false) // Featured/recommended venue
   priority         Int? // 1 = highest priority, null = no priority
-  prioritySource   String? // subscription | manual
+  prioritySource   String? // manual | homepage
   parentId         String?
   managerId        String
-  paid             Boolean   @default(false) // Whether venue has paid subscription
-  subscriptionId   String? // Stripe subscription ID
+  billingEmail     String?
+  billingName      String?
+  billingAddress   String?
+  taxId            String?
+  vatId            String?
+  paid             Boolean   @default(false) // Whether venue has paid offline listing
   paymentDate      DateTime? // When the 12,000 CZK was paid
   expiresAt        DateTime?
   lastViewedAt     DateTime? // Last time venue was viewed
@@ -108,14 +112,13 @@ model Venue {
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
 
-  manager       User                @relation(fields: [managerId], references: [id])
-  parent        Venue?              @relation("VenueHierarchy", fields: [parentId], references: [id])
-  subVenues     Venue[]             @relation("VenueHierarchy")
-  inquiries     VenueInquiry[]
-  subscription  Subscription?
-  broadcastLogs VenueBroadcastLog[]
-  claims        VenueClaim[]
-  homepageSlot  HomepageVenue?
+  manager            User                     @relation(fields: [managerId], references: [id])
+  parent             Venue?                   @relation("VenueHierarchy", fields: [parentId], references: [id])
+  subVenues          Venue[]                  @relation("VenueHierarchy")
+  inquiries          VenueInquiry[]
+  broadcastLogs      VenueBroadcastLog[]
+  claims             VenueClaim[]
+  homepageSlot       HomepageVenue?
   submissionRequests VenueSubmissionRequest[]
 
   @@map("prostormat_venues")
@@ -131,9 +134,8 @@ model VenueClaim {
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
-  venue         Venue          @relation(fields: [venueId], references: [id])
-  claimant      User           @relation(fields: [claimantId], references: [id])
-  paymentIntent PaymentIntent? @relation("PaymentIntentClaim")
+  venue    Venue @relation(fields: [venueId], references: [id])
+  claimant User  @relation(fields: [claimantId], references: [id])
 
   @@map("prostormat_venue_claims")
 }
@@ -196,18 +198,6 @@ model VenueInquiry {
 
   venue Venue @relation(fields: [venueId], references: [id])
   user  User? @relation(fields: [userId], references: [id])
-}
-
-model Subscription {
-  id                   String   @id @default(cuid())
-  venueId              String   @unique
-  stripeSubscriptionId String   @unique
-  stripeCustomerId     String
-  status               String // active, canceled, past_due
-  currentPeriodEnd     DateTime
-  createdAt            DateTime @default(now())
-
-  venue Venue @relation(fields: [venueId], references: [id])
 }
 
 model BlogPost {
@@ -292,6 +282,7 @@ model EmailFlowLog {
   error         String?
   recipientType String?
   sentBy        String
+  resendEmailId String?  @unique
   createdAt     DateTime @default(now())
   user          User     @relation(fields: [sentBy], references: [id])
 
@@ -320,23 +311,6 @@ model EventRequestFavorite {
   eventRequest EventRequest @relation(fields: [eventRequestId], references: [id], onDelete: Cascade)
 
   @@unique([userId, eventRequestId])
-}
-
-model PaymentIntent {
-  id                    String    @id @default(cuid())
-  stripePaymentIntentId String    @unique
-  venueData             String // JSON string of venue form data
-  userEmail             String
-  status                String    @default("pending") // pending, completed, failed
-  venueId               String? // Set after venue is created
-  venueClaimId          String?   @unique
-  paymentCompletedAt    DateTime?
-  createdAt             DateTime  @default(now())
-  updatedAt             DateTime  @updatedAt
-
-  venueClaim VenueClaim? @relation("PaymentIntentClaim", fields: [venueClaimId], references: [id])
-
-  @@map("prostormat_payment_intents")
 }
 
 model VenueSubmissionRequest {

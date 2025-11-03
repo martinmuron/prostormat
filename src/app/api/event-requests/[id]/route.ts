@@ -80,6 +80,14 @@ export async function PATCH(
             { status: 400 }
           )
         }
+        const startOfToday = new Date()
+        startOfToday.setHours(0, 0, 0, 0)
+        if (parsedDate.getTime() < startOfToday.getTime()) {
+          return NextResponse.json(
+            { error: "Datum akce nemůže být v minulosti" },
+            { status: 400 }
+          )
+        }
         updateData.eventDate = parsedDate
       } else {
         updateData.eventDate = null

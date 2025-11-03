@@ -32,8 +32,18 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-black bg-white">
-      <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:h-16 sm:px-6">
+      <div className="relative mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:h-16 sm:px-6">
         <Logo variant="black" size="md" />
+
+        <Link
+          href="https://www.instagram.com/prostormatcz"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="absolute left-1/2 top-1/2 flex h-11 w-11 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-gray-200 text-gray-700 transition hover:border-black hover:bg-black hover:text-white md:hidden"
+        >
+          <Instagram className="h-5 w-5" />
+          <span className="sr-only">Instagram</span>
+        </Link>
 
         <div className="flex items-center gap-2 sm:gap-3">
           <div className="hidden items-center gap-3 md:flex">
@@ -108,29 +118,12 @@ export function Header() {
           </div>
 
           <div className="flex items-center gap-2">
-            <Link href="/pridat-prostor" className="md:hidden">
-              <Button size="sm" className="rounded-full bg-black px-3 py-2 text-white transition hover:bg-gray-800">
-                <Plus className="mr-1 h-4 w-4" />
-                <span className="text-xs font-medium">Přidat prostor</span>
-              </Button>
-            </Link>
-
-            <Link
-              href="https://www.instagram.com/prostormatcz"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-gray-200 text-gray-700 transition hover:border-black hover:bg-black hover:text-white md:hidden"
-            >
-              <Instagram className="h-5 w-5" />
-              <span className="sr-only">Instagram</span>
-            </Link>
-
             <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
               <SheetTrigger asChild>
                 <Button
                   variant="outline"
-                  size="sm"
-                  className="inline-flex items-center gap-2 rounded-full border-black/10 bg-white px-3 py-2 text-sm font-medium shadow-sm transition hover:border-black hover:bg-black hover:text-white"
+                  size="lg"
+                  className="inline-flex h-11 w-11 items-center justify-center gap-2 rounded-full border-black/10 bg-white px-0 text-sm font-medium shadow-sm transition hover:border-black hover:bg-black hover:text-white sm:w-auto sm:px-5"
                 >
                   <Menu className="h-5 w-5" />
                   <span className="hidden sm:inline">Menu</span>

@@ -97,17 +97,12 @@ echo "----------------------------"
 
 # Check payment workflow files
 echo "Payment Workflow:"
-if [ -f "src/components/payment/stripe-checkout.tsx" ]; then
-    echo -e "  ✅ Payment Component: ${GREEN}OK${NC}"
-else
-    echo -e "  ❌ Payment Component: ${RED}MISSING${NC}"
-fi
-
 if [ -f "src/app/pridat-prostor/page.tsx" ]; then
     echo -e "  ✅ Venue Form: ${GREEN}OK${NC}"
 else
     echo -e "  ❌ Venue Form: ${RED}MISSING${NC}"
 fi
+echo -e "  ℹ️  Payments are processed offline – no checkout integration required."
 
 # Check admin workflow
 echo "Admin Workflow:"
@@ -127,8 +122,7 @@ echo -e "\n${BLUE}5. Configuration Summary${NC}"
 echo "------------------------------"
 echo -e "📄 MCP Config: ${GREEN}mcp-config.json${NC}"
 echo -e "🔐 Environment: ${GREEN}.env.local${NC}"
-echo -e "💳 Payment Amount: ${GREEN}12,000 CZK${NC}"
-echo -e "🌐 Webhook URL: ${GREEN}https://prostormat.cz/api/webhooks/stripe${NC}"
+echo -e "💳 Payment Amount: ${GREEN}12,000 CZK (offline invoicing)${NC}"
 echo -e "🗄️  Database: ${GREEN}Supabase PostgreSQL (11MB)${NC}"
 echo -e "🚀 Deployment: ${GREEN}Vercel + Next.js${NC}"
 

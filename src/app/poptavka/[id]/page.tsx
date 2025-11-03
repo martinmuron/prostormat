@@ -38,8 +38,7 @@ export default async function InquiryDetailsPage({ params, searchParams }: PageP
     redirect('/pridat-prostor');
   }
 
-  // Check if user is admin (info@prostormat.cz)
-  const isAdmin = session?.user?.email === 'info@prostormat.cz';
+  const isAdmin = session?.user?.role === 'admin';
 
   // If venue is not paid AND user is not admin, redirect to claim page
   if (!venue.paid && !isAdmin) {

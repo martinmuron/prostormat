@@ -40,7 +40,6 @@ export type Venue = {
     // TODO: add favorites when model is implemented
   }
   featured: boolean
-  subscriptionStatus?: string | null
   expiresAt?: Date | null
   lastBilledAt?: Date | null
   updatedAt: Date

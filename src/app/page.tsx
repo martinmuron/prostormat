@@ -4,10 +4,9 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { VenueCard } from "@/components/venue/venue-card"
 import { ScrollReveal } from "@/components/ui/scroll-reveal"
-import { HeroSearch } from "@/components/ui/hero-search"
 import { Skeleton } from "@/components/ui/skeleton"
 import { db } from "@/lib/db"
-import { Upload, MessageSquare, Euro, ArrowRight, Zap, Clock } from "lucide-react"
+import { Upload, MessageSquare, Euro, ArrowRight, Zap, Clock, Search } from "lucide-react"
 
 // Revalidate homepage data every two minutes
 export const revalidate = 120
@@ -36,105 +35,107 @@ type FeaturedVenuesResult = {
 
 async function getFeaturedVenues(): Promise<FeaturedVenuesResult> {
   try {
-    const visibleStatuses = ['published', 'active']
+    const visibleStatuses = ['published']
 
     const desiredCount = 12
-    const selected: FeaturedVenue[] = []
-    const homepageHighlighted = new Set<string>()
-    const seen = new Set<string>()
+    return await db.$transaction(async (tx) => {
+      const selected: FeaturedVenue[] = []
+      const homepageHighlighted = new Set<string>()
+      const seen = new Set<string>()
 
-    const homepageVenues = await db.homepageVenue.findMany({
-      select: {
-        venueId: true,
-        position: true,
-      },
-      orderBy: {
-        position: 'asc',
-      },
-    })
-
-    if (homepageVenues.length) {
-      const homepageVenueIds = homepageVenues.map(({ venueId }) => venueId)
-      const homepageVenueRecords = await db.venue.findMany({
-        where: {
-          id: { in: homepageVenueIds },
-          parentId: null,
-          status: { in: visibleStatuses },
+      const homepageVenues = await tx.homepageVenue.findMany({
+        select: {
+          venueId: true,
+          position: true,
         },
-        select: featuredVenueSelect,
+        orderBy: {
+          position: 'asc',
+        },
       })
 
-      const homepageVenueMap = new Map(
-        homepageVenueRecords.map((venue) => [venue.id, venue]),
-      )
+      if (homepageVenues.length) {
+        const homepageVenueIds = homepageVenues.map(({ venueId }) => venueId)
+        const homepageVenueRecords = await tx.venue.findMany({
+          where: {
+            id: { in: homepageVenueIds },
+            parentId: null,
+            status: { in: visibleStatuses },
+          },
+          select: featuredVenueSelect,
+        })
 
-      for (const entry of homepageVenues) {
-        const venue = homepageVenueMap.get(entry.venueId)
-        if (!venue) continue
-        if (!visibleStatuses.includes(venue.status)) continue
-        if (seen.has(venue.id)) continue
-        seen.add(venue.id)
-        selected.push(venue)
-        homepageHighlighted.add(venue.id)
-        if (selected.length === desiredCount) {
-          break
+        const homepageVenueMap = new Map(
+          homepageVenueRecords.map((venue) => [venue.id, venue]),
+        )
+
+        for (const entry of homepageVenues) {
+          const venue = homepageVenueMap.get(entry.venueId)
+          if (!venue) continue
+          if (!visibleStatuses.includes(venue.status)) continue
+          if (seen.has(venue.id)) continue
+          seen.add(venue.id)
+          selected.push(venue)
+          homepageHighlighted.add(venue.id)
+          if (selected.length === desiredCount) {
+            break
+          }
         }
       }
-    }
 
-    if (selected.length < desiredCount) {
-      const topPriorityVenues = await db.venue.findMany({
-        where: {
-          priority: 1,
-          status: { in: visibleStatuses },
-          parentId: null,
-          id: { notIn: Array.from(seen) },
-        },
-        orderBy: {
-          updatedAt: 'desc',
-        },
-        take: desiredCount - selected.length,
-        select: featuredVenueSelect,
-      })
+      if (selected.length < desiredCount) {
+        const topPriorityVenues = await tx.venue.findMany({
+          where: {
+            priority: 1,
+            status: { in: visibleStatuses },
+            parentId: null,
+            id: { notIn: Array.from(seen) },
+          },
+          orderBy: {
+            updatedAt: 'desc',
+          },
+          take: desiredCount - selected.length,
+          select: featuredVenueSelect,
+        })
 
-      for (const venue of topPriorityVenues) {
-        if (seen.has(venue.id)) continue
-        seen.add(venue.id)
-        selected.push(venue)
-      }
-    }
-
-    if (selected.length < desiredCount) {
-      const fallbackVenues = await db.venue.findMany({
-        where: {
-          status: { in: visibleStatuses },
-          id: { notIn: Array.from(seen) },
-          parentId: null,
-        },
-        orderBy: {
-          createdAt: 'desc',
-        },
-        take: desiredCount - selected.length,
-        select: featuredVenueSelect,
-      })
-
-      for (const venue of fallbackVenues) {
-        if (!seen.has(venue.id)) {
+        for (const venue of topPriorityVenues) {
+          if (seen.has(venue.id)) continue
           seen.add(venue.id)
           selected.push(venue)
         }
       }
-    }
 
-    const finalSelection = selected.slice(0, desiredCount)
-    const homepageHighlightedIds = finalSelection
-      .filter((venue) => homepageHighlighted.has(venue.id))
-      .map((venue) => venue.id)
+      if (selected.length < desiredCount) {
+        const fallbackVenues = await tx.venue.findMany({
+          where: {
+            status: { in: visibleStatuses },
+            id: { notIn: Array.from(seen) },
+            parentId: null,
+          },
+          orderBy: {
+            createdAt: 'desc',
+          },
+          take: desiredCount - selected.length,
+          select: featuredVenueSelect,
+        })
 
-    return {
-      venues: finalSelection,
-      homepageHighlightedIds,
-    }
+        for (const venue of fallbackVenues) {
+          if (!seen.has(venue.id)) {
+            seen.add(venue.id)
+            selected.push(venue)
+          }
+        }
+      }
+
+      const finalSelection = selected.slice(0, desiredCount)
+      const homepageHighlightedIds = finalSelection
+        .filter((venue) => homepageHighlighted.has(venue.id))
+        .map((venue) => venue.id)
+
+      return {
+        venues: finalSelection,
+        homepageHighlightedIds,
+      }
+    })
   } catch (error) {
     console.error("Error fetching prostormat_venues:", error)
     return {
@@ -211,31 +212,85 @@ export default function HomePage() {
     <div className="min-h-screen bg-white relative overflow-hidden">
       {/* Hero Section */}
       <section className="relative py-20 sm:py-28 lg:py-36 px-4 sm:px-6 bg-gradient-to-br from-rose-50 via-white to-pink-50">
-        <div className="max-w-5xl mx-auto text-center relative z-20">
-          <div className="animate-slide-up">
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-semibold text-gray-900 mb-8 tracking-tight leading-tight">
-              Najděte perfektní prostor<br className="hidden sm:block" />
-              <span className="sm:hidden"> </span>pro vaši akci
-            </h1>
+        <div className="max-w-6xl mx-auto relative z-20">
+          <div className="text-center mb-16">
+            <div className="animate-slide-up">
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-semibold text-gray-900 mb-8 tracking-tight leading-tight">
+                Najděte perfektní prostor<br className="hidden sm:block" />
+                <span className="sm:hidden"> </span>pro vaši akci
+              </h1>
+            </div>
+
+            <div className="animate-slide-up" style={{ animationDelay: '0.2s' }}>
+              <p className="text-xl sm:text-2xl text-gray-700 mb-4 max-w-3xl mx-auto leading-relaxed font-light">
+                Stovky ověřených prostorů v Praze – vyberte si svou cestu:
+              </p>
+            </div>
           </div>
-          
-          <div className="animate-slide-up" style={{ animationDelay: '0.2s' }}>
-            <p className="text-xl sm:text-2xl text-gray-700 mb-12 max-w-3xl mx-auto leading-relaxed font-light">
-              Objevte stovky ověřených prostorů v Praze – od intimních setkání až po velké konference.
-              Každý listing naši kurátoři osobně prověřují.
-            </p>
+
+          {/* Two Equal CTAs */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 max-w-5xl mx-auto">
+            {/* Rychla Poptavka CTA */}
+            <div className="animate-slide-up" style={{ animationDelay: '0.3s' }}>
+              <div className="bg-gradient-to-br from-orange-50 to-red-50 rounded-3xl p-8 border-2 border-orange-200 hover-lift h-full flex flex-col">
+                <div className="flex-1">
+                  <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl mb-5 bg-orange-500">
+                    <Zap className="w-7 h-7 text-white" />
+                  </div>
+                  <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3">
+                    Rychlá poptávka
+                  </h2>
+                  <p className="text-lg text-gray-700 mb-6 leading-relaxed">
+                    Vyplň jeden formulář a prostory se ti ozvou samy! Porovnej nabídky a vyber tu nejlepší.
+                  </p>
+                </div>
+                <Link href="/rychla-poptavka" className="block">
+                  <Button
+                    size="lg"
+                    className="magnetic-button hover-lift w-full px-6 py-4 text-base font-semibold rounded-xl bg-orange-500 text-white hover:bg-orange-600 transition-all duration-200 shadow-lg"
+                  >
+                    <Zap className="w-5 h-5 mr-2" />
+                    Zadat poptávku
+                  </Button>
+                </Link>
+              </div>
+            </div>
+
+            {/* Browse All Venues CTA */}
+            <div className="animate-slide-up" style={{ animationDelay: '0.4s' }}>
+              <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-3xl p-8 border-2 border-blue-200 hover-lift h-full flex flex-col">
+                <div className="flex-1">
+                  <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl mb-5 bg-blue-600">
+                    <Search className="w-7 h-7 text-white" />
+                  </div>
+                  <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3">
+                    Procházet prostory
+                  </h2>
+                  <p className="text-lg text-gray-700 mb-6 leading-relaxed">
+                    Prohlédněte si všechny prostory, porovnejte je a kontaktujte majitele přímo.
+                  </p>
+                </div>
+                <Link href="/prostory" className="block">
+                  <Button
+                    size="lg"
+                    className="magnetic-button hover-lift w-full px-6 py-4 text-base font-semibold rounded-xl bg-blue-600 text-white hover:bg-blue-700 transition-all duration-200 shadow-lg"
+                  >
+                    <Search className="w-5 h-5 mr-2" />
+                    Prohlédnout všechny prostory
+                  </Button>
+                </Link>
+              </div>
+            </div>
           </div>
-          
-          <div className="mb-12 animate-slide-up" style={{ animationDelay: '0.4s' }}>
-            <HeroSearch />
-          </div>
-          
-          <div className="flex flex-col sm:flex-row gap-4 justify-center max-w-3xl mx-auto animate-slide-up" style={{ animationDelay: '0.6s' }}>
-            <Link href="/pridat-prostor" className="flex-1">
-              <Button 
-                variant="outline" 
-                size="lg" 
-                className="magnetic-button hover-lift w-full px-6 py-3 text-base font-medium rounded-xl border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white transition-all duration-200"
+
+          {/* Optional: Add prostor owner CTA */}
+          <div className="text-center mt-8 animate-slide-up" style={{ animationDelay: '0.5s' }}>
+            <p className="text-gray-600 mb-3">Vlastníte prostor?</p>
+            <Link href="/pridat-prostor">
+              <Button
+                variant="outline"
+                size="lg"
+                className="magnetic-button px-6 py-3 text-base font-medium rounded-xl border-2 border-gray-300 text-gray-700 hover:border-black hover:bg-black hover:text-white transition-all duration-200"
               >
                 <Upload className="w-5 h-5 mr-2" />
                 Přidat prostor
@@ -350,24 +405,14 @@ export default function HomePage() {
                 </div>
               </div>
               
-              <div className="mt-8 space-y-4">
-                <Link href="/event-board/novy" className="block">
+              <div className="mt-8">
+                <Link href="/rychla-poptavka" className="block">
                   <Button 
                     size="lg" 
                     className="magnetic-button hover-lift w-full px-6 py-3 text-base font-medium rounded-xl bg-blue-600 text-white hover:bg-blue-700 transition-all duration-200"
                   >
                     <Zap className="w-5 h-5 mr-2" />
-                    Vytvořit poptávku
-                  </Button>
-                </Link>
-                <Link href="/event-board" className="block">
-                  <Button 
-                    variant="outline" 
-                    size="lg" 
-                    className="w-full px-6 py-3 text-base font-medium rounded-xl border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white transition-all duration-200"
-                  >
-                    Prohlédnout Event Board
-                    <ArrowRight className="w-4 h-4 ml-2" />
+                    Zadat rychlou poptávku
                   </Button>
                 </Link>
               </div>

@@ -12,3 +12,12 @@ export function formatDate(date: string | Date): string {
     day: 'numeric',
   })
 }
+
+export function formatDisplayAddress(address?: string | null): string {
+  if (!address) return ""
+  return address
+    .replace(/\b\d{3}\s?\d{2}\b/g, "")
+    .replace(/\s{2,}/g, " ")
+    .replace(/,\s*,/g, ", ")
+    .trim()
+}

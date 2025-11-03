@@ -50,7 +50,12 @@ export async function POST(request: NextRequest) {
           eventType: data.eventType || '',
           guestCount: data.guestCount?.toString() || '',
           eventDate: data.eventDate ? new Date(data.eventDate).toLocaleDateString('cs-CZ') : ''
-        }
+        },
+        tracking: {
+          emailType: 'organize_event_thank_you',
+          recipientType: 'user',
+          sentBy: null,
+        },
       })
 
       // Send notification email to admin
@@ -68,7 +73,12 @@ export async function POST(request: NextRequest) {
           budgetRange: data.budgetRange || '',
           locationPreference: data.locationPreference || '',
           message: data.message || ''
-        }
+        },
+        tracking: {
+          emailType: 'organize_event_admin_notification',
+          recipientType: 'admin',
+          sentBy: null,
+        },
       })
 
       // Track OrganizaceSubmit event in Meta (don't block on failure)

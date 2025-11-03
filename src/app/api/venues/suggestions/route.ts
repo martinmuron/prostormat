@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 import { db } from '@/lib/db';
 
-const PUBLIC_STATUSES = ['published', 'active'];
+const PUBLIC_STATUSES = ['published'];
 
 export async function GET(request: NextRequest) {
   try {

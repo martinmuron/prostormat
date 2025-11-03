@@ -5,6 +5,7 @@ import { db } from '@/lib/db'
 import { resend, FROM_EMAIL, REPLY_TO_EMAIL } from '@/lib/resend'
 import { generateVenueBroadcastEmail } from '@/lib/email-templates'
 import { randomUUID } from 'crypto'
+import { logEmailFlow } from '@/lib/email-helpers'
 
 export async function POST(request: NextRequest) {
   try {
@@ -92,6 +93,17 @@ export async function POST(request: NextRequest) {
           // Skip venues without contact email
           if (!venue.contactEmail) {
             console.log(`⚠️ Skipping ${venue.name} - no contact email`)
+            await logEmailFlow({
+              emailType: 'venue_broadcast_notification',
+              recipient: venue.contactEmail ?? 'unknown',
+              subject: title,
+              status: 'skipped',
+              error: 'missing_contact_email',
+              recipientType: 'venue_owner',
+              sentBy: session.user.id,
+              fallbackSentBy: venue.managerId ?? null,
+            })
+
             return await db.venueBroadcastLog.create({
               data: {
                 id: randomUUID(),
@@ -158,7 +170,7 @@ export async function POST(request: NextRequest) {
           }
 
           // Create broadcast log with email status and Resend email ID
-          return await db.venueBroadcastLog.create({
+          const logEntry = await db.venueBroadcastLog.create({
             data: {
               id: randomUUID(),
               broadcastId: broadcast.id,
@@ -168,11 +180,25 @@ export async function POST(request: NextRequest) {
               resendEmailId
             }
           })
+
+          await logEmailFlow({
+            emailType: 'venue_broadcast_notification',
+            recipient: venue.contactEmail ?? 'unknown',
+            subject: emailTemplate.subject,
+            status: emailStatus,
+            error: emailError,
+            recipientType: 'venue_owner',
+            sentBy: session.user.id,
+            fallbackSentBy: venue.managerId ?? null,
+            resendEmailId,
+          })
+
+          return logEntry
         } catch (error) {
           console.error(`Error processing venue ${venue.name}:`, error)
           
           // Create log entry even for errors
-          return await db.venueBroadcastLog.create({
+          const logEntry = await db.venueBroadcastLog.create({
             data: {
               id: randomUUID(),
               broadcastId: broadcast.id,
@@ -181,6 +207,20 @@ export async function POST(request: NextRequest) {
               emailError: error instanceof Error ? error.message : 'Unknown error'
             }
           })
+
+          await logEmailFlow({
+            emailType: 'venue_broadcast_notification',
+            recipient: venue.contactEmail ?? 'unknown',
+            subject: title,
+            status: 'failed',
+            error: error instanceof Error ? error.message : 'Unknown error',
+            recipientType: 'venue_owner',
+            sentBy: session.user.id,
+            fallbackSentBy: venue.managerId ?? null,
+            resendEmailId: null,
+          })
+
+          return logEntry
         }
       })
     )

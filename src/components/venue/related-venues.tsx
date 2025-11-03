@@ -22,13 +22,42 @@ interface VenueWithScore extends Venue {
 function calculateRelevanceScore(
   venue: Venue,
   targetVenueType: string | null,
+  targetVenueTypes: string[],
   targetDistrict: string | null,
   targetLocation: string,
   targetCapacity: number
 ): number {
   let score = 0
+  const venueCategories = new Set<string>()
+  if (venue.venueType) {
+    venueCategories.add(venue.venueType)
+  }
+  if (Array.isArray(venue.venueTypes)) {
+    for (const type of venue.venueTypes) {
+      if (type) {
+        venueCategories.add(type)
+      }
+    }
+  }
 
-  // Same venue type = 100 points (HIGHEST PRIORITY)
+  const targetCategorySet = new Set<string>(
+    [
+      ...(targetVenueType ? [targetVenueType] : []),
+      ...targetVenueTypes,
+    ].filter(Boolean)
+  )
+
+  // Same venue type/category = 100 points (HIGHEST PRIORITY)
+  if (targetCategorySet.size > 0) {
+    const hasMatch = Array.from(targetCategorySet).some((category) =>
+      venueCategories.has(category)
+    )
+    if (hasMatch) {
+      score += 100
+    }
+  }
+
+  // Backwards compatibility for legacy single type values
   if (venue.venueType && targetVenueType && venue.venueType === targetVenueType) {
     score += 100
   }
@@ -59,6 +88,7 @@ function calculateRelevanceScore(
 async function getRelatedVenues(
   currentVenueId: string,
   venueType: string | null,
+  venueTypes: string[],
   address: string,
   district: string | null,
   maxCapacity: number
@@ -78,6 +108,11 @@ async function getRelatedVenues(
             OR: [
               // Same venue type
               { venueType: venueType },
+              ...(venueTypes.length > 0
+                ? venueTypes.map((type) => ({
+                    venueTypes: { has: type },
+                  }))
+                : []),
               // Same location/district
               { address: { contains: location, mode: 'insensitive' } },
               // Same district
@@ -105,7 +140,7 @@ async function getRelatedVenues(
     // Calculate relevance score for each venue
     const venuesWithScores: VenueWithScore[] = venues.map(venue => ({
       ...venue,
-      relevanceScore: calculateRelevanceScore(venue, venueType, district, location, maxCapacity)
+      relevanceScore: calculateRelevanceScore(venue, venueType, venueTypes, district, location, maxCapacity)
     }))
 
     // Sort by relevance score (highest first)
@@ -122,15 +157,30 @@ async function getRelatedVenues(
 interface RelatedVenuesProps {
   currentVenueId: string
   venueType: string | null
+  venueTypes?: string[]
   address: string
   district?: string | null
   maxCapacity?: number
 }
 
-export async function RelatedVenues({ currentVenueId, venueType, address, district, maxCapacity }: RelatedVenuesProps) {
+export async function RelatedVenues({
+  currentVenueId,
+  venueType,
+  venueTypes = [],
+  address,
+  district,
+  maxCapacity,
+}: RelatedVenuesProps) {
   const desiredCapacity = typeof maxCapacity === "number" && maxCapacity > 0 ? maxCapacity : 0
 
-  const relatedVenues = await getRelatedVenues(currentVenueId, venueType, address, district ?? null, desiredCapacity)
+  const relatedVenues = await getRelatedVenues(
+    currentVenueId,
+    venueType,
+    venueTypes,
+    address,
+    district ?? null,
+    desiredCapacity
+  )
 
   if (relatedVenues.length === 0) {
     return null

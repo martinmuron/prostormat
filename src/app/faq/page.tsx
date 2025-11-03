@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     "prostormat pro organizátory",
     "event prostor otázky",
     "pronájem prostoru FAQ",
-    "stripe platba prostor",
+    "offline platba prostor",
     "refundace prostormat"
   ],
   alternates: {

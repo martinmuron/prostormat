@@ -45,16 +45,64 @@ Prostormat is a platform for finding and managing event spaces in Czech Republic
 - **Prisma models map to prefixed tables** in production environment
 - **Always reference correct table names** when debugging or managing data
 
-**CRITICAL DATABASE CONNECTION**:
-- **ALWAYS use port 5432 (direct connection)** for production database operations
-- ❌ **DO NOT use port 6543 (pgbouncer)** - this is NOT the live database
-- ✅ Correct: `DATABASE_URL="postgres://username:PASSWORD@host.supabase.com:5432/postgres"`
-- ❌ Wrong: `DATABASE_URL="postgres://username:PASSWORD@host.supabase.com:6543/postgres"` (pgbouncer - not live)
+**DATABASE CONNECTION ARCHITECTURE**:
+
+Prostormat uses Supabase with **Supavisor connection pooling** for optimal performance in serverless environments.
+
+**Understanding the Connection Pooler**:
+- The pooler (Supavisor/PgBouncer) is a **CONNECTION PROXY**, not a separate database
+- It sits between your application and the actual PostgreSQL database
+- All connections through the pooler access the **SAME underlying database**
+- Think of it as a traffic manager that efficiently routes database connections
+
+**Connection Flow**:
+```
+Your App → Pooler Proxy (aws-0-us-east-1.pooler.supabase.com) → PostgreSQL Database
+                           ↑
+                  Two modes available:
+                  - Port 6543: Transaction Mode (for Next.js/Prisma)
+                  - Port 5432: Session Mode (for scripts/migrations)
+                           ↓
+                  SAME DATABASE - NO data discrepancy
+```
+
+**Connection Modes**:
+
+1. **Transaction Mode (Port 6543)** - For Next.js Application:
+   - Optimized for serverless/short-lived connections
+   - Requires `pgbouncer=true` parameter (disables prepared statements)
+   - Ideal for Prisma in Vercel serverless functions
+   - Use: `DATABASE_URL="postgres://user:pass@aws-0-us-east-1.pooler.supabase.com:6543/postgres?pgbouncer=true"`
+
+2. **Session Mode (Port 5432)** - For Scripts & Migrations:
+   - Full PostgreSQL session features
+   - Supports prepared statements, LISTEN/NOTIFY, etc.
+   - Better for long-running scripts and database migrations
+   - Use: `POSTGRES_URL_SESSION="postgres://user:pass@aws-0-us-east-1.pooler.supabase.com:5432/postgres"`
+
+**Recommended Environment Variables**:
+```bash
+# Primary connection for Next.js app (transaction mode)
+DATABASE_URL="postgres://user:pass@aws-0-us-east-1.pooler.supabase.com:6543/postgres?pgbouncer=true&sslmode=require"
+
+# Session mode for scripts that need full PostgreSQL features
+POSTGRES_URL_SESSION="postgres://user:pass@aws-0-us-east-1.pooler.supabase.com:5432/postgres?sslmode=require"
+```
+
+**Key Points**:
+- ✅ Both ports connect to the **SAME database**
+- ✅ No data discrepancy between connection modes
+- ✅ Choose based on use case: transaction mode (app) vs session mode (scripts)
+- ✅ Simplicity: Most operations can use `DATABASE_URL` (transaction mode)
+- ⚠️ Transaction mode requires `pgbouncer=true` parameter
 
 **Production Scripts Template**:
 ```bash
-# ALWAYS use this connection string for production scripts (get from .env.local):
-DATABASE_URL="postgres://username:PASSWORD@host.supabase.com:5432/postgres" npx tsx scripts/your-script.ts
+# Default: Use DATABASE_URL (works for most scripts)
+npx tsx scripts/your-script.ts
+
+# If script needs session mode features (migrations, LISTEN/NOTIFY):
+DATABASE_URL="$POSTGRES_URL_SESSION" npx tsx scripts/your-script.ts
 ```
 
 **Common Tables**:

@@ -1,12 +1,19 @@
 import { ensureEmailDataSeeded } from '@/lib/email-admin'
 import { db } from '@/lib/db'
 import { FROM_EMAIL, REPLY_TO_EMAIL, resend } from '@/lib/resend'
+import { logEmailFlow } from '@/lib/email-helpers'
 
 interface SendEmailFromTemplateParams {
   templateKey: string
   to: string
   variables: Record<string, string>
   checkTrigger?: string
+  tracking?: {
+    emailType?: string
+    recipientType?: string | null
+    sentBy?: string | null
+    fallbackSentBy?: string | null
+  }
 }
 
 /**
@@ -16,7 +23,8 @@ export async function sendEmailFromTemplate({
   templateKey,
   to,
   variables,
-  checkTrigger
+  checkTrigger,
+  tracking,
 }: SendEmailFromTemplateParams) {
   let seedingAttempted = false
   const ensureSeededData = async () => {
@@ -47,7 +55,17 @@ export async function sendEmailFromTemplate({
 
       if (!trigger.isEnabled) {
         console.log(`Email trigger "${checkTrigger}" is disabled, skipping email`)
-        return { success: false, reason: 'trigger_disabled' }
+        await logEmailFlow({
+          emailType: tracking?.emailType ?? templateKey,
+          recipient: to,
+          subject: templateKey,
+          status: 'skipped',
+          error: 'trigger_disabled',
+          recipientType: tracking?.recipientType ?? null,
+          sentBy: tracking?.sentBy ?? null,
+          fallbackSentBy: tracking?.fallbackSentBy ?? null,
+        })
+        return { success: false, reason: 'trigger_disabled', subject: templateKey }
       }
     }
 
@@ -69,7 +87,17 @@ export async function sendEmailFromTemplate({
 
     if (!template.isActive) {
       console.log(`Email template "${templateKey}" is inactive, skipping email`)
-      return { success: false, reason: 'template_inactive' }
+      await logEmailFlow({
+        emailType: tracking?.emailType ?? templateKey,
+        recipient: to,
+        subject: template.subject,
+        status: 'skipped',
+        error: 'template_inactive',
+        recipientType: tracking?.recipientType ?? null,
+        sentBy: tracking?.sentBy ?? null,
+        fallbackSentBy: tracking?.fallbackSentBy ?? null,
+      })
+      return { success: false, reason: 'template_inactive', subject: template.subject }
     }
 
     // Replace variables in subject and content
@@ -85,18 +113,45 @@ export async function sendEmailFromTemplate({
     }
 
     // Send email via Resend
-    const result = await resend.emails.send({
-      from: FROM_EMAIL,
-      to,
-      subject,
-      html: htmlContent,
-      text: textContent || undefined,
-      replyTo: REPLY_TO_EMAIL
-    })
+    try {
+      const result = await resend.emails.send({
+        from: FROM_EMAIL,
+        to,
+        subject,
+        html: htmlContent,
+        text: textContent || undefined,
+        replyTo: REPLY_TO_EMAIL
+      })
 
-    console.log(`Email sent successfully: ${templateKey} to ${to}`)
+      console.log(`Email sent successfully: ${templateKey} to ${to}`)
 
-    return { success: true, result }
+      await logEmailFlow({
+        emailType: tracking?.emailType ?? templateKey,
+        recipient: to,
+        subject,
+        status: 'sent',
+        recipientType: tracking?.recipientType ?? null,
+        sentBy: tracking?.sentBy ?? null,
+        fallbackSentBy: tracking?.fallbackSentBy ?? null,
+        resendEmailId: result.data?.id ?? null,
+      })
+
+      return { success: true, result, subject }
+    } catch (sendError) {
+      const errorMessage = sendError instanceof Error ? sendError.message : 'Unknown error'
+      await logEmailFlow({
+        emailType: tracking?.emailType ?? templateKey,
+        recipient: to,
+        subject,
+        status: 'failed',
+        error: errorMessage,
+        recipientType: tracking?.recipientType ?? null,
+        sentBy: tracking?.sentBy ?? null,
+        fallbackSentBy: tracking?.fallbackSentBy ?? null,
+        resendEmailId: null,
+      })
+      throw sendError
+    }
   } catch (error) {
     console.error('Error sending email from template:', error)
     throw error
@@ -121,7 +176,10 @@ export async function isEmailTriggerEnabled(triggerKey: string): Promise<boolean
 /**
  * Send verification email prompting the user to confirm address
  */
-export async function sendVerificationEmail(params: { name: string; email: string; verificationLink: string }) {
+export async function sendVerificationEmail(
+  params: { name: string; email: string; verificationLink: string },
+  tracking?: { sentBy?: string | null; recipientType?: string | null }
+) {
   const { name, email, verificationLink } = params
   return sendEmailFromTemplate({
     templateKey: 'verify_email',
@@ -131,6 +189,11 @@ export async function sendVerificationEmail(params: { name: string; email: strin
       verificationLink,
     },
     checkTrigger: 'user_email_verification',
+    tracking: {
+      emailType: 'user_email_verification',
+      recipientType: tracking?.recipientType ?? 'user',
+      sentBy: tracking?.sentBy ?? null,
+    },
   })
 }
 
@@ -138,13 +201,21 @@ export async function sendVerificationEmail(params: { name: string; email: strin
  * Send welcome email to new user
  * Now uses database template - editable from admin dashboard!
  */
-export async function sendWelcomeEmail(user: { name: string; email: string; role: string }) {
+export async function sendWelcomeEmail(
+  user: { name: string; email: string; role: string },
+  tracking?: { sentBy?: string | null; recipientType?: string | null }
+) {
   return sendEmailFromTemplate({
     templateKey: 'welcome_user',
     to: user.email,
     variables: {
       name: user.name || user.email
     },
-    checkTrigger: 'user_registration'
+    checkTrigger: 'user_registration',
+    tracking: {
+      emailType: 'welcome_user',
+      recipientType: tracking?.recipientType ?? 'user',
+      sentBy: tracking?.sentBy ?? null,
+    },
   })
 }

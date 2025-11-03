@@ -18,19 +18,10 @@ const billingSchema = z.object({
   billingAddress: z.string().optional(),
   taxId: z.string().optional(),
   vatId: z.string().optional(),
-  subscriptionStatus: z.enum(["active", "past_due", "canceled", "unpaid"]).optional().or(z.literal("")),
   expiresAt: z.string().optional(),
   paid: z.boolean().default(false),
   paymentDate: z.string().optional(),
 })
-
-const SUBSCRIPTION_STATUSES = ["active", "past_due", "canceled", "unpaid"] as const
-
-type SubscriptionStatusOption = (typeof SUBSCRIPTION_STATUSES)[number]
-
-function isSubscriptionStatus(value: unknown): value is SubscriptionStatusOption {
-  return typeof value === "string" && SUBSCRIPTION_STATUSES.includes(value as SubscriptionStatusOption)
-}
 
 type VenueBillingProps = {
   venue: {
@@ -40,7 +31,6 @@ type VenueBillingProps = {
     billingAddress?: string | null
     taxId?: string | null
     vatId?: string | null
-    subscriptionStatus?: string | null
     expiresAt?: Date | null
     paid?: boolean | null
     paymentDate?: Date | null
@@ -59,25 +49,13 @@ export function VenueBilling({ venue }: VenueBillingProps) {
       billingAddress: venue.billingAddress || "",
       taxId: venue.taxId || "",
       vatId: venue.vatId || "",
-      subscriptionStatus: isSubscriptionStatus(venue.subscriptionStatus) ? venue.subscriptionStatus : "",
       expiresAt: venue.expiresAt ? new Date(venue.expiresAt).toISOString().split('T')[0] : "",
       paid: Boolean(venue.paid),
       paymentDate: venue.paymentDate ? new Date(venue.paymentDate).toISOString().split('T')[0] : "",
     },
   })
 
-  const paid = form.watch("paid")
   const paymentDate = form.watch("paymentDate")
-
-  useEffect(() => {
-    const currentStatus = form.getValues("subscriptionStatus")
-    if (paid && !currentStatus) {
-      form.setValue("subscriptionStatus", "active", { shouldDirty: true })
-    }
-    if (!paid && currentStatus === "active") {
-      form.setValue("subscriptionStatus", "", { shouldDirty: true })
-    }
-  }, [paid, form])
 
   useEffect(() => {
     if (!paymentDate) {
@@ -101,29 +79,21 @@ export function VenueBilling({ venue }: VenueBillingProps) {
     const expiresAtValue = values.expiresAt ? new Date(values.expiresAt) : null
 
     if (values.paymentDate && Number.isNaN(paymentDateValue?.getTime())) {
-      toast.error("Datum zahájení předplatného není platné")
+      toast.error("Datum platby není platné")
       return
     }
 
     if (values.expiresAt && Number.isNaN(expiresAtValue?.getTime())) {
-      toast.error("Datum konce předplatného není platné")
+      toast.error("Datum konce platnosti není platné")
       return
     }
 
     try {
-      const subscriptionStatus =
-        values.subscriptionStatus && values.subscriptionStatus.length > 0
-          ? values.subscriptionStatus
-          : values.paid
-            ? "active"
-            : null
-
       const response = await fetch(`/api/venues/${venue.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...values,
-          subscriptionStatus,
           expiresAt: expiresAtValue,
           paymentDate: paymentDateValue,
         }),
@@ -214,30 +184,6 @@ export function VenueBilling({ venue }: VenueBillingProps) {
 
           <FormField
             control={form.control}
-            name="subscriptionStatus"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Stav předplatného</FormLabel>
-                <FormControl>
-                  <select
-                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                    value={field.value ?? ""}
-                    onChange={(event) => field.onChange(event.target.value)}
-                  >
-                    <option value="">Vyberte stav</option>
-                    <option value="active">Aktivní</option>
-                    <option value="past_due">Po splatnosti</option>
-                    <option value="canceled">Zrušeno</option>
-                    <option value="unpaid">Nezaplaceno</option>
-                  </select>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
             name="expiresAt"
             render={({ field }) => (
               <FormItem>
@@ -259,9 +205,9 @@ export function VenueBilling({ venue }: VenueBillingProps) {
               <FormItem className="flex flex-col space-y-2">
                 <div className="flex items-center justify-between">
                   <div>
-                    <FormLabel>Předplatné uhrazeno</FormLabel>
+                    <FormLabel>Platba přijata</FormLabel>
                     <FormDescription>
-                      Označte, pokud má prostor aktivní roční členství.
+                      Označte, pokud jsme obdrželi platbu offline a prostor má být aktivní.
                     </FormDescription>
                   </div>
                   <FormControl>
@@ -281,12 +227,12 @@ export function VenueBilling({ venue }: VenueBillingProps) {
             name="paymentDate"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Datum zahájení</FormLabel>
+                <FormLabel>Datum platby</FormLabel>
                 <FormControl>
                   <Input type="date" {...field} />
                 </FormControl>
                 <FormDescription>
-                  Kdy klient zaplatil předplatné (offline nebo online).
+                  Kdy klient zaplatil (např. datum úhrady faktury).
                 </FormDescription>
                 <FormMessage />
               </FormItem>
@@ -303,7 +249,7 @@ export function VenueBilling({ venue }: VenueBillingProps) {
                   <Input type="date" {...field} />
                 </FormControl>
                 <FormDescription>
-                  Pokud není vyplněno, doplníme rok od data zahájení.
+                  Pokud necháte prázdné, nastavíme rok od data platby.
                 </FormDescription>
                 <FormMessage />
               </FormItem>

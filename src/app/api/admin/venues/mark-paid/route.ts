@@ -63,23 +63,6 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // Create or update subscription record (manual payment)
-    await prisma.subscription.upsert({
-      where: { venueId: venueId },
-      create: {
-        id: nanoid(),
-        venueId: venueId,
-        stripeSubscriptionId: `manual_${venueId}_${Date.now()}`,
-        stripeCustomerId: 'manual_payment',
-        status: 'active',
-        currentPeriodEnd: expiresAt,
-      },
-      update: {
-        status: 'active',
-        currentPeriodEnd: expiresAt,
-      },
-    });
-
     // Log the manual payment action
     await prisma.emailFlowLog.create({
       data: {

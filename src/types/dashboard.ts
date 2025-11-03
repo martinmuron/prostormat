@@ -20,7 +20,6 @@ export type VenueManagerVenue = Prisma.VenueGetPayload<{
     _count: {
       select: { inquiries: true }
     }
-    subscription: true
   }
 }>
 
@@ -68,6 +67,7 @@ export interface VenueManagerDashboardData extends DashboardBaseData {
     activeVenues: number
     totalInquiries: number
     totalFavorites: number
+    totalInquiryGuests: number
   }
 }
 

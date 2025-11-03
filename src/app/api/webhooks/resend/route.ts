@@ -94,41 +94,56 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Find the broadcast log entry by Resend email ID
-    const log = await prisma.venueBroadcastLog.findUnique({
-      where: { resendEmailId: emailId },
-    });
+    // Find existing log entries linked to this Resend email ID
+    const [broadcastLog, emailFlowLog] = await Promise.all([
+      prisma.venueBroadcastLog.findUnique({
+        where: { resendEmailId: emailId },
+      }),
+      prisma.emailFlowLog.findUnique({
+        where: { resendEmailId: emailId },
+      }),
+    ])
 
-    if (!log) {
-      console.warn(`No broadcast log found for email ID: ${emailId}`);
-      // Return 200 to acknowledge webhook even if we don't have a record
-      return NextResponse.json({ received: true });
+    if (!broadcastLog && !emailFlowLog) {
+      console.warn(`No broadcast or email flow log found for email ID: ${emailId}`)
+      return NextResponse.json({ received: true })
     }
 
     // Update based on event type
     const updateData: Prisma.VenueBroadcastLogUpdateInput = {};
+    let emailFlowUpdate: Prisma.EmailFlowLogUpdateInput | null = null
     const eventDate = new Date(payload.created_at);
 
     switch (payload.type) {
       case 'email.delivered':
         updateData.emailStatus = 'delivered';
         updateData.emailDeliveredAt = eventDate;
+        emailFlowUpdate = {
+          status: 'delivered',
+          error: null,
+        }
         break;
 
       case 'email.opened':
-        if (!log.emailOpenedAt) {
+        if (broadcastLog && !broadcastLog.emailOpenedAt) {
           // First open
           updateData.emailOpenedAt = eventDate;
         }
         updateData.openCount = { increment: 1 };
+        emailFlowUpdate = {
+          status: 'opened',
+        }
         break;
 
       case 'email.clicked':
-        if (!log.emailClickedAt) {
+        if (broadcastLog && !broadcastLog.emailClickedAt) {
           // First click
           updateData.emailClickedAt = eventDate;
         }
         updateData.clickCount = { increment: 1 };
+        emailFlowUpdate = {
+          status: 'clicked',
+        }
         break;
 
       case 'email.bounced':
@@ -136,17 +151,29 @@ export async function POST(request: NextRequest) {
         updateData.emailBouncedAt = eventDate;
         updateData.bounceType = payload.data.bounce_type || 'unknown';
         updateData.emailError = `Bounced (${payload.data.bounce_type || 'unknown'})`;
+        emailFlowUpdate = {
+          status: 'bounced',
+          error: `Bounced (${payload.data.bounce_type || 'unknown'})`,
+        }
         break;
 
       case 'email.complained':
         updateData.emailStatus = 'complained';
         updateData.emailComplainedAt = eventDate;
         updateData.emailError = 'Marked as spam';
+        emailFlowUpdate = {
+          status: 'complained',
+          error: 'Marked as spam',
+        }
         break;
 
       case 'email.delivery_delayed':
         updateData.emailStatus = 'delayed';
         updateData.emailError = 'Delivery delayed';
+        emailFlowUpdate = {
+          status: 'delayed',
+          error: 'Delivery delayed',
+        }
         break;
 
       default:
@@ -155,10 +182,19 @@ export async function POST(request: NextRequest) {
     }
 
     // Update the database
-    await prisma.venueBroadcastLog.update({
-      where: { id: log.id },
-      data: updateData,
-    });
+    if (broadcastLog) {
+      await prisma.venueBroadcastLog.update({
+        where: { id: broadcastLog.id },
+        data: updateData,
+      })
+    }
+
+    if (emailFlowLog && emailFlowUpdate) {
+      await prisma.emailFlowLog.update({
+        where: { id: emailFlowLog.id },
+        data: emailFlowUpdate,
+      })
+    }
 
     console.log(`Webhook processed: ${payload.type} for email ${emailId}`);
 

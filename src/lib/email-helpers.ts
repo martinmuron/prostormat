@@ -1,3 +1,4 @@
+import { randomUUID } from 'crypto'
 import { prisma } from './prisma'
 
 /**
@@ -37,4 +38,58 @@ export async function getSafeSentByUserId(
 
   // Fall back to admin user for system emails
   return getAdminUserIdForSystemEmails()
+}
+
+interface EmailFlowLogParams {
+  emailType: string
+  recipient: string
+  subject: string
+  status: string
+  error?: string | null
+  recipientType?: string | null
+  sentBy?: string | null
+  fallbackSentBy?: string | null
+  resendEmailId?: string | null
+}
+
+export async function logEmailFlow({
+  emailType,
+  recipient,
+  subject,
+  status,
+  error,
+  recipientType,
+  sentBy,
+  fallbackSentBy,
+  resendEmailId,
+}: EmailFlowLogParams): Promise<void> {
+  try {
+    const userId = await getSafeSentByUserId(sentBy, fallbackSentBy)
+
+    if (!userId) {
+      console.error('Unable to determine user for EmailFlowLog entry', {
+        emailType,
+        recipient,
+        subject,
+        status,
+      })
+      return
+    }
+
+    await prisma.emailFlowLog.create({
+      data: {
+        id: randomUUID(),
+        emailType,
+        recipient,
+        subject,
+        status,
+        error: error ?? null,
+        recipientType: recipientType ?? null,
+        sentBy: userId,
+        resendEmailId: resendEmailId ?? null,
+      },
+    })
+  } catch (logError) {
+    console.error('Failed to write EmailFlowLog entry:', logError)
+  }
 }

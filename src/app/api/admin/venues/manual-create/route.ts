@@ -126,9 +126,10 @@ export async function POST(request: NextRequest) {
     const ownerEmailSubject = '✅ Váš prostor byl přidán na Prostormat'
     let ownerEmailStatus: 'sent' | 'failed' = 'sent'
     let ownerEmailError: string | null = null
+    let ownerEmailResendId: string | null = null
 
     try {
-      await resend.emails.send({
+      const ownerEmailResult = await resend.emails.send({
         from: 'Prostormat <info@prostormat.cz>',
         to: user.email,
         subject: ownerEmailSubject,
@@ -165,13 +166,13 @@ export async function POST(request: NextRequest) {
           <p>Děkujeme za důvěru!<br>Tým Prostormat</p>
         `,
       })
+      ownerEmailResendId = ownerEmailResult.data?.id ?? null
     } catch (emailError) {
       ownerEmailStatus = 'failed'
       ownerEmailError = emailError instanceof Error ? emailError.message : 'Unknown error'
       console.error('Failed to send venue creation email:', emailError)
     }
 
-    // Track venue owner email
     const ownerEmailSentBy = await getSafeSentByUserId(session?.user?.id)
     if (ownerEmailSentBy) {
       try {
@@ -185,6 +186,7 @@ export async function POST(request: NextRequest) {
             error: ownerEmailError,
             recipientType: 'venue_owner',
             sentBy: ownerEmailSentBy,
+            resendEmailId: ownerEmailResendId,
           },
         })
       } catch (logError) {
@@ -196,9 +198,10 @@ export async function POST(request: NextRequest) {
     const adminEmailSubject = '🔧 Manuálně vytvořený prostor'
     let adminEmailStatus: 'sent' | 'failed' = 'sent'
     let adminEmailError: string | null = null
+    let adminEmailResendId: string | null = null
 
     try {
-      await resend.emails.send({
+      const adminEmailResult = await resend.emails.send({
         from: 'Prostormat <info@prostormat.cz>',
         to: 'info@prostormat.cz',
         subject: adminEmailSubject,
@@ -214,13 +217,13 @@ export async function POST(request: NextRequest) {
           <p>Prostor je automaticky zveřejněný.</p>
         `,
       })
+      adminEmailResendId = adminEmailResult.data?.id ?? null
     } catch (emailError) {
       adminEmailStatus = 'failed'
       adminEmailError = emailError instanceof Error ? emailError.message : 'Unknown error'
       console.error('Failed to send admin notification:', emailError)
     }
 
-    // Track admin notification email
     const adminEmailSentBy = await getSafeSentByUserId(session?.user?.id)
     if (adminEmailSentBy) {
       try {
@@ -234,6 +237,7 @@ export async function POST(request: NextRequest) {
             error: adminEmailError,
             recipientType: 'admin',
             sentBy: adminEmailSentBy,
+            resendEmailId: adminEmailResendId,
           },
         })
       } catch (logError) {

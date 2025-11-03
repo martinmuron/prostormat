@@ -580,7 +580,7 @@ const statusLabels: Record<string, string> = {
                 <Button 
                   variant="secondary" 
                   className="w-full justify-start text-gray-700 border-gray-300 hover:bg-gray-50"
-                  onClick={() => router.push("/dashboard/inquiries")}
+                  onClick={() => router.push("/dashboard/venue-inquiries")}
                 >
                   <MessageSquare className="h-4 w-4 mr-2" />
                   Všechny dotazy

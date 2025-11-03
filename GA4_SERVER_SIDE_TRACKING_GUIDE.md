@@ -176,70 +176,9 @@ return NextResponse.json({
 
 ---
 
-### Example 3: Payment Tracking
+### Example 3: Offline Payments
 
-**File**: `/src/app/api/confirm-payment/route.ts`
-
-```typescript
-import { trackPayment, trackLocationRegistration } from "@/lib/meta-conversions-api"
-import { trackGA4ServerPayment, trackGA4ServerLocationRegistration } from "@/lib/ga4-server-tracking"
-
-// After successful payment:
-
-// Track payment in Meta ✅
-try {
-  const [firstName, ...lastNameParts] = (normalizedName || '').split(' ')
-  await trackPayment({
-    email: venueData.userEmail,
-    phone: normalizedPhone || undefined,
-    firstName: firstName || undefined,
-    lastName: lastNameParts.join(' ') || undefined,
-  }, paymentIntent.amount / 100, 'CZK', request)
-} catch (metaError) {
-  console.error('Failed to track Meta payment:', metaError)
-}
-
-// Track payment in GA4 Server (NEW) 🆕
-try {
-  await trackGA4ServerPayment({
-    userId: userId,
-    transactionId: paymentIntentId,
-    value: paymentIntent.amount / 100,
-    currency: 'CZK',
-    venueName: venueData.name,
-    venueId: venueId,
-    subscription: true,
-    request,
-  })
-} catch (ga4Error) {
-  console.error('Failed to track GA4 payment:', ga4Error)
-}
-
-// Track location registration in Meta ✅
-try {
-  await trackLocationRegistration({
-    email: venueData.userEmail,
-    phone: normalizedPhone || undefined,
-    firstName: firstName || undefined,
-    lastName: lastNameParts.join(' ') || undefined,
-  }, venueData.name, request)
-} catch (metaError) {
-  console.error('Failed to track Meta location registration:', metaError)
-}
-
-// Track location registration in GA4 Server (NEW) 🆕
-try {
-  await trackGA4ServerLocationRegistration({
-    userId: userId,
-    venueName: venueData.name,
-    venueId: venueId,
-    mode: 'new',
-    request,
-  })
-} catch (ga4Error) {
-  console.error('Failed to track GA4 location registration:', ga4Error)
-}
-```
+Platby za listingy nyní probíhají mimo platformu (fakturace, bankovní převody). Jakmile tým Prostormat potvrdí úhradu, stav se ručně označí v administraci a není potřeba žádné serverové volání ani marketingový tracking. Pokud se v budoucnu vrátí online platby, doplňte novou implementaci a aktualizujte tento dokument.
 
 ---
 

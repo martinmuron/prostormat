@@ -303,14 +303,17 @@ export async function POST(request: Request) {
     let adminEmailStatus: 'sent' | 'failed' = 'sent'
     let adminEmailError: string | null = null
 
+    let adminEmailResendId: string | null = null
+
     try {
-      await resend.emails.send({
+      const adminEmailResult = await resend.emails.send({
         from: 'Prostormat <info@prostormat.cz>',
         to: 'poptavka@prostormat.cz',
         subject: summaryEmail.subject,
         html: summaryEmail.html,
         text: summaryEmail.text,
       })
+      adminEmailResendId = adminEmailResult.data?.id ?? null
     } catch (emailError) {
       adminEmailStatus = 'failed'
       adminEmailError = emailError instanceof Error ? emailError.message : 'Unknown error'
@@ -330,6 +333,7 @@ export async function POST(request: Request) {
             error: adminEmailError,
             recipientType: 'admin',
             sentBy: adminUserId,
+            resendEmailId: adminEmailResendId,
           },
         })
       } catch (logError) {

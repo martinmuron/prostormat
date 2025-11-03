@@ -8,7 +8,7 @@ export async function POST(request: NextRequest) {
     const session = await getServerSession(authOptions);
 
     // Check if user is admin
-    if (!session?.user?.email || session.user.email !== 'info@prostormat.cz') {
+    if (!session?.user || session.user.role !== 'admin') {
       return NextResponse.json(
         { error: 'Unauthorized - Admin access only' },
         { status: 403 }

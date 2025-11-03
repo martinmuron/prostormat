@@ -112,6 +112,7 @@ export async function POST(
           status: "sent",
           recipientType: "venue_owner",
           sentBy: session.user.id,
+          resendEmailId: emailId,
         },
       })
 
@@ -143,6 +144,7 @@ export async function POST(
           error: message,
           recipientType: "venue_owner",
           sentBy: session.user.id,
+          resendEmailId: null,
         },
       })
     }

@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server"
+import { getServerSession } from "next-auth/next"
 import { db } from "@/lib/db"
+import { authOptions } from "@/lib/auth"
 
 export async function GET(
   _request: Request,
@@ -8,6 +10,8 @@ export async function GET(
   const { slug } = await params
 
   try {
+    const session = await getServerSession(authOptions)
+
     const venue = await db.venue.findUnique({
       where: { slug },
       select: {
@@ -43,7 +47,10 @@ export async function GET(
       return NextResponse.json({ error: "Prostor nebyl nalezen" }, { status: 404 })
     }
 
-    return NextResponse.json({
+    const isAdmin = session?.user?.role === "admin"
+    const managesVenue = session?.user?.id && venue.manager?.id === session.user.id
+
+    const baseResponse = {
       id: venue.id,
       name: venue.name,
       slug: venue.slug,
@@ -54,13 +61,30 @@ export async function GET(
       capacitySeated: venue.capacitySeated ?? null,
       capacityStanding: venue.capacityStanding ?? null,
       venueType: venue.venueType ?? "",
+      amenities: Array.isArray(venue.amenities) ? venue.amenities : [],
+    }
+
+    if (!isAdmin && !managesVenue) {
+      return NextResponse.json({
+        ...baseResponse,
+        contactEmail: "",
+        contactPhone: "",
+        websiteUrl: "",
+        instagramUrl: "",
+        videoUrl: venue.videoUrl ?? venue.youtubeUrl ?? "",
+        musicAfter10: venue.musicAfter10 ?? false,
+        manager: null,
+      })
+    }
+
+    return NextResponse.json({
+      ...baseResponse,
       contactEmail: venue.contactEmail ?? "",
       contactPhone: venue.contactPhone ?? "",
       websiteUrl: venue.websiteUrl ?? "",
       instagramUrl: venue.instagramUrl ?? "",
       videoUrl: venue.videoUrl ?? venue.youtubeUrl ?? "",
       musicAfter10: venue.musicAfter10 ?? false,
-      amenities: Array.isArray(venue.amenities) ? venue.amenities : [],
       manager: venue.manager
         ? {
             id: venue.manager.id,
@@ -74,4 +98,3 @@ export async function GET(
     return NextResponse.json({ error: "Nepodařilo se načíst údaje prostoru" }, { status: 500 })
   }
 }
-

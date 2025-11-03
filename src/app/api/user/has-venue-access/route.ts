@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
-import { db } from '@/lib/db'
+import { hasActiveVenueAccess } from '@/lib/venue-access'
 
 export async function GET() {
   try {
@@ -11,29 +11,7 @@ export async function GET() {
       return NextResponse.json({ hasAccess: false })
     }
 
-    // Check if user has at least one published venue (with paid/subscribed status)
-    const venues = await db.venue.findMany({
-      where: {
-        managerId: session.user.id,
-        status: 'published'
-      },
-      select: {
-        id: true,
-        paid: true,
-        subscription: {
-          select: {
-            status: true
-          }
-        }
-      }
-    })
-
-    // User has access if they have at least one active/published venue that is either:
-    // 1. Paid (paid === true)
-    // 2. Has an active subscription
-    const hasAccess = venues.some(venue =>
-      venue.paid || venue.subscription?.status === 'active'
-    )
+    const hasAccess = await hasActiveVenueAccess(session.user.id)
 
     return NextResponse.json({ hasAccess })
   } catch (error) {

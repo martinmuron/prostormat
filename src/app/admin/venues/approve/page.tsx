@@ -26,10 +26,10 @@ interface VenueOwner {
 }
 
 interface PaymentInfo {
-  amount: number
-  currency: string
-  payment_completed_at: string
-  stripe_payment_intent_id: string
+  amount?: number | null
+  currency?: string | null
+  paymentCompletedAt?: string | null
+  reference?: string | null
 }
 
 interface PendingVenue {
@@ -50,12 +50,7 @@ interface PendingVenue {
   payment: PaymentInfo | null
 }
 
-interface PendingClaimPayment {
-  amount?: number | null
-  currency?: string | null
-  paymentCompletedAt?: string | null
-  stripePaymentIntentId?: string | null
-}
+type PendingClaimPayment = PaymentInfo
 
 interface PendingClaim {
   id: string
@@ -95,7 +90,7 @@ const formatPrice = (amount: number, currency: string) =>
   new Intl.NumberFormat("cs-CZ", {
     style: "currency",
     currency: currency.toUpperCase(),
-  }).format(amount / 100)
+  }).format(amount)
 
 export default function VenueApprovalPage() {
   const [venues, setVenues] = useState<PendingVenue[]>([])
@@ -341,16 +336,28 @@ export default function VenueApprovalPage() {
                           <div className="flex items-center justify-between">
                             <span>Částka</span>
                             <span className="font-semibold">
-                              {formatPrice(venue.payment.amount, venue.payment.currency)}
+                              {typeof venue.payment.amount === "number"
+                                ? formatPrice(
+                                    venue.payment.amount,
+                                    venue.payment.currency ?? "CZK"
+                                  )
+                                : "12,000 CZK + DPH"}
                             </span>
                           </div>
-                          <div className="flex items-center justify-between">
-                            <span>Zaplaceno</span>
-                            <span>{formatDate(venue.payment.payment_completed_at)}</span>
-                          </div>
+                          {venue.payment.paymentCompletedAt ? (
+                            <div className="flex items-center justify-between">
+                              <span>Zaplaceno</span>
+                              <span>{formatDate(venue.payment.paymentCompletedAt)}</span>
+                            </div>
+                          ) : null}
                           <div className="flex items-center gap-2 text-xs text-green-700">
                             <CreditCard className="h-3 w-3" />
-                            <span>{venue.payment.stripe_payment_intent_id}</span>
+                            <span>Offline platba zaznamenána</span>
+                            {venue.payment.reference ? (
+                              <span className="ml-2 text-[10px] uppercase tracking-wide">
+                                {venue.payment.reference}
+                              </span>
+                            ) : null}
                           </div>
                         </div>
                       ) : (
@@ -486,7 +493,7 @@ export default function VenueApprovalPage() {
                           <div className="flex items-center justify-between">
                             <span>Částka</span>
                             <span className="font-semibold">
-                              {claim.payment.amount
+                              {typeof claim.payment.amount === "number"
                                 ? formatPrice(
                                     claim.payment.amount,
                                     (claim.payment.currency || "CZK").toUpperCase()
@@ -500,12 +507,15 @@ export default function VenueApprovalPage() {
                               <span>{formatDate(claim.payment.paymentCompletedAt)}</span>
                             </div>
                           )}
-                          {claim.payment.stripePaymentIntentId && (
-                            <div className="flex items-center gap-2 text-xs text-purple-700">
-                              <CreditCard className="h-3 w-3" />
-                              <span>{claim.payment.stripePaymentIntentId}</span>
-                            </div>
-                          )}
+                          <div className="flex items-center gap-2 text-xs text-purple-700">
+                            <CreditCard className="h-3 w-3" />
+                            <span>Offline platba zaznamenána</span>
+                            {claim.payment.reference ? (
+                              <span className="ml-2 text-[10px] uppercase tracking-wide">
+                                {claim.payment.reference}
+                              </span>
+                            ) : null}
+                          </div>
                         </div>
                       ) : (
                         <div className="flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 p-3 text-red-700">

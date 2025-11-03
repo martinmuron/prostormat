@@ -77,7 +77,7 @@ export function buildVenueWhereClause({
       ? null
       : statuses && statuses.length > 0
         ? statuses
-        : ['published', 'active']
+        : ['published']
 
   if (effectiveStatuses) {
     where.status = { in: effectiveStatuses }
@@ -95,7 +95,12 @@ export function buildVenueWhereClause({
   }
 
   if (type && type !== 'all') {
-    where.venueType = type
+    andConditions.push({
+      OR: [
+        { venueType: type },
+        { venueTypes: { has: type } },
+      ],
+    })
   }
 
   if (district && district !== 'all') {
@@ -103,7 +108,9 @@ export function buildVenueWhereClause({
     andConditions.push({
       OR: [
         { district: { equals: normalized, mode: 'insensitive' } },
-        { address: { contains: normalized, mode: 'insensitive' } },
+        { address: { endsWith: normalized, mode: 'insensitive' } },
+        { address: { contains: `${normalized},`, mode: 'insensitive' } },
+        { address: { contains: `${normalized} `, mode: 'insensitive' } },
       ],
     })
   }

@@ -79,7 +79,6 @@ interface AdminVenue {
   paid?: boolean | null
   paymentDate?: string | Date | null
   expiresAt?: string | Date | null
-  subscriptionId?: string | null
   prioritySource?: string | null
   _count?: {
     inquiries: number
@@ -837,11 +836,6 @@ export function AdminVenueEditForm({ venue }: AdminVenueEditFormProps) {
                             {venue.expiresAt && (
                               <div className="text-sm text-gray-600">
                                 <strong>Platnost do:</strong> {new Date(venue.expiresAt).toLocaleDateString('cs-CZ')}
-                              </div>
-                            )}
-                            {venue.subscriptionId && (
-                              <div className="text-xs text-gray-500">
-                                <strong>Subscription ID:</strong> {venue.subscriptionId}
                               </div>
                             )}
                           </div>

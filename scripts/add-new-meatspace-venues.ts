@@ -2,23 +2,18 @@
 
 import { config } from 'dotenv'
 import { resolve } from 'path'
+import { PrismaClient } from '@prisma/client'
 
+// Load environment variables
 config({ path: resolve(process.cwd(), '.env.local') })
 config({ path: resolve(process.cwd(), '.env') })
 
-const remoteDatabaseUrl =
-  process.env.POSTGRES_URL_NON_POOLING || process.env.POSTGRES_PRISMA_URL || process.env.POSTGRES_URL
-
-if (!process.env.DATABASE_URL || /localhost|127\.0\.0\.1/.test(process.env.DATABASE_URL)) {
-  if (!remoteDatabaseUrl) {
-    throw new Error('No remote database connection string found in environment variables.')
-  }
-
-  process.env.DATABASE_URL = remoteDatabaseUrl
+// Verify DATABASE_URL is set
+if (!process.env.DATABASE_URL) {
+  throw new Error('DATABASE_URL must be set in environment variables')
 }
 
-import { PrismaClient } from '@prisma/client'
-
+// Use DATABASE_URL directly - it should already have correct parameters
 const prisma = new PrismaClient()
 
 type VenueSeed = {

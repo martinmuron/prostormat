@@ -53,11 +53,13 @@ export function VerifyEmailPage({ token }: VerifyEmailPageProps) {
               : "E-mail byl úspěšně ověřen. Přihlašujeme vás..."
           )
           setRedirecting(true)
-          router.refresh()
-          router.prefetch("/vitejte")
+
+          // Wait a bit longer to ensure the session cookie is properly set
+          // Then redirect to the welcome page
           setTimeout(() => {
-            router.replace("/vitejte")
-          }, 1000)
+            // Use window.location for a hard navigation that ensures the cookie is read
+            window.location.href = "/vitejte"
+          }, 1500)
         } else {
           const data = await response.json().catch(() => ({}))
           setStatus("error")
@@ -101,7 +103,7 @@ export function VerifyEmailPage({ token }: VerifyEmailPageProps) {
 
             {!isLoading && status === "success" && (
               <div className="space-y-4 text-center">
-                <p className="text-sm text-green-600">{message}</p>
+                <p className="text-sm text-green-600 break-words">{message}</p>
                 {redirecting && (
                   <div className="text-xs text-gray-500">
                     Přesměrováváme vás na dashboard...
@@ -112,7 +114,7 @@ export function VerifyEmailPage({ token }: VerifyEmailPageProps) {
 
             {!isLoading && status === "error" && (
               <div className="space-y-4 text-center">
-                <p className="text-sm text-red-600">{message}</p>
+                <p className="text-sm text-red-600 break-words">{message}</p>
                 <div className="space-y-2">
                   <Button asChild variant="outline" className="w-full">
                     <Link href="/registrace">Zkusit registraci znovu</Link>

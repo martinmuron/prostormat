@@ -156,6 +156,8 @@ export async function GET(request: NextRequest) {
         } catch (logError) {
           console.error('Failed to log daily digest email:', logError)
         }
+      } else {
+        console.warn('No admin user found in database - skipping EmailFlowLog entry for daily digest')
       }
     }
 

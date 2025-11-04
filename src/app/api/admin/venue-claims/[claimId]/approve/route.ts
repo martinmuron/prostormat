@@ -3,6 +3,8 @@ import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { resend } from '@/lib/resend';
+import { getSafeSentByUserId } from '@/lib/email-helpers';
+import { nanoid } from 'nanoid';
 
 function extractClaimId(request: NextRequest): string | null {
   const segments = request.nextUrl.pathname.split('/').filter(Boolean);
@@ -111,11 +113,16 @@ export async function POST(request: NextRequest) {
     });
 
     if (!approvalResult.alreadyApproved && approvalResult.claim.claimant?.email) {
+      const emailSubject = '🎉 Převzetí prostoru bylo schváleno';
+      let emailStatus: 'sent' | 'failed' = 'sent';
+      let emailError: string | null = null;
+      let resendEmailId: string | null = null;
+
       try {
-        await resend.emails.send({
+        const emailResult = await resend.emails.send({
           from: 'Prostormat <info@prostormat.cz>',
           to: approvalResult.claim.claimant.email,
-          subject: '🎉 Převzetí prostoru bylo schváleno',
+          subject: emailSubject,
           html: `
             <h2>Gratulujeme! Převzetí prostoru bylo dokončeno</h2>
             <p>Převzetí listingu "<strong>${approvalResult.venue.name}</strong>" bylo právě schváleno.</p>
@@ -131,8 +138,33 @@ export async function POST(request: NextRequest) {
             <p>Děkujeme, že jste s námi!<br>Tým Prostormat</p>
           `,
         });
-      } catch (emailError) {
-        console.error('Failed to send claim approval email:', emailError);
+        resendEmailId = emailResult.data?.id ?? null;
+      } catch (error) {
+        emailStatus = 'failed';
+        emailError = error instanceof Error ? error.message : 'Unknown error';
+        console.error('Failed to send claim approval email:', error);
+      }
+
+      // Log email attempt to EmailFlowLog
+      const sentByUserId = await getSafeSentByUserId(session?.user?.id);
+      if (sentByUserId) {
+        try {
+          await prisma.emailFlowLog.create({
+            data: {
+              id: nanoid(),
+              emailType: 'venue_claim_approval',
+              recipient: approvalResult.claim.claimant.email,
+              subject: emailSubject,
+              status: emailStatus,
+              error: emailError,
+              recipientType: 'venue_owner',
+              sentBy: sentByUserId,
+              resendEmailId: resendEmailId,
+            },
+          });
+        } catch (logError) {
+          console.error('Failed to log claim approval email:', logError);
+        }
       }
     }
 

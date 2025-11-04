@@ -5,6 +5,28 @@ import { db } from '@/lib/db'
 import { nanoid } from 'nanoid'
 import { resend } from '@/lib/resend'
 import { getSafeSentByUserId } from '@/lib/email-helpers'
+import { z } from 'zod'
+
+const manualVenueCreateSchema = z.object({
+  userId: z.string().min(1, 'User ID is required'),
+  name: z.string().min(1, 'Venue name is required'),
+  description: z.string().min(1, 'Description is required'),
+  address: z.string().min(1, 'Address is required'),
+  district: z.string().min(1, 'District is required'),
+  capacitySeated: z.number().positive('Seated capacity must be positive'),
+  capacityStanding: z.number().positive('Standing capacity must be positive'),
+  venueType: z.string().min(1, 'Venue type is required'),
+  contactEmail: z.string().email('Invalid email format'),
+  contactPhone: z.string().min(1, 'Contact phone is required'),
+  websiteUrl: z.string().url('Invalid website URL'),
+  instagramUrl: z.string().url('Invalid Instagram URL').optional().or(z.literal('')),
+  videoUrl: z.string().url('Invalid video URL').optional().or(z.literal('')),
+  musicAfter10: z.boolean().optional(),
+  amenities: z.array(z.string()).optional(),
+  paymentDate: z.string().min(1, 'Payment date is required'),
+  paymentAmount: z.number().positive('Payment amount must be positive'),
+  paymentNote: z.string().optional(),
+})
 
 export async function POST(request: NextRequest) {
   try {
@@ -18,6 +40,18 @@ export async function POST(request: NextRequest) {
     }
 
     const data = await request.json()
+
+    // Validate input with Zod
+    const validationResult = manualVenueCreateSchema.safeParse(data)
+    if (!validationResult.success) {
+      return NextResponse.json(
+        {
+          error: 'Validation failed',
+          details: validationResult.error.flatten().fieldErrors
+        },
+        { status: 400 }
+      )
+    }
 
     const {
       userId,
@@ -38,17 +72,7 @@ export async function POST(request: NextRequest) {
       paymentDate,
       paymentAmount,
       paymentNote,
-    } = data
-
-    // Validate required fields
-    if (!userId || !name || !description || !address || !district ||
-        !capacitySeated || !capacityStanding || !venueType ||
-        !contactEmail || !contactPhone || !websiteUrl || !paymentDate || !paymentAmount) {
-      return NextResponse.json(
-        { error: 'Missing required fields' },
-        { status: 400 }
-      )
-    }
+    } = validationResult.data
 
     // Check if user exists
     const user = await db.user.findUnique({
@@ -102,24 +126,6 @@ export async function POST(request: NextRequest) {
         where: { id: userId },
         data: { role: 'venue_manager' }
       })
-    }
-
-    // Log manual creation (for audit purposes)
-    try {
-      await db.emailFlowLog.create({
-        data: {
-          id: nanoid(),
-          emailType: 'manual_venue_creation',
-          recipient: user.email,
-          subject: `Manual venue creation: ${name}`,
-          status: 'completed',
-          recipientType: 'venue_owner',
-          sentBy: session.user.id!,
-          createdAt: new Date(),
-        },
-      })
-    } catch (logError) {
-      console.error('Failed to log manual venue creation:', logError)
     }
 
     // Send notification email to venue owner

@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
-import { nanoid } from 'nanoid';
 
 export async function POST(request: NextRequest) {
   try {
@@ -38,31 +37,15 @@ export async function POST(request: NextRequest) {
     const expiresAt = new Date(parsedPaymentDate);
     expiresAt.setFullYear(expiresAt.getFullYear() + 1);
 
-    // Get venue details
+    // Check if venue exists
     const venue = await prisma.venue.findUnique({
       where: { id: venueId },
-      include: {
-        manager: true,
-      },
     });
 
     if (!venue) {
       return NextResponse.json(
         { error: 'Venue not found' },
         { status: 404 }
-      );
-    }
-
-    // Verify the admin user exists in the database
-    const adminUser = await prisma.user.findUnique({
-      where: { id: session.user.id },
-    });
-
-    if (!adminUser) {
-      console.error('Admin user not found in database:', session.user.id);
-      return NextResponse.json(
-        { error: 'Admin user not found' },
-        { status: 400 }
       );
     }
 
@@ -75,25 +58,6 @@ export async function POST(request: NextRequest) {
         expiresAt: expiresAt,
       },
     });
-
-    // Log the manual payment action
-    try {
-      await prisma.emailFlowLog.create({
-        data: {
-          id: nanoid(),
-          emailType: 'admin_manual_payment',
-          recipient: venue.manager?.email || 'unknown',
-          subject: `Manual payment for venue: ${venue.name}`,
-          status: 'processed',
-          recipientType: 'venue_owner',
-          sentBy: adminUser.id,
-          createdAt: new Date(),
-        },
-      });
-    } catch (logError) {
-      // Log the error but don't fail the entire operation
-      console.error('Failed to create email flow log:', logError);
-    }
 
     return NextResponse.json({
       success: true,
@@ -109,14 +73,6 @@ export async function POST(request: NextRequest) {
 
   } catch (error) {
     console.error('Error marking venue as paid:', error);
-    // Log more detailed error information
-    if (error instanceof Error) {
-      console.error('Error details:', {
-        message: error.message,
-        stack: error.stack,
-        name: error.name,
-      });
-    }
     return NextResponse.json(
       { error: 'Failed to mark venue as paid' },
       { status: 500 }

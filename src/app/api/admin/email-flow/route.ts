@@ -76,7 +76,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
-    
+
     if (!session?.user?.id || session.user.role !== "admin") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
@@ -87,6 +87,19 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
     }
 
+    // Determine which user ID to use and verify it exists
+    const userIdToUse = sentBy || session.user.id
+    const user = await db.user.findUnique({
+      where: { id: userIdToUse },
+      select: { id: true }
+    })
+
+    if (!user) {
+      return NextResponse.json({
+        error: "User not found - cannot create email log with invalid user ID"
+      }, { status: 400 })
+    }
+
     const logEntry = await db.emailFlowLog.create({
       data: {
         id: randomUUID(),
@@ -95,7 +108,7 @@ export async function POST(request: NextRequest) {
         subject,
         status,
         error: error || null,
-        sentBy: sentBy || session.user.id,
+        sentBy: user.id,
         recipientType: recipientType || null
       }
     })

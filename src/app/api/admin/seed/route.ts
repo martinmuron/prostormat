@@ -1,10 +1,8 @@
 import { NextResponse } from "next/server"
-import { PrismaClient } from '@prisma/client'
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/lib/auth"
+import { prisma } from '@/lib/prisma'
 import bcrypt from 'bcryptjs'
-
-const prisma = new PrismaClient()
 
 export async function POST(request: Request) {
   try {
@@ -341,7 +339,5 @@ export async function POST(request: Request) {
       error: 'Failed to seed database',
       details: error instanceof Error ? error.message : 'Unknown error'
     }, { status: 500 })
-  } finally {
-    await prisma.$disconnect()
   }
 } 

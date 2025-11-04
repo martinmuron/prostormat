@@ -298,6 +298,14 @@ export function ImageManager({
                       fill
                       className="w-full h-full object-cover"
                       sizes="(max-width: 768px) 50vw, 200px"
+                      unoptimized={image.startsWith('data:')}
+                      onError={(e) => {
+                        console.error('Image load error:', image.substring(0, 100));
+                        console.error('Error event:', e);
+                      }}
+                      onLoad={() => {
+                        console.log('Image loaded successfully:', image.substring(0, 100));
+                      }}
                     />
                     
                     {/* Main Image Badge */}

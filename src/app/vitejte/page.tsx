@@ -20,8 +20,10 @@ export default async function VerifiedWelcomePage() {
           <p className="text-sm font-medium text-emerald-600 uppercase tracking-wide">
             E-mail ověřen
           </p>
-          <h1 className="mt-4 text-3xl sm:text-4xl font-bold text-slate-900">
-            {`Vítejte, ${displayName}!`}
+          <h1 className="mt-4 text-3xl sm:text-4xl font-bold text-slate-900 break-words">
+            Vítejte,&nbsp;
+            <span className="break-all">{displayName}</span>
+            !
           </h1>
           <p className="mt-4 text-base sm:text-lg text-slate-600 leading-relaxed">
             Jsme rádi, že jste s námi. Váš účet je aktivní a připravený na první akci.

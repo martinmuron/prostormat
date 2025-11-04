@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { useSession } from "next-auth/react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
@@ -58,11 +58,18 @@ export function QuickRequestPage() {
   const [errors, setErrors] = useState<Partial<QuickRequestFormData>>({})
 
   const promptLoginIfNeeded = () => {
-    if (!session && status === 'unauthenticated' && !hasPromptedLogin) {
+    if (status === 'unauthenticated' && !hasPromptedLogin) {
       setHasPromptedLogin(true)
       setShowLoginModal(true)
     }
   }
+
+  useEffect(() => {
+    if (status === 'authenticated') {
+      setHasPromptedLogin(false)
+      setShowLoginModal(false)
+    }
+  }, [status])
 
   const validateForm = () => {
     const newErrors: Partial<QuickRequestFormData> = {}
@@ -80,6 +87,13 @@ export function QuickRequestPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+
+    if (status !== 'authenticated') {
+      if (status === 'unauthenticated') {
+        promptLoginIfNeeded()
+      }
+      return
+    }
     
     if (!validateForm()) return
 
@@ -123,8 +137,11 @@ export function QuickRequestPage() {
   }
 
   const handleInputChange = (field: keyof QuickRequestFormData, value: string) => {
-    if (!session) {
-      promptLoginIfNeeded()
+    if (status !== 'authenticated') {
+      if (status === 'unauthenticated') {
+        promptLoginIfNeeded()
+      }
+      return
     }
 
     setFormData(prev => ({ ...prev, [field]: value }))
@@ -134,7 +151,7 @@ export function QuickRequestPage() {
   }
 
   const handleInputFocus = () => {
-    if (!session) {
+    if (status === 'unauthenticated') {
       promptLoginIfNeeded()
     }
   }

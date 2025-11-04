@@ -47,7 +47,7 @@ export function Header() {
 
         <div className="flex items-center gap-2 sm:gap-3">
           <div className="hidden items-center gap-3 md:flex">
-            <span className="text-xs font-semibold uppercase tracking-wide text-orange-600">Ušetři čas!</span>
+            <span className="text-sm font-semibold uppercase tracking-wide text-orange-600">Ušetři čas!</span>
             <Link href="/rychla-poptavka">
               <Button size="sm" className="rounded-full bg-orange-500 px-4 text-white transition hover:bg-orange-600">
                 Rychlá poptávka

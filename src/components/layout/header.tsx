@@ -16,6 +16,7 @@ const navLinks = [
   { href: "/pridat-prostor", label: "Přidat prostor" },
   { href: "/event-board", label: "Event Board" },
   { href: "/rychla-poptavka", label: "Rychlá poptávka" },
+  { href: "/catering", label: "Catering" },
   { href: "/organizace-akce", label: "Organizace akce" },
   { href: "/eventove-agentury", label: "Eventové agentury" },
   { href: "/blog", label: "Blog" },

@@ -618,6 +618,49 @@ export default function HomePage() {
           </ScrollReveal>
         </div>
       </section>
+
+      {/* Catering Coming Soon Section */}
+      <section className="py-12 sm:py-16 px-4 sm:px-6 bg-white">
+        <div className="max-w-6xl mx-auto">
+          <ScrollReveal delay={0.1}>
+            <Link href="/catering" className="block group">
+              <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-3xl p-8 sm:p-10 border-2 border-dashed border-gray-300 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative overflow-hidden transition-all duration-300 hover:border-gray-400 hover:shadow-md opacity-90">
+                {/* Coming Soon Badge */}
+                <div className="absolute top-4 right-4 sm:top-6 sm:right-6">
+                  <span className="bg-gray-200 text-gray-700 px-3 py-1.5 rounded-full text-xs sm:text-sm font-semibold flex items-center gap-1.5">
+                    <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Připravujeme
+                  </span>
+                </div>
+
+                {/* Content */}
+                <div className="flex-1 pr-0 md:pr-8">
+                  <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-2 sm:mb-3 text-gray-900 group-hover:text-gray-800 transition-colors">
+                    Catering přímo na míru
+                  </h3>
+                  <p className="text-sm sm:text-base lg:text-lg text-gray-700 leading-relaxed">
+                    Plánujeme kalkulačku cateringu, kde si snadno sestavíte menu pro vaši akci
+                    a získáte okamžitou cenovou nabídku. Catering zajistí naši ověření partneři.
+                  </p>
+                </div>
+
+                {/* CTA Button */}
+                <div className="w-full md:w-auto">
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className="w-full md:w-auto bg-white/80 text-gray-700 border-gray-300 hover:bg-white hover:text-gray-900 hover:border-gray-400 rounded-xl group-hover:shadow-sm transition-all"
+                  >
+                    Zjistit více
+                  </Button>
+                </div>
+              </div>
+            </Link>
+          </ScrollReveal>
+        </div>
+      </section>
     </div>
   )
 }

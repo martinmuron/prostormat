@@ -301,127 +301,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Quick Request Section */}
-      <section className="py-16 sm:py-20 px-4 sm:px-6 bg-gradient-to-br from-blue-50 to-indigo-100">
-        <div className="max-w-6xl mx-auto">
-          <ScrollReveal>
-          <div className="text-center mb-12">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-3xl mb-6 bg-blue-600">
-              <Zap className="w-8 h-8 text-white" />
-            </div>
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
-              Rychlá poptávka
-            </h2>
-            <p className="text-lg sm:text-xl text-gray-700 max-w-3xl mx-auto leading-relaxed">
-              Nemáte čas hledat? Popište svou akci a nechte majitele prostorů, aby se ozvali vám!
-            </p>
-          </div>
-          </ScrollReveal>
-          
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <ScrollReveal>
-            <div className="space-y-8">
-              <div className="flex items-start space-x-4">
-                <div className="flex-shrink-0 w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center">
-                  <Clock className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                    Ušetřete čas
-                  </h3>
-                  <p className="text-gray-600">
-                    Místo procházení stovek prostorů jednoduše popište svou akci a požadavky.
-                  </p>
-                </div>
-              </div>
-              
-              <div className="flex items-start space-x-4">
-                <div className="flex-shrink-0 w-12 h-12 bg-green-600 rounded-xl flex items-center justify-center">
-                  <MessageSquare className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                    Získejte nabídky
-                  </h3>
-                  <p className="text-gray-600">
-                    Majitelé prostorů vám sami napíšou s nabídkami přesně podle vašich potřeb.
-                  </p>
-                </div>
-              </div>
-              
-              <div className="flex items-start space-x-4">
-                <div className="flex-shrink-0 w-12 h-12 bg-purple-600 rounded-xl flex items-center justify-center">
-                  <Euro className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                    Lepší ceny
-                  </h3>
-                  <p className="text-gray-600">
-                    Majitelé soutěží o vaši akci, což často znamená výhodnější podmínky.
-                  </p>
-                </div>
-              </div>
-            </div>
-            </ScrollReveal>
-            
-            <ScrollReveal delay={150}>
-            <div className="bg-white rounded-3xl p-8 shadow-xl border border-gray-200 hover-lift">
-              <div className="text-center mb-6">
-                <h3 className="text-2xl font-bold text-gray-900 mb-2">
-                  Jak to funguje?
-                </h3>
-                <p className="text-gray-600">
-                  Tři jednoduché kroky k perfektnímu prostoru
-                </p>
-              </div>
-              
-              <div className="space-y-6">
-                <div className="flex items-center space-x-4">
-                  <div className="flex-shrink-0 w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
-                    1
-                  </div>
-                  <p className="text-gray-700 font-medium">
-                    Vyplňte formulář s detaily vaší akce
-                  </p>
-                </div>
-                
-                <div className="flex items-center space-x-4">
-                  <div className="flex-shrink-0 w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
-                    2
-                  </div>
-                  <p className="text-gray-700 font-medium">
-                    Majitelé prostorů vám pošlou nabídky
-                  </p>
-                </div>
-                
-                <div className="flex items-center space-x-4">
-                  <div className="flex-shrink-0 w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
-                    3
-                  </div>
-                  <p className="text-gray-700 font-medium">
-                    Vyberte si nejlepší nabídku a rezervujte
-                  </p>
-                </div>
-              </div>
-              
-              <div className="mt-8">
-                <Link href="/rychla-poptavka" className="block">
-                  <Button 
-                    size="lg" 
-                    className="magnetic-button hover-lift w-full px-6 py-3 text-base font-medium rounded-xl bg-blue-600 text-white hover:bg-blue-700 transition-all duration-200"
-                  >
-                    <Zap className="w-5 h-5 mr-2" />
-                    Zadat rychlou poptávku
-                  </Button>
-                </Link>
-              </div>
-            </div>
-            </ScrollReveal>
-          </div>
-        </div>
-      </section>
-
       {/* Featured Venues */}
       <section className="py-16 sm:py-20 px-4 sm:px-6 bg-gray-50">
         <div className="max-w-6xl mx-auto">
@@ -459,6 +338,127 @@ export default function HomePage() {
               </Link>
             </div>
           </ScrollReveal>
+        </div>
+      </section>
+
+      {/* Quick Request Section */}
+      <section className="py-16 sm:py-20 px-4 sm:px-6 bg-gradient-to-br from-blue-50 to-indigo-100">
+        <div className="max-w-6xl mx-auto">
+          <ScrollReveal>
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-3xl mb-6 bg-blue-600">
+              <Zap className="w-8 h-8 text-white" />
+            </div>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
+              Rychlá poptávka
+            </h2>
+            <p className="text-lg sm:text-xl text-gray-700 max-w-3xl mx-auto leading-relaxed">
+              Nemáte čas hledat? Popište svou akci a nechte majitele prostorů, aby se ozvali vám!
+            </p>
+          </div>
+          </ScrollReveal>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <ScrollReveal>
+            <div className="space-y-8">
+              <div className="flex items-start space-x-4">
+                <div className="flex-shrink-0 w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center">
+                  <Clock className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                    Ušetřete čas
+                  </h3>
+                  <p className="text-gray-600">
+                    Místo procházení stovek prostorů jednoduše popište svou akci a požadavky.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start space-x-4">
+                <div className="flex-shrink-0 w-12 h-12 bg-green-600 rounded-xl flex items-center justify-center">
+                  <MessageSquare className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                    Získejte nabídky
+                  </h3>
+                  <p className="text-gray-600">
+                    Majitelé prostorů vám sami napíšou s nabídkami přesně podle vašich potřeb.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start space-x-4">
+                <div className="flex-shrink-0 w-12 h-12 bg-purple-600 rounded-xl flex items-center justify-center">
+                  <Euro className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                    Lepší ceny
+                  </h3>
+                  <p className="text-gray-600">
+                    Majitelé soutěží o vaši akci, což často znamená výhodnější podmínky.
+                  </p>
+                </div>
+              </div>
+            </div>
+            </ScrollReveal>
+
+            <ScrollReveal delay={150}>
+            <div className="bg-white rounded-3xl p-8 shadow-xl border border-gray-200 hover-lift">
+              <div className="text-center mb-6">
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                  Jak to funguje?
+                </h3>
+                <p className="text-gray-600">
+                  Tři jednoduché kroky k perfektnímu prostoru
+                </p>
+              </div>
+
+              <div className="space-y-6">
+                <div className="flex items-center space-x-4">
+                  <div className="flex-shrink-0 w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                    1
+                  </div>
+                  <p className="text-gray-700 font-medium">
+                    Vyplňte formulář s detaily vaší akce
+                  </p>
+                </div>
+
+                <div className="flex items-center space-x-4">
+                  <div className="flex-shrink-0 w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                    2
+                  </div>
+                  <p className="text-gray-700 font-medium">
+                    Majitelé prostorů vám pošlou nabídky
+                  </p>
+                </div>
+
+                <div className="flex items-center space-x-4">
+                  <div className="flex-shrink-0 w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                    3
+                  </div>
+                  <p className="text-gray-700 font-medium">
+                    Vyberte si nejlepší nabídku a rezervujte
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-8">
+                <Link href="/rychla-poptavka" className="block">
+                  <Button
+                    size="lg"
+                    className="magnetic-button hover-lift w-full px-6 py-3 text-base font-medium rounded-xl bg-blue-600 text-white hover:bg-blue-700 transition-all duration-200"
+                  >
+                    <Zap className="w-5 h-5 mr-2" />
+                    Zadat rychlou poptávku
+                  </Button>
+                </Link>
+              </div>
+            </div>
+            </ScrollReveal>
+          </div>
         </div>
       </section>
 

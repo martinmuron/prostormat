@@ -14,6 +14,7 @@ import { YouTubeManager } from "@/components/ui/youtube-manager"
 import { AmenitiesManager } from "@/components/ui/amenities-manager"
 import { Switch } from "@/components/ui/switch"
 import { Label } from "@/components/ui/label"
+import { VENUE_TYPES } from "@/types"
 import {
   Save,
   Eye,
@@ -151,17 +152,11 @@ export function AdminVenueEditForm({ venue }: AdminVenueEditFormProps) {
     managerId: venue.managerId ?? ""
   })
 
-  const venueTypes = [
-    { value: "conference-hall", label: "Konferenční sál" },
-    { value: "wedding-venue", label: "Svatební prostor" },
-    { value: "corporate-space", label: "Firemní prostor" },
-    { value: "gallery", label: "Galerie" },
-    { value: "restaurant", label: "Restaurace" },
-    { value: "hotel", label: "Hotel" },
-    { value: "outdoor-space", label: "Venkovní prostor" },
-    { value: "theater", label: "Divadlo" },
-    { value: "other", label: "Jiné" }
-  ]
+  // Generate venue types from VENUE_TYPES constant
+  const venueTypes = Object.entries(VENUE_TYPES).map(([value, label]) => ({
+    value,
+    label
+  }))
 
   const statusOptions = [
     { value: "draft", label: "Koncept" },
@@ -340,8 +335,15 @@ export function AdminVenueEditForm({ venue }: AdminVenueEditFormProps) {
           router.refresh()
         }, 1500)
       } else {
-        const error = await response.json()
-        setErrorMessage(`Chyba při aktualizaci: ${error.message || 'Neznámá chyba'}`)
+        // Read response as text first, then try to parse as JSON
+        const responseText = await response.text()
+        try {
+          const error = JSON.parse(responseText)
+          setErrorMessage(`Chyba při aktualizaci: ${error.error || error.message || 'Neznámá chyba'}`)
+        } catch {
+          // If JSON parsing fails, use the plain text
+          setErrorMessage(`Chyba při aktualizaci: ${responseText || 'Neznámá chyba'}`)
+        }
       }
     } catch (error) {
       console.error("Error updating venue:", error)

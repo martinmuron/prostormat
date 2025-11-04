@@ -41,24 +41,34 @@ export async function PATCH(
     // Verify authentication
     const session = await getServerSession(authOptions)
     if (!session?.user) {
-      return new NextResponse("Unauthorized", { status: 401 })
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
     // Check if user is admin or venue manager for this venue
     if (session.user.role !== "admin") {
       if (session.user.role !== "venue_manager") {
-        return new NextResponse("Unauthorized", { status: 401 })
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
       }
-      
+
       // Verify venue manager owns this venue
       const venue = await db.venue.findUnique({
         where: { id },
         select: { managerId: true }
       })
-      
+
       if (!venue || venue.managerId !== session.user.id) {
-        return new NextResponse("Unauthorized", { status: 401 })
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
       }
+    }
+
+    // Get current venue data to check for changes
+    const currentVenue = await db.venue.findUnique({
+      where: { id },
+      select: { managerId: true }
+    })
+
+    if (!currentVenue) {
+      return NextResponse.json({ error: "Venue not found" }, { status: 404 })
     }
 
     // Validate request body
@@ -143,15 +153,17 @@ export async function PATCH(
       delete updateData.expiresAt
     }
 
-    // If managerId is provided and user is admin, verify the manager exists
-    if (body.managerId && session.user.role === "admin") {
+    // If managerId is being changed and user is admin, verify the new manager exists
+    // Only validate if the managerId is different from the current one
+    const managerIdChanged = typeof body.managerId !== "undefined" && body.managerId !== currentVenue.managerId
+    if (managerIdChanged && body.managerId?.trim() && session.user.role === "admin") {
       const manager = await db.user.findUnique({
         where: { id: body.managerId },
         select: { role: true }
       })
-      
+
       if (!manager || manager.role !== "venue_manager") {
-        return new NextResponse("Invalid manager ID - user must be a venue_manager", { status: 400 })
+        return NextResponse.json({ error: "Invalid manager ID - user must be a venue_manager" }, { status: 400 })
       }
     }
 
@@ -173,12 +185,12 @@ export async function PATCH(
     return NextResponse.json(updatedVenue)
   } catch (error) {
     console.error("Error updating venue:", error)
-    
+
     if (error instanceof z.ZodError) {
-      return new NextResponse(JSON.stringify(error.issues), { status: 422 })
+      return NextResponse.json({ error: "Validation error", issues: error.issues }, { status: 422 })
     }
-    
-    return new NextResponse("Internal server error", { status: 500 })
+
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
   }
 }
 
@@ -191,23 +203,23 @@ export async function GET(
     // Verify authentication
     const session = await getServerSession(authOptions)
     if (!session?.user) {
-      return new NextResponse("Unauthorized", { status: 401 })
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
     // Check if user is admin or venue manager for this venue
     if (session.user.role !== "admin") {
       if (session.user.role !== "venue_manager") {
-        return new NextResponse("Unauthorized", { status: 401 })
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
       }
-      
+
       // Verify venue manager owns this venue
       const venueCheck = await db.venue.findUnique({
         where: { id },
         select: { managerId: true }
       })
-      
+
       if (!venueCheck || venueCheck.managerId !== session.user.id) {
-        return new NextResponse("Unauthorized", { status: 401 })
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
       }
     }
 
@@ -227,12 +239,12 @@ export async function GET(
     })
 
     if (!venue) {
-      return new NextResponse("Venue not found", { status: 404 })
+      return NextResponse.json({ error: "Venue not found" }, { status: 404 })
     }
 
     return NextResponse.json(venue)
   } catch (error) {
     console.error("Error fetching venue:", error)
-    return new NextResponse("Internal server error", { status: 500 })
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
   }
 }

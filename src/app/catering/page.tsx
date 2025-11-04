@@ -53,18 +53,6 @@ export default function CateringPage() {
       <section className="px-4 sm:px-6 py-16 sm:py-20 lg:py-24">
         <div className="max-w-7xl mx-auto">
 
-          {/* Main Description */}
-          <div className="max-w-3xl mx-auto text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl font-bold mb-6 text-gray-900">
-              Catering na míru pro každou akci
-            </h2>
-            <p className="text-lg text-gray-600 leading-relaxed">
-              Pracujeme na inteligentní kalkulačce, která vám umožní snadno naplánovat catering
-              pro vaši akci. Jednoduše vyberete položky, zadáte počet hostů a okamžitě získáte
-              přesnou cenovou nabídku.
-            </p>
-          </div>
-
           {/* Features Grid - Coming Soon Style */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 mb-16">
 

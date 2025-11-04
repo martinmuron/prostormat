@@ -195,13 +195,7 @@ export default function CateringPage() {
 
           {/* CTA Section */}
           <div className="mt-16 text-center">
-            <div className="inline-flex items-center gap-2 bg-emerald-50 border border-emerald-200 px-6 py-3 rounded-full">
-              <Clock className="h-5 w-5 text-emerald-600" />
-              <span className="font-semibold text-emerald-900">
-                Očekávané spuštění: Q2 2025
-              </span>
-            </div>
-            <p className="mt-6 text-gray-600 max-w-2xl mx-auto">
+            <p className="text-gray-600 max-w-2xl mx-auto">
               Máte zájem o catering už teď? Kontaktujte nás na{" "}
               <a href="mailto:info@prostormat.cz" className="text-emerald-600 hover:text-emerald-700 font-semibold">
                 info@prostormat.cz

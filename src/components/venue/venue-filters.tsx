@@ -206,7 +206,7 @@ export function VenueFilters({ initialValues }: VenueFiltersProps) {
               >
                 <div className="font-medium text-gray-900">{suggestion.name}</div>
                 {suggestion.district && (
-                  <div className="text-xs text-gray-500">{suggestion.district}</div>
+                  <div className="text-sm text-gray-500">{suggestion.district}</div>
                 )}
               </button>
             ))

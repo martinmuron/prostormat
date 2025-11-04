@@ -63,7 +63,7 @@ export function PageHero({
       <div className={cn("relative z-10 px-4 sm:px-6", containerClassName)}>
         <div className={cn("max-w-4xl mx-auto flex flex-col gap-6", contentAlignment)}>
           {eyebrow ? (
-            <div className="inline-flex items-center rounded-full border border-blue-100 bg-white/70 px-4 py-1 text-xs font-semibold uppercase tracking-[0.32em] text-blue-600 shadow-sm">
+            <div className="inline-flex items-center rounded-full border border-blue-100 bg-white/70 px-4 py-1.5 text-sm font-semibold uppercase tracking-[0.32em] text-blue-600 shadow-sm">
               {eyebrow}
             </div>
           ) : null}

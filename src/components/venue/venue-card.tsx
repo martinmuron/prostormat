@@ -104,7 +104,7 @@ export function VenueCard({ venue, priority = false, showPriorityBadge = false }
                 <Badge
                   key={cat}
                   variant="secondary"
-                  className="bg-black text-white border-black text-xs sm:text-sm font-semibold border-2"
+                  className="bg-black text-white border-black text-sm font-semibold border-2"
                 >
                   {VENUE_TYPES[cat as VenueType] || cat}
                 </Badge>
@@ -112,7 +112,7 @@ export function VenueCard({ venue, priority = false, showPriorityBadge = false }
               {categories.length > 2 && (
                 <Badge
                   variant="secondary"
-                  className="bg-black text-white border-black text-xs sm:text-sm font-semibold border-2"
+                  className="bg-black text-white border-black text-sm font-semibold border-2"
                 >
                   +{categories.length - 2}
                 </Badge>
@@ -121,7 +121,7 @@ export function VenueCard({ venue, priority = false, showPriorityBadge = false }
           )}
           {venue.images.length > 1 && (
             <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4">
-              <div className="flex items-center gap-1 bg-black/80 text-white px-2 py-1 rounded-full text-xs font-medium shadow-lg">
+              <div className="flex items-center gap-1 bg-black/80 text-white px-2 py-1 rounded-full text-sm font-medium shadow-lg">
                 <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" />
                 </svg>
@@ -131,7 +131,7 @@ export function VenueCard({ venue, priority = false, showPriorityBadge = false }
           )}
           {showPriorityBadge && (
             <div className="absolute top-3 right-3 sm:top-4 sm:right-4">
-              <span className="bg-gradient-to-r from-yellow-300 via-amber-400 to-orange-500 text-black px-3 py-1 rounded-full text-xs sm:text-sm font-semibold shadow-lg flex items-center gap-1">
+              <span className="bg-gradient-to-r from-yellow-300 via-amber-400 to-orange-500 text-black px-3 py-1 rounded-full text-sm font-semibold shadow-lg flex items-center gap-1">
                 <Star className="w-3 h-3 sm:w-4 sm:h-4" />
                 Doporučeno
               </span>
@@ -154,14 +154,14 @@ export function VenueCard({ venue, priority = false, showPriorityBadge = false }
                   {DISPLAY_NAME_OVERRIDES[venue.slug] ?? venue.name}
                 </h3>
                 {totalCapacity > 0 && (
-                  <span className="flex items-center gap-1 px-2 py-1 bg-white rounded-lg border border-black text-black font-semibold text-xs whitespace-nowrap">
+                  <span className="flex items-center gap-1 px-3 py-2 bg-white rounded-lg border border-black text-black font-semibold text-sm whitespace-nowrap">
                     <Users className="h-3 w-3" />
                     {totalCapacity}
                   </span>
                 )}
               </div>
               {venue.district && (
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-600 mb-1">
+                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-blue-600 mb-1">
                   {venue.district}
                 </p>
               )}

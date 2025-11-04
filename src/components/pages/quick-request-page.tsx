@@ -41,7 +41,6 @@ export function QuickRequestPage() {
   const [isSuccess, setIsSuccess] = useState(false)
   const [pendingCount, setPendingCount] = useState(0)
   const [showLoginModal, setShowLoginModal] = useState(false)
-  const [hasPromptedLogin, setHasPromptedLogin] = useState(false)
   const today = useMemo(() => new Date().toISOString().split('T')[0], [])
   
   const [formData, setFormData] = useState<QuickRequestFormData>({
@@ -58,18 +57,22 @@ export function QuickRequestPage() {
   const [errors, setErrors] = useState<Partial<QuickRequestFormData>>({})
 
   const promptLoginIfNeeded = () => {
-    if (status === 'unauthenticated' && !hasPromptedLogin) {
-      setHasPromptedLogin(true)
+    if (status === 'unauthenticated') {
       setShowLoginModal(true)
     }
   }
 
+  // Pre-fill form data after successful authentication
   useEffect(() => {
-    if (status === 'authenticated') {
-      setHasPromptedLogin(false)
+    if (status === 'authenticated' && session?.user) {
+      setFormData(prev => ({
+        ...prev,
+        contactEmail: session.user.email || prev.contactEmail,
+        contactName: session.user.name || prev.contactName,
+      }))
       setShowLoginModal(false)
     }
-  }, [status])
+  }, [status, session])
 
   const validateForm = () => {
     const newErrors: Partial<QuickRequestFormData> = {}
@@ -439,16 +442,8 @@ export function QuickRequestPage() {
         <LoginModal
           isOpen={showLoginModal}
           onClose={() => setShowLoginModal(false)}
-          onSuccess={() => {
-            setShowLoginModal(false)
-            // Refresh form data with user info after login
-            if (session?.user) {
-              setFormData(prev => ({
-                ...prev,
-                contactEmail: session.user.email || prev.contactEmail,
-              }))
-            }
-          }}
+          onSuccess={() => setShowLoginModal(false)}
+          message="Pro použití rychlé poptávky je nutné vytvořit si bezplatný účet"
         />
       </div>
     </div>

@@ -18,9 +18,10 @@ interface LoginModalProps {
   isOpen: boolean
   onClose: () => void
   onSuccess?: () => void
+  message?: string
 }
 
-export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
+export function LoginModal({ isOpen, onClose, onSuccess, message }: LoginModalProps) {
   const router = useRouter()
   const eligibleTabs = useMemo(() => ["login", "register"], [])
   const [activeTab, setActiveTab] = useState(eligibleTabs[0])
@@ -167,6 +168,12 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
             Přihlášení nebo registrace
           </DialogTitle>
         </DialogHeader>
+
+        {message && (
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-2">
+            <p className="text-sm text-blue-800 text-center font-medium">{message}</p>
+          </div>
+        )}
 
         <Tabs value={activeTab} onValueChange={(value) => value && eligibleTabs.includes(value) && setActiveTab(value)} className="w-full">
           <TabsList className="grid w-full grid-cols-2">

@@ -1,4 +1,9 @@
 export default function supabaseLoader({ src, width, quality }) {
+  // If it's a base64 data URL, return it as-is (used by ImageManager for uploaded images)
+  if (src.startsWith('data:')) {
+    return src
+  }
+
   // If the src is already a full URL (starts with http:// or https://), return it as-is
   if (src.startsWith('http://') || src.startsWith('https://')) {
     return src

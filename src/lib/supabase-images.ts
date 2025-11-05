@@ -50,9 +50,6 @@ export function getImageStorageUrl(imagePath: string): string {
 }
 
 /**
- * Get the transformation render URL for an image
- */
-/**
  * Get optimized image URL for a specific size
  *
  * @param imagePath - Path to image in Supabase storage (e.g., "kafkoff/image_1.jpg")

@@ -1,7 +1,6 @@
 "use client"
 
-import { useState, useCallback, useRef } from 'react';
-import Image from 'next/image';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -39,6 +38,13 @@ export function ImageManager({
   const [dragOver, setDragOver] = useState(false);
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [localMainImageIndex, setLocalMainImageIndex] = useState(mainImageIndex);
+
+  const effectiveMainIndex = onMainImageChange ? mainImageIndex : localMainImageIndex;
+
+  useEffect(() => {
+    setLocalMainImageIndex(mainImageIndex);
+  }, [mainImageIndex]);
 
   const handleFileSelect = useCallback(async (files: File[]) => {
     if (images.length + files.length > maxImages) {
@@ -127,19 +133,43 @@ export function ImageManager({
     const newImages = images.filter((_, i) => i !== index);
     onImagesChange(newImages);
     
-    // Adjust main image index if needed
-    if (allowSetMain && onMainImageChange) {
-      if (index === mainImageIndex) {
-        onMainImageChange(0); // Set first image as main
-      } else if (index < mainImageIndex) {
-        onMainImageChange(mainImageIndex - 1); // Shift main index down
+    if (!allowSetMain) return;
+
+    if (onMainImageChange) {
+      if (index === effectiveMainIndex) {
+        onMainImageChange(0);
+        setLocalMainImageIndex(0);
+      } else if (index < effectiveMainIndex) {
+        onMainImageChange(effectiveMainIndex - 1);
+        setLocalMainImageIndex((prev) => Math.max(prev - 1, 0));
+      }
+    } else {
+      if (index === localMainImageIndex) {
+        setLocalMainImageIndex(0);
+      } else if (index < localMainImageIndex) {
+        setLocalMainImageIndex((prev) => Math.max(prev - 1, 0));
       }
     }
   };
 
   const setAsMainImage = (index: number) => {
-    if (allowSetMain && onMainImageChange) {
-      onMainImageChange(index);
+    if (!allowSetMain) return;
+
+    if (allowReorder) {
+      const reordered = [...images];
+      const [selected] = reordered.splice(index, 1);
+      reordered.unshift(selected);
+      onImagesChange(reordered);
+
+      if (onMainImageChange) {
+        onMainImageChange(0);
+      }
+      setLocalMainImageIndex(0);
+    } else {
+      if (onMainImageChange) {
+        onMainImageChange(index);
+      }
+      setLocalMainImageIndex(index);
     }
   };
 
@@ -152,13 +182,28 @@ export function ImageManager({
     onImagesChange(newImages);
 
     // Update main image index if needed
-    if (allowSetMain && onMainImageChange) {
-      if (fromIndex === mainImageIndex) {
+    if (!allowSetMain) return;
+
+    const currentMain = effectiveMainIndex;
+
+    if (onMainImageChange) {
+      if (fromIndex === currentMain) {
         onMainImageChange(toIndex);
-      } else if (fromIndex < mainImageIndex && toIndex >= mainImageIndex) {
-        onMainImageChange(mainImageIndex - 1);
-      } else if (fromIndex > mainImageIndex && toIndex <= mainImageIndex) {
-        onMainImageChange(mainImageIndex + 1);
+        setLocalMainImageIndex(toIndex);
+      } else if (fromIndex < currentMain && toIndex >= currentMain) {
+        onMainImageChange(currentMain - 1);
+        setLocalMainImageIndex((prev) => Math.max(prev - 1, 0));
+      } else if (fromIndex > currentMain && toIndex <= currentMain) {
+        onMainImageChange(currentMain + 1);
+        setLocalMainImageIndex((prev) => prev + 1);
+      }
+    } else {
+      if (fromIndex === localMainImageIndex) {
+        setLocalMainImageIndex(toIndex);
+      } else if (fromIndex < localMainImageIndex && toIndex >= localMainImageIndex) {
+        setLocalMainImageIndex((prev) => Math.max(prev - 1, 0));
+      } else if (fromIndex > localMainImageIndex && toIndex <= localMainImageIndex) {
+        setLocalMainImageIndex((prev) => prev + 1);
       }
     }
   };
@@ -281,7 +326,7 @@ export function ImageManager({
               <Card
                 key={index}
                 className={`relative group overflow-hidden ${
-                  allowSetMain && index === mainImageIndex 
+                  allowSetMain && index === effectiveMainIndex 
                     ? 'ring-2 ring-blue-500' 
                     : ''
                 }`}
@@ -291,25 +336,24 @@ export function ImageManager({
                 onDragOver={(e) => handleDragOver(e, index)}
               >
                 <CardContent className="p-0">
-                  <div className="aspect-square relative">
-                    <Image
-                      src={image}
+                  <div className="aspect-square relative bg-gray-100">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={image.startsWith('data:') || image.startsWith('http') ? image : `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/venue-images/${image}`}
                       alt={`Obrázek ${index + 1}`}
-                      fill
-                      className="w-full h-full object-cover"
-                      sizes="(max-width: 768px) 50vw, 200px"
-                      unoptimized={image.startsWith('data:')}
+                      className="absolute inset-0 w-full h-full object-cover"
                       onError={(e) => {
                         console.error('Image load error:', image.substring(0, 100));
-                        console.error('Error event:', e);
+                        e.currentTarget.style.display = 'none';
                       }}
-                      onLoad={() => {
-                        console.log('Image loaded successfully:', image.substring(0, 100));
+                      onLoad={(e) => {
+                        e.currentTarget.style.opacity = '1';
                       }}
+                      style={{ opacity: 0, transition: 'opacity 0.2s' }}
                     />
                     
                     {/* Main Image Badge */}
-                    {allowSetMain && index === mainImageIndex && (
+                    {allowSetMain && index === effectiveMainIndex && (
                       <Badge className="absolute top-2 left-2 bg-blue-600 text-white text-xs">
                         <Star className="h-3 w-3 mr-1" />
                         Hlavní
@@ -317,7 +361,7 @@ export function ImageManager({
                     )}
                     
                     {/* Action Overlay */}
-                    <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all duration-200 flex items-center justify-center">
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-200 flex items-center justify-center">
                       <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex gap-1">
                         {allowSetMain && index !== mainImageIndex && (
                           <Button

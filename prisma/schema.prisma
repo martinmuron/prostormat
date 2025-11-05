@@ -2,12 +2,19 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-arm64-openssl-3.0.x", "debian-openssl-3.0.x", "linux-musl"]
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+enum VenueBroadcastStatus {
+  pending
+  partial
+  completed
 }
 
 model Account {
@@ -92,7 +99,7 @@ model Venue {
   videoUrl         String?
   youtubeUrl       String? // YouTube URL
   musicAfter10     Boolean? // Can play music after 22:00
-  status           String    @default("draft") // draft, active, expired, pending, published
+  status           String    @default("published") // published, hidden
   isRecommended    Boolean   @default(false) // Featured/recommended venue
   priority         Int? // 1 = highest priority, null = no priority
   prioritySource   String? // manual | homepage
@@ -116,11 +123,6 @@ model Venue {
   homepageSlot       HomepageVenue?
   submissionRequests VenueSubmissionRequest[]
 
-  @@index([status, priority, updatedAt])
-  @@index([district, status])
-  @@index([capacityStanding, status])
-  @@index([capacitySeated, status])
-  @@index([status, createdAt])
   @@map("prostormat_venues")
 }
 
@@ -138,12 +140,6 @@ model VenueClaim {
   claimant User  @relation(fields: [claimantId], references: [id])
 
   @@map("prostormat_venue_claims")
-}
-
-enum VenueBroadcastStatus {
-  pending
-  partial
-  completed
 }
 
 model HomepageVenue {

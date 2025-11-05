@@ -15,10 +15,10 @@ interface EmailLog {
   error?: string | null
   recipientType?: string | null
   createdAt: string
-  prostormat_users?: {
-    name: string
-    email: string
-  }
+  user?: {
+    name: string | null
+    email: string | null
+  } | null
 }
 
 interface EmailStats {
@@ -301,7 +301,7 @@ export function EmailFlowDashboard() {
                       </td>
                       <td className="py-3 px-4">
                         <div className="flex items-center gap-2">
-                          {log.recipientType === 'venue_manager' ? (
+                          {['venue_manager', 'venue_owner'].includes(log.recipientType ?? '') ? (
                             <Building className="h-4 w-4 text-gray-400" />
                           ) : (
                             <Users className="h-4 w-4 text-gray-400" />
@@ -317,7 +317,7 @@ export function EmailFlowDashboard() {
                         {new Date(log.createdAt).toLocaleString('cs-CZ')}
                       </td>
                       <td className="py-3 px-4 text-sm">
-                        {log.prostormat_users?.name || 'System'}
+                        {log.user?.name || log.user?.email || 'System'}
                       </td>
                     </tr>
                   ))}

@@ -47,11 +47,11 @@ interface Venue {
       email?: string | null;
     } | null;
   }[];
-  prostormat_users: {
-    name: string;
-    email: string;
-    phone?: string;
-  };
+  manager?: {
+    name?: string | null;
+    email?: string | null;
+    phone?: string | null;
+  } | null;
 }
 
 export default function VenueManagementPage() {
@@ -86,7 +86,9 @@ const [updatingPaidId, setUpdatingPaidId] = useState<string | null>(null);
       filtered = filtered.filter((venue) => {
         const nameMatch = venue.name?.toLowerCase().includes(normalizedSearch);
         const addressMatch = venue.address?.toLowerCase().includes(normalizedSearch);
-        const managerMatch = venue.prostormat_users?.name?.toLowerCase().includes(normalizedSearch);
+        const managerName = venue.manager?.name?.toLowerCase() ?? '';
+        const managerEmail = venue.manager?.email?.toLowerCase() ?? '';
+        const managerMatch = managerName.includes(normalizedSearch) || managerEmail.includes(normalizedSearch);
         return Boolean(nameMatch || addressMatch || managerMatch);
       });
     }
@@ -604,8 +606,8 @@ const [updatingPaidId, setUpdatingPaidId] = useState<string | null>(null);
                         <div className="flex items-center justify-between">
                           <div>
                             <span className="text-sm font-medium text-gray-700">Majitel: </span>
-                            <span className="text-sm text-gray-900">{venue.prostormat_users?.name || 'Neuvedeno'}</span>
-                            <span className="text-sm text-gray-500 ml-2">({venue.prostormat_users?.email || 'bez emailu'})</span>
+                            <span className="text-sm text-gray-900">{venue.manager?.name || venue.manager?.email || 'Neuvedeno'}</span>
+                            <span className="text-sm text-gray-500 ml-2">({venue.manager?.email || 'bez emailu'})</span>
                           </div>
                           <div className="text-xs text-gray-500">
                             Vytvořeno {formatDate(venue.createdAt)}

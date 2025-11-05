@@ -63,12 +63,8 @@ export const authOptions: NextAuthOptions = {
 
         if (!user.emailVerified) {
           if (user.role === "admin") {
-            const updated = await db.user.update({
-              where: { id: user.id },
-              data: { emailVerified: new Date() },
-              select: { emailVerified: true },
-            })
-            user.emailVerified = updated.emailVerified
+            // Allow admin login without database update - set in memory only
+            user.emailVerified = new Date()
           } else {
             throw new Error("EMAIL_NOT_VERIFIED")
           }

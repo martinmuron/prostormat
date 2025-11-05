@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
@@ -32,7 +32,7 @@ export function VenueContactForm({ venueId, venueName }: VenueContactFormProps) 
   const { data: session } = useSession()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
-  const today = useMemo(() => new Date().toISOString().split('T')[0], [])
+  const [today, setToday] = useState<string | undefined>(undefined)
 
   const {
     register,
@@ -47,6 +47,10 @@ export function VenueContactForm({ venueId, venueName }: VenueContactFormProps) 
       email: session?.user?.email || "",
     },
   })
+
+  useEffect(() => {
+    setToday(new Date().toISOString().split('T')[0])
+  }, [])
 
   useEffect(() => {
     if (session?.user?.email) {
@@ -128,6 +132,7 @@ export function VenueContactForm({ venueId, venueName }: VenueContactFormProps) 
           <Input
             {...register("name")}
             placeholder="Vaše jméno"
+            autoComplete="name"
           />
           {errors.name && (
             <p className="text-caption text-red-600 mt-1">{errors.name.message}</p>
@@ -142,6 +147,7 @@ export function VenueContactForm({ venueId, venueName }: VenueContactFormProps) 
             type="email"
             {...register("email")}
             placeholder="vas@email.cz"
+            autoComplete="email"
           />
           {errors.email && (
             <p className="text-caption text-red-600 mt-1">{errors.email.message}</p>
@@ -156,6 +162,7 @@ export function VenueContactForm({ venueId, venueName }: VenueContactFormProps) 
             type="tel"
             {...register("phone")}
             placeholder="+420 123 456 789"
+            autoComplete="tel"
           />
         </div>
 
@@ -168,6 +175,7 @@ export function VenueContactForm({ venueId, venueName }: VenueContactFormProps) 
               type="date"
               {...register("eventDate")}
               min={today}
+              autoComplete="off"
             />
           </div>
 
@@ -180,6 +188,7 @@ export function VenueContactForm({ venueId, venueName }: VenueContactFormProps) 
               {...register("guestCount")}
               placeholder="50"
               min="1"
+              autoComplete="off"
             />
           </div>
         </div>
@@ -192,6 +201,7 @@ export function VenueContactForm({ venueId, venueName }: VenueContactFormProps) 
             {...register("message")}
             placeholder="Popište svou akci a požadavky..."
             rows={4}
+            autoComplete="off"
           />
           {errors.message && (
             <p className="text-caption text-red-600 mt-1">{errors.message.message}</p>

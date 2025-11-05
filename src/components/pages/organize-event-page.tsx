@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -34,6 +34,11 @@ type FormValues = z.infer<typeof formSchema>
 export function OrganizeEventPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
+  const [today, setToday] = useState<string | undefined>(undefined)
+
+  useEffect(() => {
+    setToday(new Date().toISOString().split('T')[0])
+  }, [])
 
   const { register, handleSubmit, formState: { errors }, reset, setValue } = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -160,21 +165,21 @@ export function OrganizeEventPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <Label>Jméno a příjmení *</Label>
-                  <Input placeholder="Jan Novák" {...register('name')} />
+                  <Input placeholder="Jan Novák" autoComplete="name" {...register('name')} />
                   {errors.name && <p className="text-sm text-red-600 mt-1">{errors.name.message}</p>}
                 </div>
                 <div>
                   <Label>E‑mail *</Label>
-                  <Input type="email" placeholder="jan.novak@email.cz" {...register('email')} />
+                  <Input type="email" placeholder="jan.novak@email.cz" autoComplete="email" {...register('email')} />
                   {errors.email && <p className="text-sm text-red-600 mt-1">{errors.email.message}</p>}
                 </div>
                 <div>
                   <Label>Telefon</Label>
-                  <Input placeholder="+420 123 456 789" {...register('phone')} />
+                  <Input placeholder="+420 123 456 789" autoComplete="tel" {...register('phone')} />
                 </div>
                 <div>
                   <Label>Společnost</Label>
-                  <Input placeholder="Název společnosti (volitelné)" {...register('company')} />
+                  <Input placeholder="Název společnosti (volitelné)" autoComplete="organization" {...register('company')} />
                 </div>
               </div>
 
@@ -194,14 +199,14 @@ export function OrganizeEventPage() {
                 </div>
                 <div>
                   <Label>Datum akce</Label>
-                  <Input type="date" {...register('eventDate')} min={new Date().toISOString().split('T')[0]} />
+                  <Input type="date" {...register('eventDate')} min={today} autoComplete="off" />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <Label>Počet hostů *</Label>
-                  <Input type="number" min={100} {...register('guestCount', { valueAsNumber: true })} />
+                  <Input type="number" min={100} autoComplete="off" {...register('guestCount', { valueAsNumber: true })} />
                   {errors.guestCount && <p className="text-sm text-red-600 mt-1">{errors.guestCount.message}</p>}
                 </div>
                 <div>
@@ -235,13 +240,13 @@ export function OrganizeEventPage() {
                 </div>
                 <div>
                   <Label>Speciální požadavky</Label>
-                  <Textarea rows={4} {...register('message')} placeholder="Scéna, catering, program, technika..." />
+                  <Textarea rows={4} autoComplete="off" {...register('message')} placeholder="Scéna, catering, program, technika..." />
                 </div>
               </div>
 
               <div>
                 <Label>Co byste rádi zažili?</Label>
-                <Textarea rows={5} {...register('message')} placeholder="Popište vaši ideální akci a důležité detaily." />
+                <Textarea rows={5} autoComplete="off" {...register('message')} placeholder="Popište vaši ideální akci a důležité detaily." />
               </div>
 
               <Button

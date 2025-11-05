@@ -9,7 +9,9 @@ async function main() {
   const adminPassword = await bcrypt.hash('admin123', 12)
   const admin = await prisma.prostormat_users.upsert({
     where: { email: 'admin@prostormat.cz' },
-    update: {},
+    update: {
+      emailVerified: new Date(),
+    },
     create: {
       id: randomUUID(),
       email: 'admin@prostormat.cz',
@@ -17,6 +19,7 @@ async function main() {
       password: adminPassword,
       role: 'admin',
       createdAt: new Date(),
+      emailVerified: new Date(),
     },
   })
 

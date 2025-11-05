@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { LogIn, UserPlus, Mail, Lock, Eye, EyeOff } from "lucide-react"
 import { trackGA4Registration } from "@/lib/ga4-tracking"
@@ -167,6 +167,9 @@ export function LoginModal({ isOpen, onClose, onSuccess, message }: LoginModalPr
           <DialogTitle className="text-center text-xl font-bold">
             Přihlášení nebo registrace
           </DialogTitle>
+          <DialogDescription className="text-center text-sm text-gray-600">
+            Přihlaste se ke svému účtu nebo si během chvíle vytvořte nový.
+          </DialogDescription>
         </DialogHeader>
 
         {message && (
@@ -201,6 +204,7 @@ export function LoginModal({ isOpen, onClose, onSuccess, message }: LoginModalPr
                     onChange={(e) => setLoginData(prev => ({ ...prev, email: e.target.value }))}
                     className="pl-10"
                     required
+                    autoComplete="email"
                   />
                 </div>
               </div>
@@ -217,6 +221,7 @@ export function LoginModal({ isOpen, onClose, onSuccess, message }: LoginModalPr
                     onChange={(e) => setLoginData(prev => ({ ...prev, password: e.target.value }))}
                     className="pl-10 pr-10"
                     required
+                    autoComplete="current-password"
                   />
                   <button
                     type="button"
@@ -260,6 +265,7 @@ export function LoginModal({ isOpen, onClose, onSuccess, message }: LoginModalPr
                     onChange={(e) => setRegisterData(prev => ({ ...prev, email: e.target.value }))}
                     className="pl-10"
                     required
+                    autoComplete="email"
                   />
                 </div>
               </div>
@@ -277,6 +283,7 @@ export function LoginModal({ isOpen, onClose, onSuccess, message }: LoginModalPr
                     className="pl-10 pr-10"
                     minLength={6}
                     required
+                    autoComplete="new-password"
                   />
                   <button
                     type="button"
@@ -304,6 +311,7 @@ export function LoginModal({ isOpen, onClose, onSuccess, message }: LoginModalPr
                     onChange={(e) => setRegisterData(prev => ({ ...prev, confirmPassword: e.target.value }))}
                     className="pl-10 pr-10"
                     required
+                    autoComplete="new-password"
                   />
                   <button
                     type="button"

@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useState } from "react"
 import { useSession } from "next-auth/react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
@@ -41,7 +41,7 @@ export function QuickRequestPage() {
   const [isSuccess, setIsSuccess] = useState(false)
   const [pendingCount, setPendingCount] = useState(0)
   const [showLoginModal, setShowLoginModal] = useState(false)
-  const today = useMemo(() => new Date().toISOString().split('T')[0], [])
+  const [today, setToday] = useState<string | undefined>(undefined)
   
   const [formData, setFormData] = useState<QuickRequestFormData>({
     eventDate: "",
@@ -55,6 +55,10 @@ export function QuickRequestPage() {
   })
 
   const [errors, setErrors] = useState<Partial<QuickRequestFormData>>({})
+
+  useEffect(() => {
+    setToday(new Date().toISOString().split('T')[0])
+  }, [])
 
   const promptLoginIfNeeded = () => {
     if (status === 'unauthenticated') {
@@ -140,22 +144,9 @@ export function QuickRequestPage() {
   }
 
   const handleInputChange = (field: keyof QuickRequestFormData, value: string) => {
-    if (status !== 'authenticated') {
-      if (status === 'unauthenticated') {
-        promptLoginIfNeeded()
-      }
-      return
-    }
-
     setFormData(prev => ({ ...prev, [field]: value }))
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: undefined }))
-    }
-  }
-
-  const handleInputFocus = () => {
-    if (status === 'unauthenticated') {
-      promptLoginIfNeeded()
     }
   }
 
@@ -269,10 +260,10 @@ export function QuickRequestPage() {
                     name="eventDate"
                     value={formData.eventDate}
                     onChange={(e) => handleInputChange('eventDate', e.target.value)}
-                    onFocus={handleInputFocus}
                     className={errors.eventDate ? 'border-red-300' : ''}
                     min={today}
                     placeholder="Vyberte datum akce"
+                    autoComplete="off"
                   />
                   {errors.eventDate && <p className="text-sm text-red-600 mt-1">{errors.eventDate}</p>}
                 </div>
@@ -285,7 +276,6 @@ export function QuickRequestPage() {
                   <Select value={formData.guestCount} onValueChange={(value) => handleInputChange('guestCount', value)}>
                     <SelectTrigger 
                       className={errors.guestCount ? 'border-red-300' : ''}
-                      onFocus={handleInputFocus}
                     >
                       <SelectValue placeholder="Vyberte počet hostů" />
                     </SelectTrigger>
@@ -307,7 +297,6 @@ export function QuickRequestPage() {
                   <Select value={formData.locationPreference} onValueChange={(value) => handleInputChange('locationPreference', value)}>
                     <SelectTrigger 
                       className={errors.locationPreference ? 'border-red-300' : ''}
-                      onFocus={handleInputFocus}
                     >
                       <SelectValue placeholder="Vyberte lokalitu" />
                     </SelectTrigger>
@@ -333,8 +322,8 @@ export function QuickRequestPage() {
                   name="requirements"
                   value={formData.requirements}
                   onChange={(e) => handleInputChange('requirements', e.target.value)}
-                  onFocus={handleInputFocus}
                   rows={3}
+                  autoComplete="off"
                 />
               </div>
 
@@ -349,8 +338,8 @@ export function QuickRequestPage() {
                   name="message"
                   value={formData.message}
                   onChange={(e) => handleInputChange('message', e.target.value)}
-                  onFocus={handleInputFocus}
                   rows={4}
+                  autoComplete="off"
                 />
               </div>
 
@@ -367,9 +356,9 @@ export function QuickRequestPage() {
                       name="contactName"
                       value={formData.contactName}
                       onChange={(e) => handleInputChange('contactName', e.target.value)}
-                      onFocus={handleInputFocus}
                       placeholder="Jan Novák"
                       className={errors.contactName ? 'border-red-300' : ''}
+                      autoComplete="name"
                     />
                     {errors.contactName && <p className="text-sm text-red-600 mt-1">{errors.contactName}</p>}
                   </div>
@@ -384,9 +373,9 @@ export function QuickRequestPage() {
                       name="contactEmail"
                       value={formData.contactEmail}
                       onChange={(e) => handleInputChange('contactEmail', e.target.value)}
-                      onFocus={handleInputFocus}
                       placeholder="jan.novak@email.cz"
                       className={errors.contactEmail ? 'border-red-300' : ''}
+                      autoComplete="email"
                     />
                     {errors.contactEmail && <p className="text-sm text-red-600 mt-1">{errors.contactEmail}</p>}
                   </div>
@@ -400,8 +389,8 @@ export function QuickRequestPage() {
                       name="contactPhone"
                       value={formData.contactPhone}
                       onChange={(e) => handleInputChange('contactPhone', e.target.value)}
-                      onFocus={handleInputFocus}
                       placeholder="+420 123 456 789"
+                      autoComplete="tel"
                     />
                   </div>
                 </div>

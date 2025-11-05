@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -56,6 +56,11 @@ const VENUE_TYPES: { [key: string]: string } = {
 
 export function VenuePreview({ venue, isOpen, onClose }: VenuePreviewProps) {
   const [viewMode, setViewMode] = useState<'desktop' | 'tablet' | 'mobile'>('desktop');
+  const [lastUpdated, setLastUpdated] = useState<string>('');
+
+  useEffect(() => {
+    setLastUpdated(new Date().toLocaleString('cs-CZ'));
+  }, []);
 
   if (!isOpen) return null;
 
@@ -342,7 +347,7 @@ export function VenuePreview({ venue, isOpen, onClose }: VenuePreviewProps) {
             </div>
             <div className="flex items-center gap-2">
               <div className="text-xs text-gray-500">
-                Aktualizováno: {new Date().toLocaleString('cs-CZ')}
+                Aktualizováno: {lastUpdated || '—'}
               </div>
             </div>
           </div>

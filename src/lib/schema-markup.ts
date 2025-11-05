@@ -37,7 +37,7 @@ export function generateVenueSchema(venue: VenueData) {
 
   const images = imageUrls.length > 0
     ? imageUrls
-    : [absoluteUrl('/images/placeholder-venue.jpg')]
+    : [absoluteUrl('/images/prostormat_sharing.jpg')]
 
   const capacity = Math.max(
     venue.capacitySeated || 0,

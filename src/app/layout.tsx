@@ -116,75 +116,90 @@ export default function RootLayout({
           strategy="beforeInteractive"
         />
 
-        {/* Google Ads (gtag.js) - Loads the gtag library */}
         <Script
-          src="https://www.googletagmanager.com/gtag/js?id=AW-17685324076"
+          id="gtag-consent-loader"
           strategy="afterInteractive"
-          type="text/plain"
-          data-cookieconsent="marketing"
-        />
-
-        {/* Google Ads & Analytics Configuration */}
-        <Script
-          id="gtag-config"
-          strategy="afterInteractive"
-          type="text/plain"
-          data-cookieconsent="marketing"
           dangerouslySetInnerHTML={{
             __html: `
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              gtag('js', new Date());
+              (function() {
+                var ADS_ID = 'AW-17685324076';
+                var GA4_ID = 'G-5KYL3YYZL2';
+                var hasLoaded = false;
 
-              // Configure Google Ads
-              gtag('config', 'AW-17685324076');
-
-              // Configure Google Analytics 4
-              gtag('config', 'G-5KYL3YYZL2');
-            `,
-          }}
-        />
-
-        <Script
-          id="google-ads-conversion"
-          strategy="afterInteractive"
-          type="text/plain"
-          data-cookieconsent="marketing"
-          dangerouslySetInnerHTML={{
-            __html: `
-              window.reportGoogleAdsConversion = function(config, url) {
-                if (!config || !config.send_to) {
-                  console.warn('Missing Google Ads conversion configuration');
-                  return false;
+                function ensureDataLayer() {
+                  window.dataLayer = window.dataLayer || [];
+                  window.gtag = window.gtag || function(){window.dataLayer.push(arguments);};
                 }
 
-                var callback = function () {
-                  if (typeof url !== 'undefined') {
-                    window.location = url;
-                  }
-                };
+                function loadGtag() {
+                  if (hasLoaded) return;
+                  hasLoaded = true;
+                  ensureDataLayer();
 
-                if (typeof gtag === 'function') {
-                  gtag('event', 'conversion', {
-                    'send_to': config.send_to,
-                    'value': typeof config.value === 'number' ? config.value : 0,
-                    'currency': config.currency || 'CZK',
-                    'event_callback': callback,
+                  var script = document.createElement('script');
+                  script.src = 'https://www.googletagmanager.com/gtag/js?id=' + ADS_ID;
+                  script.async = true;
+                  document.head.appendChild(script);
+
+                  script.addEventListener('load', function() {
+                    window.gtag('js', new Date());
+                    window.gtag('config', ADS_ID);
+                    window.gtag('config', GA4_ID);
                   });
-                } else {
-                  console.warn('gtag is not available when attempting to report conversion');
+
+                  window.reportGoogleAdsConversion = function(config, url) {
+                    if (!config || !config.send_to) {
+                      console.warn('Missing Google Ads conversion configuration');
+                      return false;
+                    }
+
+                    var callback = function () {
+                      if (typeof url !== 'undefined') {
+                        window.location = url;
+                      }
+                    };
+
+                    if (typeof window.gtag === 'function') {
+                      window.gtag('event', 'conversion', {
+                        'send_to': config.send_to,
+                        'value': typeof config.value === 'number' ? config.value : 0,
+                        'currency': config.currency || 'CZK',
+                        'event_callback': callback,
+                      });
+                    } else {
+                      console.warn('gtag is not available when attempting to report conversion');
+                    }
+
+                    return false;
+                  };
+
+                  window.gtag_report_conversion = function(url) {
+                    return window.reportGoogleAdsConversion({
+                      send_to: 'AW-17685324076/zK4hCKTLpbUbEKzCgvFB',
+                      value: 1.0,
+                      currency: 'CZK',
+                    }, url);
+                  };
                 }
 
-                return false;
-              };
+                function hasMarketingConsent() {
+                  if (!window.Cookiebot || !window.Cookiebot.consent) {
+                    return false;
+                  }
+                  var consent = window.Cookiebot.consent;
+                  return !!(consent.marketing || consent.statistics);
+                }
 
-              window.gtag_report_conversion = function(url) {
-                return window.reportGoogleAdsConversion({
-                  send_to: 'AW-17685324076/zK4hCKTLpbUbEKzCgvFB',
-                  value: 1.0,
-                  currency: 'CZK',
-                }, url);
-              };
+                function evaluateConsent() {
+                  if (hasMarketingConsent()) {
+                    loadGtag();
+                  }
+                }
+
+                window.addEventListener('CookiebotOnAccept', evaluateConsent);
+                window.addEventListener('CookiebotOnLoad', evaluateConsent);
+                evaluateConsent();
+              })();
             `,
           }}
         />

@@ -44,6 +44,11 @@ export function EventRequestForm({
   const router = useRouter()
   const { data: session } = useSession()
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [today, setToday] = useState<string | undefined>(undefined)
+
+  useEffect(() => {
+    setToday(new Date().toISOString().split("T")[0])
+  }, [])
 
   const defaultValues = useMemo<EventRequestFormData>(() => ({
     title: initialValues?.title ?? "",
@@ -84,7 +89,6 @@ export function EventRequestForm({
   const eventTypeValue = watch("eventType") || ""
   const budgetRangeValue = watch("budgetRange") || ""
   const locationPreferenceValue = watch("locationPreference") || ""
-  const today = useMemo(() => new Date().toISOString().split("T")[0], [])
 
   const redirectTarget =
     successRedirect ??
@@ -186,6 +190,7 @@ export function EventRequestForm({
           {...register("title")}
           placeholder="např. Firemní vánoční večírek"
           className="text-body"
+          autoComplete="off"
         />
         {errors.title && (
           <p className="text-callout text-red-600 mt-2 font-medium">{errors.title.message}</p>
@@ -201,6 +206,7 @@ export function EventRequestForm({
           placeholder="Popište svou akci, atmosféru, požadavky..."
           rows={4}
           className="text-body rounded-2xl border-2 min-h-[120px]"
+          autoComplete="off"
         />
       </div>
 
@@ -240,6 +246,7 @@ export function EventRequestForm({
             {...register("eventDate")}
             min={today}
             className="text-body"
+            autoComplete="off"
           />
         </div>
       </div>
@@ -255,6 +262,7 @@ export function EventRequestForm({
             placeholder="50"
             min="1"
             className="text-body"
+            autoComplete="off"
           />
           {errors.guestCount && (
             <p className="text-callout text-red-600 mt-2 font-medium">{errors.guestCount.message}</p>
@@ -317,6 +325,7 @@ export function EventRequestForm({
           placeholder="Parkovací místa, catering, technika, přístupnost..."
           rows={3}
           className="text-body rounded-2xl border-2 min-h-[100px]"
+          autoComplete="off"
         />
       </div>
 
@@ -337,6 +346,7 @@ export function EventRequestForm({
               {...register("contactName")}
               placeholder="Vaše jméno"
               className="text-body"
+              autoComplete="name"
             />
             {errors.contactName && (
               <p className="text-callout text-red-600 mt-2 font-medium">{errors.contactName.message}</p>
@@ -353,6 +363,7 @@ export function EventRequestForm({
                 {...register("contactEmail")}
                 placeholder="vas@email.cz"
                 className="text-body"
+                autoComplete="email"
               />
               {errors.contactEmail && (
                 <p className="text-callout text-red-600 mt-2 font-medium">{errors.contactEmail.message}</p>
@@ -368,6 +379,7 @@ export function EventRequestForm({
                 {...register("contactPhone")}
                 placeholder="+420 123 456 789"
                 className="text-body"
+                autoComplete="tel"
               />
             </div>
           </div>

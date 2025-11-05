@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 
@@ -35,7 +35,11 @@ export function VenueBroadcastPage() {
     contactPhone: '',
     contactName: session?.user?.name || ''
   })
-  const today = useMemo(() => new Date().toISOString().split('T')[0], [])
+  const [today, setToday] = useState<string | undefined>(undefined)
+
+  useEffect(() => {
+    setToday(new Date().toISOString().split('T')[0])
+  }, [])
 
   if (status === 'loading') {
     return (
@@ -117,6 +121,7 @@ export function VenueBroadcastPage() {
                   required
                   className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                   placeholder="Např. Firemní vánoční večírek"
+                  autoComplete="off"
                 />
               </div>
 
@@ -132,6 +137,7 @@ export function VenueBroadcastPage() {
                   onChange={handleChange}
                   required
                   rows={4}
+                  autoComplete="off"
                   className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none"
                   placeholder="Popište detailně svou akci, atmosféru, kterou chcete vytvořit..."
                 />
@@ -171,12 +177,13 @@ export function VenueBroadcastPage() {
                   <input
                     type="date"
                     id="eventDate"
-                  name="eventDate"
-                  value={formData.eventDate}
-                  onChange={handleChange}
-                  min={today}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                />
+                    name="eventDate"
+                    value={formData.eventDate}
+                    onChange={handleChange}
+                    min={today}
+                    className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                    autoComplete="off"
+                  />
                 </div>
 
                 <div>
@@ -192,6 +199,7 @@ export function VenueBroadcastPage() {
                     min="1"
                     className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                     placeholder="Přibližný počet hostů"
+                    autoComplete="off"
                   />
                 </div>
               </div>
@@ -230,6 +238,7 @@ export function VenueBroadcastPage() {
                   onChange={handleChange}
                   className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                   placeholder="Např. Praha 1, Brno centrum, Ostrava..."
+                  autoComplete="off"
                 />
               </div>
 
@@ -244,6 +253,7 @@ export function VenueBroadcastPage() {
                   value={formData.requirements}
                   onChange={handleChange}
                   rows={3}
+                  autoComplete="off"
                   className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none"
                   placeholder="Parking, klimatizace, projektor, catering možnosti..."
                 />
@@ -269,6 +279,7 @@ export function VenueBroadcastPage() {
                       required
                       className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                       placeholder="Vaše jméno"
+                      autoComplete="name"
                     />
                   </div>
 
@@ -284,6 +295,7 @@ export function VenueBroadcastPage() {
                       onChange={handleChange}
                       className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                       placeholder="+420 123 456 789"
+                      autoComplete="tel"
                     />
                   </div>
                 </div>
@@ -301,6 +313,7 @@ export function VenueBroadcastPage() {
                     required
                     className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                     placeholder="vas@email.cz"
+                    autoComplete="email"
                   />
                 </div>
               </div>

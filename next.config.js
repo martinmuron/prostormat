@@ -31,8 +31,6 @@ if (supabaseUrl) {
 const nextConfig = {
   images: {
     remotePatterns,
-    loader: 'custom',
-    loaderFile: './src/lib/image-loader.js',
   },
   async redirects() {
     return [

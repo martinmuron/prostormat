@@ -45,6 +45,7 @@ async function main() {
         name: 'Admin',
         password: adminPassword,
         role: 'admin',
+        emailVerified: new Date(),
       },
     })
 

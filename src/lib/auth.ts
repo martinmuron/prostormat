@@ -62,7 +62,16 @@ export const authOptions: NextAuthOptions = {
         }
 
         if (!user.emailVerified) {
-          throw new Error("EMAIL_NOT_VERIFIED")
+          if (user.role === "admin") {
+            const updated = await db.user.update({
+              where: { id: user.id },
+              data: { emailVerified: new Date() },
+              select: { emailVerified: true },
+            })
+            user.emailVerified = updated.emailVerified
+          } else {
+            throw new Error("EMAIL_NOT_VERIFIED")
+          }
         }
 
         if (user.role === "venue_manager") {

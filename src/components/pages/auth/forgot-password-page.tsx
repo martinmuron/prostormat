@@ -58,6 +58,7 @@ export function ForgotPasswordPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="vas@email.cz"
+                autoComplete="email"
               />
             </div>
             {error && <p className="text-red-600 text-callout">{error}</p>}

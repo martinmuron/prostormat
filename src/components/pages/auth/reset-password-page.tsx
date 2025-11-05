@@ -68,6 +68,7 @@ function ResetPasswordForm() {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
                 required
+                autoComplete="new-password"
               />
             </div>
             <div>
@@ -78,6 +79,7 @@ function ResetPasswordForm() {
                 onChange={(e) => setConfirm(e.target.value)}
                 placeholder="••••••••"
                 required
+                autoComplete="new-password"
               />
             </div>
             {error && <p className="text-red-600 text-callout">{error}</p>}

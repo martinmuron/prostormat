@@ -204,6 +204,18 @@ export default function RootLayout({
           }}
         />
 
+        <Script
+          id="remove-gtag-preload"
+          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+              document.querySelectorAll('link[rel="preload"][href*="gtag/js"]').forEach(function(link) {
+                link.remove();
+              });
+            `,
+          }}
+        />
+
         {/* Meta Pixel Code */}
         <Script
           id="meta-pixel"

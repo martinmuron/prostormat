@@ -116,6 +116,7 @@ export function RegisterPage() {
                   placeholder="vas@email.cz"
                   required
                   className="h-11 sm:h-12"
+                  autoComplete="email"
                 />
               </div>
 
@@ -131,6 +132,7 @@ export function RegisterPage() {
                     placeholder="••••••••"
                     required
                     className="h-11 sm:h-12"
+                    autoComplete="new-password"
                   />
                   <p className="text-xs sm:text-caption text-gray-500 mt-1">
                     Heslo musí mít alespoň 6 znaků
@@ -148,6 +150,7 @@ export function RegisterPage() {
                     placeholder="••••••••"
                     required
                     className="h-11 sm:h-12"
+                    autoComplete="new-password"
                   />
                 </div>
               </div>

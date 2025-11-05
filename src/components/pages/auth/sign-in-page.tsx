@@ -130,6 +130,7 @@ function SignInForm() {
                   placeholder="vas@email.cz"
                   required
                   className="h-11 sm:h-12"
+                  autoComplete="email"
                 />
               </div>
 
@@ -144,6 +145,7 @@ function SignInForm() {
                   placeholder="••••••••"
                   required
                   className="h-11 sm:h-12"
+                  autoComplete="current-password"
                 />
               </div>
 

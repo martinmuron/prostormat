@@ -26,32 +26,6 @@ function normaliseStoragePath(imagePath: string): string {
 
 export type ImageSize = 'thumbnail' | 'medium' | 'full';
 
-export interface ImageTransformOptions {
-  width?: number;
-  height?: number;
-  quality?: number;
-  format?: 'origin' | 'webp';
-}
-
-/**
- * Predefined image sizes for different use cases
- */
-const IMAGE_SIZES: Record<ImageSize, ImageTransformOptions> = {
-  thumbnail: {
-    width: 600,
-    height: 400,
-    quality: 85,
-  },
-  medium: {
-    width: 1200,
-    height: 800,
-    quality: 90,
-  },
-  full: {
-    // No transformations - original image
-  }
-};
-
 /**
  * Get the base storage URL for an image
  */
@@ -78,27 +52,6 @@ export function getImageStorageUrl(imagePath: string): string {
 /**
  * Get the transformation render URL for an image
  */
-export function getImageRenderUrl(imagePath: string, options: ImageTransformOptions): string {
-  const params = new URLSearchParams();
-
-  if (options.width) params.append('width', options.width.toString());
-  if (options.height) params.append('height', options.height.toString());
-  if (options.quality) params.append('quality', options.quality.toString());
-  if (options.format) params.append('format', options.format);
-
-  const queryString = params.toString();
-  const supabaseUrl = resolveSupabaseUrl();
-
-  if (!supabaseUrl) {
-    console.warn('Supabase URL is not configured. Falling back to direct storage URL.');
-    return getImageStorageUrl(imagePath);
-  }
-
-  const baseUrl = `${supabaseUrl}/storage/v1/render/image/public/${SUPABASE_STORAGE_BUCKET}/${normaliseStoragePath(imagePath)}`;
-
-  return queryString ? `${baseUrl}?${queryString}` : baseUrl;
-}
-
 /**
  * Get optimized image URL for a specific size
  *
@@ -116,7 +69,7 @@ export function getImageRenderUrl(imagePath: string, options: ImageTransformOpti
  * // For lightbox/zoom (full size)
  * const fullUrl = getOptimizedImageUrl('kafkoff/image_1.jpg', 'full');
  */
-export function getOptimizedImageUrl(imagePath: string, size: ImageSize = 'medium'): string {
+export function getOptimizedImageUrl(imagePath: string, size?: ImageSize): string {
   if (!imagePath) {
     return '/images/placeholder-venue.jpg';
   }
@@ -125,15 +78,15 @@ export function getOptimizedImageUrl(imagePath: string, size: ImageSize = 'mediu
     return imagePath;
   }
 
-  const options = IMAGE_SIZES[size];
+  const sizeHint = size ?? 'medium';
+  const storageUrl = getImageStorageUrl(imagePath);
 
-  // For full size, return direct storage URL (no transformations)
-  if (size === 'full' || Object.keys(options).length === 0) {
-    return getImageStorageUrl(imagePath);
+  if (sizeHint === 'full') {
+    return storageUrl;
   }
 
-  // For thumbnail and medium, use render API with transformations
-  return getImageRenderUrl(imagePath, options);
+  // Rely on Next.js image optimization to handle resizing to avoid Cloudflare cookies
+  return storageUrl;
 }
 
 /**

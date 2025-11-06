@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { cn } from "@/lib/utils"
-import { Calendar, Mail, MapPin, Users, RefreshCw, Send, Zap } from "lucide-react"
+import { Calendar, Mail, MapPin, Users, RefreshCw, Send, Trash, Zap } from "lucide-react"
 
 interface QuickRequestLog {
   id: string
@@ -125,6 +125,7 @@ export default function AdminQuickRequestsPage() {
   const [statusFilter, setStatusFilter] = useState<StatusValue>("pending")
   const [sendingLogId, setSendingLogId] = useState<string | null>(null)
   const [bulkSendingId, setBulkSendingId] = useState<string | null>(null)
+  const [deletingId, setDeletingId] = useState<string | null>(null)
 
   const fetchRequests = useCallback(async (status: StatusValue) => {
     setLoading(true)
@@ -343,6 +344,36 @@ export default function AdminQuickRequestsPage() {
 
   const selectedRequest = selectedRequestId ? requests.find((request) => request.id === selectedRequestId) ?? null : null
 
+  const handleDelete = useCallback(
+    async (requestId: string) => {
+      const confirmed = window.confirm("Opravdu chcete tuto poptávku smazat? Tuto akci nelze vrátit.")
+      if (!confirmed) {
+        return
+      }
+
+      setDeletingId(requestId)
+
+      try {
+        const response = await fetch(`/api/admin/quick-requests/${requestId}`, {
+          method: "DELETE",
+        })
+
+        if (!response.ok) {
+          const data = await response.json().catch(() => ({}))
+          throw new Error(data.error || "Smazání poptávky se nezdařilo")
+        }
+
+        setRequests((prev) => prev.filter((req) => req.id !== requestId))
+      } catch (err) {
+        console.error(err)
+        alert(err instanceof Error ? err.message : "Smazání poptávky se nezdařilo")
+      } finally {
+        setDeletingId(null)
+      }
+    },
+    []
+  )
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -495,6 +526,22 @@ export default function AdminQuickRequestsPage() {
                           Čeká {selectedRequest.pendingCount}
                         </Badge>
                       )}
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => handleDelete(selectedRequest.id)}
+                        disabled={deletingId === selectedRequest.id || loading}
+                        className="rounded-lg"
+                      >
+                        {deletingId === selectedRequest.id ? (
+                          <RefreshCw className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <>
+                            <Trash className="h-4 w-4" />
+                            Smazat
+                          </>
+                        )}
+                      </Button>
                     </div>
                   </div>
                   <div className="grid grid-cols-1 gap-3 text-sm text-gray-600 sm:grid-cols-2 lg:grid-cols-3">

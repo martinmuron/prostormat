@@ -423,17 +423,16 @@ function AddVenuePageInner() {
             <CardContent>
               <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
                 {comingFromInquiry && (
-                  <Alert className="border-blue-200 bg-blue-50">
-                    <AlertTitle>Prostor zatím nemá aktivní správu</AlertTitle>
+                  <Alert variant="destructive" className="border-rose-200 bg-rose-50">
+                    <AlertTitle>Aktivujte svůj prostor pro zobrazení poptávek</AlertTitle>
                     <AlertDescription>
+                      Abyste viděli poptávky ve svém dashboardu, musíte převzít{" "}
                       {prefilledVenueName ? (
-                        <span>
-                          Poptávka je propojena s prostorem <strong>{prefilledVenueName}</strong>. Vyplňte formulář
-                          níže a náš tým vám pomůže převzít listing.
-                        </span>
+                        <strong>{prefilledVenueName}</strong>
                       ) : (
-                        "Poptávka je propojena s vaším prostorem. Vyplňte formulář níže a náš tým vám pomůže převzít listing."
+                        "svůj prostor"
                       )}
+                      . Vyplňte formulář níže a náš tým vám pomůže převzetí dokončit.
                     </AlertDescription>
                   </Alert>
                 )}

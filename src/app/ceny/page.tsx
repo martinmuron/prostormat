@@ -74,13 +74,10 @@ export default async function PricingPage() {
                 {/* Features List */}
                 <div className="space-y-4 mb-10">
                   {[
-                    'Profil prostoru s fotogalerií',
+                    'Profil prostoru s fotkami a videi včetně detailních informací',
                     'Neomezené dotazy od klientů',
                     'Přístup k požadavkům na akce',
-                    'Přístup do Event Boardu',
-                    'Email podpora',
-                    'Ruční onboarding a schválení do 24 hodin',
-                    'Fakturace na 12 měsíců dopředu'
+                    'Přístup do Event Boardu'
                   ].map((feature, index) => (
                     <div key={index} className="flex items-center gap-3">
                       <div className="w-6 h-6 bg-black rounded-full flex items-center justify-center flex-shrink-0">

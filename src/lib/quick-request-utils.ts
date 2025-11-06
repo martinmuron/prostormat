@@ -76,7 +76,14 @@ export async function findMatchingVenues(criteria: {
 
   let minGuests = 0
   if (typeof guestCount === "string" && guestCount.trim().length > 0) {
-    minGuests = parseGuestCount(guestCount).min
+    // Try parsing as direct number first (e.g., "40")
+    const directNumber = parseInt(guestCount)
+    if (!isNaN(directNumber) && directNumber > 0) {
+      minGuests = directNumber
+    } else {
+      // Fallback for old range format (backward compatibility)
+      minGuests = parseGuestCount(guestCount).min
+    }
   } else if (typeof guestCount === "number" && Number.isFinite(guestCount)) {
     minGuests = Math.max(0, Math.floor(guestCount))
   }
@@ -93,7 +100,8 @@ export async function findMatchingVenues(criteria: {
   const andConditions: Prisma.VenueWhereInput[] = []
 
   if (trimmedLocation) {
-    if (trimmedLocation === "Celá Praha") {
+    // Treat "Celá Praha" and "Praha" the same - match all Praha districts
+    if (trimmedLocation === "Celá Praha" || trimmedLocation === "Praha") {
       andConditions.push({
         district: {
           startsWith: "Praha",

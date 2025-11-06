@@ -1390,12 +1390,25 @@ export function generateQuickRequestInternalNotificationEmail(data: QuickRequest
 
   const matchingCount = matchingVenues.length
 
-  const guestLabel = quickRequest.guestCount
-    ? QUICK_REQUEST_INTERNAL_GUEST_LABELS[quickRequest.guestCount] || quickRequest.guestCount
-    : null
+  // Handle both numeric and range-based guest counts
+  let guestLabel: string | null = null
+  if (quickRequest.guestCount) {
+    // Check if it's an old range format (contains hyphen or +)
+    if (quickRequest.guestCount.includes('-') || quickRequest.guestCount.includes('+')) {
+      // Old range format (e.g., "26-50", "200+")
+      guestLabel = QUICK_REQUEST_INTERNAL_GUEST_LABELS[quickRequest.guestCount] || quickRequest.guestCount
+    } else {
+      // Direct number (e.g., "40")
+      const guestNum = parseInt(quickRequest.guestCount)
+      if (!isNaN(guestNum) && guestNum > 0) {
+        guestLabel = `${guestNum} hostů`
+      }
+    }
+  }
+
   const locationLabel = quickRequest.locationPreference || null
   const subjectDetails = [guestLabel, locationLabel].filter(Boolean).join(' · ')
-  const guestCountDisplay = guestLabel || quickRequest.guestCount || 'Neuvedeno'
+  const guestCountDisplay = guestLabel || 'Neuvedeno'
 
   const eventDateText = quickRequest.eventDate
     ? new Date(quickRequest.eventDate).toLocaleDateString('cs-CZ')

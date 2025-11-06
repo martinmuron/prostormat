@@ -27,14 +27,6 @@ interface QuickRequestFormData {
   message: string
 }
 
-const GUEST_COUNT_OPTIONS = [
-  { label: "1-25 osob", value: "1-25" },
-  { label: "26-50 osob", value: "26-50" },
-  { label: "51-100 osob", value: "51-100" },
-  { label: "101-200 osob", value: "101-200" },
-  { label: "200+ osob", value: "200+" },
-]
-
 export function QuickRequestPage() {
   const { data: session, status } = useSession()
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -82,7 +74,19 @@ export function QuickRequestPage() {
     const newErrors: Partial<QuickRequestFormData> = {}
 
     if (!formData.eventDate) newErrors.eventDate = "Vyberte datum akce"
-    if (!formData.guestCount) newErrors.guestCount = "Vyberte počet hostů"
+
+    // Validate guest count: must be a number between 1-9999
+    if (!formData.guestCount || formData.guestCount.trim() === "") {
+      newErrors.guestCount = "Zadejte počet hostů"
+    } else {
+      const guestNum = parseInt(formData.guestCount)
+      if (isNaN(guestNum) || guestNum < 1) {
+        newErrors.guestCount = "Počet hostů musí být alespoň 1"
+      } else if (guestNum > 9999) {
+        newErrors.guestCount = "Počet hostů nesmí překročit 9999"
+      }
+    }
+
     if (!formData.locationPreference) newErrors.locationPreference = "Vyberte lokalitu"
     if (!formData.contactName.trim()) newErrors.contactName = "Zadejte vaše jméno"
     if (!formData.contactEmail.trim()) newErrors.contactEmail = "Zadejte email"
@@ -273,19 +277,18 @@ export function QuickRequestPage() {
                   <Label htmlFor="guestCount" className="text-sm font-medium text-gray-700 mb-2 block">
                     Počet hostů *
                   </Label>
-                  <Select value={formData.guestCount} onValueChange={(value) => handleInputChange('guestCount', value)}>
-                    <SelectTrigger 
-                      className={errors.guestCount ? 'border-red-300' : ''}
-                    >
-                      <SelectValue placeholder="Vyberte počet hostů" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {GUEST_COUNT_OPTIONS.map(option => (
-                        <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <input type="hidden" name="guestCount" value={formData.guestCount} />
+                  <Input
+                    type="number"
+                    id="guestCount"
+                    name="guestCount"
+                    value={formData.guestCount}
+                    onChange={(e) => handleInputChange('guestCount', e.target.value)}
+                    className={errors.guestCount ? 'border-red-300' : ''}
+                    min={1}
+                    max={9999}
+                    placeholder="Např. 40"
+                    autoComplete="off"
+                  />
                   {errors.guestCount && <p className="text-sm text-red-600 mt-1">{errors.guestCount}</p>}
                 </div>
 

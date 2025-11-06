@@ -9,7 +9,7 @@ import { generateQuickRequestInternalNotificationEmail } from "@/lib/email-templ
 import { trackBulkFormSubmit } from "@/lib/meta-conversions-api"
 import { trackGA4ServerLead } from "@/lib/ga4-server-tracking"
 import { getSafeSentByUserId } from "@/lib/email-helpers"
-import { findMatchingVenues, parseGuestCount, QUICK_REQUEST_GUEST_LABELS } from "@/lib/quick-request-utils"
+import { findMatchingVenues } from "@/lib/quick-request-utils"
 
 const trackingSchema = z.object({
   eventId: z.string(),
@@ -19,8 +19,33 @@ const trackingSchema = z.object({
 }).optional()
 
 const quickRequestSchema = z.object({
-  eventDate: z.string().min(1, "Event date is required"),
-  guestCount: z.string().min(1, "Guest count is required"),
+  eventDate: z.string()
+    .min(1, "Event date is required")
+    .refine(
+      (val) => {
+        const date = new Date(val)
+        return !isNaN(date.getTime())
+      },
+      { message: "Invalid date format" }
+    )
+    .refine(
+      (val) => {
+        const date = new Date(val)
+        const today = new Date()
+        today.setHours(0, 0, 0, 0)
+        return date >= today
+      },
+      { message: "Event date must be today or in the future" }
+    ),
+  guestCount: z.string()
+    .min(1, "Guest count is required")
+    .refine(
+      (val) => {
+        const num = parseInt(val, 10)
+        return !isNaN(num) && num >= 1 && num <= 9999
+      },
+      { message: "Guest count must be a number between 1 and 9999" }
+    ),
   locationPreference: z.string().min(1, "Location preference is required"),
   requirements: z.string().optional(),
   message: z.string().optional(),
@@ -56,11 +81,13 @@ export async function POST(request: Request) {
       )
     }
 
-    const guestCountInfo = parseGuestCount(validatedData.guestCount)
-    const guestCountNumeric = Number.isFinite(guestCountInfo.min) ? guestCountInfo.min : null
-    const guestRangeLabel =
-      QUICK_REQUEST_GUEST_LABELS[validatedData.guestCount] ||
-      (guestCountNumeric ? `${guestCountNumeric}+ hostů` : null)
+    // Parse guest count - now accepts direct numbers (e.g., "40")
+    // Zod validation ensures this is a valid number string, but we add defensive checks
+    const parsed = parseInt(validatedData.guestCount, 10)
+    const guestCountNumeric = !isNaN(parsed) && parsed > 0 ? parsed : 1
+    const guestRangeLabel = guestCountNumeric > 0
+      ? `${guestCountNumeric} hostů`
+      : null
     const locationLabel =
       validatedData.locationPreference === "Celá Praha"
         ? "Praha"
@@ -76,36 +103,40 @@ export async function POST(request: Request) {
       isSqlite ? JSON.stringify(sentVenueIds) : sentVenueIds
     ) as unknown as string[]
 
-    // Create a broadcast record to track this request
-    const broadcast = await db.venueBroadcast.create({
-      data: {
-        id: randomUUID(),
-        userId: session?.user?.id || "anonymous", // Allow anonymous requests
-        title: broadcastTitle,
-        description: validatedData.message || "Rychlá poptávka prostoru",
-        eventType: validatedData.eventType || QUICK_REQUEST_DEFAULT_EVENT_TYPE,
-        eventDate: new Date(validatedData.eventDate),
-        guestCount: guestCountNumeric ?? 1, // Take the lower bound
-        budgetRange: null,
-        locationPreference: validatedData.locationPreference,
-        requirements: validatedData.requirements || null,
-        contactEmail: validatedData.contactEmail,
-        contactPhone: validatedData.contactPhone || null,
-        contactName: validatedData.contactName,
-        sentVenues: sentVenuesValue,
-        status: "pending",
-        sentCount: 0,
-        updatedAt: new Date()
-      }
-    })
+    // Create a broadcast record and logs in a transaction to prevent orphaned records
+    const broadcast = await db.$transaction(async (tx) => {
+      const newBroadcast = await tx.venueBroadcast.create({
+        data: {
+          id: randomUUID(),
+          userId: session?.user?.id || "anonymous", // Allow anonymous requests
+          title: broadcastTitle,
+          description: validatedData.message || "Rychlá poptávka prostoru",
+          eventType: validatedData.eventType || QUICK_REQUEST_DEFAULT_EVENT_TYPE,
+          eventDate: new Date(validatedData.eventDate),
+          guestCount: guestCountNumeric, // Always a valid number after validation
+          budgetRange: null,
+          locationPreference: validatedData.locationPreference,
+          requirements: validatedData.requirements || null,
+          contactEmail: validatedData.contactEmail,
+          contactPhone: validatedData.contactPhone || null,
+          contactName: validatedData.contactName,
+          sentVenues: sentVenuesValue,
+          status: "pending",
+          sentCount: 0,
+          updatedAt: new Date()
+        }
+      })
 
-    await db.venueBroadcastLog.createMany({
-      data: matchingVenues.map((venue) => ({
-        id: randomUUID(),
-        broadcastId: broadcast.id,
-        venueId: venue.id,
-        emailStatus: "pending",
-      })),
+      await tx.venueBroadcastLog.createMany({
+        data: matchingVenues.map((venue) => ({
+          id: randomUUID(),
+          broadcastId: newBroadcast.id,
+          venueId: venue.id,
+          emailStatus: "pending",
+        })),
+      })
+
+      return newBroadcast
     })
 
     let eventRequestId: string | null = null

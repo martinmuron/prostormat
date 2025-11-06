@@ -46,7 +46,15 @@ export async function sendQuickRequestEmailToVenue(
   })
 
   if (!emailResult.data) {
-    throw new Error(`Resend nevrátil email ID pro ${venue.contactEmail}`)
+    // Log the full Resend error for debugging
+    console.error('Resend API error:', {
+      email: venue.contactEmail,
+      error: emailResult.error,
+      fullResponse: emailResult,
+    })
+
+    const errorMessage = emailResult.error?.message || 'Unknown Resend error'
+    throw new Error(`Resend nevrátil email ID pro ${venue.contactEmail}: ${errorMessage}`)
   }
 
   return {

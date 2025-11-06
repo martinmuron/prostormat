@@ -61,6 +61,9 @@ export async function POST(
   const successes: string[] = []
   const failures: { venueId: string; error: string }[] = []
 
+  // Add delay between sends to avoid rate limiting
+  const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
+
   for (const log of logs) {
     if (!log.venue?.contactEmail) {
       failures.push({ venueId: log.venueId, error: "Missing contact email" })
@@ -116,6 +119,9 @@ export async function POST(
       })
 
       successes.push(log.venueId)
+
+      // Add 100ms delay between successful sends to avoid rate limiting
+      await delay(100)
     } catch (error) {
       const message = error instanceof Error ? error.message : "Unknown error"
       failures.push({ venueId: log.venueId, error: message })

@@ -170,8 +170,8 @@ model EventRequest {
   contactEmail            String // PUBLIC - for direct contact
   contactPhone            String?
   contactName             String // PUBLIC
-  status                  String    @default("active") // active, closed, expired
-  expiresAt               DateTime
+  status                  String    @default("active") // active, closed
+  expiresAt               DateTime? // Optional - not used anymore
   createdAt               DateTime  @default(now())
 
   user      User                   @relation(fields: [userId], references: [id])

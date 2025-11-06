@@ -405,7 +405,7 @@ export function EventRequestForm({
       </div>
 
       <p className="text-callout text-gray-500 text-center mt-6 leading-relaxed">
-        Požadavek bude aktivní 30 dní a poté bude automaticky odstraněn.
+        Poptávku můžete kdykoliv uzavřít ve svém dashboardu.
       </p>
     </form>
   )

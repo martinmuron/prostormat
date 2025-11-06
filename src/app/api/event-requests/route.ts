@@ -22,18 +22,6 @@ const eventRequestSchema = z.object({
 
 export async function GET() {
   try {
-    await db.eventRequest.updateMany({
-      where: {
-        status: "active",
-        expiresAt: {
-          lt: new Date(),
-        },
-      },
-      data: {
-        status: "expired",
-      },
-    })
-
     let hasVenueAccess = false
     const session = await getServerSession(authOptions)
 
@@ -44,9 +32,6 @@ export async function GET() {
     const requests = await db.eventRequest.findMany({
       where: {
         status: "active",
-        expiresAt: {
-          gte: new Date(),
-        },
       },
       orderBy: {
         createdAt: "desc",
@@ -115,7 +100,6 @@ export async function POST(request: Request) {
         contactEmail: validatedData.contactEmail,
         contactPhone: validatedData.contactPhone || null,
         status: "active",
-        expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
       },
     })
 

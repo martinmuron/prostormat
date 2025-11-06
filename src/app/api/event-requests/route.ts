@@ -5,6 +5,7 @@ import { db } from "@/lib/db"
 import { authOptions } from "@/lib/auth"
 import { randomUUID } from "crypto"
 import { hasActiveVenueAccess } from "@/lib/venue-access"
+import { deriveGuestRangeFromNumber, findMatchingVenues } from "@/lib/quick-request-utils"
 
 const eventRequestSchema = z.object({
   title: z.string().min(5),
@@ -102,6 +103,81 @@ export async function POST(request: Request) {
         status: "active",
       },
     })
+
+    try {
+      const locationPreferenceValue = validatedData.locationPreference?.trim() || null
+      const matchingVenues = await findMatchingVenues({
+        guestCount: validatedData.guestCount ?? null,
+        locationPreference: locationPreferenceValue,
+      })
+
+      const guestRangeInfo = deriveGuestRangeFromNumber(validatedData.guestCount ?? null)
+      const guestLabel =
+        guestRangeInfo.label ??
+        (typeof validatedData.guestCount === "number" && Number.isFinite(validatedData.guestCount)
+          ? `${validatedData.guestCount} hostů`
+          : null)
+
+      const locationLabel =
+        locationPreferenceValue === "Celá Praha"
+          ? "Praha"
+          : locationPreferenceValue
+
+      const broadcastTitleParts = [guestLabel, locationLabel].filter(Boolean)
+      const broadcastTitle = broadcastTitleParts.length
+        ? `Rychlá poptávka · ${broadcastTitleParts.join(" · ")}`
+        : "Rychlá poptávka"
+
+      const sentVenueIds = matchingVenues.map((venue) => venue.id)
+      const isSqlite = process.env.DATABASE_URL?.startsWith("file:")
+      const sentVenuesValue = (
+        isSqlite ? JSON.stringify(sentVenueIds) : sentVenueIds
+      ) as unknown as string[]
+
+      const broadcast = await db.venueBroadcast.create({
+        data: {
+          id: randomUUID(),
+          userId: session.user.id,
+          eventRequestId: eventRequest.id,
+          title: broadcastTitle,
+          description: validatedData.description || "Poptávka z Event Boardu",
+          eventType: validatedData.eventType,
+          eventDate: validatedData.eventDate,
+          guestCount:
+            typeof validatedData.guestCount === "number" && Number.isFinite(validatedData.guestCount)
+              ? Math.max(1, Math.floor(validatedData.guestCount))
+              : 1,
+          budgetRange: validatedData.budgetRange || null,
+          locationPreference: locationPreferenceValue,
+          requirements: validatedData.requirements || null,
+          contactEmail: validatedData.contactEmail,
+          contactPhone: validatedData.contactPhone || null,
+          contactName: validatedData.contactName,
+          sentVenues: sentVenuesValue,
+          status: "pending",
+          sentCount: 0,
+        },
+      })
+
+      if (matchingVenues.length > 0) {
+        await db.venueBroadcastLog.createMany({
+          data: matchingVenues.map((venue) => ({
+            id: randomUUID(),
+            broadcastId: broadcast.id,
+            venueId: venue.id,
+            emailStatus: "pending",
+          })),
+        })
+      } else {
+        console.warn("[Event Request] No matching venues found for mirrored quick request", {
+          eventRequestId: eventRequest.id,
+          locationPreference: locationPreferenceValue,
+          guestCount: validatedData.guestCount,
+        })
+      }
+    } catch (quickRequestError) {
+      console.error("Failed to create mirrored quick request for event request:", quickRequestError)
+    }
 
     return NextResponse.json({ 
       success: true, 

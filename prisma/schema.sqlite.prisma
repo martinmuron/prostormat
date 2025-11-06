@@ -153,6 +153,7 @@ model EventRequest {
   createdAt          DateTime  @default(now())
 
   user User @relation(fields: [userId], references: [id])
+  broadcast VenueBroadcast? @relation("EventRequestBroadcast")
 }
 
 model VenueInquiry {
@@ -193,6 +194,7 @@ model BlogPost {
 model VenueBroadcast {
   id                 String               @id @default(cuid())
   userId             String
+  eventRequestId     String?              @unique
   title              String
   description        String
   eventType          String // firemni-akce, teambuilding, svatba, soukroma-akce
@@ -212,6 +214,7 @@ model VenueBroadcast {
   updatedAt          DateTime             @updatedAt
 
   user User                @relation(fields: [userId], references: [id])
+  eventRequest EventRequest?        @relation("EventRequestBroadcast", fields: [eventRequestId], references: [id])
   logs VenueBroadcastLog[]
 }
 

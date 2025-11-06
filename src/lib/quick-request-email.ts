@@ -36,29 +36,95 @@ export async function sendQuickRequestEmailToVenue(
     },
   })
 
-  const emailResult = await resend.emails.send({
-    from: FROM_EMAIL,
-    to: venue.contactEmail,
-    subject: emailContent.subject,
-    html: emailContent.html,
-    text: emailContent.text,
-    replyTo: REPLY_TO_EMAIL,
-  })
+  const maxAttempts = 4
+  const baseDelayMs = 750
 
-  if (!emailResult.data) {
-    // Log the full Resend error for debugging
-    console.error('Resend API error:', {
-      email: venue.contactEmail,
-      error: emailResult.error,
-      fullResponse: emailResult,
-    })
+  const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
-    const errorMessage = emailResult.error?.message || 'Unknown Resend error'
-    throw new Error(`Resend nevrátil email ID pro ${venue.contactEmail}: ${errorMessage}`)
+  const isRateLimitError = (error: unknown): boolean => {
+    if (!error) return false
+
+    const message =
+      typeof error === "string"
+        ? error
+        : error instanceof Error
+          ? error.message
+          : typeof error === "object" && "message" in error && typeof (error as { message?: unknown }).message === "string"
+            ? (error as { message: string }).message
+            : null
+
+    if (!message) return false
+
+    const normalized = message.toLowerCase()
+    return normalized.includes("too many requests") || normalized.includes("rate limit") || normalized.includes("429")
   }
 
-  return {
-    emailId: emailResult.data.id,
-    subject: emailContent.subject,
+  let lastError: Error | null = null
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      const emailResult = await resend.emails.send({
+        from: FROM_EMAIL,
+        to: venue.contactEmail,
+        subject: emailContent.subject,
+        html: emailContent.html,
+        text: emailContent.text,
+        replyTo: REPLY_TO_EMAIL,
+      })
+
+      if (!emailResult.data) {
+        const errorDetails = emailResult.error ?? new Error("Unknown Resend error")
+
+        // Log the full Resend error for debugging
+        console.error("Resend API error:", {
+          email: venue.contactEmail,
+          attempt,
+          error: errorDetails,
+          fullResponse: emailResult,
+        })
+
+        const errorMessage = emailResult.error?.message || "Unknown Resend error"
+
+        if (isRateLimitError(errorDetails) && attempt < maxAttempts) {
+          const backoffMs = baseDelayMs * attempt
+          await wait(backoffMs)
+          continue
+        }
+
+        throw new Error(`Resend nevrátil email ID pro ${venue.contactEmail}: ${errorMessage}`)
+      }
+
+      return {
+        emailId: emailResult.data.id,
+        subject: emailContent.subject,
+      }
+    } catch (error) {
+      const normalizedError =
+        error instanceof Error
+          ? error
+          : new Error(
+              typeof error === "string"
+                ? error
+                : "Došlo k neznámé chybě při odesílání emailu přes Resend"
+            )
+
+      lastError = normalizedError
+
+      console.error("Resend send attempt failed:", {
+        email: venue.contactEmail,
+        attempt,
+        error: normalizedError,
+      })
+
+      if (isRateLimitError(normalizedError) && attempt < maxAttempts) {
+        const backoffMs = baseDelayMs * attempt
+        await wait(backoffMs)
+        continue
+      }
+
+      throw normalizedError
+    }
   }
+
+  throw lastError ?? new Error(`Resend nevrátil email ID pro ${venue.contactEmail}: Neznámá chyba`)
 }

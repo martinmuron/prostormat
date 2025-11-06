@@ -4,6 +4,7 @@ import { redirect } from "next/navigation"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { DashboardSidebar, DashboardMobileNav } from "@/components/dashboard/sidebar"
+import { BetaBanner } from "@/components/dashboard/beta-banner"
 
 interface AdminLayoutProps {
   children: ReactNode
@@ -40,11 +41,12 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
       <div className="flex">
         <DashboardSidebar userRole={session.user.role} initialCollapsed />
         <div className="flex min-h-screen flex-1 flex-col">
-          <main className="flex-1 px-4 py-8 sm:px-6 md:px-10 md:py-10">
+          <main className="flex-1 px-4 py-8 pb-20 sm:px-6 sm:pb-24 md:px-10 md:py-10">
             <div className="mx-auto w-full max-w-7xl">{children}</div>
           </main>
         </div>
       </div>
+      <BetaBanner />
     </div>
   )
 }

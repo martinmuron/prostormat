@@ -33,32 +33,41 @@ export async function GET(request: Request) {
 
   const { searchParams } = new URL(request.url)
   const statusParam = searchParams.get("status") ?? undefined
-  const takeParam = searchParams.get("take")
+  const pageParam = searchParams.get("page")
+  const pageSizeParam = searchParams.get("pageSize")
 
   const status = statusSchema.parse(statusParam)
-  const take = takeParam ? Math.min(Number(takeParam) || 20, 100) : 20
+  const page = Math.max(1, Number(pageParam) || 1)
+  const pageSize = Math.min(Number(pageSizeParam) || 50, 100)
+  const skip = (page - 1) * pageSize
 
-  const broadcasts = await prisma.venueBroadcast.findMany({
-    where: status === "all" ? undefined : { status },
-    orderBy: { createdAt: "desc" },
-    take,
-    include: {
-      logs: {
-        include: {
-          venue: {
-            select: {
-              id: true,
-              name: true,
-              district: true,
-              capacityStanding: true,
-              capacitySeated: true,
-              contactEmail: true,
+  const whereClause = status === "all" ? undefined : { status }
+
+  const [broadcasts, totalCount] = await Promise.all([
+    prisma.venueBroadcast.findMany({
+      where: whereClause,
+      orderBy: { eventDate: "asc" },
+      skip,
+      take: pageSize,
+      include: {
+        logs: {
+          include: {
+            venue: {
+              select: {
+                id: true,
+                name: true,
+                district: true,
+                capacityStanding: true,
+                capacitySeated: true,
+                contactEmail: true,
+              },
             },
           },
         },
       },
-    },
-  })
+    }),
+    prisma.venueBroadcast.count({ where: whereClause }),
+  ])
 
   const payload = broadcasts.map((broadcast) => {
     const logs = broadcast.logs.map((log) => ({
@@ -98,5 +107,17 @@ export async function GET(request: Request) {
     }
   })
 
-  return NextResponse.json({ quickRequests: payload })
+  const totalPages = Math.ceil(totalCount / pageSize)
+
+  return NextResponse.json({
+    quickRequests: payload,
+    pagination: {
+      page,
+      pageSize,
+      totalCount,
+      totalPages,
+      hasNextPage: page < totalPages,
+      hasPreviousPage: page > 1,
+    }
+  })
 }

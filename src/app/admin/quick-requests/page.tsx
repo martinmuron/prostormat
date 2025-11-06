@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { cn } from "@/lib/utils"
-import { Calendar, Mail, MapPin, Users, RefreshCw, Send, Trash, Zap } from "lucide-react"
+import { Calendar, Mail, MapPin, Users, RefreshCw, Send, Trash, Zap, ChevronLeft, ChevronRight } from "lucide-react"
 
 interface QuickRequestLog {
   id: string
@@ -127,12 +127,21 @@ export default function AdminQuickRequestsPage() {
   const [bulkSendingId, setBulkSendingId] = useState<string | null>(null)
   const [resendingFailedId, setResendingFailedId] = useState<string | null>(null)
   const [deletingId, setDeletingId] = useState<string | null>(null)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [pagination, setPagination] = useState({
+    page: 1,
+    pageSize: 50,
+    totalCount: 0,
+    totalPages: 0,
+    hasNextPage: false,
+    hasPreviousPage: false,
+  })
 
-  const fetchRequests = useCallback(async (status: StatusValue) => {
+  const fetchRequests = useCallback(async (status: StatusValue, page: number = 1) => {
     setLoading(true)
     setError(null)
     try {
-      const response = await fetch(`/api/admin/quick-requests?status=${status}`, {
+      const response = await fetch(`/api/admin/quick-requests?status=${status}&page=${page}&pageSize=50`, {
         cache: "no-store",
       })
 
@@ -141,7 +150,17 @@ export default function AdminQuickRequestsPage() {
         throw new Error(data.error || "Nepodařilo se načíst rychlé poptávky")
       }
 
-      const data = (await response.json()) as { quickRequests: ApiQuickRequest[] }
+      const data = (await response.json()) as {
+        quickRequests: ApiQuickRequest[]
+        pagination: {
+          page: number
+          pageSize: number
+          totalCount: number
+          totalPages: number
+          hasNextPage: boolean
+          hasPreviousPage: boolean
+        }
+      }
 
       const normalized: QuickRequestItem[] = data.quickRequests.map((item) => ({
         ...item,
@@ -155,6 +174,8 @@ export default function AdminQuickRequestsPage() {
       }))
 
       setRequests(normalized)
+      setPagination(data.pagination)
+      setCurrentPage(page)
     } catch (err) {
       console.error(err)
       setError(err instanceof Error ? err.message : "Nepodařilo se načíst data")
@@ -164,8 +185,17 @@ export default function AdminQuickRequestsPage() {
   }, [])
 
   useEffect(() => {
-    fetchRequests(statusFilter)
-  }, [fetchRequests, statusFilter])
+    fetchRequests(statusFilter, currentPage)
+  }, [fetchRequests, statusFilter, currentPage])
+
+  const handlePageChange = useCallback((newPage: number) => {
+    setCurrentPage(newPage)
+  }, [])
+
+  const handleStatusFilterChange = useCallback((newStatus: StatusValue) => {
+    setStatusFilter(newStatus)
+    setCurrentPage(1)
+  }, [])
 
   useEffect(() => {
     if (requests.length === 0) {
@@ -475,7 +505,7 @@ export default function AdminQuickRequestsPage() {
           <p className="text-sm text-gray-500">Přehled poptávek, které je potřeba manuálně odeslat provozovatelům.</p>
         </div>
         <div className="flex items-center gap-3">
-          <Select value={statusFilter} onValueChange={(value: StatusValue) => setStatusFilter(value)}>
+          <Select value={statusFilter} onValueChange={handleStatusFilterChange}>
             <SelectTrigger className="w-48">
               <SelectValue placeholder="Filtrovat stav" />
             </SelectTrigger>
@@ -487,7 +517,7 @@ export default function AdminQuickRequestsPage() {
               ))}
             </SelectContent>
           </Select>
-          <Button variant="outline" onClick={() => fetchRequests(statusFilter)} disabled={loading}>
+          <Button variant="outline" onClick={() => fetchRequests(statusFilter, currentPage)} disabled={loading}>
             <RefreshCw className={cn("h-4 w-4", loading && "animate-spin")} />
             Obnovit
           </Button>
@@ -797,6 +827,98 @@ export default function AdminQuickRequestsPage() {
                 Vyberte poptávku vlevo pro zobrazení detailů.
               </div>
             )}
+          </div>
+        </div>
+      )}
+
+      {!loading && requests.length > 0 && pagination.totalPages > 1 && (
+        <div className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 rounded-lg shadow-sm">
+          <div className="flex flex-1 justify-between sm:hidden">
+            <Button
+              variant="outline"
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={!pagination.hasPreviousPage}
+            >
+              Předchozí
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={!pagination.hasNextPage}
+            >
+              Další
+            </Button>
+          </div>
+          <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+            <div>
+              <p className="text-sm text-gray-700">
+                Zobrazeno{" "}
+                <span className="font-medium">{(currentPage - 1) * pagination.pageSize + 1}</span>
+                {" "}-{" "}
+                <span className="font-medium">
+                  {Math.min(currentPage * pagination.pageSize, pagination.totalCount)}
+                </span>
+                {" "}z{" "}
+                <span className="font-medium">{pagination.totalCount}</span> poptávek
+              </p>
+            </div>
+            <div>
+              <nav className="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={!pagination.hasPreviousPage}
+                  className="rounded-l-md"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                  <span className="sr-only">Předchozí</span>
+                </Button>
+                {Array.from({ length: pagination.totalPages }, (_, i) => i + 1)
+                  .filter((page) => {
+                    // Show first page, last page, current page, and pages around current
+                    return (
+                      page === 1 ||
+                      page === pagination.totalPages ||
+                      (page >= currentPage - 1 && page <= currentPage + 1)
+                    )
+                  })
+                  .map((page, index, array) => {
+                    // Add ellipsis if there's a gap
+                    const showEllipsisBefore = index > 0 && page - array[index - 1] > 1
+                    return (
+                      <div key={page} className="inline-flex">
+                        {showEllipsisBefore && (
+                          <span className="relative inline-flex items-center border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700">
+                            ...
+                          </span>
+                        )}
+                        <Button
+                          variant={page === currentPage ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => handlePageChange(page)}
+                          className={cn(
+                            "rounded-none",
+                            page === currentPage && "z-10"
+                          )}
+                        >
+                          {page}
+                        </Button>
+                      </div>
+                    )
+                  })}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={!pagination.hasNextPage}
+                  className="rounded-r-md"
+                >
+                  <ChevronRight className="h-4 w-4" />
+                  <span className="sr-only">Další</span>
+                </Button>
+              </nav>
+            </div>
           </div>
         </div>
       )}

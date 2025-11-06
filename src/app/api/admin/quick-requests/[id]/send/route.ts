@@ -36,8 +36,9 @@ export async function POST(
   const logs = await prisma.venueBroadcastLog.findMany({
     where: {
       broadcastId: id,
-      emailStatus: "pending",
-      ...(venueId ? { venueId } : {}),
+      // Allow resending to any venue if specific venueId is provided
+      // Otherwise only send to pending
+      ...(venueId ? { venueId } : { emailStatus: "pending" }),
     },
     include: {
       venue: {

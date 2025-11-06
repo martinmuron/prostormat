@@ -77,6 +77,9 @@ const emailStatusStyles: Record<string, string> = {
   delivered: "bg-emerald-100 text-emerald-700",
   failed: "bg-rose-100 text-rose-700",
   skipped: "bg-slate-100 text-slate-700",
+  bounced: "bg-red-100 text-red-800 border-red-300",
+  complained: "bg-orange-100 text-orange-800 border-orange-300",
+  delayed: "bg-yellow-100 text-yellow-800 border-yellow-300",
 }
 
 function toDate(value: string | null): Date | null {
@@ -116,6 +119,7 @@ export default function AdminQuickRequestsPage() {
   const highlightId = searchParams.get("highlight")
 
   const [requests, setRequests] = useState<QuickRequestItem[]>([])
+  const [selectedRequestId, setSelectedRequestId] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [statusFilter, setStatusFilter] = useState<StatusValue>("pending")
@@ -162,9 +166,30 @@ export default function AdminQuickRequestsPage() {
   }, [fetchRequests, statusFilter])
 
   useEffect(() => {
+    if (requests.length === 0) {
+      if (selectedRequestId !== null) {
+        setSelectedRequestId(null)
+      }
+      return
+    }
+
+    if (highlightId && requests.some((request) => request.id === highlightId)) {
+      if (selectedRequestId !== highlightId) {
+        setSelectedRequestId(highlightId)
+      }
+      return
+    }
+
+    const isCurrentSelectionValid = selectedRequestId && requests.some((request) => request.id === selectedRequestId)
+    if (!isCurrentSelectionValid) {
+      setSelectedRequestId(requests[0]?.id ?? null)
+    }
+  }, [requests, highlightId, selectedRequestId])
+
+  useEffect(() => {
     if (!highlightId) return
     const timer = setTimeout(() => {
-      const element = document.getElementById(`quick-request-${highlightId}`)
+      const element = document.getElementById(`quick-request-list-${highlightId}`) ?? document.getElementById("quick-request-detail")
       if (element) {
         element.scrollIntoView({ behavior: "smooth", block: "start" })
       }
@@ -316,6 +341,8 @@ export default function AdminQuickRequestsPage() {
     [updateRequest]
   )
 
+  const selectedRequest = selectedRequestId ? requests.find((request) => request.id === selectedRequestId) ?? null : null
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -374,144 +401,240 @@ export default function AdminQuickRequestsPage() {
         </div>
       )}
 
-      <div className="space-y-6">
-        {requests.map((request) => {
-          const statusStyle = statusBadgeStyles[request.status] ?? "bg-gray-100 text-gray-700 border-gray-200"
-          const cardHighlight = highlightId === request.id ? "ring-2 ring-emerald-400" : ""
+      {!loading && requests.length > 0 && (
+        <div className="grid gap-6 lg:grid-cols-[minmax(260px,320px)_1fr]">
+          <div className="flex flex-col gap-3 lg:sticky lg:top-24 lg:h-[calc(100vh-8rem)]">
+            <div className="overflow-y-auto rounded-xl border border-gray-200 bg-white shadow-sm lg:flex-1">
+              <div className="divide-y divide-gray-100">
+                {requests.map((request) => {
+                  const isSelected = request.id === selectedRequestId
+                  const statusStyle = statusBadgeStyles[request.status] ?? "bg-gray-100 text-gray-700 border-gray-200"
 
-          return (
-            <Card key={request.id} id={`quick-request-${request.id}`} className={cn("border border-gray-200 shadow-sm", cardHighlight)}>
-              <CardHeader className="flex flex-col gap-4 border-b border-gray-100 pb-4">
-                <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                  <div>
-                    <CardTitle className="text-lg font-semibold text-gray-900">{request.title}</CardTitle>
-                    <p className="text-sm text-gray-500">{request.description}</p>
-                  </div>
-                  <div className="flex flex-wrap items-center gap-2">
-                    <Badge variant="outline" className={statusStyle}>
-                      {statusFilter === "all" ? request.status : STATUS_OPTIONS.find((opt) => opt.value === request.status)?.label || request.status}
-                    </Badge>
-                    <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200">
-                      Odesláno {request.sentCount}/{request.totalVenues}
-                    </Badge>
-                    {request.pendingCount > 0 && (
-                      <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200">
-                        Čeká {request.pendingCount}
+                  return (
+                    <button
+                      type="button"
+                      key={request.id}
+                      id={`quick-request-list-${request.id}`}
+                      onClick={() => setSelectedRequestId(request.id)}
+                      className={cn(
+                        "w-full text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2",
+                        isSelected ? "bg-emerald-50" : "hover:bg-gray-50"
+                      )}
+                    >
+                      <div
+                        className={cn(
+                          "flex flex-col gap-3 px-4 py-3",
+                          isSelected ? "border-l-4 border-emerald-500" : "border-l-4 border-transparent"
+                        )}
+                      >
+                        <div className="flex items-start justify-between gap-2">
+                          <div>
+                            <p className="text-sm font-semibold text-gray-900">{request.title}</p>
+                            <p className="text-xs text-gray-500">{formatDateTime(request.createdAt)}</p>
+                          </div>
+                          <Badge variant="outline" className={statusStyle}>
+                            {statusFilter === "all"
+                              ? request.status
+                              : STATUS_OPTIONS.find((opt) => opt.value === request.status)?.label || request.status}
+                          </Badge>
+                        </div>
+                        <div className="flex flex-wrap items-center gap-2 text-xs text-gray-600">
+                          <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-0.5 font-medium text-slate-700">
+                            <Send className="h-3 w-3" />
+                            {request.sentCount}/{request.totalVenues}
+                          </span>
+                          {request.pendingCount > 0 && (
+                            <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 font-medium text-amber-800">
+                              <Zap className="h-3 w-3" />
+                              Čeká {request.pendingCount}
+                            </span>
+                          )}
+                          {request.locationPreference && (
+                            <span className="inline-flex items-center gap-1 text-slate-500">
+                              <MapPin className="h-3 w-3 text-slate-400" />
+                              {request.locationPreference}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
+          </div>
+
+          <div id="quick-request-detail" className="space-y-6">
+            {selectedRequest ? (
+              <Card
+                key={selectedRequest.id}
+                id={`quick-request-${selectedRequest.id}`}
+                className="border border-gray-200 shadow-sm"
+              >
+                <CardHeader className="flex flex-col gap-4 border-b border-gray-100 pb-4">
+                  <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                      <CardTitle className="text-lg font-semibold text-gray-900">{selectedRequest.title}</CardTitle>
+                      <p className="text-sm text-gray-500">{selectedRequest.description}</p>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <Badge
+                        variant="outline"
+                        className={statusBadgeStyles[selectedRequest.status] ?? "bg-gray-100 text-gray-700 border-gray-200"}
+                      >
+                        {statusFilter === "all"
+                          ? selectedRequest.status
+                          : STATUS_OPTIONS.find((opt) => opt.value === selectedRequest.status)?.label ||
+                            selectedRequest.status}
                       </Badge>
+                      <Badge variant="outline" className="border-emerald-200 bg-emerald-50 text-emerald-700">
+                        Odesláno {selectedRequest.sentCount}/{selectedRequest.totalVenues}
+                      </Badge>
+                      {selectedRequest.pendingCount > 0 && (
+                        <Badge variant="outline" className="border-amber-200 bg-amber-50 text-amber-700">
+                          Čeká {selectedRequest.pendingCount}
+                        </Badge>
+                      )}
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-1 gap-3 text-sm text-gray-600 sm:grid-cols-2 lg:grid-cols-3">
+                    <div className="flex items-center gap-2">
+                      <Calendar className="h-4 w-4 text-gray-400" />
+                      <span>Akce: {formatDate(selectedRequest.eventDate)}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Users className="h-4 w-4 text-gray-400" />
+                      <span>Hostů: {selectedRequest.guestCount ?? "-"}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <MapPin className="h-4 w-4 text-gray-400" />
+                      <span>{selectedRequest.locationPreference || "Bez preference"}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Mail className="h-4 w-4 text-gray-400" />
+                      <span>{selectedRequest.contactEmail}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Calendar className="h-4 w-4 text-gray-400" />
+                      <span>Vytvořeno: {formatDateTime(selectedRequest.createdAt)}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Send className="h-4 w-4 text-gray-400" />
+                      <span>Naposledy odesláno: {formatDateTime(selectedRequest.lastSentAt)}</span>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                      <h3 className="text-sm font-semibold text-gray-800">Seznam vhodných prostorů</h3>
+                      <p className="text-xs text-gray-500">
+                        Vyberte prostor a odešlete email jednotlivě nebo využijte hromadné odeslání.
+                      </p>
+                    </div>
+                    {selectedRequest.pendingCount > 0 && (
+                      <Button
+                        variant="default"
+                        size="sm"
+                        onClick={() => handleSendAll(selectedRequest.id)}
+                        disabled={bulkSendingId === selectedRequest.id || sendingLogId !== null}
+                        className="rounded-lg"
+                      >
+                        {bulkSendingId === selectedRequest.id ? (
+                          <Send className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <>
+                            <Send className="h-4 w-4" />
+                            Odeslat všem
+                          </>
+                        )}
+                      </Button>
                     )}
                   </div>
-                </div>
-                <div className="grid grid-cols-1 gap-3 text-sm text-gray-600 sm:grid-cols-2 lg:grid-cols-3">
-                  <div className="flex items-center gap-2">
-                    <Calendar className="h-4 w-4 text-gray-400" />
-                    <span>Akce: {formatDate(request.eventDate)}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Users className="h-4 w-4 text-gray-400" />
-                    <span>Hostů: {request.guestCount ?? "-"}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <MapPin className="h-4 w-4 text-gray-400" />
-                    <span>{request.locationPreference || "Bez preference"}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Mail className="h-4 w-4 text-gray-400" />
-                    <span>{request.contactEmail}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Calendar className="h-4 w-4 text-gray-400" />
-                    <span>Vytvořeno: {formatDateTime(request.createdAt)}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Send className="h-4 w-4 text-gray-400" />
-                    <span>Naposledy odesláno: {formatDateTime(request.lastSentAt)}</span>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-sm font-semibold text-gray-800">Seznam vhodných prostorů</h3>
-                  {request.pendingCount > 0 && (
-                    <Button
-                      variant="default"
-                      size="sm"
-                      onClick={() => handleSendAll(request.id)}
-                      disabled={bulkSendingId === request.id || sendingLogId !== null}
-                      className="rounded-lg"
-                    >
-                      {bulkSendingId === request.id ? (
-                        <Send className="h-4 w-4 animate-spin" />
-                      ) : (
-                        <>
-                          <Send className="h-4 w-4" />
-                          Odeslat všem
-                        </>
-                      )}
-                    </Button>
-                  )}
-                </div>
 
-                <div className="overflow-hidden rounded-lg border border-gray-100">
-                  <table className="min-w-full divide-y divide-gray-100 text-sm">
-                    <thead className="bg-gray-50 text-xs uppercase tracking-wide text-gray-500">
-                      <tr>
-                        <th className="px-4 py-2 text-left">Prostor</th>
-                        <th className="px-4 py-2 text-left">Kapacita</th>
-                        <th className="px-4 py-2 text-left">Stav</th>
-                        <th className="px-4 py-2 text-left">Akce</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-100 bg-white">
-                      {request.logs.map((log) => (
-                        <tr key={log.id} className="align-top">
-                          <td className="px-4 py-3">
-                            <div className="font-medium text-gray-900">{log.venue.name}</div>
-                            <div className="text-xs text-gray-500">{log.venue.district || "Bez lokality"}</div>
-                            {log.venue.contactEmail && (
-                              <div className="text-xs text-gray-500">{log.venue.contactEmail}</div>
-                            )}
-                          </td>
-                          <td className="px-4 py-3 text-gray-700">{formatCapacity(log)}</td>
-                          <td className="px-4 py-3">
-                            <Badge variant="outline" className={emailStatusStyles[log.emailStatus] || "bg-gray-100 text-gray-700"}>
-                              {log.emailStatus}
-                            </Badge>
-                            {log.emailError && (
-                              <div className="mt-1 text-xs text-rose-600">{log.emailError}</div>
-                            )}
-                            {log.sentAt && (
-                              <div className="mt-1 text-xs text-gray-500">{formatDateTime(log.sentAt)}</div>
-                            )}
-                          </td>
-                          <td className="px-4 py-3">
-                            {log.emailStatus === "pending" ? (
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => handleSend(request.id, log.venueId)}
-                                disabled={sendingLogId === log.venueId || bulkSendingId === request.id}
-                                className="rounded-lg"
-                              >
-                                {sendingLogId === log.venueId ? (
-                                  <Send className="h-4 w-4 animate-spin" />
-                                ) : (
-                                  "Odeslat"
-                                )}
-                              </Button>
-                            ) : (
-                              <span className="text-xs text-gray-400">-</span>
-                            )}
-                          </td>
+                  <div className="overflow-hidden rounded-lg border border-gray-100">
+                    <table className="min-w-full divide-y divide-gray-100 text-sm">
+                      <thead className="bg-gray-50 text-xs uppercase tracking-wide text-gray-500">
+                        <tr>
+                          <th className="px-4 py-2 text-left">Prostor</th>
+                          <th className="px-4 py-2 text-left">Kapacita</th>
+                          <th className="px-4 py-2 text-left">Stav</th>
+                          <th className="px-4 py-2 text-left">Akce</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </CardContent>
-            </Card>
-          )
-        })}
-      </div>
+                      </thead>
+                      <tbody className="divide-y divide-gray-100 bg-white">
+                        {selectedRequest.logs.map((log) => (
+                          <tr key={log.id} className="align-top">
+                            <td className="px-4 py-3">
+                              <div className="font-medium text-gray-900">{log.venue.name}</div>
+                              <div className="text-xs text-gray-500">{log.venue.district || "Bez lokality"}</div>
+                              {log.venue.contactEmail && (
+                                <div className="text-xs text-gray-500">{log.venue.contactEmail}</div>
+                              )}
+                            </td>
+                            <td className="px-4 py-3 text-gray-700">{formatCapacity(log)}</td>
+                            <td className="px-4 py-3">
+                              <Badge variant="outline" className={emailStatusStyles[log.emailStatus] || "bg-gray-100 text-gray-700"}>
+                                {log.emailStatus}
+                              </Badge>
+                              {log.emailError && (
+                                <div className="mt-1 text-xs text-rose-600">{log.emailError}</div>
+                              )}
+                              {log.sentAt && (
+                                <div className="mt-1 text-xs text-gray-500">{formatDateTime(log.sentAt)}</div>
+                              )}
+                            </td>
+                            <td className="px-4 py-3">
+                              {log.emailStatus === "pending" ? (
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => handleSend(selectedRequest.id, log.venueId)}
+                                  disabled={sendingLogId === log.venueId || bulkSendingId === selectedRequest.id}
+                                  className="rounded-lg"
+                                >
+                                  {sendingLogId === log.venueId ? (
+                                    <Send className="h-4 w-4 animate-spin" />
+                                  ) : (
+                                    "Odeslat"
+                                  )}
+                                </Button>
+                              ) : log.emailStatus === "sent" || log.emailStatus === "failed" || log.emailStatus === "bounced" || log.emailStatus === "complained" ? (
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => handleSend(selectedRequest.id, log.venueId)}
+                                  disabled={sendingLogId === log.venueId || bulkSendingId === selectedRequest.id}
+                                  className="rounded-lg text-xs"
+                                >
+                                  {sendingLogId === log.venueId ? (
+                                    <RefreshCw className="h-3 w-3 animate-spin" />
+                                  ) : (
+                                    <>
+                                      <RefreshCw className="h-3 w-3" />
+                                      Znovu
+                                    </>
+                                  )}
+                                </Button>
+                              ) : (
+                                <span className="text-xs text-gray-400">-</span>
+                              )}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="rounded-lg border border-dashed border-gray-200 bg-white px-4 py-12 text-center text-sm text-gray-500 shadow-sm">
+                Vyberte poptávku vlevo pro zobrazení detailů.
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   )
 }

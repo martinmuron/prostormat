@@ -84,7 +84,7 @@ export function Footer() {
         <div className="mt-12 pt-8 border-t border-gray-200">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <p className="text-caption text-gray-500">
-              © 2024 Prostormat. Všechna práva vyhrazena.
+              © 2025 Prostormat. Všechna práva vyhrazena.
             </p>
             <div className="flex space-x-6 mt-4 md:mt-0">
               <Link href="/podminky-pouziti" className="text-caption text-gray-500 hover:text-black transition-colors">

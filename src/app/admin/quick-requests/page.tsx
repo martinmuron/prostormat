@@ -125,6 +125,7 @@ export default function AdminQuickRequestsPage() {
   const [statusFilter, setStatusFilter] = useState<StatusValue>("pending")
   const [sendingLogId, setSendingLogId] = useState<string | null>(null)
   const [bulkSendingId, setBulkSendingId] = useState<string | null>(null)
+  const [resendingFailedId, setResendingFailedId] = useState<string | null>(null)
   const [deletingId, setDeletingId] = useState<string | null>(null)
 
   const fetchRequests = useCallback(async (status: StatusValue) => {
@@ -340,6 +341,98 @@ export default function AdminQuickRequestsPage() {
       }
     },
     [updateRequest]
+  )
+
+  const handleResendFailed = useCallback(
+    async (requestId: string) => {
+      const request = requests.find((r) => r.id === requestId)
+      if (!request) return
+
+      const failedVenues = request.logs.filter((log) =>
+        log.emailStatus === "failed" ||
+        log.emailStatus === "bounced" ||
+        log.emailStatus === "complained"
+      )
+
+      if (failedVenues.length === 0) {
+        alert("Nejsou žádné nedoručené emaily k opětovnému odeslání.")
+        return
+      }
+
+      const confirmed = window.confirm(
+        `Opravdu chcete znovu odeslat email ${failedVenues.length} prostorům, kterým se předchozí doručení nezdařilo?`
+      )
+      if (!confirmed) return
+
+      setResendingFailedId(requestId)
+      try {
+        const response = await fetch(`/api/admin/quick-requests/${requestId}/resend-failed`, {
+          method: "POST",
+        })
+
+        if (!response.ok) {
+          const data = await response.json().catch(() => ({}))
+          throw new Error(data.error || "Odeslání se nezdařilo")
+        }
+
+        const data = await response.json()
+
+        updateRequest(requestId, (request) => {
+          const sentSet = new Set<string>(data.sent as string[])
+          const failedMap = new Map<string, string>(
+            (data.failed as { venueId: string; error: string }[]).map((item: { venueId: string; error: string }) => [item.venueId, item.error])
+          )
+
+          const updatedLogs = request.logs.map((log) => {
+            if (sentSet.has(log.venueId)) {
+              return {
+                ...log,
+                emailStatus: "sent",
+                emailError: null,
+                sentAt: new Date(),
+              }
+            }
+
+            if (failedMap.has(log.venueId)) {
+              return {
+                ...log,
+                emailStatus: "failed",
+                emailError: failedMap.get(log.venueId) || "Chyba",
+              }
+            }
+
+            return log
+          })
+
+          return {
+            ...request,
+            logs: updatedLogs,
+            pendingCount: data.remaining,
+            status: data.broadcast?.status ?? request.status,
+            sentCount: data.broadcast?.sentCount ?? request.sentCount,
+            lastSentAt: data.broadcast?.lastSentAt ? new Date(data.broadcast.lastSentAt) : request.lastSentAt,
+          }
+        })
+
+        const successCount = (data.sent as string[]).length
+        if (successCount > 0) {
+          alert(`Úspěšně odesláno ${successCount} z ${failedVenues.length} prostorům.`)
+        }
+
+        if (data.failed?.length) {
+          const failures = (data.failed as { venueId: string; error: string }[])
+            .map((item) => `• ${item.venueId}: ${item.error}`)
+            .join("\n")
+          alert(`Některým prostorům se email stále nepodařilo odeslat:\n${failures}`)
+        }
+      } catch (err) {
+        console.error(err)
+        alert(err instanceof Error ? err.message : "Odeslání se nezdařilo")
+      } finally {
+        setResendingFailedId(null)
+      }
+    },
+    [requests, updateRequest]
   )
 
   const selectedRequest = selectedRequestId ? requests.find((request) => request.id === selectedRequestId) ?? null : null
@@ -579,24 +672,49 @@ export default function AdminQuickRequestsPage() {
                         Vyberte prostor a odešlete email jednotlivě nebo využijte hromadné odeslání.
                       </p>
                     </div>
-                    {selectedRequest.pendingCount > 0 && (
-                      <Button
-                        variant="default"
-                        size="sm"
-                        onClick={() => handleSendAll(selectedRequest.id)}
-                        disabled={bulkSendingId === selectedRequest.id || sendingLogId !== null}
-                        className="rounded-lg"
-                      >
-                        {bulkSendingId === selectedRequest.id ? (
-                          <Send className="h-4 w-4 animate-spin" />
-                        ) : (
-                          <>
-                            <Send className="h-4 w-4" />
-                            Odeslat všem
-                          </>
-                        )}
-                      </Button>
-                    )}
+                    <div className="flex flex-wrap gap-2">
+                      {(() => {
+                        const failedCount = selectedRequest.logs.filter(
+                          (log) => log.emailStatus === "failed" || log.emailStatus === "bounced" || log.emailStatus === "complained"
+                        ).length
+                        return failedCount > 0 ? (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleResendFailed(selectedRequest.id)}
+                            disabled={resendingFailedId === selectedRequest.id || bulkSendingId === selectedRequest.id || sendingLogId !== null}
+                            className="rounded-lg border-rose-200 bg-rose-50 text-rose-700 hover:bg-rose-100"
+                          >
+                            {resendingFailedId === selectedRequest.id ? (
+                              <RefreshCw className="h-4 w-4 animate-spin" />
+                            ) : (
+                              <>
+                                <RefreshCw className="h-4 w-4" />
+                                Odeslat znovu nedoručeným ({failedCount})
+                              </>
+                            )}
+                          </Button>
+                        ) : null
+                      })()}
+                      {selectedRequest.pendingCount > 0 && (
+                        <Button
+                          variant="default"
+                          size="sm"
+                          onClick={() => handleSendAll(selectedRequest.id)}
+                          disabled={bulkSendingId === selectedRequest.id || resendingFailedId === selectedRequest.id || sendingLogId !== null}
+                          className="rounded-lg"
+                        >
+                          {bulkSendingId === selectedRequest.id ? (
+                            <Send className="h-4 w-4 animate-spin" />
+                          ) : (
+                            <>
+                              <Send className="h-4 w-4" />
+                              Odeslat všem
+                            </>
+                          )}
+                        </Button>
+                      )}
+                    </div>
                   </div>
 
                   <div className="overflow-hidden rounded-lg border border-gray-100">

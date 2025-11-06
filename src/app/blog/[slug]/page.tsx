@@ -11,6 +11,9 @@ import { Button } from "@/components/ui/button"
 import { absoluteUrl, DEFAULT_OG_IMAGE, stripHtml } from "@/lib/seo"
 import { generateBlogPostingSchema, generateBreadcrumbSchema, schemaToJsonLd } from "@/lib/schema-markup"
 
+// Revalidate blog post pages every 60 seconds
+export const revalidate = 60
+
 type BlogPostData = {
   id: string
   title: string

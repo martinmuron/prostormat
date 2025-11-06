@@ -10,6 +10,9 @@ import { db } from "@/lib/db"
 import { fallbackBlogPosts } from "@/data/blog-fallback-posts"
 import { DEFAULT_OG_IMAGE, DEFAULT_OG_IMAGES } from "@/lib/seo"
 
+// Revalidate blog page every 60 seconds to show new posts
+export const revalidate = 60
+
 type BlogPostWithRelations = {
   id: string
   title: string

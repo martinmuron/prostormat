@@ -551,7 +551,7 @@ export const fallbackBlogPosts: FallbackBlogPost[] = [
   </p>
 </div>
     `,
-    coverImage: "https://hlwgpjdhhjaibkqcyjts.supabase.co/storage/v1/object/public/venue-images/blog/prostormat_blog_10_reasons.jpg",
+    coverImage: "https://hlwgpjdhhjaibkqcyjts.supabase.co/storage/v1/object/public/venue-images/blog/10-duvodu-proc-se-pripojit-k-prostormat.jpg",
     author: { name: "Prostormat tým", email: "info@prostormat.cz" },
     publishedAt: "2025-02-03T00:00:00.000Z",
     tags: JSON.stringify(["Pro majitele", "Růst byznysu", "Marketing"]),

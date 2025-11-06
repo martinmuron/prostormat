@@ -4,13 +4,14 @@ import { useState, useCallback, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { 
-  Upload, 
-  X, 
-  Star, 
-  Move, 
+import {
+  Upload,
+  X,
+  Star,
+  Move,
   FileImage,
 } from 'lucide-react';
+import { uploadImages } from '@/lib/supabase-storage';
 
 interface ImageManagerProps {
   images: string[];
@@ -77,42 +78,27 @@ export function ImageManager({
     if (validFiles.length === 0) return;
 
     setUploading(true);
-    const newImages: string[] = [];
 
-    for (let i = 0; i < validFiles.length; i++) {
-      const file = validFiles[i];
-      const uploadId = `${Date.now()}-${i}`;
-      
-      try {
-        setUploadProgress(prev => ({ ...prev, [uploadId]: 0 }));
-        
-        // Convert to base64 (stored directly without external service)
-        const base64 = await convertToBase64(file);
-        newImages.push(base64);
-        
-        setUploadProgress(prev => ({ ...prev, [uploadId]: 100 }));
-      } catch (error) {
-        console.error('Upload error:', error);
-        alert(`Chyba při nahrávání ${file.name}`);
+    try {
+      // Upload all files to Supabase Storage
+      const uploadId = `upload-${Date.now()}`;
+      setUploadProgress({ [uploadId]: 0 });
+
+      const uploadedUrls = await uploadImages(validFiles);
+
+      setUploadProgress({ [uploadId]: 100 });
+
+      if (uploadedUrls.length > 0) {
+        onImagesChange([...images, ...uploadedUrls]);
       }
+    } catch (error) {
+      console.error('Upload error:', error);
+      alert('Chyba při nahrávání obrázků. Zkuste to prosím znovu.');
+    } finally {
+      setUploading(false);
+      setUploadProgress({});
     }
-
-    if (newImages.length > 0) {
-      onImagesChange([...images, ...newImages]);
-    }
-
-    setUploading(false);
-    setUploadProgress({});
   }, [images, maxImages, maxSizePerImage, onImagesChange]);
-
-  const convertToBase64 = (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(reader.result as string);
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
-    });
-  };
 
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();

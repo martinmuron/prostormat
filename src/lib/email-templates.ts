@@ -614,12 +614,32 @@ export function generateQuickRequestVenueNotificationEmail(data: QuickRequestVen
     .value { font-size: 17px; font-weight: 600; color: #0f172a; }
     .note { margin: 32px 0 12px 0; font-size: 15px; color: #475569; line-height: 1.6; }
     .cta { text-align: center; margin: 28px 0 10px 0; }
-    .cta a { display: inline-block; padding: 14px 32px; border-radius: 999px; background: #1d4ed8; color: #ffffff; font-weight: 600; text-decoration: none; font-size: 16px; }
+    .cta a {
+      display: inline-block;
+      padding: 14px 32px;
+      border-radius: 999px;
+      background: #1d4ed8;
+      color: #ffffff;
+      font-weight: 600;
+      text-decoration: none;
+      font-size: 16px;
+      box-sizing: border-box;
+      word-wrap: break-word;
+      white-space: normal;
+      text-align: center;
+    }
     .footer { padding: 24px 36px 30px 36px; background: #f8fafc; color: #475569; font-size: 13px; text-align: center; line-height: 1.6; }
     @media (max-width: 600px) {
       body { padding: 16px; }
       .header, .content { padding: 28px 24px; }
-      .cta a { width: 100%; }
+      .footer { padding: 20px 24px; }
+      .cta a {
+        width: 100%;
+        max-width: 100%;
+        padding: 12px 20px;
+        font-size: 15px;
+        display: block;
+      }
     }
   </style>
 </head>
@@ -1721,6 +1741,241 @@ Kontaktní údaje:
 ${data.additionalInfo ? `Poznámka:\n${data.additionalInfo}\n` : ''}
 
 Detail žádosti: ${adminUrl}
+`
+
+  return { subject, html, text }
+}
+
+interface VenueSubmissionConfirmationData {
+  contactName: string
+  locationTitle?: string
+  submissionType: 'new' | 'claim' | 'priority_interest'
+}
+
+export function generateVenueSubmissionConfirmationEmail(data: VenueSubmissionConfirmationData) {
+  const subject = 'Děkujeme za tvou žádost na Prostormatu!'
+
+  const html = `
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${subject}</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background-color: #f8f9fa;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    .email-wrapper {
+      width: 100%;
+      padding: 40px 16px;
+    }
+    .email-container {
+      max-width: 600px;
+      margin: 0 auto;
+      background-color: #ffffff;
+      border-radius: 0;
+      overflow: hidden;
+    }
+    .email-header {
+      background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+      padding: 40px 30px;
+      text-align: center;
+    }
+    .logo-img {
+      max-width: 180px;
+      height: auto;
+      display: inline-block;
+    }
+    .email-body {
+      padding: 40px 30px;
+      color: #1a1a1a;
+      line-height: 1.6;
+      font-size: 16px;
+    }
+    .greeting {
+      font-size: 18px;
+      font-weight: 600;
+      margin: 0 0 20px 0;
+      color: #111827;
+    }
+    .text-block {
+      margin: 0 0 16px 0;
+      color: #374151;
+      line-height: 1.6;
+    }
+    .benefits-list {
+      background: #eff6ff;
+      border-radius: 8px;
+      padding: 24px 28px;
+      margin: 28px 0;
+      border-left: 4px solid #3b82f6;
+    }
+    .benefits-title {
+      font-size: 17px;
+      font-weight: 600;
+      margin: 0 0 16px 0;
+      color: #1e40af;
+    }
+    .benefit-item {
+      margin: 12px 0;
+      padding-left: 24px;
+      position: relative;
+      color: #1f2937;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+    .benefit-item:before {
+      content: '✓';
+      position: absolute;
+      left: 0;
+      color: #f97316;
+      font-weight: 700;
+      font-size: 16px;
+    }
+    .closing {
+      margin: 24px 0 0 0;
+      font-size: 16px;
+      font-weight: 500;
+      color: #1f2937;
+    }
+    .email-footer {
+      background: #f8f9fa;
+      padding: 30px 30px;
+      text-align: center;
+      color: #6c757d;
+      font-size: 14px;
+    }
+    .footer-link {
+      color: #2563eb;
+      text-decoration: none;
+      font-weight: 500;
+    }
+    .footer-link:hover {
+      text-decoration: underline;
+    }
+
+    /* Mobile responsive */
+    @media only screen and (max-width: 600px) {
+      .email-wrapper {
+        padding: 0;
+      }
+      .email-header {
+        padding: 32px 20px;
+      }
+      .logo-img {
+        max-width: 150px;
+      }
+      .email-body {
+        padding: 32px 24px;
+      }
+      .greeting {
+        font-size: 17px;
+      }
+      .benefits-list {
+        padding: 20px 20px;
+        margin: 24px 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="email-wrapper">
+    <div class="email-container">
+      <!-- Header -->
+      <div class="email-header">
+        <img src="https://prostormat.cz/images/logo-white.svg" alt="Prostormat" class="logo-img" />
+      </div>
+
+      <!-- Body -->
+      <div class="email-body">
+        <p class="greeting">Ahoj,</p>
+
+        <p class="text-block">
+          díky, že ses ozval(a) ohledně ${data.submissionType === 'claim' ? 'převzetí' : 'přidání'} profilu ${data.locationTitle ? `<strong>${data.locationTitle}</strong>` : ''} na Prostormatu.
+        </p>
+
+        <p class="text-block">
+          Tvůj požadavek jsme přijali a zpracovali – ke každému prostoru přistupujeme individuálně, takže se ti ozveme do 48 hodin s dalším postupem.
+        </p>
+
+        <div class="benefits-list">
+          <div class="benefits-title">Ať máš zatím dobrou náladu, tady máš pár důvodů, proč to celé vlastně dává smysl:</div>
+
+          <div class="benefit-item">
+            Lidi tě konečně najdou. A ne přes mapu, ale proto, že tě fakt hledají.
+          </div>
+
+          <div class="benefit-item">
+            Rychlá poptávka přímo do mailu. Místo toho, aby tě lidi hledali na stránce 5, vyplní jeden formulář – a pokud tvůj prostor splňuje kritéria, dostaneš poptávku rovnou do emailu. Víc poptávek než teď, zaručeně.
+          </div>
+
+          <div class="benefit-item">
+            Relevantní zájemci místo chaosu. Ozývají se ti, co opravdu hledají prostor, ne ti, co se jen nudí.
+          </div>
+
+          <div class="benefit-item">
+            Prezentuješ se vedle špiček, ne vedle suterénů a skladů.
+          </div>
+
+          <div class="benefit-item">
+            A my tě marketingově podržíme. Protože chceme, aby tvůj prostor vypadal stejně dobře, jako je.
+          </div>
+        </div>
+
+        <p class="closing">
+          Ozveme se co nejdřív — dík za trpělivost a za to, že chceš být součástí Prostormatu.
+        </p>
+
+        <p class="closing" style="margin-top: 12px;">
+          Funguje to. Fakt.
+        </p>
+      </div>
+
+      <!-- Footer -->
+      <div class="email-footer">
+        <p>
+          <a href="mailto:info@prostormat.cz" class="footer-link">info@prostormat.cz</a> |
+          <a href="https://prostormat.cz" class="footer-link">prostormat.cz</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+`
+
+  const text = `
+Ahoj,
+
+díky, že ses ozval(a) ohledně ${data.submissionType === 'claim' ? 'převzetí' : 'přidání'} profilu ${data.locationTitle ? data.locationTitle : ''} na Prostormatu.
+
+Tvůj požadavek jsme přijali a zpracovali – ke každému prostoru přistupujeme individuálně, takže se ti ozveme do 48 hodin s dalším postupem.
+
+Ať máš zatím dobrou náladu, tady máš pár důvodů, proč to celé vlastně dává smysl:
+
+✓ Lidi tě konečně najdou. A ne přes mapu, ale proto, že tě fakt hledají.
+
+✓ Rychlá poptávka přímo do mailu. Místo toho, aby tě lidi hledali na stránce 5, vyplní jeden formulář – a pokud tvůj prostor splňuje kritéria, dostaneš poptávku rovnou do emailu. Víc poptávek než teď, zaručeně.
+
+✓ Relevantní zájemci místo chaosu. Ozývají se ti, co opravdu hledají prostor, ne ti, co se jen nudí.
+
+✓ Prezentuješ se vedle špiček, ne vedle suterénů a skladů.
+
+✓ A my tě marketingově podržíme. Protože chceme, aby tvůj prostor vypadal stejně dobře, jako je.
+
+Ozveme se co nejdřív — dík za trpělivost a za to, že chceš být součástí Prostormatu.
+
+Funguje to. Fakt.
+
+---
+Prostormat
+prostormat.cz | info@prostormat.cz
 `
 
   return { subject, html, text }

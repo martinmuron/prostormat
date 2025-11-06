@@ -2,7 +2,6 @@ import { NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
 import { z } from "zod"
 import { db } from "@/lib/db"
-import { Prisma } from "@prisma/client"
 import { authOptions } from "@/lib/auth"
 import { randomUUID } from "crypto"
 import { resend } from "@/lib/resend"
@@ -10,6 +9,7 @@ import { generateQuickRequestInternalNotificationEmail } from "@/lib/email-templ
 import { trackBulkFormSubmit } from "@/lib/meta-conversions-api"
 import { trackGA4ServerLead } from "@/lib/ga4-server-tracking"
 import { getSafeSentByUserId } from "@/lib/email-helpers"
+import { findMatchingVenues, parseGuestCount, QUICK_REQUEST_GUEST_LABELS } from "@/lib/quick-request-utils"
 
 const trackingSchema = z.object({
   eventId: z.string(),
@@ -36,121 +36,6 @@ const payloadSchema = quickRequestSchema.extend({
 })
 
 const QUICK_REQUEST_DEFAULT_EVENT_TYPE = 'rychla-poptavka' as const
-
-type VenueMatch = {
-  id: string
-  name: string
-  slug: string
-  contactEmail: string | null
-  capacityStanding: number | null
-  capacitySeated: number | null
-  district: string | null
-  manager: {
-    name: string | null
-    email: string | null
-  } | null
-}
-
-const QUICK_REQUEST_GUEST_LABELS: Record<string, string> = {
-  "1-25": "1-25 hostů",
-  "26-50": "26-50 hostů",
-  "51-100": "51-100 hostů",
-  "101-200": "101-200 hostů",
-  "200+": "200+ hostů",
-}
-
-// Helper function to extract guest count range
-function parseGuestCount(guestCountRange: string): { min: number; max: number | null } {
-  const ranges: { [key: string]: { min: number; max: number | null } } = {
-    "1-25": { min: 1, max: 25 },
-    "26-50": { min: 26, max: 50 },
-    "51-100": { min: 51, max: 100 },
-    "101-200": { min: 101, max: 200 },
-    "200+": { min: 200, max: null },
-  }
-  return ranges[guestCountRange] || { min: 0, max: null }
-}
-
-// Helper function to match venues based on criteria
-async function findMatchingVenues(criteria: {
-  guestCount: string
-  locationPreference: string
-}): Promise<VenueMatch[]> {
-  const { min: minGuests } = parseGuestCount(criteria.guestCount)
-
-  const where: Prisma.VenueWhereInput = {
-    status: 'published', // Only published venues are visible
-    // Note: contactEmail check removed - all 841 venues have emails anyway
-  }
-
-  const andConditions: Prisma.VenueWhereInput[] = []
-
-  // Handle location preference
-  if (criteria.locationPreference) {
-    if (criteria.locationPreference === "Celá Praha") {
-      // Match any Prague district (Praha 1-16)
-      andConditions.push({
-        district: {
-          startsWith: "Praha",
-          mode: 'insensitive',
-        }
-      })
-    } else {
-      // Use exact matching for specific districts to avoid "Praha 1" matching "Praha 10"
-      andConditions.push({
-        OR: [
-          { district: { equals: criteria.locationPreference, mode: 'insensitive' } },
-          { address: { contains: criteria.locationPreference, mode: 'insensitive' } },
-        ]
-      })
-    }
-  }
-
-  if (minGuests > 0) {
-    andConditions.push({
-      OR: [
-        { capacityStanding: { gte: minGuests } },
-        { capacitySeated: { gte: minGuests } },
-      ],
-    })
-  }
-
-  if (andConditions.length > 0) {
-    where.AND = andConditions
-  }
-
-  const venues = await db.venue.findMany({
-    where,
-    select: {
-      id: true,
-      name: true,
-      slug: true,
-      contactEmail: true,
-      capacityStanding: true,
-      capacitySeated: true,
-      district: true,
-      manager: {
-        select: {
-          name: true,
-          email: true,
-        }
-      }
-    }
-  })
-
-  console.log(`[Quick Request] Matched ${venues.length} venues for criteria:`, {
-    location: criteria.locationPreference,
-    minGuests,
-  })
-
-  return venues.filter(venue => {
-    const standing = venue.capacityStanding ?? 0
-    const seated = venue.capacitySeated ?? 0
-    // Use max capacity (either standing OR seated) to match database OR query logic
-    const maxCapacity = Math.max(standing, seated)
-    return maxCapacity >= minGuests
-  })
-}
 
 export async function POST(request: Request) {
   try {
@@ -265,11 +150,19 @@ export async function POST(request: Request) {
             contactEmail: validatedData.contactEmail,
             contactPhone: validatedData.contactPhone || null,
             status: "active",
-            expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
           },
         })
 
         eventRequestId = eventRequest.id
+
+        try {
+          await db.venueBroadcast.update({
+            where: { id: broadcast.id },
+            data: { eventRequestId: eventRequest.id },
+          })
+        } catch (linkError) {
+          console.error("Failed to link quick request broadcast to event request:", linkError)
+        }
       } else {
         console.warn(
           "[Quick Request] Unable to determine user for Event Board entry – no session or admin fallback found"

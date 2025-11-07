@@ -42,7 +42,7 @@ export default function SpolupracePage() {
               Hledání nových klientů pro váš event prostor je náročné. Reklama je drahá, výsledky nejisté.
             </p>
             <p className="text-xl text-gray-800 mt-4 font-medium leading-relaxed">
-              A teď si říkáš že to není možný ne? A kolik za to chtějí? 100 tisíc???
+              A teď si říkáš, že to není možné, ne? A kolik za to chtějí? 100 tisíc???
             </p>
             <p className="text-xl text-gray-900 mt-4 font-semibold">
               Prostormat vám přivede zákazníky automaticky.
@@ -70,7 +70,7 @@ export default function SpolupracePage() {
                   Rychlá poptávka = Vaše konkurenční výhoda
                 </h3>
                 <p className="text-gray-700 leading-relaxed">
-                  Kvůli naší funkci &quot;Rychlá poptávka&quot; potenciální klient vyplní jeden formulář a jejich poptávka přijde všem prostorům co splňují jejich kritéria. Jedna poptávka = desítky prostorů co se prohánějí za klientem. Vy mezi nimi.
+                  Kvůli naší funkci &quot;Rychlá poptávka&quot; potenciální klient vyplní jeden formulář a jejich poptávka přijde všem prostorům, které splňují jejich kritéria. Jedna poptávka = desítky prostorů, které se prohánějí za klientem. Vy mezi nimi.
                 </p>
               </div>
             </ScrollReveal>
@@ -180,10 +180,10 @@ export default function SpolupracePage() {
         <div className="max-w-6xl mx-auto">
           <ScrollReveal>
             <h2 className="text-3xl sm:text-4xl font-bold text-center mb-4 text-gray-900">
-              Cože oni chtějí 12,000?
+              Cože oni chtějí 12 000 Kč?
             </h2>
             <p className="text-center text-gray-700 mb-4 text-xl">
-              Aby se vám tahle &quot;investice&quot; nevratila, to byste musel nikdy na poptávku neodpovědět a nikdy žádnou akci nemít...
+              Aby se vám tahle &quot;investice&quot; nevrátila, to byste museli nikdy na poptávku neodpovědět a nikdy žádnou akci nemít...
             </p>
             <p className="text-center text-gray-900 mb-12 text-xl font-semibold">
               Tohle je fakt skoro zadarmo.
@@ -238,7 +238,7 @@ export default function SpolupracePage() {
                   <h3 className="text-2xl font-bold mb-2">Top Priority</h3>
                   <div className="mb-4">
                     <span className="text-5xl font-black">14 000</span>
-                    <span className="text-xl text-gray-300 ml-2">Kč</span>
+                    <span className="text-xl text-gray-300 ml-2">Kč + DPH</span>
                   </div>
                   <p className="text-gray-300">za rok navíc</p>
                 </div>
@@ -274,7 +274,7 @@ export default function SpolupracePage() {
         <div className="max-w-4xl mx-auto text-center">
           <ScrollReveal>
             <h2 className="text-3xl sm:text-4xl font-bold mb-6">
-              Stačí asi tak jedna akce za 5 let aby se vám investice vrátila...
+              Stačí asi tak jedna akce za 5 let, aby se vám investice vrátila...
             </h2>
             <p className="text-xl text-blue-100 mb-8 leading-relaxed">
               Průměrný příjem z jedné akce? Vy si napište ceny jak chcete.

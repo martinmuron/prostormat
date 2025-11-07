@@ -30,7 +30,7 @@ export default function SpolupracePage() {
         tone="blue"
         variant="soft"
         size="lg"
-        title="Začněte dostávat poptávky na akce z největší platformy v Praze"
+        title="Začnete dostávat poptávky na akce hned."
         subtitle="Připojte se ke stovkám prostorů, které už získávají klienty přes Prostormat"
       />
 
@@ -40,9 +40,12 @@ export default function SpolupracePage() {
           <ScrollReveal>
             <p className="text-lg sm:text-xl text-gray-700 leading-relaxed">
               Hledání nových klientů pro váš event prostor je náročné. Reklama je drahá, výsledky nejisté.
-              <span className="block mt-3 text-gray-900 font-semibold">
-                Prostormat vám přivede zákazníky automaticky.
-              </span>
+            </p>
+            <p className="text-xl text-gray-800 mt-4 font-medium leading-relaxed">
+              A teď si říkáš že to není možný ne? A kolik za to chtějí? 100 tisíc???
+            </p>
+            <p className="text-xl text-gray-900 mt-4 font-semibold">
+              Prostormat vám přivede zákazníky automaticky.
             </p>
           </ScrollReveal>
         </div>
@@ -64,10 +67,10 @@ export default function SpolupracePage() {
                   <Calendar className="w-6 h-6 text-white" />
                 </div>
                 <h3 className="text-xl font-bold mb-3 text-gray-900">
-                  Denní poptávky přímo k vám
+                  Rychlá poptávka = Vaše konkurenční výhoda
                 </h3>
                 <p className="text-gray-700 leading-relaxed">
-                  Organizátoři akcí vás kontaktují přímo přes platformu. Dostanete notifikace o každé poptávce do vašeho dashboardu.
+                  Kvůli naší funkci "Rychlá poptávka" potenciální klient vyplní jeden formulář a jejich poptávka přijde všem prostorům co splňují jejich kritéria. Jedna poptávka = desítky prostorů co se prohánějí za klientem. Vy mezi nimi.
                 </p>
               </div>
             </ScrollReveal>
@@ -75,41 +78,41 @@ export default function SpolupracePage() {
             <ScrollReveal delay={150}>
               <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-8 border border-green-100">
                 <div className="w-12 h-12 bg-green-600 rounded-xl flex items-center justify-center mb-4">
-                  <BadgeCheck className="w-6 h-6 text-white" />
+                  <Users className="w-6 h-6 text-white" />
                 </div>
                 <h3 className="text-xl font-bold mb-3 text-gray-900">
-                  Bez provizí z rezervací
+                  Jo a taky máme vyhledávač...
                 </h3>
                 <p className="text-gray-700 leading-relaxed">
-                  Platíte jen roční předplatné. Žádné skryté poplatky, žádné provize. Všechny příjmy z akcí jdou přímo vám.
+                  Samozřejmě vás můžou i najít v našem vyhledávači prostorů. Ale co si budeme povídat... lidi jsou víc a víc líní. Nikdo nechce nic dělat! Proto máme tu rychlou poptávku.
                 </p>
               </div>
             </ScrollReveal>
 
             <ScrollReveal delay={200}>
-              <div className="bg-gradient-to-br from-purple-50 to-violet-50 rounded-2xl p-8 border border-purple-100">
-                <div className="w-12 h-12 bg-purple-600 rounded-xl flex items-center justify-center mb-4">
-                  <Users className="w-6 h-6 text-white" />
-                </div>
-                <h3 className="text-xl font-bold mb-3 text-gray-900">
-                  Tisíce aktivních uživatelů
-                </h3>
-                <p className="text-gray-700 leading-relaxed">
-                  Vaše místo uvidí organizátoři akcí, firemní event manažeři a další profesionálové, kteří aktivně hledají prostory.
-                </p>
-              </div>
-            </ScrollReveal>
-
-            <ScrollReveal delay={250}>
               <div className="bg-gradient-to-br from-orange-50 to-amber-50 rounded-2xl p-8 border border-orange-100">
                 <div className="w-12 h-12 bg-orange-600 rounded-xl flex items-center justify-center mb-4">
                   <TrendingUp className="w-6 h-6 text-white" />
                 </div>
                 <h3 className="text-xl font-bold mb-3 text-gray-900">
-                  Měřitelné výsledky
+                  Takže to spadne na vás...
                 </h3>
                 <p className="text-gray-700 leading-relaxed">
-                  Prostory s Priority balíčkem dostávají o 70% více dotazů. Top Priority až o 135% více. Sledujte vše v dashboardu.
+                  Dostanete hodně poptávek a potom je to na vás jim odpsat co nejdřív s nabídkou. Rychlost = klíč k úspěchu. První odpověď často vyhrává.
+                </p>
+              </div>
+            </ScrollReveal>
+
+            <ScrollReveal delay={250}>
+              <div className="bg-gradient-to-br from-purple-50 to-violet-50 rounded-2xl p-8 border border-purple-100">
+                <div className="w-12 h-12 bg-purple-600 rounded-xl flex items-center justify-center mb-4">
+                  <BadgeCheck className="w-6 h-6 text-white" />
+                </div>
+                <h3 className="text-xl font-bold mb-3 text-gray-900">
+                  Garance? Jasná věc.
+                </h3>
+                <p className="text-gray-700 leading-relaxed">
+                  Garance že budete mít víc poptávek než teď je víceméně jasná. Bez provizí z rezervací. Vše jde přímo vám.
                 </p>
               </div>
             </ScrollReveal>
@@ -177,17 +180,20 @@ export default function SpolupracePage() {
         <div className="max-w-6xl mx-auto">
           <ScrollReveal>
             <h2 className="text-3xl sm:text-4xl font-bold text-center mb-4 text-gray-900">
-              Transparentní ceny
+              Cože oni chtějí 12,000?
             </h2>
-            <p className="text-center text-gray-600 mb-12 text-lg">
-              Bez skrytých poplatků. Bez provizí z rezervací.
+            <p className="text-center text-gray-700 mb-4 text-xl">
+              Aby se vám tahle "investice" nevratila, to byste musel nikdy na poptávku neodpovědět a nikdy žádnou akci nemít...
+            </p>
+            <p className="text-center text-gray-900 mb-12 text-xl font-semibold">
+              Tohle je fakt skoro zadarmo.
             </p>
           </ScrollReveal>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-4xl mx-auto">
             {/* Basic Package */}
             <ScrollReveal delay={100}>
-              <div className="bg-white border-2 border-gray-200 rounded-3xl p-8 hover:border-gray-300 transition-all">
+              <div className="bg-white border-2 border-blue-500 rounded-3xl p-8 hover:border-blue-600 transition-all">
                 <div className="text-center mb-6">
                   <h3 className="text-2xl font-bold mb-2 text-gray-900">Základní balíček</h3>
                   <div className="mb-4">
@@ -213,60 +219,19 @@ export default function SpolupracePage() {
                 </div>
 
                 <Link href="/pridat-prostor">
-                  <Button className="w-full bg-gray-900 hover:bg-gray-800 text-white">
+                  <Button className="w-full bg-gray-900 hover:bg-gray-800 text-white text-lg py-6">
                     Přidat prostor
                   </Button>
                 </Link>
               </div>
             </ScrollReveal>
 
-            {/* Priority Package */}
+            {/* Top Priority Package - SOLD OUT */}
             <ScrollReveal delay={150}>
-              <div className="bg-gradient-to-br from-orange-50 to-red-50 border-2 border-orange-200 rounded-3xl p-8 hover:border-orange-300 transition-all relative">
+              <div className="bg-gradient-to-br from-gray-900 to-gray-800 border-2 border-gray-700 rounded-3xl p-8 text-white relative opacity-75">
                 <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                  <span className="bg-orange-500 text-white px-4 py-1.5 rounded-full text-sm font-bold">
-                    +70% poptávek
-                  </span>
-                </div>
-                <div className="text-center mb-6">
-                  <h3 className="text-2xl font-bold mb-2 text-gray-900">Priority</h3>
-                  <div className="mb-4">
-                    <span className="text-5xl font-black text-gray-900">7 000</span>
-                    <span className="text-xl text-gray-600 ml-2">Kč</span>
-                  </div>
-                  <p className="text-gray-600">za rok navíc</p>
-                </div>
-
-                <div className="space-y-3 mb-8">
-                  <p className="text-gray-700 font-medium mb-4">
-                    Vše ze základního balíčku +
-                  </p>
-                  {[
-                    'Top 24 ve vyhledávání',
-                    'Vyšší viditelnost ve filtrech',
-                    'Newsletter marketing'
-                  ].map((feature, index) => (
-                    <div key={index} className="flex items-start gap-3">
-                      <Star className="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" />
-                      <span className="text-gray-700">{feature}</span>
-                    </div>
-                  ))}
-                </div>
-
-                <Link href="/ceny#premium">
-                  <Button className="w-full bg-orange-600 hover:bg-orange-700 text-white">
-                    Zjistit více
-                  </Button>
-                </Link>
-              </div>
-            </ScrollReveal>
-
-            {/* Top Priority Package */}
-            <ScrollReveal delay={200}>
-              <div className="bg-gradient-to-br from-gray-900 to-gray-800 border-2 border-gray-700 rounded-3xl p-8 hover:border-gray-600 transition-all text-white relative">
-                <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                  <span className="bg-yellow-400 text-black px-4 py-1.5 rounded-full text-sm font-bold">
-                    +135% poptávek
+                  <span className="bg-red-500 text-white px-4 py-1.5 rounded-full text-sm font-bold">
+                    VYPRODÁNO
                   </span>
                 </div>
                 <div className="text-center mb-6">
@@ -280,12 +245,13 @@ export default function SpolupracePage() {
 
                 <div className="space-y-3 mb-8">
                   <p className="text-gray-200 font-medium mb-4">
-                    Vše z Priority balíčku +
+                    Vše ze základního balíčku +
                   </p>
                   {[
                     'Top 12 ve vyhledávání',
                     'Doporučený výběr na homepage',
-                    'Maximální viditelnost'
+                    'Maximální viditelnost',
+                    '+135% poptávek'
                   ].map((feature, index) => (
                     <div key={index} className="flex items-start gap-3">
                       <Sparkles className="w-5 h-5 text-yellow-400 flex-shrink-0 mt-0.5" />
@@ -294,11 +260,9 @@ export default function SpolupracePage() {
                   ))}
                 </div>
 
-                <Link href="/ceny#premium">
-                  <Button className="w-full bg-white hover:bg-gray-100 text-gray-900">
-                    Zjistit více
-                  </Button>
-                </Link>
+                <Button disabled className="w-full bg-gray-700 text-gray-400 cursor-not-allowed">
+                  Momentálně nedostupné
+                </Button>
               </div>
             </ScrollReveal>
           </div>
@@ -310,15 +274,15 @@ export default function SpolupracePage() {
         <div className="max-w-4xl mx-auto text-center">
           <ScrollReveal>
             <h2 className="text-3xl sm:text-4xl font-bold mb-6">
-              Stačí 1-2 akce za rok a investice se vrátí
+              Stačí asi tak jedna akce za 5 let aby se vám investice vrátila...
             </h2>
             <p className="text-xl text-blue-100 mb-8 leading-relaxed">
-              Průměrný příjem z jedné akce: <span className="font-bold text-white">15 000 - 50 000 Kč</span>
+              Průměrný příjem z jedné akce? Vy si napište ceny jak chcete.
             </p>
             <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20">
               <p className="text-lg text-blue-50">
-                Roční předplatné <span className="font-bold text-white">12 000 Kč</span> se zaplatí už první akcí z Prostormatu.
-                Každá další je čistý zisk navíc.
+                Roční předplatné <span className="font-bold text-white">12 000 Kč</span>. To je 1 000 Kč měsíčně.
+                Za to nedostanete ani pořádnou Facebook reklamu.
               </p>
             </div>
           </ScrollReveal>

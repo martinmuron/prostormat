@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react"
 import { useSession } from "next-auth/react"
-import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -211,25 +210,12 @@ export function QuickRequestPage() {
               Poptávka byla odeslána!
             </h1>
             <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
-              Vaši poptávku jsme přijali a náš tým ji manuálně zkontroluje. 
-              Po schválení ji odešleme {pendingCount} vybraným prostorům a potvrdíme vám to emailem.
+              Vaši poptávku jsme přijali a náš tým ji manuálně zkontroluje.
+              Po schválení ji odešleme {pendingCount} vybraným prostorům, které splňují vaše kritéria.
             </p>
             <p className="text-base text-gray-600 mb-10 max-w-xl mx-auto">
               Současně jsme vaši poptávku zveřejnili na Event Boardu, aby vás mohli kontaktovat i další ověření provozovatelé prostorů.
             </p>
-            
-            <div className="space-y-4 sm:space-y-0 sm:space-x-4 sm:flex sm:justify-center">
-              <Link href="/dashboard">
-                <Button size="lg" className="bg-black text-white hover:bg-gray-800 rounded-xl w-full sm:w-auto">
-                  Otevřít můj dashboard
-                </Button>
-              </Link>
-              <Link href="/prostory">
-                <Button variant="outline" size="lg" className="rounded-xl border-gray-300 hover:bg-gray-50 w-full sm:w-auto">
-                  Procházet prostory
-                </Button>
-              </Link>
-            </div>
           </div>
         </div>
       </div>

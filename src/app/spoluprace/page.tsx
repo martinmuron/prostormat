@@ -42,7 +42,7 @@ export default function SpolupracePage() {
               Hledání nových klientů pro váš event prostor je náročné. Reklama je drahá, výsledky nejisté.
             </p>
             <p className="text-xl text-gray-900 mt-4 font-semibold">
-              Prostormat is here to change that.... (a teď si říkáš, no jasně a chcete za to určitě 100 tisíc)
+              Prostormat je tady, aby to změnil.... (a teď si říkáš, no jasně a chcete za to určitě 100 tisíc)
             </p>
           </ScrollReveal>
         </div>

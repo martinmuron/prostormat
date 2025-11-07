@@ -147,7 +147,6 @@ export default function AdminQuickRequestsPage() {
   })
   const [selectedVenueTypes, setSelectedVenueTypes] = useState<string[]>([])
   const [venueTypeCounts, setVenueTypeCounts] = useState<VenueTypeCount[]>([])
-  const [loadingVenueTypes, setLoadingVenueTypes] = useState(false)
 
   const fetchRequests = useCallback(async (status: StatusValue, page: number = 1) => {
     setLoading(true)
@@ -210,7 +209,6 @@ export default function AdminQuickRequestsPage() {
   }, [])
 
   const fetchVenueTypeCounts = useCallback(async (requestId: string) => {
-    setLoadingVenueTypes(true)
     try {
       const response = await fetch(`/api/admin/quick-requests/${requestId}/venue-types`, {
         cache: "no-store",
@@ -225,8 +223,6 @@ export default function AdminQuickRequestsPage() {
     } catch (err) {
       console.error("Error fetching venue types:", err)
       setVenueTypeCounts([])
-    } finally {
-      setLoadingVenueTypes(false)
     }
   }, [])
 

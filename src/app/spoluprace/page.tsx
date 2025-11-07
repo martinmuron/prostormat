@@ -41,11 +41,8 @@ export default function SpolupracePage() {
             <p className="text-lg sm:text-xl text-gray-700 leading-relaxed">
               Hledání nových klientů pro váš event prostor je náročné. Reklama je drahá, výsledky nejisté.
             </p>
-            <p className="text-xl text-gray-800 mt-4 font-medium leading-relaxed">
-              A teď si říkáš, že to není možné, ne? A kolik za to chtějí? 100 tisíc???
-            </p>
             <p className="text-xl text-gray-900 mt-4 font-semibold">
-              Prostormat vám přivede zákazníky automaticky.
+              Prostormat is here to change that.... (a teď si říkáš, no jasně a chcete za to určitě 100 tisíc)
             </p>
           </ScrollReveal>
         </div>
@@ -98,7 +95,7 @@ export default function SpolupracePage() {
                   Takže to spadne na vás...
                 </h3>
                 <p className="text-gray-700 leading-relaxed">
-                  Dostanete hodně poptávek a potom je to na vás jim odpsat co nejdřív s nabídkou. Rychlost = klíč k úspěchu. První odpověď často vyhrává.
+                  Dostanete hodně poptávek a potom je to na vás jim odpsat co nejdřív s nabídkou. Rychlost = klíč k úspěchu.
                 </p>
               </div>
             </ScrollReveal>

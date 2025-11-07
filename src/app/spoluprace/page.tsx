@@ -274,12 +274,12 @@ export default function SpolupracePage() {
               Stačí asi tak jedna akce za 5 let, aby se vám investice vrátila...
             </h2>
             <p className="text-xl text-blue-100 mb-8 leading-relaxed">
-              Průměrný příjem z jedné akce? Vy si napište ceny jak chcete.
+              Průměrný příjem z jedné akce? To je na vás, prostě ty ceny napalte!
             </p>
             <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20">
               <p className="text-lg text-blue-50">
                 Roční předplatné <span className="font-bold text-white">12 000 Kč</span>. To je 1 000 Kč měsíčně.
-                Za to nedostanete ani pořádnou Facebook reklamu.
+                Za to nedostanete skoro ani normální jídlo v restauraci.
               </p>
             </div>
           </ScrollReveal>

@@ -30,7 +30,7 @@ export default function SpolupracePage() {
         tone="blue"
         variant="soft"
         size="lg"
-        title="Začnete dostávat poptávky na akce hned."
+        title="Začnete dostávat poptávky na firemní akce, teambuildingy, svatby a více hned."
         subtitle="Připojte se ke stovkám prostorů, které už získávají klienty přes Prostormat"
       />
 

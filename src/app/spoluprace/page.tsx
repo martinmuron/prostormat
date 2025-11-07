@@ -62,7 +62,7 @@ export default function SpolupracePage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
             <ScrollReveal delay={100}>
-              <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-8 border border-blue-100">
+              <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-8 border border-blue-100 h-full">
                 <div className="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center mb-4">
                   <Calendar className="w-6 h-6 text-white" />
                 </div>
@@ -76,7 +76,7 @@ export default function SpolupracePage() {
             </ScrollReveal>
 
             <ScrollReveal delay={150}>
-              <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-8 border border-green-100">
+              <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-8 border border-green-100 h-full">
                 <div className="w-12 h-12 bg-green-600 rounded-xl flex items-center justify-center mb-4">
                   <Users className="w-6 h-6 text-white" />
                 </div>
@@ -90,7 +90,7 @@ export default function SpolupracePage() {
             </ScrollReveal>
 
             <ScrollReveal delay={200}>
-              <div className="bg-gradient-to-br from-orange-50 to-amber-50 rounded-2xl p-8 border border-orange-100">
+              <div className="bg-gradient-to-br from-orange-50 to-amber-50 rounded-2xl p-8 border border-orange-100 h-full">
                 <div className="w-12 h-12 bg-orange-600 rounded-xl flex items-center justify-center mb-4">
                   <TrendingUp className="w-6 h-6 text-white" />
                 </div>
@@ -104,7 +104,7 @@ export default function SpolupracePage() {
             </ScrollReveal>
 
             <ScrollReveal delay={250}>
-              <div className="bg-gradient-to-br from-purple-50 to-violet-50 rounded-2xl p-8 border border-purple-100">
+              <div className="bg-gradient-to-br from-purple-50 to-violet-50 rounded-2xl p-8 border border-purple-100 h-full">
                 <div className="w-12 h-12 bg-purple-600 rounded-xl flex items-center justify-center mb-4">
                   <BadgeCheck className="w-6 h-6 text-white" />
                 </div>

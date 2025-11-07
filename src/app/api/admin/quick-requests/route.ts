@@ -60,6 +60,7 @@ export async function GET(request: Request) {
                 capacityStanding: true,
                 capacitySeated: true,
                 contactEmail: true,
+                venueTypes: true,
               },
             },
           },

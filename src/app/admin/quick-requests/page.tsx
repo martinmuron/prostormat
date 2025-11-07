@@ -1,13 +1,21 @@
 "use client"
 
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useState, useMemo } from "react"
 import { useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { cn } from "@/lib/utils"
-import { Calendar, Mail, MapPin, Users, RefreshCw, Send, Trash, Zap, ChevronLeft, ChevronRight } from "lucide-react"
+import { Calendar, Mail, MapPin, Users, RefreshCw, Send, Trash, Zap, ChevronLeft, ChevronRight, Filter, X } from "lucide-react"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Label } from "@/components/ui/label"
+
+interface VenueTypeCount {
+  type: string
+  count: number
+  label: string
+}
 
 interface QuickRequestLog {
   id: string
@@ -23,6 +31,7 @@ interface QuickRequestLog {
     capacityStanding?: number | null
     capacitySeated?: number | null
     contactEmail?: string | null
+    venueTypes?: string[]
   }
 }
 
@@ -136,6 +145,9 @@ export default function AdminQuickRequestsPage() {
     hasNextPage: false,
     hasPreviousPage: false,
   })
+  const [selectedVenueTypes, setSelectedVenueTypes] = useState<string[]>([])
+  const [venueTypeCounts, setVenueTypeCounts] = useState<VenueTypeCount[]>([])
+  const [loadingVenueTypes, setLoadingVenueTypes] = useState(false)
 
   const fetchRequests = useCallback(async (status: StatusValue, page: number = 1) => {
     setLoading(true)
@@ -197,6 +209,38 @@ export default function AdminQuickRequestsPage() {
     setCurrentPage(1)
   }, [])
 
+  const fetchVenueTypeCounts = useCallback(async (requestId: string) => {
+    setLoadingVenueTypes(true)
+    try {
+      const response = await fetch(`/api/admin/quick-requests/${requestId}/venue-types`, {
+        cache: "no-store",
+      })
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch venue types")
+      }
+
+      const data = await response.json()
+      setVenueTypeCounts(data.venueTypes || [])
+    } catch (err) {
+      console.error("Error fetching venue types:", err)
+      setVenueTypeCounts([])
+    } finally {
+      setLoadingVenueTypes(false)
+    }
+  }, [])
+
+  // Fetch venue type counts when selected request changes
+  useEffect(() => {
+    if (selectedRequestId) {
+      fetchVenueTypeCounts(selectedRequestId)
+      setSelectedVenueTypes([]) // Reset filter when switching requests
+    } else {
+      setVenueTypeCounts([])
+      setSelectedVenueTypes([])
+    }
+  }, [selectedRequestId, fetchVenueTypeCounts])
+
   useEffect(() => {
     if (requests.length === 0) {
       if (selectedRequestId !== null) {
@@ -231,6 +275,16 @@ export default function AdminQuickRequestsPage() {
 
   const updateRequest = useCallback((requestId: string, updater: (request: QuickRequestItem) => QuickRequestItem) => {
     setRequests((prev) => prev.map((req) => (req.id === requestId ? updater(req) : req)))
+  }, [])
+
+  const toggleVenueType = useCallback((type: string) => {
+    setSelectedVenueTypes((prev) =>
+      prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]
+    )
+  }, [])
+
+  const clearVenueTypeFilters = useCallback(() => {
+    setSelectedVenueTypes([])
   }, [])
 
   const handleSend = useCallback(
@@ -311,6 +365,12 @@ export default function AdminQuickRequestsPage() {
       try {
         const response = await fetch(`/api/admin/quick-requests/${requestId}/send-all`, {
           method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            venueTypes: selectedVenueTypes.length > 0 ? selectedVenueTypes : undefined,
+          }),
         })
 
         if (!response.ok) {
@@ -370,7 +430,7 @@ export default function AdminQuickRequestsPage() {
         setBulkSendingId(null)
       }
     },
-    [updateRequest]
+    [updateRequest, selectedVenueTypes]
   )
 
   const handleResendFailed = useCallback(
@@ -466,6 +526,23 @@ export default function AdminQuickRequestsPage() {
   )
 
   const selectedRequest = selectedRequestId ? requests.find((request) => request.id === selectedRequestId) ?? null : null
+
+  // Filter logs by selected venue types
+  const filteredLogs = useMemo(() => {
+    if (!selectedRequest || selectedVenueTypes.length === 0) {
+      return selectedRequest?.logs || []
+    }
+
+    return selectedRequest.logs.filter((log) => {
+      // Check if venue has any of the selected types
+      const venueTypes = log.venue.venueTypes || []
+      return venueTypes.some((type: string) => selectedVenueTypes.includes(type))
+    })
+  }, [selectedRequest, selectedVenueTypes])
+
+  const filteredPendingCount = useMemo(() => {
+    return filteredLogs.filter((log) => log.emailStatus === "pending").length
+  }, [filteredLogs])
 
   const handleDelete = useCallback(
     async (requestId: string) => {
@@ -695,6 +772,54 @@ export default function AdminQuickRequestsPage() {
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-6">
+                  {/* Venue Type Filter */}
+                  {venueTypeCounts.length > 0 && (
+                    <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
+                      <div className="flex items-center gap-2 mb-3">
+                        <Filter className="h-4 w-4 text-gray-600" />
+                        <Label className="text-sm font-semibold text-gray-800">Filtrovat podle typu prostoru</Label>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+                        {venueTypeCounts.map(({ type, count, label }) => (
+                          <div key={type} className="flex items-center space-x-2">
+                            <Checkbox
+                              id={`venue-type-${type}`}
+                              checked={selectedVenueTypes.includes(type)}
+                              onCheckedChange={() => toggleVenueType(type)}
+                            />
+                            <label
+                              htmlFor={`venue-type-${type}`}
+                              className="text-xs font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                            >
+                              {label} ({count})
+                            </label>
+                          </div>
+                        ))}
+                      </div>
+                      {selectedVenueTypes.length > 0 && (
+                        <div className="mt-3 flex items-center justify-between border-t border-gray-300 pt-3">
+                          <span className="text-sm text-gray-700">
+                            Filtrováno: <span className="font-semibold">{filteredLogs.length}</span> z <span className="font-semibold">{selectedRequest.logs.length}</span> prostorů
+                            {filteredPendingCount > 0 && (
+                              <span className="ml-2 text-amber-700">
+                                ({filteredPendingCount} čeká na odeslání)
+                              </span>
+                            )}
+                          </span>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={clearVenueTypeFilters}
+                            className="text-gray-600 hover:text-gray-900"
+                          >
+                            <X className="h-4 w-4 mr-1" />
+                            Zrušit filtr
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
                   <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <div>
                       <h3 className="text-sm font-semibold text-gray-800">Seznam vhodných prostorů</h3>
@@ -726,7 +851,7 @@ export default function AdminQuickRequestsPage() {
                           </Button>
                         ) : null
                       })()}
-                      {selectedRequest.pendingCount > 0 && (
+                      {filteredPendingCount > 0 && (
                         <Button
                           variant="default"
                           size="sm"
@@ -739,7 +864,9 @@ export default function AdminQuickRequestsPage() {
                           ) : (
                             <>
                               <Send className="h-4 w-4" />
-                              Odeslat všem
+                              {selectedVenueTypes.length > 0
+                                ? `Odeslat filtrovaným (${filteredPendingCount})`
+                                : "Odeslat všem"}
                             </>
                           )}
                         </Button>
@@ -758,7 +885,7 @@ export default function AdminQuickRequestsPage() {
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-gray-100 bg-white">
-                        {selectedRequest.logs.map((log) => (
+                        {filteredLogs.map((log) => (
                           <tr key={log.id} className="align-top">
                             <td className="px-4 py-3">
                               <div className="font-medium text-gray-900">{log.venue.name}</div>

@@ -95,6 +95,7 @@ export async function findMatchingVenues(criteria: {
 
   const where: Prisma.VenueWhereInput = {
     status: "published",
+    parentId: null, // Only match parent venues - child venues (sub-spaces) are managed by their parent
   }
 
   const andConditions: Prisma.VenueWhereInput[] = []
@@ -154,6 +155,7 @@ export async function findMatchingVenues(criteria: {
     count: venues.length,
     minGuests,
     location: trimmedLocation,
+    excludedSubVenues: true,
   })
 
   if (minGuests <= 0) {

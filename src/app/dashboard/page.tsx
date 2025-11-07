@@ -35,9 +35,34 @@ async function getDashboardData(userId: string, userRole: string): Promise<Dashb
             orderBy: { createdAt: "desc" },
             take: 5,
           },
+          broadcastLogs: {
+            where: {
+              emailStatus: "sent" // Only show successfully sent quick requests
+            },
+            include: {
+              broadcast: {
+                select: {
+                  id: true,
+                  title: true,
+                  description: true,
+                  eventType: true,
+                  eventDate: true,
+                  guestCount: true,
+                  locationPreference: true,
+                  contactName: true,
+                  contactEmail: true,
+                  contactPhone: true,
+                  createdAt: true,
+                }
+              }
+            },
+            orderBy: { sentAt: "desc" },
+            take: 10,
+          },
           _count: {
             select: {
               inquiries: true,
+              broadcastLogs: true,
             }
           },
         }
@@ -80,7 +105,7 @@ async function getDashboardData(userId: string, userRole: string): Promise<Dashb
         stats: {
           totalVenues: venues.length,
           activeVenues: venues.filter(v => v.status === "published").length,
-          totalInquiries: venues.reduce((sum, venue) => sum + venue._count.inquiries, 0),
+          totalInquiries: venues.reduce((sum, venue) => sum + venue._count.inquiries + venue._count.broadcastLogs, 0),
           totalFavorites: totalFavoritesCount,
           totalInquiryGuests,
         }

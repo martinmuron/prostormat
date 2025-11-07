@@ -17,16 +17,53 @@ export function VenueManagerDashboard({ data }: VenueManagerDashboardProps) {
   const { user, venues, favoritedEventRequests, stats } = data
 
   type VenueInquiryEntry = VenueManagerDashboardData['venues'][number]['inquiries'][number]
+  type VenueBroadcastLogEntry = VenueManagerDashboardData['venues'][number]['broadcastLogs'][number]
 
-  type RecentInquiry = VenueInquiryEntry & { venueName: string }
+  type RecentInquiry = (VenueInquiryEntry & { venueName: string; type: 'inquiry' }) | {
+    type: 'broadcast'
+    id: string
+    venueName: string
+    venueSlug: string
+    name: string
+    email: string
+    phone: string | null
+    message: string | null
+    createdAt: Date
+    broadcastId: string
+    eventDate: Date | null
+    guestCount: number | null
+  }
 
-  const recentInquiries: RecentInquiry[] = venues
+  const inquiries: RecentInquiry[] = venues
     .flatMap((venue) =>
-      (venue.inquiries ?? []).map((inquiry) => ({
+      (venue.inquiries ?? []).map((inquiry): RecentInquiry => ({
         ...inquiry,
-        venueName: venue.name ?? ''
+        venueName: venue.name ?? '',
+        type: 'inquiry' as const
       }))
     )
+
+  const broadcastInquiries: RecentInquiry[] = venues
+    .flatMap((venue) =>
+      (venue.broadcastLogs ?? [])
+        .filter((log) => log.broadcast)
+        .map((log): RecentInquiry => ({
+          type: 'broadcast' as const,
+          id: log.id,
+          venueName: venue.name ?? '',
+          venueSlug: venue.slug,
+          name: log.broadcast.contactName,
+          email: log.broadcast.contactEmail,
+          phone: log.broadcast.contactPhone,
+          message: log.broadcast.description || null,
+          createdAt: log.sentAt,
+          broadcastId: log.broadcast.id,
+          eventDate: log.broadcast.eventDate,
+          guestCount: log.broadcast.guestCount,
+        }))
+    )
+
+  const recentInquiries: RecentInquiry[] = [...inquiries, ...broadcastInquiries]
     .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
 
   const statusLabelMap: Record<string, { label: string; isActive: boolean }> = {
@@ -408,10 +445,16 @@ export function VenueManagerDashboard({ data }: VenueManagerDashboardProps) {
                         <h4 className="text-callout font-medium text-gray-900">{inquiry.name}</h4>
                         <p className="text-caption text-gray-600">{inquiry.venueName}</p>
                       </div>
-                      <Badge variant="secondary" className="bg-blue-100 text-blue-800 text-xs">
-                        Nový
+                      <Badge variant="secondary" className={inquiry.type === 'broadcast' ? "bg-green-100 text-green-800 text-xs" : "bg-blue-100 text-blue-800 text-xs"}>
+                        {inquiry.type === 'broadcast' ? 'Rychlá poptávka' : 'Nový'}
                       </Badge>
                     </div>
+                    {inquiry.type === 'broadcast' && (inquiry.guestCount || inquiry.eventDate) && (
+                      <div className="flex gap-3 mb-2 text-caption text-gray-600">
+                        {inquiry.guestCount && <span>👥 {inquiry.guestCount} hostů</span>}
+                        {inquiry.eventDate && <span>📅 {formatDate(new Date(inquiry.eventDate))}</span>}
+                      </div>
+                    )}
                     <p className="text-caption text-gray-700 mb-3 line-clamp-2">
                       {inquiry.message}
                     </p>
@@ -419,12 +462,20 @@ export function VenueManagerDashboard({ data }: VenueManagerDashboardProps) {
                       <p className="text-caption text-gray-500">
                         {formatDate(new Date(inquiry.createdAt))}
                       </p>
-                      <a 
-                        href={`mailto:${inquiry.email}`}
-                        className="text-caption bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition-colors"
-                      >
-                        Odpovědět
-                      </a>
+                      {inquiry.type === 'broadcast' ? (
+                        <Link href={`/poptavka/${inquiry.broadcastId}?venue=${inquiry.venueSlug}`}>
+                          <span className="text-caption bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 transition-colors">
+                            Zobrazit detail
+                          </span>
+                        </Link>
+                      ) : (
+                        <a
+                          href={`mailto:${inquiry.email}`}
+                          className="text-caption bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition-colors"
+                        >
+                          Odpovědět
+                        </a>
+                      )}
                     </div>
                   </div>
                 ))}

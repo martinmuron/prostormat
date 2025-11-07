@@ -17,8 +17,33 @@ export type VenueManagerVenue = Prisma.VenueGetPayload<{
       orderBy: { createdAt: 'desc' }
       take: 5
     }
+    broadcastLogs: {
+      where: { emailStatus: 'sent' }
+      include: {
+        broadcast: {
+          select: {
+            id: true
+            title: true
+            description: true
+            eventType: true
+            eventDate: true
+            guestCount: true
+            locationPreference: true
+            contactName: true
+            contactEmail: true
+            contactPhone: true
+            createdAt: true
+          }
+        }
+      }
+      orderBy: { sentAt: 'desc' }
+      take: 10
+    }
     _count: {
-      select: { inquiries: true }
+      select: {
+        inquiries: true
+        broadcastLogs: true
+      }
     }
   }
 }>

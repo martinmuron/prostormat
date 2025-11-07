@@ -67,7 +67,7 @@ export default function SpolupracePage() {
                   <Calendar className="w-6 h-6 text-white" />
                 </div>
                 <h3 className="text-xl font-bold mb-3 text-gray-900">
-                  Rychlá poptávka = Vaše konkurenční výhoda
+                  Rychlá poptávka = Vaše garance poptávek
                 </h3>
                 <p className="text-gray-700 leading-relaxed">
                   Kvůli naší funkci &quot;Rychlá poptávka&quot; potenciální klient vyplní jeden formulář a jejich poptávka přijde všem prostorům, které splňují jejich kritéria. Jedna poptávka = desítky prostorů, které se prohánějí za klientem. Vy mezi nimi.

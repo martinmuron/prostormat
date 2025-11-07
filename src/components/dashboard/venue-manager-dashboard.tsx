@@ -17,7 +17,6 @@ export function VenueManagerDashboard({ data }: VenueManagerDashboardProps) {
   const { user, venues, favoritedEventRequests, stats } = data
 
   type VenueInquiryEntry = VenueManagerDashboardData['venues'][number]['inquiries'][number]
-  type VenueBroadcastLogEntry = VenueManagerDashboardData['venues'][number]['broadcastLogs'][number]
 
   type RecentInquiry = (VenueInquiryEntry & { venueName: string; type: 'inquiry' }) | {
     type: 'broadcast'

@@ -40,7 +40,6 @@ interface EventRequest {
 }
 
 const GUEST_COUNTS = [
-  { label: "Všechny", value: "all" },
   { label: "1-25 osob", value: "1-25" },
   { label: "26-50 osob", value: "26-50" },
   { label: "51-100 osob", value: "51-100" },
@@ -49,14 +48,12 @@ const GUEST_COUNTS = [
 ]
 
 const DATE_RANGES = [
-  { label: "Všechny", value: "all" },
   { label: "Posledních 7 dní", value: "7days" },
   { label: "Posledních 30 dní", value: "30days" },
   { label: "Nejnovější", value: "recent" },
 ]
 
 const LOCATIONS = [
-  "Všechny",
   "Celá Praha",
   "Praha 1",
   "Praha 2",

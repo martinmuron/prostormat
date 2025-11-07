@@ -266,8 +266,8 @@ model VenueBroadcastLog {
   openCount         Int       @default(0)
   clickCount        Int       @default(0)
 
-  broadcast VenueBroadcast @relation(fields: [broadcastId], references: [id])
-  venue     Venue          @relation(fields: [venueId], references: [id])
+  broadcast VenueBroadcast @relation(fields: [broadcastId], references: [id], onDelete: Cascade)
+  venue     Venue          @relation(fields: [venueId], references: [id], onDelete: Cascade)
 
   @@map("prostormat_venue_broadcast_logs")
 }

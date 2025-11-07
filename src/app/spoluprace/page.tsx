@@ -3,7 +3,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { PageHero } from "@/components/layout/page-hero"
 import { ScrollReveal } from "@/components/ui/scroll-reveal"
-import { Check, Mail, TrendingUp, Calendar, Users, BadgeCheck, Sparkles, Star, ChevronRight } from "lucide-react"
+import { Check, Mail, TrendingUp, Calendar, Users, BadgeCheck, Sparkles, ChevronRight } from "lucide-react"
 
 export const metadata: Metadata = {
   title: "Spolupráce pro prostory | Prostormat",
@@ -70,7 +70,7 @@ export default function SpolupracePage() {
                   Rychlá poptávka = Vaše konkurenční výhoda
                 </h3>
                 <p className="text-gray-700 leading-relaxed">
-                  Kvůli naší funkci "Rychlá poptávka" potenciální klient vyplní jeden formulář a jejich poptávka přijde všem prostorům co splňují jejich kritéria. Jedna poptávka = desítky prostorů co se prohánějí za klientem. Vy mezi nimi.
+                  Kvůli naší funkci &quot;Rychlá poptávka&quot; potenciální klient vyplní jeden formulář a jejich poptávka přijde všem prostorům co splňují jejich kritéria. Jedna poptávka = desítky prostorů co se prohánějí za klientem. Vy mezi nimi.
                 </p>
               </div>
             </ScrollReveal>
@@ -183,7 +183,7 @@ export default function SpolupracePage() {
               Cože oni chtějí 12,000?
             </h2>
             <p className="text-center text-gray-700 mb-4 text-xl">
-              Aby se vám tahle "investice" nevratila, to byste musel nikdy na poptávku neodpovědět a nikdy žádnou akci nemít...
+              Aby se vám tahle &quot;investice&quot; nevratila, to byste musel nikdy na poptávku neodpovědět a nikdy žádnou akci nemít...
             </p>
             <p className="text-center text-gray-900 mb-12 text-xl font-semibold">
               Tohle je fakt skoro zadarmo.

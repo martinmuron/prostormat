@@ -7,18 +7,43 @@ import { Check, Mail, TrendingUp, Calendar, Users, BadgeCheck, Sparkles, Chevron
 
 export const metadata: Metadata = {
   title: "Spolupráce pro prostory | Prostormat",
-  description: "Připojte se k největší platformě event prostorů v Praze. Získejte více poptávek na akce, bez provizí z rezervací. Roční předplatné 12 000 Kč + DPH.",
-  keywords: ["spolupráce event prostor", "přidat prostor prostormat", "partner prostormat", "registrace event prostor Praha"],
+  description: "Začněte dostávat poptávky na firemní akce, teambuildingy a svatby hned. Rychlá poptávka = vaše garance. 12 000 Kč ročně, bez provizí z rezervací.",
+  keywords: [
+    "spolupráce event prostor",
+    "přidat prostor prostormat",
+    "partner prostormat",
+    "registrace event prostor Praha",
+    "teambuilding prostor Praha",
+    "svatební prostor Praha",
+    "prostor na firemní akci",
+    "rychlá poptávka event prostor",
+    "event prostor bez provizí",
+    "pronájem prostoru platforma"
+  ],
   alternates: {
     canonical: "https://prostormat.cz/spoluprace",
   },
   openGraph: {
     title: "Spolupráce pro prostory | Prostormat",
-    description: "Získejte více poptávek na akce z největší platformy v Praze. Bez provizí, transparentní ceny.",
+    description: "Začněte dostávat poptávky na firemní akce, teambuildingy a svatby hned. Rychlá poptávka = vaše garance. 12 000 Kč ročně, bez provizí.",
     url: "https://prostormat.cz/spoluprace",
     siteName: "Prostormat",
     locale: "cs_CZ",
-    type: "website"
+    type: "website",
+    images: [
+      {
+        url: "https://prostormat.cz/images/prostormat_sharing.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Prostormat - Spolupráce pro event prostory"
+      }
+    ]
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Spolupráce pro prostory | Prostormat",
+    description: "Začněte dostávat poptávky na firemní akce, teambuildingy a svatby hned. 12 000 Kč ročně, bez provizí z rezervací.",
+    images: ["https://prostormat.cz/images/prostormat_sharing.jpg"],
   }
 }
 

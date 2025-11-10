@@ -1669,7 +1669,7 @@ export function generateVenueSubmissionNotificationEmail(data: VenueSubmissionNo
     <div class="card">
       <div class="header">
         <div class="badge">${submissionTypeLabel}</div>
-        <h1>${data.venueName ?? data.locationTitle ?? 'Nová žádost'}</h1>
+        <h1>${data.submissionType === 'claim' ? (data.locationTitle ?? data.venueName ?? 'Nová žádost') : (data.venueName ?? data.locationTitle ?? 'Nová žádost')}</h1>
         <p>Nová žádost o přidání/převzetí prostoru</p>
       </div>
       <div class="content">

@@ -38,7 +38,7 @@ export async function POST(request: Request) {
     const searchTerms = trimmedName
       .split(/\s+/)
       .map((term) => term.trim())
-      .filter((term) => term.length >= 3)
+      .filter((term) => term.length >= 2)
 
     const existingVenue = await db.venue.findFirst({
       where: {

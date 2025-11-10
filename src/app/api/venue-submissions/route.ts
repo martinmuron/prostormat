@@ -9,7 +9,7 @@ import { sanitizeTrackingContext } from '@/lib/tracking-utils'
 import { trackGA4ServerLead } from '@/lib/ga4-server-tracking'
 import { trackVenueLead } from '@/lib/meta-conversions-api'
 import { resend, FROM_EMAIL } from '@/lib/resend'
-import { generateVenueSubmissionNotificationEmail } from '@/lib/email-templates'
+import { generateVenueSubmissionNotificationEmail, generateVenueSubmissionConfirmationEmail } from '@/lib/email-templates'
 
 function splitContactName(name: string | undefined) {
   if (!name) {
@@ -220,6 +220,71 @@ export async function POST(request: NextRequest) {
           console.error('Failed to log email failure:', logError)
         }
       }
+    }
+
+    // Send confirmation email to user (casual "Funguje to. Fakt." email)
+    try {
+      const confirmationEmailContent = generateVenueSubmissionConfirmationEmail({
+        contactName: body.contactName,
+        locationTitle: body.locationTitle || undefined,
+        submissionType,
+      })
+
+      const userEmailResult = await resend.emails.send({
+        from: FROM_EMAIL,
+        to: body.contactEmail,
+        subject: confirmationEmailContent.subject,
+        html: confirmationEmailContent.html,
+        text: confirmationEmailContent.text,
+      })
+
+      // Track user confirmation email in Email Flow system
+      if (userEmailResult.data?.id && logSentBy) {
+        const userEmailResendId = userEmailResult.data.id
+        try {
+          await prisma.emailFlowLog.create({
+            data: {
+              id: randomUUID(),
+              emailType: 'venue_submission_confirmation',
+              recipient: body.contactEmail,
+              subject: confirmationEmailContent.subject,
+              status: 'sent',
+              error: null,
+              recipientType: 'venue_owner',
+              sentBy: logSentBy,
+              resendEmailId: userEmailResendId,
+            },
+          })
+        } catch (logError) {
+          console.error('Failed to log user confirmation email:', logError)
+        }
+      }
+    } catch (error) {
+      console.error('Failed to send user confirmation email:', error)
+      const emailError = error instanceof Error ? error.message : 'Unknown error'
+
+      // Track failed confirmation email in Email Flow system
+      if (logSentBy) {
+        try {
+          await prisma.emailFlowLog.create({
+            data: {
+              id: randomUUID(),
+              emailType: 'venue_submission_confirmation',
+              recipient: body.contactEmail,
+              subject: 'Děkujeme za tvou žádost na Prostormatu!',
+              status: 'failed',
+              error: emailError,
+              recipientType: 'venue_owner',
+              sentBy: logSentBy,
+              resendEmailId: null,
+            },
+          })
+        } catch (logError) {
+          console.error('Failed to log confirmation email failure:', logError)
+        }
+      }
+      // Don't fail the request if confirmation email fails
+      // User submission was successful, they just won't get the confirmation email
     }
 
     await Promise.allSettled([

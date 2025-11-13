@@ -147,6 +147,8 @@ export default function AdminQuickRequestsPage() {
   })
   const [selectedVenueTypes, setSelectedVenueTypes] = useState<string[]>([])
   const [venueTypeCounts, setVenueTypeCounts] = useState<VenueTypeCount[]>([])
+  const [pollingRequestId, setPollingRequestId] = useState<string | null>(null)
+  const [progressPercent, setProgressPercent] = useState(0)
 
   const fetchRequests = useCallback(async (status: StatusValue, page: number = 1) => {
     setLoading(true)
@@ -196,8 +198,10 @@ export default function AdminQuickRequestsPage() {
   }, [])
 
   useEffect(() => {
+    // Don't auto-refresh while sending emails (polling handles updates)
+    if (bulkSendingId) return
     fetchRequests(statusFilter, currentPage)
-  }, [fetchRequests, statusFilter, currentPage])
+  }, [fetchRequests, statusFilter, currentPage, bulkSendingId])
 
   const handlePageChange = useCallback((newPage: number) => {
     setCurrentPage(newPage)
@@ -268,6 +272,63 @@ export default function AdminQuickRequestsPage() {
     }, 300)
     return () => clearTimeout(timer)
   }, [highlightId, requests])
+
+  // Polling for real-time progress updates
+  useEffect(() => {
+    if (!pollingRequestId) return
+
+    const pollStatus = async () => {
+      try {
+        const response = await fetch(`/api/admin/quick-requests/${pollingRequestId}/status`, {
+          cache: "no-store",
+        })
+
+        if (!response.ok) return
+
+        const data = await response.json()
+
+        // Update the request in the list
+        updateRequest(pollingRequestId, (request) => ({
+          ...request,
+          sentCount: data.sentCount,
+          pendingCount: data.pendingCount,
+          status: data.status,
+          lastSentAt: data.lastSentAt ? new Date(data.lastSentAt) : request.lastSentAt,
+        }))
+
+        // Update progress percentage
+        const percent = data.totalVenues > 0 ? Math.round((data.sentCount / data.totalVenues) * 100) : 0
+        setProgressPercent(percent)
+
+        // Stop polling when completed
+        if (data.status === "completed" || data.pendingCount === 0) {
+          setPollingRequestId(null)
+          setProgressPercent(0)
+        }
+      } catch (error) {
+        console.error("Polling error:", error)
+      }
+    }
+
+    // Poll every 2 seconds
+    const interval = setInterval(pollStatus, 2000)
+    pollStatus() // Initial poll
+
+    return () => clearInterval(interval)
+  }, [pollingRequestId])
+
+  // Prevent page unload during email sending
+  useEffect(() => {
+    if (!bulkSendingId) return
+
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      e.preventDefault()
+      e.returnValue = "Odesílání emailů probíhá. Opravdu chcete opustit stránku?"
+    }
+
+    window.addEventListener("beforeunload", handleBeforeUnload)
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload)
+  }, [bulkSendingId])
 
   const updateRequest = useCallback((requestId: string, updater: (request: QuickRequestItem) => QuickRequestItem) => {
     setRequests((prev) => prev.map((req) => (req.id === requestId ? updater(req) : req)))
@@ -358,6 +419,9 @@ export default function AdminQuickRequestsPage() {
   const handleSendAll = useCallback(
     async (requestId: string) => {
       setBulkSendingId(requestId)
+      setPollingRequestId(requestId) // Start polling for real-time progress
+      setProgressPercent(0)
+
       try {
         const response = await fetch(`/api/admin/quick-requests/${requestId}/send-all`, {
           method: "POST",
@@ -422,6 +486,8 @@ export default function AdminQuickRequestsPage() {
       } catch (err) {
         console.error(err)
         alert(err instanceof Error ? err.message : "Odeslání se nezdařilo")
+        setPollingRequestId(null) // Stop polling on error
+        setProgressPercent(0)
       } finally {
         setBulkSendingId(null)
       }
@@ -676,6 +742,12 @@ export default function AdminQuickRequestsPage() {
                               Čeká {request.pendingCount}
                             </span>
                           )}
+                          {bulkSendingId === request.id && (
+                            <span className="inline-flex items-center gap-1 rounded-full bg-blue-100 px-2 py-0.5 font-medium text-blue-800">
+                              <Send className="h-3 w-3 animate-pulse" />
+                              Odesílá se...
+                            </span>
+                          )}
                           {request.locationPreference && (
                             <span className="inline-flex items-center gap-1 text-slate-500">
                               <MapPin className="h-3 w-3 text-slate-400" />
@@ -740,6 +812,31 @@ export default function AdminQuickRequestsPage() {
                       </Button>
                     </div>
                   </div>
+
+                  {/* Real-time Progress Bar */}
+                  {pollingRequestId === selectedRequest.id && bulkSendingId === selectedRequest.id && (
+                    <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-2">
+                          <Send className="h-4 w-4 text-blue-600 animate-pulse" />
+                          <span className="text-sm font-medium text-blue-900">Odesílání emailů...</span>
+                        </div>
+                        <span className="text-sm font-semibold text-blue-900">
+                          {selectedRequest.sentCount}/{selectedRequest.totalVenues} ({progressPercent}%)
+                        </span>
+                      </div>
+                      <div className="h-2 w-full bg-blue-200 rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-blue-600 transition-all duration-500 ease-out"
+                          style={{ width: `${progressPercent}%` }}
+                        />
+                      </div>
+                      <p className="text-xs text-blue-700 mt-2">
+                        Pokrok se aktualizuje každé 2 sekundy. Prosím nevypínejte tuto stránku.
+                      </p>
+                    </div>
+                  )}
+
                   <div className="grid grid-cols-1 gap-3 text-sm text-gray-600 sm:grid-cols-2 lg:grid-cols-3">
                     <div className="flex items-center gap-2">
                       <Calendar className="h-4 w-4 text-gray-400" />

@@ -74,9 +74,14 @@ export async function POST(
   const failures: { venueId: string; error: string }[] = []
 
   const RATE_LIMIT_DELAY_MS = 800
+  const PROGRESS_UPDATE_BATCH_SIZE = 10 // Update sentCount every 10 emails
   const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
-  for (const log of logs) {
+  let batchSuccessCount = 0
+
+  for (let i = 0; i < logs.length; i++) {
+    const log = logs[i]
+
     if (!log.venue?.contactEmail) {
       failures.push({ venueId: log.venueId, error: "Missing contact email" })
       await prisma.venueBroadcastLog.update({
@@ -131,6 +136,19 @@ export async function POST(
       })
 
       successes.push(log.venueId)
+      batchSuccessCount++
+
+      // Update sentCount incrementally every N emails for progress tracking
+      if (batchSuccessCount >= PROGRESS_UPDATE_BATCH_SIZE || i === logs.length - 1) {
+        await prisma.venueBroadcast.update({
+          where: { id },
+          data: {
+            sentCount: { increment: batchSuccessCount },
+            lastSentAt: new Date(),
+          },
+        })
+        batchSuccessCount = 0
+      }
     } catch (error) {
       const message = error instanceof Error ? error.message : "Unknown error"
       failures.push({ venueId: log.venueId, error: message })
@@ -170,11 +188,10 @@ export async function POST(
     where: { broadcastId: id, emailStatus: "pending" },
   })
 
+  // Update final status (sentCount already updated incrementally during loop)
   const updatedBroadcast = await prisma.venueBroadcast.update({
     where: { id },
     data: {
-      sentCount: broadcast.sentCount + successes.length,
-      lastSentAt: successes.length ? new Date() : broadcast.lastSentAt,
       status:
         remaining === 0
           ? "completed"

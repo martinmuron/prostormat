@@ -186,6 +186,7 @@ export async function PATCH(
 
     revalidatePath("/prostory", "page")
     revalidatePath(`/prostory/${updatedVenue.slug}`, "page")
+    revalidatePath(`/admin/venues/${updatedVenue.id}/edit`, "page")
     if (updatedVenue.prioritySource === "homepage") {
       revalidatePath("/", "page")
     }

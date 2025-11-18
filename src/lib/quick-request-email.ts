@@ -24,6 +24,14 @@ export async function sendQuickRequestEmailToVenue(
     throw new Error(`Venue ${venue.name} nemá vyplněný kontaktní email`)
   }
 
+  // Handle multiple comma-separated emails - use only the first valid one
+  const emails = venue.contactEmail.split(',').map(e => e.trim()).filter(e => e.length > 0)
+  const recipientEmail = emails[0]
+
+  if (!recipientEmail) {
+    throw new Error(`Venue ${venue.name} nemá platný kontaktní email`)
+  }
+
   const emailContent = generateQuickRequestVenueNotificationEmail({
     venueName: venue.name,
     venueSlug: venue.slug,
@@ -65,7 +73,7 @@ export async function sendQuickRequestEmailToVenue(
     try {
       const emailResult = await resend.emails.send({
         from: FROM_EMAIL,
-        to: venue.contactEmail,
+        to: recipientEmail,
         subject: emailContent.subject,
         html: emailContent.html,
         text: emailContent.text,
@@ -77,7 +85,7 @@ export async function sendQuickRequestEmailToVenue(
 
         // Log the full Resend error for debugging
         console.error("Resend API error:", {
-          email: venue.contactEmail,
+          email: recipientEmail,
           attempt,
           error: errorDetails,
           fullResponse: emailResult,
@@ -91,7 +99,7 @@ export async function sendQuickRequestEmailToVenue(
           continue
         }
 
-        throw new Error(`Resend nevrátil email ID pro ${venue.contactEmail}: ${errorMessage}`)
+        throw new Error(`Resend nevrátil email ID pro ${recipientEmail}: ${errorMessage}`)
       }
 
       return {
@@ -111,7 +119,7 @@ export async function sendQuickRequestEmailToVenue(
       lastError = normalizedError
 
       console.error("Resend send attempt failed:", {
-        email: venue.contactEmail,
+        email: recipientEmail,
         attempt,
         error: normalizedError,
       })
@@ -126,5 +134,5 @@ export async function sendQuickRequestEmailToVenue(
     }
   }
 
-  throw lastError ?? new Error(`Resend nevrátil email ID pro ${venue.contactEmail}: Neznámá chyba`)
+  throw lastError ?? new Error(`Resend nevrátil email ID pro ${recipientEmail}: Neznámá chyba`)
 }

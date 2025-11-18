@@ -425,7 +425,12 @@ export function VenueManagerDashboard({ data }: VenueManagerDashboardProps) {
         {/* Recent Inquiries */}
         <Card className="bg-white">
           <CardHeader>
-            <CardTitle className="text-gray-900">Nedávné dotazy</CardTitle>
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-gray-900">Nedávné dotazy</CardTitle>
+              <Link href="/dashboard/inquiries" className="text-sm text-blue-600 hover:text-blue-800 font-medium">
+                Zobrazit vše →
+              </Link>
+            </div>
           </CardHeader>
           <CardContent>
             {recentInquiries.length === 0 ? (

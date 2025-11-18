@@ -67,8 +67,12 @@ export async function POST(request: Request) {
 
     // Send welcome email with login credentials if requested
     if (sendEmail) {
+      let emailStatus: 'sent' | 'failed' = 'sent'
+      let resendEmailId: string | null = null
+      let emailErrorMessage: string | null = null
+
       try {
-        await resend.emails.send({
+        const emailResult = await resend.emails.send({
           from: 'Prostormat <noreply@prostormat.cz>',
           to: email,
           replyTo: 'info@prostormat.cz',
@@ -147,21 +151,32 @@ export async function POST(request: Request) {
           `
         })
 
-        // Log the email send
+        // Capture Resend email ID
+        resendEmailId = emailResult.data?.id ?? null
+      } catch (emailError) {
+        emailStatus = 'failed'
+        emailErrorMessage = emailError instanceof Error ? emailError.message : 'Unknown error sending email'
+        console.error('Failed to send welcome email:', emailError)
+        // Don't fail the user creation if email fails
+      }
+
+      // Log the email send with actual status and Resend ID
+      try {
         await db.emailFlowLog.create({
           data: {
             id: randomUUID(),
             emailType: 'venue_manager_created',
             recipient: email,
             subject: 'Váš účet správce prostoru na Prostormat.cz',
-            status: 'sent',
+            status: emailStatus,
+            error: emailErrorMessage,
             recipientType: 'venue_manager',
             sentBy: session.user.id,
+            resendEmailId: resendEmailId,
           }
         })
-      } catch (emailError) {
-        console.error('Failed to send welcome email:', emailError)
-        // Don't fail the user creation if email fails
+      } catch (logError) {
+        console.error('Failed to log email send:', logError)
       }
     }
 

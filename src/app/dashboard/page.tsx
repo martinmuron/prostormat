@@ -37,7 +37,7 @@ async function getDashboardData(userId: string, userRole: string): Promise<Dashb
           },
           broadcastLogs: {
             where: {
-              emailStatus: "sent" // Only show successfully sent quick requests
+              emailStatus: { in: ["sent", "backfilled"] } // Show sent and backfilled quick requests
             },
             include: {
               broadcast: {

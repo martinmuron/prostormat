@@ -232,18 +232,6 @@ export function VenueManagerDashboard({ data }: VenueManagerDashboardProps) {
           </CardContent>
         </Card>
 
-        <Card className="bg-white border-l-4 border-l-rose-500">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-caption text-gray-500 mb-1">Hostů v poptávkách</p>
-                <p className="text-title-2 text-gray-900">{stats.totalInquiryGuests.toLocaleString("cs-CZ")}</p>
-              </div>
-              <Users className="h-8 w-8 text-rose-500" />
-            </div>
-          </CardContent>
-        </Card>
-
         <Card className="bg-white border-l-4 border-l-orange-500">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
@@ -427,7 +415,7 @@ export function VenueManagerDashboard({ data }: VenueManagerDashboardProps) {
           <CardHeader>
             <div className="flex items-center justify-between">
               <CardTitle className="text-gray-900">Nedávné dotazy</CardTitle>
-              <Link href="/dashboard/inquiries" className="text-sm text-blue-600 hover:text-blue-800 font-medium">
+              <Link href="/dashboard/venue-inquiries" className="text-sm text-blue-600 hover:text-blue-800 font-medium">
                 Zobrazit vše →
               </Link>
             </div>

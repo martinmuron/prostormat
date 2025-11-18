@@ -2,8 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { db } from "@/lib/db"
-import { resend, FROM_EMAIL, REPLY_TO_EMAIL } from "@/lib/resend"
-import { generateWelcomeEmailForUser, generateWelcomeEmailForLocationOwner } from "@/lib/email-templates"
+import { sendEmailFromTemplate } from "@/lib/email-service"
 
 export async function POST(request: NextRequest) {
   try {
@@ -50,74 +49,28 @@ export async function POST(request: NextRequest) {
 
     for (const user of users) {
       try {
-        let emailData
-        
-        if (templateType === 'welcome_user') {
-          emailData = generateWelcomeEmailForUser({
-            name: user.name || 'Uživatel',
+        // Use DB-backed email template system
+        await sendEmailFromTemplate({
+          templateKey: templateType,
+          to: user.email,
+          variables: {
+            name: user.name || (templateType === 'welcome_user' ? 'Uživatel' : 'Majitel prostoru'),
             email: user.email
-          })
-        } else {
-          emailData = generateWelcomeEmailForLocationOwner({
-            name: user.name || 'Majitel prostoru',
-            email: user.email
-          })
-        }
-
-        await resend.emails.send({
-          from: FROM_EMAIL,
-          to: [user.email],
-          replyTo: REPLY_TO_EMAIL,
-          subject: emailData.subject,
-          html: emailData.html,
-          text: emailData.text,
+          },
+          tracking: {
+            emailType: templateType,
+            recipientType: templateType === 'welcome_user' ? 'user' : 'venue_owner',
+            sentBy: session.user.id
+          }
         })
 
         emailsSent++
-
-        // Log to Email Flow tracking system
-        try {
-          await fetch(`${process.env.NEXTAUTH_URL}/api/admin/email-flow`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              emailType: templateType,
-              recipient: user.email,
-              subject: emailData.subject,
-              status: 'sent',
-              sentBy: session.user.id
-            })
-          })
-        } catch (logError) {
-          console.error('Failed to log email to Email Flow:', logError)
-        }
 
       } catch (error) {
         console.error(`Failed to send email to ${user.email}:`, error)
         emailsErrored++
         errors.push(`${user.email}: ${error instanceof Error ? error.message : 'Unknown error'}`)
-
-        // Log error to Email Flow tracking system
-        try {
-          await fetch(`${process.env.NEXTAUTH_URL}/api/admin/email-flow`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              emailType: templateType,
-              recipient: user.email,
-              subject: templateType === 'welcome_user' ? 'Vítejte v Prostormatu!' : 'Vítejte v Prostormatu - Začněte nabízet své prostory!',
-              status: 'failed',
-              error: error instanceof Error ? error.message : 'Unknown error',
-              sentBy: session.user.id
-            })
-          })
-        } catch (logError) {
-          console.error('Failed to log email error to Email Flow:', logError)
-        }
+        // Email Flow logging is handled automatically by sendEmailFromTemplate
       }
     }
 

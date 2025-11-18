@@ -1117,18 +1117,6 @@ export function AdminVenueEditForm({ venue }: AdminVenueEditFormProps) {
                         <CardContent className="p-4">
                           <div className="flex items-center justify-between">
                             <div>
-                              <p className="text-sm text-gray-500">Celkové zobrazení</p>
-                              <p className="text-2xl font-bold">{venue.totalViews}</p>
-                            </div>
-                            <Eye className="h-8 w-8 text-gray-400" />
-                          </div>
-                        </CardContent>
-                      </Card>
-
-                      <Card>
-                        <CardContent className="p-4">
-                          <div className="flex items-center justify-between">
-                            <div>
                               <p className="text-sm text-gray-500">Dotazy</p>
                               <p className="text-2xl font-bold">{venue._count?.inquiries || 0}</p>
                             </div>

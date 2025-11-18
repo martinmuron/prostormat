@@ -369,12 +369,9 @@ export function VenueManagerDashboard({ data }: VenueManagerDashboardProps) {
                     <div key={venue.id} className="border border-gray-200 rounded-xl p-4 hover:shadow-md transition-shadow">
                       <div className="flex items-start justify-between mb-3">
                         <div className="flex-1">
-                          <h4 className="text-callout font-medium text-gray-900 mb-1">{venue.name}</h4>
-                          <p className="text-caption text-gray-600">
-                            {venue.inquiries?.length || 0} dotazů • {venue.capacitySeated || 0} míst k sezení
-                          </p>
+                          <h4 className="text-callout font-medium text-gray-900">{venue.name}</h4>
                         </div>
-                        <Badge 
+                        <Badge
                           variant={isActive ? "default" : "secondary"}
                           className={isActive ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-800"}
                         >

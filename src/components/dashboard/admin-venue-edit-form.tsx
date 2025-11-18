@@ -263,6 +263,21 @@ export function AdminVenueEditForm({ venue }: AdminVenueEditFormProps) {
           if (userResponse.ok) {
             const userData = await userResponse.json()
             resolvedManagerId = userData.user.id
+
+            // Send notification email to existing user about their new venue assignment
+            try {
+              await fetch('/api/admin/venues/notify-manager', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  userId: userData.user.id,
+                  venueId: venue.id,
+                }),
+              })
+            } catch (emailError) {
+              console.error('Failed to send manager notification email:', emailError)
+              // Don't fail the assignment if email fails
+            }
           } else if (userResponse.status === 404) {
             if (!managerPassword || managerPassword.length < 8) {
               setErrorMessage('Pro nového správce zadejte heslo alespoň o 8 znacích')

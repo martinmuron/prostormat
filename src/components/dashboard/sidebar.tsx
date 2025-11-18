@@ -101,7 +101,7 @@ function buildNavigation(userRole: string): DashboardNavGroup[] {
       {
         label: "Nástroje",
         items: [
-          { name: "Priority & viditelnost", href: "/ceny#priority", icon: Sparkles },
+          { name: "Priority & viditelnost", href: "/ceny#premium", icon: Sparkles },
         ],
       },
     ]

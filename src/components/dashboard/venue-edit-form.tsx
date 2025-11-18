@@ -12,7 +12,6 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { ImageManager } from "@/components/ui/image-manager"
 import { YouTubeManager } from "@/components/ui/youtube-manager"
 import { AmenitiesManager } from "@/components/ui/amenities-manager"
-import { ProfileCompletion } from "@/components/ui/profile-completion"
 import { VenueInfo } from "@/components/ui/venue-info"
 import { VenuePreview } from "@/components/ui/venue-preview"
 import { formatDate } from "@/lib/utils"
@@ -166,21 +165,6 @@ const statusLabels: Record<string, string> = {
     }))
   }
 
-  const handleSectionFocus = (section: string) => {
-    const sectionMap: { [key: string]: string } = {
-      'basic-info': 'basic',
-      'images': 'media',
-      'video': 'media',
-      'capacity': 'basic',
-      'contact': 'basic',
-      'venue-type': 'basic',
-      'amenities': 'features',
-      'website': 'basic'
-    }
-    const targetTab = sectionMap[section] || 'basic'
-    setActiveTab(targetTab)
-  }
-
   return (
     <div className="space-y-8">
       {/* Header with Quick Actions */}
@@ -209,15 +193,10 @@ const statusLabels: Record<string, string> = {
 
       {/* Main Content */}
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-        {/* Left Sidebar - Profile Completion */}
+        {/* Left Sidebar */}
         <div className="lg:col-span-1">
-          <ProfileCompletion 
-            venue={formData} 
-            onSectionFocus={handleSectionFocus}
-          />
-          
           {/* Recent Inquiries */}
-          <Card className="mt-6 bg-white">
+          <Card className="bg-white">
             <CardHeader>
               <CardTitle className="text-gray-900">Nedávné dotazy</CardTitle>
             </CardHeader>

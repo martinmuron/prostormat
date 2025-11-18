@@ -28,6 +28,7 @@ import {
   Music,
   Instagram,
   ArrowLeft,
+  Mail,
   CreditCard,
   CheckCircle2,
   XCircle
@@ -367,6 +368,177 @@ export function AdminVenueEditForm({ venue }: AdminVenueEditFormProps) {
     } catch (error) {
       console.error("Error updating venue:", error)
       setErrorMessage("Došlo k chybě při aktualizaci prostoru")
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleSaveAndSendEmail = async () => {
+    setIsLoading(true)
+    setSuccessMessage("")
+    setErrorMessage("")
+
+    try {
+      const trimmedManagerEmail = managerEmail.trim()
+
+      if (!trimmedManagerEmail) {
+        setErrorMessage('Zadejte email správce prostoru')
+        setIsLoading(false)
+        return
+      }
+
+      let resolvedManagerId: string | null = formData.managerId || null
+      let managerCreated = false
+      let emailSent = false
+
+      const currentManagerEmail = venue.manager?.email || ''
+
+      if (trimmedManagerEmail.toLowerCase() !== currentManagerEmail.toLowerCase()) {
+        // Check if user exists
+        const userResponse = await fetch(
+          `/api/admin/users/find-by-email?email=${encodeURIComponent(trimmedManagerEmail)}`
+        )
+
+        if (userResponse.ok) {
+          // User exists - assign and send notification
+          const userData = await userResponse.json()
+          resolvedManagerId = userData.user.id
+
+          // Send notification email to existing user
+          try {
+            const emailResponse = await fetch('/api/admin/venues/notify-manager', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                userId: userData.user.id,
+                venueId: venue.id,
+              }),
+            })
+
+            if (emailResponse.ok) {
+              emailSent = true
+            }
+          } catch (emailError) {
+            console.error('Failed to send manager notification email:', emailError)
+            setErrorMessage('Správce byl přiřazen, ale email se nepodařilo odeslat.')
+          }
+        } else if (userResponse.status === 404) {
+          // User doesn't exist - create new manager
+          if (!managerPassword || managerPassword.length < 8) {
+            setErrorMessage('Pro nového správce zadejte heslo alespoň o 8 znacích')
+            setIsLoading(false)
+            return
+          }
+
+          const createResponse = await fetch('/api/admin/users/create-venue-manager', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              email: trimmedManagerEmail,
+              password: managerPassword,
+            }),
+          })
+
+          if (createResponse.ok) {
+            const createData = await createResponse.json()
+            resolvedManagerId = createData.user.id
+            setManagerPassword('')
+            managerCreated = true
+            emailSent = true // Email is sent automatically by the API
+          } else if (createResponse.status === 409) {
+            const conflictData = await createResponse.json().catch(() => null)
+            if (conflictData?.userId) {
+              resolvedManagerId = conflictData.userId
+            } else {
+              setErrorMessage(conflictData?.error || 'Nepodařilo se vytvořit uživatele.')
+              setIsLoading(false)
+              return
+            }
+          } else {
+            const errorData = await createResponse.json().catch(() => null)
+            setErrorMessage(errorData?.error || 'Nepodařilo se vytvořit nového správce.')
+            setIsLoading(false)
+            return
+          }
+        } else {
+          const errorText = await userResponse.text()
+          setErrorMessage(errorText || 'Nepodařilo se načíst informace o správci prostoru.')
+          setIsLoading(false)
+          return
+        }
+      } else {
+        // Same manager - just send notification email
+        const userData = venue.manager
+        if (userData?.id) {
+          try {
+            const emailResponse = await fetch('/api/admin/venues/notify-manager', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                userId: userData.id,
+                venueId: venue.id,
+              }),
+            })
+
+            if (emailResponse.ok) {
+              emailSent = true
+              setSuccessMessage('Email byl úspěšně odeslán správci prostoru!')
+              setIsLoading(false)
+              return
+            }
+          } catch (emailError) {
+            console.error('Failed to send manager notification email:', emailError)
+            setErrorMessage('Email se nepodařilo odeslat.')
+            setIsLoading(false)
+            return
+          }
+        }
+      }
+
+      // Update venue with new manager
+      const payload = {
+        ...formData,
+        managerId: resolvedManagerId,
+      }
+
+      const response = await fetch(`/api/venues/${venue.id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      })
+
+      if (response.ok) {
+        if (managerCreated) {
+          setSuccessMessage('Byl vytvořen nový správce prostoru a byl mu odeslán email s přihlašovacími údaji!')
+        } else if (emailSent) {
+          setSuccessMessage('Správce byl přiřazen a byl mu odeslán email s informacemi!')
+        } else {
+          setSuccessMessage('Správce byl přiřazen!')
+        }
+
+        if (!managerCreated && managerPassword) {
+          setManagerPassword('')
+        }
+
+        setTimeout(() => {
+          router.refresh()
+        }, 1500)
+      } else {
+        const responseText = await response.text()
+        try {
+          const error = JSON.parse(responseText)
+          setErrorMessage(`Chyba při aktualizaci: ${error.error || error.message || 'Neznámá chyba'}`)
+        } catch {
+          setErrorMessage(`Chyba při aktualizaci: ${responseText || 'Neznámá chyba'}`)
+        }
+      }
+    } catch (error) {
+      console.error("Error saving and sending email:", error)
+      setErrorMessage("Došlo k chybě při ukládání a odesílání emailu")
     } finally {
       setIsLoading(false)
     }
@@ -768,6 +940,29 @@ export function AdminVenueEditForm({ venue }: AdminVenueEditFormProps) {
                       <p className="text-xs text-gray-500 mt-1">
                         Pokud email dosud neexistuje, vytvoříme nové konto správce s tímto heslem.
                       </p>
+                    </div>
+
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                      <div className="flex items-start gap-3">
+                        <Mail className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
+                        <div className="flex-1">
+                          <h4 className="text-sm font-semibold text-blue-900 mb-1">
+                            Odeslat email správci
+                          </h4>
+                          <p className="text-xs text-blue-700 mb-3">
+                            Kliknutím na tlačítko přiřadíte správce k tomuto prostoru a odešlete mu email s přihlašovacími údaji nebo informacemi o přiřazení.
+                          </p>
+                          <Button
+                            type="button"
+                            onClick={handleSaveAndSendEmail}
+                            disabled={isLoading || !managerEmail.trim()}
+                            className="bg-blue-600 hover:bg-blue-700 text-white"
+                          >
+                            <Mail className="w-4 h-4 mr-2" />
+                            {isLoading ? 'Odesílání...' : 'Uložit a odeslat email'}
+                          </Button>
+                        </div>
+                      </div>
                     </div>
 
                     {pendingClaims.length > 0 && (

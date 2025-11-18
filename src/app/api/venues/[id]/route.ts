@@ -154,7 +154,7 @@ export async function PATCH(
     }
 
     // If managerId is being changed and user is admin, verify the new manager exists
-    // Only validate if the managerId is different from the current one
+    // and automatically promote them to venue_manager role if needed
     const managerIdChanged = typeof body.managerId !== "undefined" && body.managerId !== currentVenue.managerId
     if (managerIdChanged && body.managerId?.trim() && session.user.role === "admin") {
       const manager = await db.user.findUnique({
@@ -162,8 +162,16 @@ export async function PATCH(
         select: { role: true }
       })
 
-      if (!manager || manager.role !== "venue_manager") {
-        return NextResponse.json({ error: "Invalid manager ID - user must be a venue_manager" }, { status: 400 })
+      if (!manager) {
+        return NextResponse.json({ error: "Invalid manager ID - user not found" }, { status: 400 })
+      }
+
+      // Automatically promote user to venue_manager role if they're not already
+      if (manager.role !== "venue_manager" && manager.role !== "admin") {
+        await db.user.update({
+          where: { id: body.managerId },
+          data: { role: "venue_manager" }
+        })
       }
     }
 

@@ -123,7 +123,11 @@ export function AdminVenueEditForm({ venue }: AdminVenueEditFormProps) {
   const [errorMessage, setErrorMessage] = useState("")
   const [managerEmail, setManagerEmail] = useState(venue.manager?.email || "")
   const [managerPassword, setManagerPassword] = useState("")
-  const [paymentDate, setPaymentDate] = useState("")
+  const [paymentDate, setPaymentDate] = useState(() => {
+    // Default to today's date in YYYY-MM-DD format for the date input
+    const today = new Date()
+    return today.toISOString().split('T')[0]
+  })
   const [isMarkingPaid, setIsMarkingPaid] = useState(false)
   const [paymentNotes, setPaymentNotes] = useState("")
   const [approvingClaimId, setApprovingClaimId] = useState<string | null>(null)

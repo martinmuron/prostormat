@@ -292,6 +292,7 @@ export default function AdminQuickRequestsPage() {
           ...request,
           sentCount: data.sentCount,
           pendingCount: data.pendingCount,
+          totalVenues: data.totalVenues,
           status: data.status,
           lastSentAt: data.lastSentAt ? new Date(data.lastSentAt) : request.lastSentAt,
         }))

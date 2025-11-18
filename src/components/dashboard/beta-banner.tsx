@@ -45,6 +45,16 @@ export function BetaBanner() {
             >
               info@prostormat.cz
             </a>
+            <span className="hidden sm:inline"> nebo na WhatsApp{" "}</span>
+            <span className="sm:hidden"> / WhatsApp{" "}</span>
+            <a
+              href="https://wa.me/420775654639"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-medium text-orange-700 underline hover:text-orange-800"
+            >
+              +420 775 654 639
+            </a>
             <span className="hidden sm:inline">. Děkujeme!</span>
           </p>
         </div>

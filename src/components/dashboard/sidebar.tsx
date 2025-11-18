@@ -5,7 +5,6 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { Logo } from "@/components/ui/logo"
 import {
   Sheet,
   SheetClose,
@@ -148,8 +147,7 @@ export function DashboardSidebar({ userRole, initialCollapsed = false }: Dashboa
     >
       <div className="flex items-center justify-between border-b border-gray-200 px-4 py-5">
         {!collapsed && (
-          <Link href="/dashboard" className="flex items-center gap-2">
-            <Logo variant="black" size="sm" href={null} className="h-6 w-auto" />
+          <Link href="/dashboard">
             <span className="text-xs font-medium uppercase tracking-[0.24em] text-gray-500">
               Admin
             </span>
@@ -216,8 +214,7 @@ export function DashboardMobileNav({ userRole }: DashboardMobileNavProps) {
   return (
     <div className="sticky top-14 z-40 border-b border-gray-200 bg-white shadow-sm sm:top-16 md:hidden">
       <div className="flex items-center justify-between px-4 py-3">
-        <Link href="/dashboard" className="flex items-center gap-2">
-          <Logo variant="black" size="sm" href={null} className="h-6 w-auto" />
+        <Link href="/dashboard">
           <span className="text-xs font-medium uppercase tracking-[0.24em] text-gray-500">
             Admin
           </span>
@@ -235,7 +232,6 @@ export function DashboardMobileNav({ userRole }: DashboardMobileNavProps) {
           </SheetTrigger>
           <SheetContent side="left" className="flex flex-col p-0">
             <SheetHeader className="border-b border-gray-200 px-5 py-4 text-left">
-              <Logo variant="black" size="sm" href={null} className="h-6 w-auto" />
               <SheetTitle className="text-xs font-medium uppercase tracking-[0.24em] text-gray-500">
                 Admin
               </SheetTitle>

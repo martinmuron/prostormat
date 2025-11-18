@@ -17,7 +17,6 @@ import { Label } from "@/components/ui/label"
 import { VENUE_TYPES } from "@/types"
 import {
   Save,
-  Eye,
   MessageSquare,
   Settings,
   Camera,

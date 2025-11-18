@@ -6,21 +6,18 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+import { Card, CardContent } from "@/components/ui/card"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { ImageManager } from "@/components/ui/image-manager"
 import { YouTubeManager } from "@/components/ui/youtube-manager"
 import { AmenitiesManager } from "@/components/ui/amenities-manager"
 import { VenueInfo } from "@/components/ui/venue-info"
 import { VenuePreview } from "@/components/ui/venue-preview"
-import { formatDate } from "@/lib/utils"
 import { Switch } from "@/components/ui/switch"
-import { 
-  Building, 
-  Save, 
+import {
+  Building,
+  Save,
   Eye,
-  MessageSquare,
   Settings,
   Camera,
   Star,
@@ -192,61 +189,9 @@ const statusLabels: Record<string, string> = {
       </div>
 
       {/* Main Content */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-        {/* Left Sidebar */}
-        <div className="lg:col-span-1">
-          {/* Recent Inquiries */}
-          <Card className="bg-white">
-            <CardHeader>
-              <CardTitle className="text-gray-900">Nedávné dotazy</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {venue.inquiries?.length === 0 ? (
-                <div className="text-center py-8">
-                  <MessageSquare className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <p className="text-body text-gray-600">
-                    Zatím žádné dotazy
-                  </p>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {venue.inquiries?.slice(0, 3).map((inquiry) => (
-                    <div key={inquiry.id} className="border border-gray-200 rounded-lg p-3">
-                      <div className="flex items-start justify-between mb-2">
-                        <h4 className="text-sm font-medium text-gray-900">{inquiry.name}</h4>
-                        <Badge variant="secondary" className="bg-blue-100 text-blue-800 text-xs">
-                          Nový
-                        </Badge>
-                      </div>
-                      <p className="text-xs text-gray-600 mb-2 line-clamp-2">
-                        {inquiry.message}
-                      </p>
-                      <div className="flex items-center justify-between">
-                        <p className="text-xs text-gray-500">
-                          {formatDate(new Date(inquiry.createdAt))}
-                        </p>
-                        <a 
-                          href={`mailto:${inquiry.email}`}
-                          className="text-xs bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700"
-                        >
-                          Odpovědět
-                        </a>
-                      </div>
-                    </div>
-                  ))}
-                  {(venue.inquiries?.length ?? 0) > 3 && (
-                    <p className="text-sm text-gray-500 text-center">
-                      +{(venue.inquiries?.length ?? 0) - 3} dalších
-                    </p>
-                  )}
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </div>
-
+      <div>
         {/* Main Edit Form */}
-        <div className="lg:col-span-3">
+        <div>
           <Card className="bg-white">
             <CardContent className="p-0">
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">

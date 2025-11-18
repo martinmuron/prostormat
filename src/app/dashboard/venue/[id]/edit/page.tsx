@@ -22,9 +22,34 @@ async function getVenueData(venueId: string, userId: string) {
           orderBy: { createdAt: "desc" },
           take: 10,
         },
+        broadcastLogs: {
+          where: {
+            emailStatus: { in: ["sent", "backfilled"] }
+          },
+          include: {
+            broadcast: {
+              select: {
+                contactName: true,
+                contactEmail: true,
+                contactPhone: true,
+                title: true,
+                description: true,
+                eventDate: true,
+                guestCount: true,
+              }
+            }
+          },
+          orderBy: { sentAt: "desc" },
+          take: 10,
+        },
         _count: {
           select: {
             inquiries: true,
+            broadcastLogs: {
+              where: {
+                emailStatus: { in: ["sent", "backfilled"] }
+              }
+            }
           }
         }
       }

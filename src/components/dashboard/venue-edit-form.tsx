@@ -37,6 +37,20 @@ type VenueInquirySummary = {
   createdAt: string | Date
 }
 
+type BroadcastLogSummary = {
+  id: string
+  sentAt: string | Date
+  broadcast: {
+    contactName: string
+    contactEmail: string
+    contactPhone?: string | null
+    title: string
+    description?: string | null
+    eventDate?: string | Date | null
+    guestCount?: number | null
+  }
+}
+
 type EditableVenue = {
   id: string
   slug: string
@@ -58,6 +72,11 @@ type EditableVenue = {
   status: string
   musicAfter10?: boolean | null
   inquiries?: VenueInquirySummary[]
+  broadcastLogs?: BroadcastLogSummary[]
+  _count?: {
+    inquiries: number
+    broadcastLogs: number
+  }
   createdAt: string | Date
   updatedAt: string | Date
 }
@@ -460,14 +479,28 @@ const statusLabels: Record<string, string> = {
                       ...venue,
                       createdAt: new Date(venue.createdAt).toISOString(),
                       updatedAt: new Date(venue.updatedAt).toISOString(),
-                      inquiries: venue.inquiries?.map((inquiry) => ({
-                        ...inquiry,
-                        message: inquiry.message ?? '',
-                        createdAt: new Date(inquiry.createdAt).toISOString(),
-                        eventDate: inquiry.eventDate ? new Date(inquiry.eventDate).toISOString() : undefined,
-                        phone: inquiry.phone ?? undefined,
-                        guestCount: inquiry.guestCount ?? undefined,
-                      })),
+                      inquiries: [
+                        // Regular inquiries
+                        ...(venue.inquiries?.map((inquiry) => ({
+                          ...inquiry,
+                          message: inquiry.message ?? '',
+                          createdAt: new Date(inquiry.createdAt).toISOString(),
+                          eventDate: inquiry.eventDate ? new Date(inquiry.eventDate).toISOString() : undefined,
+                          phone: inquiry.phone ?? undefined,
+                          guestCount: inquiry.guestCount ?? undefined,
+                        })) || []),
+                        // Quick request broadcast logs (converted to inquiry format)
+                        ...(venue.broadcastLogs?.map((log) => ({
+                          id: log.id,
+                          name: log.broadcast.contactName,
+                          email: log.broadcast.contactEmail,
+                          phone: log.broadcast.contactPhone ?? undefined,
+                          message: log.broadcast.description ?? log.broadcast.title,
+                          createdAt: new Date(log.sentAt).toISOString(),
+                          eventDate: log.broadcast.eventDate ? new Date(log.broadcast.eventDate).toISOString() : undefined,
+                          guestCount: log.broadcast.guestCount ?? undefined,
+                        })) || [])
+                      ].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
                     }}
                   />
                   </TabsContent>

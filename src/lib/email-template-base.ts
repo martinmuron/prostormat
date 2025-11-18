@@ -260,8 +260,8 @@ export function generateUnifiedEmailTemplate(options: EmailTemplateOptions): str
  */
 export function stripHtmlToText(html: string): string {
   return html
-    .replace(/<style[^>]*>.*?<\/style>/gis, '')
-    .replace(/<script[^>]*>.*?<\/script>/gis, '')
+    .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
+    .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
     .replace(/<[^>]+>/g, '')
     .replace(/\n\s*\n\s*\n/g, '\n\n')
     .trim()

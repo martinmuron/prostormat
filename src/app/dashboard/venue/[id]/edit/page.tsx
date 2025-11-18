@@ -52,7 +52,7 @@ export default async function VenueEditPage({ params }: VenueEditPageProps) {
   }
 
   return (
-    <div className="mx-auto max-w-4xl space-y-8">
+    <div className="mx-auto max-w-7xl px-6 space-y-8">
       <div>
         <h1 className="text-title-1 text-gray-900 mb-2">
           Upravit prostor: {venue.name}

@@ -312,6 +312,7 @@ model EventRequestFavorite {
   eventRequest EventRequest @relation(fields: [eventRequestId], references: [id], onDelete: Cascade)
 
   @@unique([userId, eventRequestId])
+  @@map("prostormat_event_request_favorites")
 }
 
 model VenueSubmissionRequest {

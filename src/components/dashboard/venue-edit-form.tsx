@@ -267,7 +267,7 @@ const statusLabels: Record<string, string> = {
         </div>
 
         {/* Main Edit Form */}
-        <div className="lg:col-span-2">
+        <div className="lg:col-span-3">
           <Card className="bg-white">
             <CardContent className="p-0">
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
@@ -549,51 +549,6 @@ const statusLabels: Record<string, string> = {
                   </TabsContent>
                 </div>
               </Tabs>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Right Sidebar - Quick Actions */}
-        <div className="lg:col-span-1">
-          <Card className="bg-white sticky top-4">
-            <CardHeader>
-              <CardTitle className="text-gray-900">Rychlé akce</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                <Button 
-                  variant="secondary" 
-                  className="w-full justify-start text-gray-700 border-gray-300 hover:bg-gray-50"
-                  onClick={() => setIsPreviewOpen(true)}
-                >
-                  <Eye className="h-4 w-4 mr-2" />
-                  Náhled profilu
-                </Button>
-                <Button 
-                  variant="secondary" 
-                  className="w-full justify-start text-gray-700 border-gray-300 hover:bg-gray-50"
-                  onClick={() => window.open(`/prostory/${venue.slug}`, '_blank')}
-                >
-                  <Monitor className="h-4 w-4 mr-2" />
-                  Zobrazit živě
-                </Button>
-                <Button 
-                  variant="secondary" 
-                  className="w-full justify-start text-gray-700 border-gray-300 hover:bg-gray-50"
-                  onClick={() => router.push("/dashboard/venue-inquiries")}
-                >
-                  <MessageSquare className="h-4 w-4 mr-2" />
-                  Všechny dotazy
-                </Button>
-                <Button 
-                  variant="secondary" 
-                  className="w-full justify-start text-gray-700 border-gray-300 hover:bg-gray-50"
-                  onClick={() => router.push("/dashboard")}
-                >
-                  <Building className="h-4 w-4 mr-2" />
-                  Dashboard
-                </Button>
-              </div>
             </CardContent>
           </Card>
         </div>

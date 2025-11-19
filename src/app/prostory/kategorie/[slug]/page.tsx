@@ -35,7 +35,7 @@ const PUBLIC_STATUSES: string[] = ["published", "active"]
 export async function generateStaticParams() {
   const pages = generateAllLandingPageSlugs()
   return pages.map((page) => ({
-    filters: [page.slug],
+    slug: page.slug,
   }))
 }
 
@@ -43,11 +43,10 @@ export async function generateMetadata({
   params,
   searchParams,
 }: {
-  params: Promise<{ filters: string[] }>
+  params: Promise<{ slug: string }>
   searchParams: Promise<Record<string, string | string[] | undefined>>
 }): Promise<Metadata> {
-  const { filters } = await params
-  const slug = filters[0]
+  const { slug } = await params
 
   if (!slug) {
     notFound()
@@ -70,7 +69,7 @@ export async function generateMetadata({
   const title = getLandingPageTitle(parsed.venueType, parsed.district, venueCount)
   const description = getLandingPageDescription(parsed.venueType, parsed.district, venueCount)
 
-  const canonicalBase = `https://prostormat.cz/prostory/${slug}`
+  const canonicalBase = `https://prostormat.cz/prostory/kategorie/${slug}`
   const canonical = page > 1 ? `${canonicalBase}?page=${page}` : canonicalBase
 
   return {
@@ -288,7 +287,7 @@ function PaginationLinks({
       params.set("page", String(page))
     }
     const query = params.toString()
-    return query ? `/prostory/${slug}?${query}` : `/prostory/${slug}`
+    return query ? `/prostory/kategorie/${slug}?${query}` : `/prostory/kategorie/${slug}`
   }
 
   return (
@@ -438,11 +437,10 @@ export default async function LandingPage({
   params,
   searchParams,
 }: {
-  params: Promise<{ filters: string[] }>
+  params: Promise<{ slug: string }>
   searchParams: Promise<SearchParams>
 }) {
-  const { filters } = await params
-  const slug = filters[0]
+  const { slug } = await params
 
   if (!slug) {
     notFound()

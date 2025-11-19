@@ -134,15 +134,15 @@ export function buildLandingPageUrl(
   if (venueType && district) {
     const typeSlug = VENUE_TYPE_SLUGS[venueType]
     const districtSlug = DISTRICT_SLUGS[district]
-    return `/prostory/${typeSlug}-${districtSlug}`
+    return `/prostory/kategorie/${typeSlug}-${districtSlug}`
   }
 
   if (venueType) {
-    return `/prostory/${VENUE_TYPE_SLUGS[venueType]}`
+    return `/prostory/kategorie/${VENUE_TYPE_SLUGS[venueType]}`
   }
 
   if (district) {
-    return `/prostory/${DISTRICT_SLUGS[district]}`
+    return `/prostory/kategorie/${DISTRICT_SLUGS[district]}`
   }
 
   return '/prostory'

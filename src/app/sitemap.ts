@@ -70,7 +70,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const landingPages = generateAllLandingPageSlugs()
     routes.push(
       ...landingPages.map((page) => ({
-        url: `${BASE_URL}/prostory/${page.slug}`,
+        url: `${BASE_URL}/prostory/kategorie/${page.slug}`,
         lastModified: new Date(),
         changeFrequency: "weekly" as ChangeFreq,
         priority: page.priority,

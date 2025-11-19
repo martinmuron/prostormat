@@ -195,13 +195,21 @@ export function generateAllLandingPageSlugs(): {
   return pages
 }
 
+// Helper for Czech numeral declension
+function getCountText(count?: number): string {
+  if (!count) return ''
+  if (count === 1) return ` - ${count} prostor`
+  if (count >= 2 && count <= 4) return ` - ${count} prostory`
+  return ` - ${count} prostorů`
+}
+
 // Get SEO title for landing page
 export function getLandingPageTitle(
   venueType?: VenueType,
   district?: string,
   venueCount?: number
 ): string {
-  const countText = venueCount ? ` - ${venueCount} prostor` : ''
+  const countText = getCountText(venueCount)
 
   if (venueType && district) {
     return `${VENUE_TYPE_SEO_NAMES[venueType]} v ${district.replace('Praha', 'Praze')}${countText} | Prostormat`
@@ -224,18 +232,19 @@ export function getLandingPageDescription(
   district?: string,
   venueCount?: number
 ): string {
-  const countText = venueCount ? `${venueCount} ` : ''
-
   if (venueType && district) {
-    return `Najděte ideální ${VENUE_TYPE_SEO_NAMES[venueType].toLowerCase()} pro vaši akci v ${district.replace('Praha', 'Praze')}. Prohlédněte si ${countText}ověřených prostor s cenami a dostupností.`
+    const countPart = venueCount ? `Prohlédněte si ${venueCount} ověřených prostorů` : 'Prohlédněte si ověřené prostory'
+    return `Najděte ideální ${VENUE_TYPE_SEO_NAMES[venueType].toLowerCase()} pro vaši akci v ${district.replace('Praha', 'Praze')}. ${countPart} s cenami a dostupností.`
   }
 
   if (venueType) {
-    return `Hledáte ${VENUE_TYPE_SEO_NAMES[venueType].toLowerCase()} pro firemní akci, teambuilding nebo oslavu? Porovnejte ${countText}prostor v Praze na jednom místě.`
+    const countPart = venueCount ? `Porovnejte ${venueCount} prostorů` : 'Porovnejte prostory'
+    return `Hledáte ${VENUE_TYPE_SEO_NAMES[venueType].toLowerCase()} pro firemní akci, teambuilding nebo oslavu? ${countPart} v Praze na jednom místě.`
   }
 
   if (district) {
-    return `Objevte prostory pro firemní akce v ${district.replace('Praha', 'Praze')}. ${countText ? `${countText}ověřených ` : ''}míst pro konference, teambuildng, svatby a další události.`
+    const countPart = venueCount ? `Nabízíme ${venueCount} ověřených míst` : 'Nabízíme ověřená místa'
+    return `Objevte prostory pro firemní akce v ${district.replace('Praha', 'Praze')}. ${countPart} pro konference, teambuilding, svatby a další události.`
   }
 
   return 'Najděte ideální prostor pro vaši firemní akci v Praze. Ověřené prostory s cenami a dostupností.'
@@ -272,10 +281,12 @@ export function getLandingPageSEOContent(
 
   if (venueType && district) {
     return {
-      title: `Proč uspořádat akci v kategorii ${typeName} v části ${districtName}?`,
+      title: `Proč zvolit ${typeName} v městské části ${districtName}?`,
       paragraphs: [
-        `Hledáte ideální ${typeName} pro vaši firemní akci, večírek nebo konferenci v lokalitě ${districtName}? Tato část Prahy nabízí širokou škálu možností, které vyhoví každému rozpočtu i požadavkům. ${typeNameCapitalized} v této lokalitě jsou oblíbenou volbou díky skvělé dostupnosti a jedinečné atmosféře.`,
-        `Ať už plánujete formální setkání nebo neformální teambuilding, ${districtName} má co nabídnout. Naše nabídka zahrnuje prověřené ${typeName}, které disponují potřebným technickým zázemím, cateringovými službami a profesionálním personálem. Vyberte si z našeho seznamu a zarezervujte si ten pravý prostor ještě dnes.`
+        `Hledáte ideální ${typeName} pro vaši firemní akci, večírek nebo konferenci v lokalitě ${districtName}? Tato městská část Prahy nabízí širokou škálu možností, které vyhoví každému rozpočtu i požadavkům. ${typeNameCapitalized} v této lokalitě jsou oblíbenou volbou díky skvělé dostupnosti MHD a jedinečné atmosféře.`,
+        `Ať už plánujete formální setkání, prezentaci produktu nebo neformální teambuilding, ${districtName} má co nabídnout. Naše nabídka zahrnuje prověřené ${typeName}, které disponují potřebným technickým zázemím, možnostmi cateringu a profesionálním personálem připraveným pomoct s organizací vaší akce.`,
+        `Výhodou prostor v této lokalitě je také dobrá dopravní dostupnost pro účastníky z celé Prahy i mimopražské hosty. Mnoho ${typeName} nabízí parkování nebo se nachází v blízkosti stanic metra či tramvajových zastávek.`,
+        `Vyberte si z našeho seznamu ověřených prostorů a zarezervujte si ten pravý prostor pro vaši akci. Každý prostor obsahuje detailní informace o kapacitě, vybavení, cenách a dostupných termínech.`
       ]
     }
   }
@@ -284,18 +295,22 @@ export function getLandingPageSEOContent(
     return {
       title: `${typeNameCapitalized} pro každou příležitost v Praze`,
       paragraphs: [
-        `Praha je domovem stovek úžasných míst pro pořádání akcí. Pokud hledáte konkrétně ${typeName}, jste na správném místě. Nabízíme nejširší výběr v kategorii ${typeName} po celém hlavním městě, od historického centra až po moderní obchodní čtvrtě.`,
-        `Každý prostor v naší nabídce je detailně popsán, včetně kapacity, cen a vybavení, abyste mohli udělat informované rozhodnutí. ${typeNameCapitalized} jsou skvělou volbou pro firmy i soukromé osoby, které chtějí svou akci povýšit na novou úroveň.`
+        `Praha je domovem stovek úžasných míst pro pořádání akcí. Pokud hledáte konkrétně ${typeName}, jste na správném místě. Nabízíme široký výběr v kategorii ${typeName} po celém hlavním městě, od historického centra až po moderní obchodní čtvrtě na okraji Prahy.`,
+        `Každý prostor v naší nabídce je detailně popsán, včetně kapacity pro sezení i stání, orientačních cen pronájmu a dostupného vybavení. ${typeNameCapitalized} jsou skvělou volbou pro firmy i soukromé osoby, které chtějí svou akci uspořádat v profesionálním prostředí.`,
+        `Při výběru prostoru zvažte nejen kapacitu, ale také dostupnost pro vaše hosty, možnosti parkování a technické vybavení. Mnoho prostor nabízí také catering nebo spolupráci s ověřenými dodavateli občerstvení.`,
+        `Prohlédněte si fotografie, přečtěte si popis a kontaktujte majitele prostoru přímo přes náš formulář. Ušetříte čas a získáte rychlou odpověď na vaše dotazy ohledně dostupnosti a ceny.`
       ]
     }
   }
 
   if (district) {
     return {
-      title: `Nejlepší prostory pro akce v lokalitě ${districtName}`,
+      title: `Prostory pro akce v městské části ${districtName}`,
       paragraphs: [
-        `${districtName} patří mezi nejvyhledávanější lokality pro pořádání firemních i soukromých akcí v Praze. Díky své poloze a občanské vybavenosti je ideálním místem pro konference, večírky, svatby i školení.`,
-        `V této kategorii naleznete pečlivě vybrané prostory různých typů - od restaurací a barů až po konferenční sály a netradiční místa. Prozkoumejte možnosti, které ${districtName} nabízí, a najděte prostor, který přesně odpovídá vašim představám a potřebám vaší akce.`
+        `${districtName} patří mezi vyhledávané lokality pro pořádání firemních i soukromých akcí v Praze. Díky své poloze a občanské vybavenosti je ideálním místem pro konference, firemní večírky, svatby, školení i narozeninové oslavy.`,
+        `V této městské části naleznete pečlivě vybrané prostory různých typů - od restaurací a barů přes konferenční sály až po netradiční místa jako galerie, lofty nebo střešní terasy. Každý typ prostoru nabízí jedinečnou atmosféru pro váš event.`,
+        `Většina prostor v ${districtName} je dobře dostupná městskou hromadnou dopravou. Mnoho z nich nabízí také možnost parkování pro hosty nebo se nachází v blízkosti veřejných parkovišť.`,
+        `Prozkoumejte možnosti, které ${districtName} nabízí, a najděte prostor, který přesně odpovídá vašim představám. Můžete filtrovat podle kapacity, typu prostoru i cenového rozsahu a rychle najít to pravé místo pro vaši akci.`
       ]
     }
   }

@@ -4,7 +4,7 @@
  */
 
 import { getOptimizedImageUrl } from '@/lib/supabase-images'
-import { absoluteUrl, SITE_URL, DEFAULT_OG_IMAGE } from '@/lib/seo'
+import { absoluteUrl, SITE_URL } from '@/lib/seo'
 
 interface VenueData {
   name: string
@@ -233,6 +233,10 @@ interface BlogPostingSchemaOptions {
   tags?: string[]
 }
 
+/**
+ * Generate BlogPosting schema for blog post pages
+ * https://schema.org/BlogPosting
+ */
 export function generateBlogPostingSchema({
   title,
   description,
@@ -244,32 +248,81 @@ export function generateBlogPostingSchema({
   modifiedAt,
   tags,
 }: BlogPostingSchemaOptions) {
-  const image = coverImage ? absoluteUrl(coverImage) : DEFAULT_OG_IMAGE
-  const canonical = absoluteUrl(`/blog/${slug}`)
+  const url = absoluteUrl(`/blog/${slug}`)
 
-  return {
+  const schema: Record<string, unknown> = {
     '@context': 'https://schema.org',
     '@type': 'BlogPosting',
     headline: title,
     description,
-    image,
+    url,
     datePublished: publishedAt,
-    dateModified: modifiedAt ?? publishedAt,
-    mainEntityOfPage: canonical,
-    author: {
-      '@type': 'Person',
-      name: authorName ?? 'Prostormat tým',
+    dateModified: modifiedAt || publishedAt,
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': url,
     },
     publisher: {
       '@type': 'Organization',
       name: 'Prostormat',
       url: SITE_URL,
-      logo: {
-        '@type': 'ImageObject',
-        url: absoluteUrl('/images/logo-black.svg'),
-      },
     },
-    articleBody: contentHtml,
-    keywords: tags && tags.length ? tags.join(', ') : undefined,
   }
+
+  if (coverImage) {
+    schema.image = getOptimizedImageUrl(coverImage, 1200, 630)
+  }
+
+  if (authorName) {
+    schema.author = {
+      '@type': 'Person',
+      name: authorName,
+    }
+  }
+
+  if (tags && tags.length > 0) {
+    schema.keywords = tags.join(', ')
+  }
+
+  // Extract word count from content
+  const wordCount = contentHtml.replace(/<[^>]*>/g, '').split(/\s+/).length
+  schema.wordCount = wordCount
+
+  return schema
+}
+
+interface CollectionPageSchemaOptions {
+  title: string
+  description: string
+  url: string
+  items?: Array<{ name: string; url: string }>
+}
+
+export function generateCollectionPageSchema({
+  title,
+  description,
+  url,
+  items,
+}: CollectionPageSchemaOptions) {
+  const schema: Record<string, unknown> = {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: title,
+    description: description,
+    url: url,
+  }
+
+  if (items && items.length > 0) {
+    schema.mainEntity = {
+      '@type': 'ItemList',
+      itemListElement: items.map((item, index) => ({
+        '@type': 'ListItem',
+        position: index + 1,
+        name: item.name,
+        url: item.url,
+      })),
+    }
+  }
+
+  return schema
 }

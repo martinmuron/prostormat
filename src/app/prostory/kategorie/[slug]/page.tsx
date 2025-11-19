@@ -5,7 +5,7 @@ import type { Metadata } from "next"
 import { VenueFilters } from "@/components/venue/venue-filters"
 import { InfiniteVenueList } from "@/components/venue/infinite-venue-list"
 import { PageHero } from "@/components/layout/page-hero"
-import { DEFAULT_OG_IMAGE, DEFAULT_OG_IMAGES } from "@/lib/seo"
+import { DEFAULT_OG_IMAGE, DEFAULT_OG_IMAGES, SITE_URL } from "@/lib/seo"
 import { fetchRandomizedVenuePage, getCurrentSeed } from "@/lib/venue-order"
 import {
   parseLandingPageSlug,
@@ -17,6 +17,11 @@ import {
   VENUE_TYPE_SEO_NAMES,
   buildLandingPageUrl,
 } from "@/lib/seo-slugs"
+import {
+  generateBreadcrumbSchema,
+  generateCollectionPageSchema,
+  schemaToJsonLd,
+} from "@/lib/schema-markup"
 import { VenueType, PRAGUE_DISTRICTS } from "@/types"
 
 export const revalidate = 3600 // Revalidate every hour
@@ -496,6 +501,40 @@ export default async function LandingPage({
     district: district ?? resolvedSearchParams.district,
   }
 
+  // Schema.org: Breadcrumbs
+  const breadcrumbItems = [
+    { name: 'Domů', url: `${SITE_URL}` },
+    { name: 'Prostory', url: `${SITE_URL}/prostory` },
+  ]
+  if (venueType && district) {
+    breadcrumbItems.push({ 
+      name: VENUE_TYPE_SEO_NAMES[venueType], 
+      url: `${SITE_URL}${buildLandingPageUrl(venueType)}` 
+    })
+    breadcrumbItems.push({ 
+      name: `${district.replace('Praha', 'Praha')}`, 
+      url: `${SITE_URL}${buildLandingPageUrl(venueType, district)}` 
+    })
+  } else if (venueType) {
+    breadcrumbItems.push({ 
+      name: VENUE_TYPE_SEO_NAMES[venueType], 
+      url: `${SITE_URL}${buildLandingPageUrl(venueType)}` 
+    })
+  } else if (district) {
+    breadcrumbItems.push({ 
+      name: district, 
+      url: `${SITE_URL}${buildLandingPageUrl(undefined, district)}` 
+    })
+  }
+  const breadcrumbSchema = generateBreadcrumbSchema(breadcrumbItems)
+
+  // Schema.org: CollectionPage
+  const collectionSchema = generateCollectionPageSchema({
+    title: h1,
+    description: subtitle,
+    url: `${SITE_URL}/prostory/kategorie/${slug}`,
+  })
+
   const hero = (
     <PageHero
       eyebrow="Výběr prostorů"
@@ -515,6 +554,16 @@ export default async function LandingPage({
 
   return (
     <div className="min-h-screen bg-white">
+      {/* Schema.org JSON-LD */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={schemaToJsonLd(breadcrumbSchema)}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={schemaToJsonLd(collectionSchema)}
+      />
+
       {hero}
 
       {/* Venue Grid */}

@@ -13,8 +13,6 @@ import {
   getLandingPageDescription,
   getLandingPageH1,
   generateAllLandingPageSlugs,
-  VENUE_TYPE_SLUGS,
-  DISTRICT_SLUGS,
   VENUE_TYPE_SEO_NAMES,
   buildLandingPageUrl,
 } from "@/lib/seo-slugs"

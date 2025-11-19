@@ -156,7 +156,6 @@ export default function AdminQuickRequestsPage() {
   const [selectedVenueTypes, setSelectedVenueTypes] = useState<string[]>([])
   const [venueTypeCounts, setVenueTypeCounts] = useState<VenueTypeCount[]>([])
   const [pollingRequestId, setPollingRequestId] = useState<string | null>(null)
-  const [progressPercent, setProgressPercent] = useState(0)
 
   const fetchRequests = useCallback(async (status: StatusValue, page: number = 1, time: TimeFilterValue = "upcoming") => {
     setLoading(true)

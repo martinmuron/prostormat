@@ -270,7 +270,7 @@ export function generateBlogPostingSchema({
   }
 
   if (coverImage) {
-    schema.image = getOptimizedImageUrl(coverImage, 1200, 630)
+    schema.image = getOptimizedImageUrl(coverImage, 'large')
   }
 
   if (authorName) {

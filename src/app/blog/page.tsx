@@ -7,7 +7,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 import { db } from "@/lib/db"
-import { fallbackBlogPosts } from "@/data/blog-fallback-posts"
+import { staticBlogPosts } from "@/data/blog-posts"
 import { DEFAULT_OG_IMAGE, DEFAULT_OG_IMAGES } from "@/lib/seo"
 
 // Revalidate blog page every 60 seconds to show new posts
@@ -184,7 +184,7 @@ async function BlogGrid() {
           ...post,
           publishedAt: (post.publishedAt ?? post.createdAt).toISOString(),
         }))
-      : fallbackBlogPosts.map((post) => ({
+      : staticBlogPosts.map((post) => ({
           id: post.id,
           title: post.title,
           slug: post.slug,

@@ -5,7 +5,7 @@ import { notFound } from "next/navigation"
 import { Calendar, ArrowLeft, Share2, Clock, BookOpen, ChevronRight } from "lucide-react"
 
 import { db } from "@/lib/db"
-import { fallbackBlogPosts } from "@/data/blog-fallback-posts"
+import { staticBlogPosts } from "@/data/blog-posts"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { absoluteUrl, DEFAULT_OG_IMAGE, stripHtml } from "@/lib/seo"
@@ -39,7 +39,7 @@ function parseTags(value?: string | null) {
 }
 
 function mapFallbackPost(slug: string): BlogPostData | null {
-  const fallback = fallbackBlogPosts.find((post) => post.slug === slug)
+  const fallback = staticBlogPosts.find((post) => post.slug === slug)
   if (!fallback) return null
 
   return {

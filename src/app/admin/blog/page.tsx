@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { authOptions } from '@/lib/auth'
 import { db } from '@/lib/db'
-import { ensureFallbackBlogPosts } from '@/lib/blog-admin'
+import { ensureStaticBlogPosts } from '@/lib/blog-admin'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -27,9 +27,9 @@ export default async function AdminBlogPage() {
   }
 
   try {
-    await ensureFallbackBlogPosts(session.user.id)
+    await ensureStaticBlogPosts(session.user.id)
   } catch (error) {
-    console.error('Failed to seed fallback blog posts:', error)
+    console.error('Failed to seed static blog posts:', error)
   }
 
   const posts = await db.blogPost.findMany({

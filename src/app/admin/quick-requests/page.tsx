@@ -428,7 +428,6 @@ export default function AdminQuickRequestsPage() {
     async (requestId: string) => {
       setBulkSendingId(requestId)
       setPollingRequestId(requestId) // Start polling for real-time progress
-      setProgressPercent(0)
 
       try {
         const response = await fetch(`/api/admin/quick-requests/${requestId}/send-all`, {
@@ -495,7 +494,6 @@ export default function AdminQuickRequestsPage() {
         console.error(err)
         alert(err instanceof Error ? err.message : "Odeslání se nezdařilo")
         setPollingRequestId(null) // Stop polling on error
-        setProgressPercent(0)
       } finally {
         setBulkSendingId(null)
       }

@@ -31,6 +31,7 @@ if (supabaseUrl) {
 const nextConfig = {
   images: {
     remotePatterns,
+    unoptimized: true, // Use Supabase Image Transformations instead of Vercel
   },
   async redirects() {
     return [

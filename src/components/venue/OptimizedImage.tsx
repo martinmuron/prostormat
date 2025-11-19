@@ -92,7 +92,6 @@ export function OptimizedImage({
     priority,
     onError: () => setError(true),
     onClick,
-    unoptimized: false,
   } as const;
 
   if (fill) {

@@ -75,15 +75,26 @@ export function getOptimizedImageUrl(imagePath: string, size?: ImageSize): strin
     return imagePath;
   }
 
-  const sizeHint = size ?? 'medium';
-  const storageUrl = getImageStorageUrl(imagePath);
+  const supabaseUrl = resolveSupabaseUrl();
 
-  if (sizeHint === 'full') {
-    return storageUrl;
+  if (!supabaseUrl) {
+    console.warn('Supabase URL is not configured. Returning original image path.');
+    return imagePath;
   }
 
-  // Rely on Next.js image optimization to handle resizing to avoid Cloudflare cookies
-  return storageUrl;
+  const normalisedPath = normaliseStoragePath(imagePath);
+
+  // Size configurations for Supabase Image Transformations
+  const sizeConfig = {
+    thumbnail: { width: 400, quality: 75 },
+    medium: { width: 800, quality: 80 },
+    full: { width: 1600, quality: 85 },
+  };
+
+  const config = sizeConfig[size ?? 'medium'];
+
+  // Use Supabase render endpoint for image transformations
+  return `${supabaseUrl}/storage/v1/render/image/public/${SUPABASE_STORAGE_BUCKET}/${normalisedPath}?width=${config.width}&quality=${config.quality}`;
 }
 
 /**

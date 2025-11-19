@@ -55,7 +55,9 @@ export async function GET(
       .map(([type, count]) => ({
         type,
         count,
-        label: VENUE_TYPES[type as VenueType] || type,
+        // Use known label or capitalize first letter of unknown type
+        label: VENUE_TYPES[type as VenueType] ||
+          type.charAt(0).toUpperCase() + type.slice(1).replace(/-/g, ' '),
       }))
       .sort((a, b) => b.count - a.count) // Sort by count descending
 

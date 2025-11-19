@@ -73,7 +73,18 @@ function SignInForm() {
           }
         }
       } else {
-        router.push(callbackUrl)
+        // Fetch session to get user role for redirect
+        const sessionRes = await fetch("/api/auth/session")
+        const session = await sessionRes.json()
+
+        // Redirect based on role
+        if (session?.user?.role === "organizer") {
+          router.push("/organizator")
+        } else if (session?.user?.role === "admin") {
+          router.push("/admin")
+        } else {
+          router.push(callbackUrl)
+        }
       }
     } catch (error) {
       console.error("Failed to sign in:", error)

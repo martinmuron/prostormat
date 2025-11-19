@@ -64,7 +64,14 @@ const STATUS_OPTIONS = [
   { value: "all", label: "Vše" },
 ] as const
 
+const TIME_FILTER_OPTIONS = [
+  { value: "upcoming", label: "Aktuální" },
+  { value: "past", label: "Proběhlé" },
+  { value: "all", label: "Vše" },
+] as const
+
 type StatusValue = typeof STATUS_OPTIONS[number]["value"]
+type TimeFilterValue = typeof TIME_FILTER_OPTIONS[number]["value"]
 
 type ApiLog = Omit<QuickRequestLog, "sentAt"> & { sentAt: string | null }
 type ApiQuickRequest = Omit<QuickRequestItem, "createdAt" | "lastSentAt" | "logs" | "eventDate"> & {
@@ -132,6 +139,7 @@ export default function AdminQuickRequestsPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [statusFilter, setStatusFilter] = useState<StatusValue>("pending")
+  const [timeFilter, setTimeFilter] = useState<TimeFilterValue>("upcoming")
   const [sendingLogId, setSendingLogId] = useState<string | null>(null)
   const [bulkSendingId, setBulkSendingId] = useState<string | null>(null)
   const [resendingFailedId, setResendingFailedId] = useState<string | null>(null)
@@ -150,11 +158,11 @@ export default function AdminQuickRequestsPage() {
   const [pollingRequestId, setPollingRequestId] = useState<string | null>(null)
   const [progressPercent, setProgressPercent] = useState(0)
 
-  const fetchRequests = useCallback(async (status: StatusValue, page: number = 1) => {
+  const fetchRequests = useCallback(async (status: StatusValue, page: number = 1, time: TimeFilterValue = "upcoming") => {
     setLoading(true)
     setError(null)
     try {
-      const response = await fetch(`/api/admin/quick-requests?status=${status}&page=${page}&pageSize=50`, {
+      const response = await fetch(`/api/admin/quick-requests?status=${status}&timeFilter=${time}&page=${page}&pageSize=50`, {
         cache: "no-store",
       })
 
@@ -200,8 +208,8 @@ export default function AdminQuickRequestsPage() {
   useEffect(() => {
     // Don't auto-refresh while sending emails (polling handles updates)
     if (bulkSendingId) return
-    fetchRequests(statusFilter, currentPage)
-  }, [fetchRequests, statusFilter, currentPage, bulkSendingId])
+    fetchRequests(statusFilter, currentPage, timeFilter)
+  }, [fetchRequests, statusFilter, currentPage, timeFilter, bulkSendingId])
 
   const handlePageChange = useCallback((newPage: number) => {
     setCurrentPage(newPage)
@@ -209,6 +217,11 @@ export default function AdminQuickRequestsPage() {
 
   const handleStatusFilterChange = useCallback((newStatus: StatusValue) => {
     setStatusFilter(newStatus)
+    setCurrentPage(1)
+  }, [])
+
+  const handleTimeFilterChange = useCallback((newTime: TimeFilterValue) => {
+    setTimeFilter(newTime)
     setCurrentPage(1)
   }, [])
 
@@ -645,6 +658,18 @@ export default function AdminQuickRequestsPage() {
           <p className="text-sm text-gray-500">Přehled poptávek, které je potřeba manuálně odeslat provozovatelům.</p>
         </div>
         <div className="flex items-center gap-3">
+          <Select value={timeFilter} onValueChange={handleTimeFilterChange}>
+            <SelectTrigger className="w-36">
+              <SelectValue placeholder="Čas" />
+            </SelectTrigger>
+            <SelectContent>
+              {TIME_FILTER_OPTIONS.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
           <Select value={statusFilter} onValueChange={handleStatusFilterChange}>
             <SelectTrigger className="w-48">
               <SelectValue placeholder="Filtrovat stav" />
@@ -657,7 +682,7 @@ export default function AdminQuickRequestsPage() {
               ))}
             </SelectContent>
           </Select>
-          <Button variant="outline" onClick={() => fetchRequests(statusFilter, currentPage)} disabled={loading}>
+          <Button variant="outline" onClick={() => fetchRequests(statusFilter, currentPage, timeFilter)} disabled={loading}>
             <RefreshCw className={cn("h-4 w-4", loading && "animate-spin")} />
             Obnovit
           </Button>

@@ -309,15 +309,9 @@ export default function AdminQuickRequestsPage() {
           lastSentAt: data.lastSentAt ? new Date(data.lastSentAt) : request.lastSentAt,
         }))
 
-        // Update progress percentage based on filtered logs (will be recalculated in useEffect below)
-        // This is a temporary value that gets overwritten by the filtered calculation
-        const percent = data.totalVenues > 0 ? Math.round((data.sentCount / data.totalVenues) * 100) : 0
-        setProgressPercent(percent)
-
         // Stop polling when completed
         if (data.status === "completed" || data.pendingCount === 0) {
           setPollingRequestId(null)
-          setProgressPercent(0)
         }
       } catch (error) {
         console.error("Polling error:", error)

@@ -25,7 +25,7 @@ export async function GET(
       include: {
         venue: {
           select: {
-            venueTypes: true,
+            venueType: true,
           },
         },
       },
@@ -35,7 +35,9 @@ export async function GET(
     const typeCounts = new Map<string, number>()
 
     for (const log of logs) {
-      const venueTypes = log.venue?.venueTypes || []
+      // Handle both single venueType (SQLite) and array venueTypes (PostgreSQL)
+      const venueType = log.venue?.venueType
+      const venueTypes = venueType ? [venueType] : []
 
       // If venue has no types, count as "other"
       if (venueTypes.length === 0) {

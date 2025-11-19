@@ -40,7 +40,6 @@ export async function POST(
           id: true,
           name: true,
           slug: true,
-          district: true,
           contactEmail: true,
           capacityStanding: true,
           capacitySeated: true,

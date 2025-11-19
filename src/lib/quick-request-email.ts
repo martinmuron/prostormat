@@ -1,5 +1,6 @@
 import { resend, FROM_EMAIL, REPLY_TO_EMAIL } from "@/lib/resend"
 import { generateQuickRequestVenueNotificationEmail } from "@/lib/email-templates"
+import { validateAndExtractEmail, getEmailValidationError } from "@/lib/email-validation"
 
 interface QuickRequestContact {
   title?: string | null
@@ -24,12 +25,12 @@ export async function sendQuickRequestEmailToVenue(
     throw new Error(`Venue ${venue.name} nemá vyplněný kontaktní email`)
   }
 
-  // Handle multiple comma-separated emails - use only the first valid one
-  const emails = venue.contactEmail.split(',').map(e => e.trim()).filter(e => e.length > 0)
-  const recipientEmail = emails[0]
+  // Validate and extract email - ensures ASCII-only for Resend compatibility
+  const recipientEmail = validateAndExtractEmail(venue.contactEmail)
 
   if (!recipientEmail) {
-    throw new Error(`Venue ${venue.name} nemá platný kontaktní email`)
+    const errorDetail = getEmailValidationError(venue.contactEmail)
+    throw new Error(`Venue ${venue.name}: ${errorDetail || "Neplatný kontaktní email"}`)
   }
 
   const emailContent = generateQuickRequestVenueNotificationEmail({

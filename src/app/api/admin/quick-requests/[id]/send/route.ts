@@ -44,8 +44,8 @@ export async function POST(
       ...(venueTypes && venueTypes.length > 0 && !venueId
         ? {
             venue: {
-              venueTypes: {
-                hasSome: venueTypes,
+              venueType: {
+                in: venueTypes,
               },
             },
           }
@@ -57,10 +57,10 @@ export async function POST(
           id: true,
           name: true,
           slug: true,
-          district: true,
           contactEmail: true,
           capacityStanding: true,
           capacitySeated: true,
+          venueType: true,
         },
       },
     },

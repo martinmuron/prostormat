@@ -80,6 +80,51 @@ export function Footer() {
           </div>
         </div>
 
+        {/* Popular Searches - SEO Internal Links */}
+        <div className="mt-8 pt-8 border-t border-gray-200">
+          <h4 className="text-headline font-semibold text-black mb-4">
+            Oblíbené vyhledávání
+          </h4>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
+            <Link href="/prostory/konferencni-prostory" className="text-sm text-gray-600 hover:text-black transition-colors">
+              Konferenční prostory
+            </Link>
+            <Link href="/prostory/lofty" className="text-sm text-gray-600 hover:text-black transition-colors">
+              Lofty
+            </Link>
+            <Link href="/prostory/restaurace" className="text-sm text-gray-600 hover:text-black transition-colors">
+              Restaurace
+            </Link>
+            <Link href="/prostory/hotely" className="text-sm text-gray-600 hover:text-black transition-colors">
+              Hotely
+            </Link>
+            <Link href="/prostory/stresni-terasy" className="text-sm text-gray-600 hover:text-black transition-colors">
+              Střešní terasy
+            </Link>
+            <Link href="/prostory/galerie" className="text-sm text-gray-600 hover:text-black transition-colors">
+              Galerie
+            </Link>
+            <Link href="/prostory/praha-1" className="text-sm text-gray-600 hover:text-black transition-colors">
+              Praha 1
+            </Link>
+            <Link href="/prostory/praha-2" className="text-sm text-gray-600 hover:text-black transition-colors">
+              Praha 2
+            </Link>
+            <Link href="/prostory/praha-3" className="text-sm text-gray-600 hover:text-black transition-colors">
+              Praha 3
+            </Link>
+            <Link href="/prostory/praha-7" className="text-sm text-gray-600 hover:text-black transition-colors">
+              Praha 7
+            </Link>
+            <Link href="/prostory/lofty-praha-7" className="text-sm text-gray-600 hover:text-black transition-colors">
+              Lofty Praha 7
+            </Link>
+            <Link href="/prostory/konferencni-prostory-praha-1" className="text-sm text-gray-600 hover:text-black transition-colors">
+              Konference Praha 1
+            </Link>
+          </div>
+        </div>
+
         {/* Bottom Bar */}
         <div className="mt-12 pt-8 border-t border-gray-200">
           <div className="flex flex-col md:flex-row justify-between items-center">

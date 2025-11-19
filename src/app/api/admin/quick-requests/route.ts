@@ -76,11 +76,11 @@ export async function GET(request: Request) {
               select: {
                 id: true,
                 name: true,
-                district: true,
+                slug: true,
                 capacityStanding: true,
                 capacitySeated: true,
                 contactEmail: true,
-                venueTypes: true,
+                venueType: true,
               },
             },
           },

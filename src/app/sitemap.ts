@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next"
 import { db } from "@/lib/db"
 import { SITE_URL } from "@/lib/seo"
+import { generateAllLandingPageSlugs } from "@/lib/seo-slugs"
 
 const BASE_URL = SITE_URL
 
@@ -62,6 +63,21 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     )
   } catch (error) {
     console.error("Failed to build venue sitemap entries:", error)
+  }
+
+  // SEO landing pages (venue type + district combinations)
+  try {
+    const landingPages = generateAllLandingPageSlugs()
+    routes.push(
+      ...landingPages.map((page) => ({
+        url: `${BASE_URL}/prostory/${page.slug}`,
+        lastModified: new Date(),
+        changeFrequency: "weekly" as ChangeFreq,
+        priority: page.priority,
+      }))
+    )
+  } catch (error) {
+    console.error("Failed to build landing page sitemap entries:", error)
   }
 
   try {

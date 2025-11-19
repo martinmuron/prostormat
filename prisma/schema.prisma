@@ -63,6 +63,7 @@ model User {
   venueBroadcasts  VenueBroadcast[]
   venueClaims      VenueClaim[]
   venueSubmissions VenueSubmissionRequest[]
+  emailFlowLogs    EmailFlowLog[]
   createdAt        DateTime                 @default(now())
 }
 
@@ -225,9 +226,36 @@ model VenueBroadcastLog {
   sentAt      DateTime @default(now())
   emailStatus String   @default("pending") // pending, sent, delivered, failed, skipped
   emailError  String? // Error message if email failed
+  status      String   @default("new") // new, answered, completed - venue manager response status
+
+  // Resend tracking fields
+  resendEmailId     String?   @unique
+  emailDeliveredAt  DateTime?
+  emailOpenedAt     DateTime?
+  emailClickedAt    DateTime?
+  emailBouncedAt    DateTime?
+  bounceType        String?
+  emailComplainedAt DateTime?
+  openCount         Int?      @default(0)
+  clickCount        Int?      @default(0)
 
   broadcast VenueBroadcast @relation(fields: [broadcastId], references: [id])
   venue     Venue          @relation(fields: [venueId], references: [id])
+}
+
+model EmailFlowLog {
+  id            String   @id
+  emailType     String
+  recipient     String
+  subject       String
+  status        String
+  error         String?
+  recipientType String?
+  sentBy        String
+  resendEmailId String?  @unique
+  createdAt     DateTime @default(now())
+
+  user User @relation(fields: [sentBy], references: [id])
 }
 
 model VenueSubmissionRequest {

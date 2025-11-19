@@ -310,7 +310,8 @@ export default function AdminQuickRequestsPage() {
           lastSentAt: data.lastSentAt ? new Date(data.lastSentAt) : request.lastSentAt,
         }))
 
-        // Update progress percentage
+        // Update progress percentage based on filtered logs (will be recalculated in useEffect below)
+        // This is a temporary value that gets overwritten by the filtered calculation
         const percent = data.totalVenues > 0 ? Math.round((data.sentCount / data.totalVenues) * 100) : 0
         setProgressPercent(percent)
 
@@ -620,6 +621,18 @@ export default function AdminQuickRequestsPage() {
     return filteredLogs.filter((log) => log.emailStatus === "pending").length
   }, [filteredLogs])
 
+  const filteredSentCount = useMemo(() => {
+    return filteredLogs.filter((log) => log.emailStatus === "sent").length
+  }, [filteredLogs])
+
+  // Determine if we're using a filter - when no filter, use aggregate counts (updated by polling)
+  const isFiltered = selectedVenueTypes.length > 0
+
+  // Display counts - use aggregate when unfiltered (polling updates these), filtered counts when filtered
+  const displaySentCount = isFiltered ? filteredSentCount : (selectedRequest?.sentCount ?? 0)
+  const displayPendingCount = isFiltered ? filteredPendingCount : (selectedRequest?.pendingCount ?? 0)
+  const displayTotalCount = isFiltered ? filteredLogs.length : (selectedRequest?.totalVenues ?? 0)
+
   const handleDelete = useCallback(
     async (requestId: string) => {
       const confirmed = window.confirm("Opravdu chcete tuto poptávku smazat? Tuto akci nelze vrátit.")
@@ -813,11 +826,11 @@ export default function AdminQuickRequestsPage() {
                             selectedRequest.status}
                       </Badge>
                       <Badge variant="outline" className="border-emerald-200 bg-emerald-50 text-emerald-700">
-                        Odesláno {selectedRequest.sentCount}/{selectedRequest.totalVenues}
+                        Odesláno {displaySentCount}/{displayTotalCount}
                       </Badge>
-                      {selectedRequest.pendingCount > 0 && (
+                      {displayPendingCount > 0 && (
                         <Badge variant="outline" className="border-amber-200 bg-amber-50 text-amber-700">
-                          Čeká {selectedRequest.pendingCount}
+                          Čeká {displayPendingCount}
                         </Badge>
                       )}
                       <Button
@@ -848,13 +861,13 @@ export default function AdminQuickRequestsPage() {
                           <span className="text-sm font-medium text-blue-900">Odesílání emailů...</span>
                         </div>
                         <span className="text-sm font-semibold text-blue-900">
-                          {selectedRequest.sentCount}/{selectedRequest.totalVenues} ({progressPercent}%)
+                          {displaySentCount}/{displayTotalCount} ({displayTotalCount > 0 ? Math.round((displaySentCount / displayTotalCount) * 100) : 0}%)
                         </span>
                       </div>
                       <div className="h-2 w-full bg-blue-200 rounded-full overflow-hidden">
                         <div
                           className="h-full bg-blue-600 transition-all duration-500 ease-out"
-                          style={{ width: `${progressPercent}%` }}
+                          style={{ width: `${displayTotalCount > 0 ? Math.round((displaySentCount / displayTotalCount) * 100) : 0}%` }}
                         />
                       </div>
                       <p className="text-xs text-blue-700 mt-2">

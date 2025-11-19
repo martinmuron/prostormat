@@ -27,7 +27,7 @@ export async function POST(
     // Find user by email
     const user = await db.user.findUnique({
       where: { email },
-      select: { id: true, role: true, name: true, email: true }
+      select: { id: true, role: true, name: true, email: true, emailVerified: true }
     })
 
     if (!user) {
@@ -35,10 +35,14 @@ export async function POST(
     }
 
     // Update user role to venue_manager if they're not already
-    if (user.role !== "venue_manager") {
+    // Also auto-verify email if not already verified (admin-assigned managers are trusted)
+    if (user.role !== "venue_manager" || !user.emailVerified) {
       await db.user.update({
         where: { id: user.id },
-        data: { role: "venue_manager" }
+        data: {
+          role: "venue_manager",
+          emailVerified: user.emailVerified ?? new Date(), // Auto-verify if not already verified
+        }
       })
     }
 

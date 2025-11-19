@@ -269,7 +269,6 @@ export function getLandingPageSEOContent(
   const typeName = venueType ? VENUE_TYPE_SEO_NAMES[venueType].toLowerCase() : 'prostory'
   const typeNameCapitalized = venueType ? VENUE_TYPE_SEO_NAMES[venueType] : 'Prostory'
   const districtName = district ? district : 'Praha'
-  const districtNameIn = district ? district.replace('Praha', 'Praze') : 'Praze'
 
   if (venueType && district) {
     return {

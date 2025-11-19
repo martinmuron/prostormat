@@ -10,7 +10,7 @@ export function RoiCalculator() {
   const [rentalPrice, setRentalPrice] = useState(15000)
   const [currentInquiries, setCurrentInquiries] = useState(2)
 
-  const monthlyFee = 690
+  const monthlyFee = 1000
   const estimatedIncrease = 3 // 3x increase based on testimonial
   const potentialInquiries = currentInquiries * estimatedIncrease
   const additionalInquiries = potentialInquiries - currentInquiries

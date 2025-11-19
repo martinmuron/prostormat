@@ -80,7 +80,7 @@ export function generateOrganizationSchema() {
     name: 'Prostormat',
     url: baseUrl,
     logo: absoluteUrl('/images/logo-black.svg'),
-    description: 'Největší katalog event prostorů v Praze. Najděte perfektní prostor pro vaši firemní akci, svatbu, teambuilding nebo konferenci.',
+    description: 'Rozsáhlý katalog event prostorů v Praze. Najděte perfektní prostor pro vaši firemní akci, svatbu, teambuilding nebo konferenci.',
     address: {
       '@type': 'PostalAddress',
       addressLocality: 'Praha',

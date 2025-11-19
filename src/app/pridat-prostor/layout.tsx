@@ -3,7 +3,7 @@ import { DEFAULT_OG_IMAGE, DEFAULT_OG_IMAGES } from "@/lib/seo"
 
 export const metadata: Metadata = {
   title: "Přidat prostor - Prostormat | Zaregistrujte svůj event prostor zdarma",
-  description: "Zaregistrujte svůj event prostor a oslovte tisíce organizátorů firemních akcí, konferencí a teambuilding v Praze. Bezplatná registrace, žádné provize, okamžitá viditelnost.",
+  description: "Zaregistrujte svůj event prostor a oslovte stovky organizátorů firemních akcí, konferencí a teambuilding v Praze. Bezplatná registrace, žádné provize, viditelnost do 48-72 hodin.",
   keywords: [
     "přidat prostor",
     "registrace event prostor",
@@ -15,7 +15,7 @@ export const metadata: Metadata = {
   ],
   openGraph: {
     title: "Přidat prostor - Prostormat",
-    description: "Zaregistrujte svůj event prostor a oslovte tisíce organizátorů firemních akcí v Praze. Bezplatná registrace, žádné provize.",
+    description: "Zaregistrujte svůj event prostor a oslovte stovky organizátorů firemních akcí v Praze. Bezplatná registrace, žádné provize.",
     url: "https://prostormat.cz/pridat-prostor",
     siteName: "Prostormat",
     images: [...DEFAULT_OG_IMAGES],
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Přidat prostor - Prostormat",
-    description: "Zaregistrujte svůj event prostor a oslovte tisíce organizátorů firemních akcí v Praze.",
+    description: "Zaregistrujte svůj event prostor a oslovte stovky organizátorů firemních akcí v Praze.",
     images: [DEFAULT_OG_IMAGE]
   },
   alternates: {

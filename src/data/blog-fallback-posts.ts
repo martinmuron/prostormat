@@ -242,22 +242,22 @@ export const fallbackBlogPosts: FallbackBlogPost[] = [
     title: "10 Důvodů Proč se Připojit k Prostormat",
     slug: "10-duvodu-proc-se-pripojit-k-prostormat",
     excerpt:
-      "Vlastníte eventový prostor, ale rezervace nepřibývají? Zjistěte, jak Prostormat pomáhá stovkám prostor generovat 3× více poptávek za pouhých 690 Kč měsíčně. ROI kalkulačka, reálné příběhy a odpovědi na všechny vaše otázky.",
+      "Vlastníte eventový prostor, ale rezervace nepřibývají? Zjistěte, jak Prostormat pomáhá stovkám prostor generovat 3× více poptávek za pouhých 1 000 Kč měsíčně. ROI kalkulačka, reálné příběhy a odpovědi na všechny vaše otázky.",
     content: `
       <h2>Máte skvělý prostor, ale rezervace nepřibývají?</h2>
 
 <p>Vlastníte eventový prostor nebo místo vhodné pro firemní akce, svatby či teambuildingy – ale poptávky přicházejí nepravidelně nebo vůbec? Organizátoři akcí dnes nehledají prostory v inzerátech. Hledají je tam, kde mají přehled, recenze a možnost rychlého kontaktu.</p>
 
-<p><strong>Prostormat je přesně to místo.</strong> Platforma, která spojuje majitele kvalitních prostor s tisíci aktivními organizátory. Za pouhých <strong>690 Kč měsíčně</strong> získáte profesionální viditelnost, automatickou kvalifikaci poptávek a přístup k zákazníkům, ke kterým byste se jinak nikdy nedostali.</p>
+<p><strong>Prostormat je přesně to místo.</strong> Platforma, která spojuje majitele kvalitních prostor se stovkami aktivních organizátorů. Za pouhých <strong>1 000 Kč měsíčně</strong> získáte profesionální viditelnost, automatickou kvalifikaci poptávek a přístup k zákazníkům, ke kterým byste se jinak nikdy nedostali.</p>
 
 <p>Proč se k nám už připojilo přes <strong>200 prostor po celé České republice</strong>? Pojďme si to ukázat na deseti konkrétních důvodech.</p>
 
 <div class="bg-blue-50 border-l-4 border-blue-600 p-6 my-8 rounded-r-lg">
   <p class="text-lg font-semibold text-blue-900 mb-2">💡 Tip: Než budete číst dál...</p>
-  <p class="text-gray-700">Vyzkoušejte výpočet návratnosti investice. S průměrnou cenou pronájmu 15 000 Kč se investice 690 Kč vrátí už po první rezervaci – to je návratnost <strong>21×</strong>!</p>
+  <p class="text-gray-700">Vyzkoušejte výpočet návratnosti investice. S průměrnou cenou pronájmu 15 000 Kč se investice 1 000 Kč vrátí už po první rezervaci – to je návratnost <strong>21×</strong>!</p>
 </div>
 
-<h2>1. Tisíce Aktivních Organizátorů Hledají Váš Prostor Právě Teď</h2>
+<h2>1. Stovky Aktivních Organizátorů Hledají Váš Prostor Právě Teď</h2>
 
 <p>Každý den navštíví Prostormat stovky organizátorů, kteří aktivně plánují akce – od firemních konferencí přes svatby až po produktové launche. <strong>Nejsou to náhodní návštěvníci</strong>. Jsou to lidé s konkrétním datem, rozpočtem a potřebou rychle najít perfektní místo.</p>
 
@@ -277,7 +277,7 @@ export const fallbackBlogPosts: FallbackBlogPost[] = [
 
 <h2>2. ROI Už Po První Rezervaci – Kalkulujte Sami</h2>
 
-<p>Investice 690 Kč měsíčně. Průměrná cena pronájmu eventového prostoru v Praze: <strong>15 000 Kč</strong>.</p>
+<p>Investice 1 000 Kč měsíčně. Průměrná cena pronájmu eventového prostoru v Praze: <strong>15 000 Kč</strong>.</p>
 
 <p>To znamená, že <strong>stačí jediná rezervace za měsíc</strong> a investice se vrátila 21×. Každá další poptávka je čistý zisk.</p>
 
@@ -290,7 +290,7 @@ export const fallbackBlogPosts: FallbackBlogPost[] = [
 
 <div class="text-center my-8">
   <a href="/pridat-prostor" class="inline-flex items-center justify-center gap-2 rounded-full bg-blue-600 px-8 py-4 text-base font-semibold text-white shadow-lg transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl hover:bg-blue-700">
-    Aktivovat můj prostor za 690 Kč/měsíc
+    Aktivovat můj prostor za 1 000 Kč/měsíc
   </a>
 </div>
 
@@ -353,7 +353,7 @@ export const fallbackBlogPosts: FallbackBlogPost[] = [
   </p>
   <div class="flex flex-col sm:flex-row gap-4 justify-center">
     <a href="/pridat-prostor" class="inline-flex items-center justify-center gap-2 rounded-full bg-white px-8 py-4 text-base font-semibold text-blue-600 shadow-lg transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl">
-      Aktivovat prostor (690 Kč/měsíc)
+      Aktivovat prostor (1 000 Kč/měsíc)
     </a>
     <a href="/kontakt" class="inline-flex items-center justify-center gap-2 rounded-full border-2 border-white px-8 py-4 text-base font-semibold text-white transition-all duration-300 hover:bg-white/10">
       Chci poradit
@@ -380,7 +380,7 @@ export const fallbackBlogPosts: FallbackBlogPost[] = [
 <p>To znamená:</p>
 
 <ul>
-  <li>✅ <strong>690 Kč měsíčně</strong> – bez ohledu na počet rezervací</li>
+  <li>✅ <strong>1 000 Kč měsíčně</strong> – bez ohledu na počet rezervací</li>
   <li>✅ <strong>Žádné provize</strong> – 100 % příjmu z pronájmu je váš</li>
   <li>✅ <strong>Zrušit můžete kdykoli</strong> – bez výpovědních lhůt nebo sankcí</li>
   <li>✅ <strong>Žádné skryté poplatky</strong> – platíte jen to, co vidíte</li>
@@ -392,7 +392,7 @@ export const fallbackBlogPosts: FallbackBlogPost[] = [
   <h4 class="font-bold text-green-900 text-lg mb-2">💰 Porovnání s konkurencí</h4>
   <div class="space-y-2 text-sm text-green-800">
     <p><strong>Booking platformy:</strong> 15 % provize = při pronájmu za 15 000 Kč platíte 2 250 Kč</p>
-    <p><strong>Prostormat:</strong> Fixně 690 Kč/měsíc = <span class="text-green-600 font-bold">ušetříte 1 560 Kč na každé rezervaci</span></p>
+    <p><strong>Prostormat:</strong> Fixně 1 000 Kč/měsíc = <span class="text-green-600 font-bold">ušetříte 1 560 Kč na každé rezervaci</span></p>
   </div>
 </div>
 
@@ -405,7 +405,7 @@ export const fallbackBlogPosts: FallbackBlogPost[] = [
 <p>Průměrná doba od aktivace profilu k první poptávce? <strong>Méně než 48 hodin.</strong> Proč?</p>
 
 <ul>
-  <li>Platformu denně navštěvují tisíce organizátorů</li>
+  <li>Platformu denně navštěvují stovky organizátorů</li>
   <li>Nové prostory se automaticky zobrazují v sekcích "Novinky"</li>
   <li>Filtrovací systém okamžitě propojí váš prostor s relevantními poptávkami</li>
   <li>Notifikace zajistí, že poptávku zpracujete během několika minut</li>
@@ -476,8 +476,8 @@ export const fallbackBlogPosts: FallbackBlogPost[] = [
 
 <div class="space-y-4 my-8">
   <details class="bg-gray-50 border border-gray-200 rounded-xl p-5">
-    <summary class="font-semibold text-gray-900 cursor-pointer">Je opravdu jen 690 Kč měsíčně? Nejsou tam žádné další poplatky?</summary>
-    <p class="mt-3 text-gray-700">Ano, 690 Kč měsíčně je jediný poplatek. Žádné provize, žádné skryté náklady, žádné poplatky za rezervace. Zrušit můžete kdykoli bez výpovední lhůty.</p>
+    <summary class="font-semibold text-gray-900 cursor-pointer">Je opravdu jen 1 000 Kč měsíčně? Nejsou tam žádné další poplatky?</summary>
+    <p class="mt-3 text-gray-700">Ano, 1 000 Kč měsíčně je jediný poplatek. Žádné provize, žádné skryté náklady, žádné poplatky za rezervace. Zrušit můžete kdykoli bez výpovední lhůty.</p>
   </details>
 
   <details class="bg-gray-50 border border-gray-200 rounded-xl p-5">
@@ -512,10 +512,10 @@ export const fallbackBlogPosts: FallbackBlogPost[] = [
 
 <p><strong>Prostormat je ten most.</strong></p>
 
-<p>Za 690 Kč měsíčně získáte:</p>
+<p>Za 1 000 Kč měsíčně získáte:</p>
 
 <ul>
-  <li>✅ Přístup k tisícům aktivních organizátorů</li>
+  <li>✅ Přístup ke stovkám aktivních organizátorů</li>
   <li>✅ Průměrně 15+ kvalifikovaných poptávek měsíčně</li>
   <li>✅ Profesionální prezentaci vašeho prostoru</li>
   <li>✅ ROI už po první rezervaci</li>
@@ -529,11 +529,11 @@ export const fallbackBlogPosts: FallbackBlogPost[] = [
   <h3 class="text-3xl font-bold mb-4">Jste připraveni na první poptávku?</h3>
   <p class="text-blue-100 mb-8 max-w-2xl mx-auto text-lg">
     Aktivujte svůj prostor ještě dnes a začněte dostávat relevantní poptávky už zítra.
-    Tisíce organizátorů čeká.
+    Stovky organizátorů čekají.
   </p>
   <div class="flex flex-col sm:flex-row gap-4 justify-center">
     <a href="/pridat-prostor" class="inline-flex items-center justify-center gap-2 rounded-full bg-white px-10 py-5 text-lg font-bold text-purple-600 shadow-2xl transition-all duration-300 hover:-translate-y-1 hover:shadow-3xl">
-      Aktivovat prostor za 690 Kč/měsíc
+      Aktivovat prostor za 1 000 Kč/měsíc
     </a>
     <a href="/kontakt" class="inline-flex items-center justify-center gap-2 rounded-full border-2 border-white px-10 py-5 text-lg font-semibold text-white transition-all duration-300 hover:bg-white/20">
       Mám ještě otázky
@@ -557,6 +557,6 @@ export const fallbackBlogPosts: FallbackBlogPost[] = [
     tags: JSON.stringify(["Pro majitele", "Růst byznysu", "Marketing"]),
     metaTitle: "10 Důvodů Proč Připojit Svůj Prostor k Prostormat | ROI Kalkulačka",
     metaDescription:
-      "Zjistěte, proč se 200+ prostor rozhodlo pro Prostormat. Interaktivní ROI kalkulačka + skutečné příběhy majitelů. První poptávka do 48 hodin. Jen 690 Kč/měsíc, žádné provize.",
+      "Zjistěte, proč se 200+ prostor rozhodlo pro Prostormat. Interaktivní ROI kalkulačka + skutečné příběhy majitelů. První poptávka do 48 hodin. Jen 1 000 Kč/měsíc, žádné provize.",
   },
 ]

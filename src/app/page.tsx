@@ -505,7 +505,7 @@ export default function HomePage() {
                       Získejte klienty
                     </h3>
                     <p className="text-gray-600">
-                      Tisíce organizátorů hledá prostory každý měsíc - buďte vidět!
+                      Stovky organizátorů hledá prostory každý měsíc - buďte vidět!
                     </p>
                   </div>
                 </div>

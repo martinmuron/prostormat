@@ -49,10 +49,10 @@ export default function AboutUsPage() {
   ]
 
   const stats = [
-    { number: "500+", label: "Prostor v databázi" },
-    { number: "1000+", label: "Spokojených klientů" },
-    { number: "50+", label: "Měst po celé ČR" },
-    { number: "24/7", label: "Podpora" }
+    { number: "200+", label: "Prostor v databázi" },
+    { number: "100+", label: "Spokojených klientů" },
+    { number: "Praha", label: "Hlavní region" },
+    { number: "24/7", label: "Online dostupnost" }
   ]
 
   return (

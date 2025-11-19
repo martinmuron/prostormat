@@ -12,7 +12,7 @@ export function Footer() {
               <Logo variant="black" size="md" href="/" />
             </div>
             <p className="text-body text-gray-600 max-w-md">
-              Největší katalog event prostorů v Praze. Spojujeme organizátory akcí s jedinečnými prostory.
+              Rozsáhlý katalog event prostorů v Praze. Spojujeme organizátory akcí s jedinečnými prostory.
             </p>
           </div>
 

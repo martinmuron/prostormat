@@ -12,6 +12,7 @@ import {
   getLandingPageTitle,
   getLandingPageDescription,
   getLandingPageH1,
+  getLandingPageSEOContent,
   generateAllLandingPageSlugs,
   VENUE_TYPE_SEO_NAMES,
   buildLandingPageUrl,
@@ -315,6 +316,34 @@ function PaginationLinks({
   )
 }
 
+// SEO Content component for rich text
+function SeoContent({
+  venueType,
+  district,
+}: {
+  venueType?: VenueType
+  district?: string
+}) {
+  const content = getLandingPageSEOContent(venueType, district)
+
+  if (!content) return null
+
+  return (
+    <div className="mt-16 mb-8 bg-gray-50 rounded-2xl p-6 sm:p-10">
+      <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-4">
+        {content.title}
+      </h2>
+      <div className="prose prose-gray max-w-none">
+        {content.paragraphs.map((paragraph, index) => (
+          <p key={index} className="text-gray-600 leading-relaxed">
+            {paragraph}
+          </p>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 // Related links component for internal linking
 function RelatedLinks({
   venueType,
@@ -502,6 +531,7 @@ export default async function LandingPage({
           />
         </Suspense>
 
+        <SeoContent venueType={venueType} district={district} />
         <RelatedLinks venueType={venueType} district={district} />
       </div>
     </div>

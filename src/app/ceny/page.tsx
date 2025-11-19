@@ -332,7 +332,7 @@ export default async function PricingPage() {
               Připraveni začít?
             </h2>
             <p className="text-lg sm:text-title-3 text-gray-600 max-w-3xl mx-auto leading-relaxed font-medium mb-12">
-              Přidejte svůj prostor na největší platformu event prostorů v Praze
+              Přidejte svůj prostor na Prostormat
               a začněte získávat nové klienty už dnes.
             </p>
             

@@ -4,13 +4,13 @@ import { DEFAULT_OG_IMAGE, DEFAULT_OG_IMAGES } from "@/lib/seo"
 
 export const metadata: Metadata = {
   title: "O nás | Prostormat",
-  description: "Poznejte tým Prostormat, naši vizi pro eventový trh v Česku a principy, podle kterých budujeme největší katalog eventových prostorů.",
+  description: "Poznejte tým Prostormat, naši vizi pro eventový trh v Česku a principy, podle kterých pomáháme najít prostory pro akce.",
   alternates: {
     canonical: "https://prostormat.cz/o-nas",
   },
   openGraph: {
     title: "O Prostormat | Příběh eventového katalogu",
-    description: "Budujeme největší český katalog eventových prostorů a propojeme organizátory akcí s majiteli lokací.",
+    description: "Propojujeme organizátory akcí s majiteli lokací v Praze a po celém Česku.",
     url: "https://prostormat.cz/o-nas",
     images: [...DEFAULT_OG_IMAGES],
     locale: "cs_CZ",
@@ -88,7 +88,7 @@ export default function AboutUsPage() {
               teambuilding nebo soukromou oslavu.
             </p>
             <p className="text-lg text-gray-700 leading-relaxed mb-6">
-              Naší vizí je vytvořit největší a nejkvalitnější databázi prostor v České republice, 
+              Naší vizí je vytvořit kvalitní a přehlednou databázi prostor v České republice,
               kde se organizátoři akcí setkají s majiteli prostor v přátelském a profesionálním prostředí.
             </p>
             <p className="text-lg text-gray-700 leading-relaxed">

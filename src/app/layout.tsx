@@ -10,8 +10,8 @@ import { generateOrganizationSchema, generateWebSiteSchema, schemaToJsonLd } fro
 import { DEFAULT_OG_IMAGE, DEFAULT_OG_IMAGES, SITE_URL } from "@/lib/seo"
 
 export const metadata: Metadata = {
-  title: "Prostormat - Největší katalog event prostorů v Praze",
-  description: "Hledáte prostor na firemní akci, svatbu, konferenci nebo teambuilding? Prostormat je největší katalog event prostorů v Praze s 866+ lokacemi. Najděte perfektní prostor pro vaši akci.",
+  title: "Prostormat - Tvůj nový kámoš na hledání prostorů pro akce",
+  description: "Hledáte prostor na firemní akci, svatbu, konferenci nebo teambuilding? Prostormat vám pomůže najít perfektní prostor pro vaši akci v Praze.",
   keywords: [
     'firemní akce Praha',
     'event prostory Praha',
@@ -30,8 +30,8 @@ export const metadata: Metadata = {
   applicationName: "Prostormat",
   category: "Eventy",
   openGraph: {
-    title: 'Prostormat - Největší katalog event prostorů v Praze',
-    description: 'Hledáte prostor na firemní akci, svatbu, konferenci nebo teambuilding? Najděte perfektní prostor z 866+ lokací v Praze.',
+    title: 'Prostormat - Tvůj nový kámoš na hledání prostorů pro akce',
+    description: 'Hledáte prostor na firemní akci, svatbu, konferenci nebo teambuilding? Prostormat vám pomůže najít perfektní prostor pro vaši akci v Praze.',
     url: 'https://prostormat.cz',
     siteName: 'Prostormat',
     images: [...DEFAULT_OG_IMAGES],
@@ -40,8 +40,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Prostormat - Největší katalog event prostorů v Praze',
-    description: 'Hledáte prostor na firemní akci, svatbu, konferenci nebo teambuilding? Najděte perfektní prostor z 866+ lokací v Praze.',
+    title: 'Prostormat - Tvůj nový kámoš na hledání prostorů pro akce',
+    description: 'Hledáte prostor na firemní akci, svatbu, konferenci nebo teambuilding? Prostormat vám pomůže najít perfektní prostor pro vaši akci v Praze.',
     images: [DEFAULT_OG_IMAGE],
     creator: '@prostormat',
   },

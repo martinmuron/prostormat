@@ -233,7 +233,7 @@ export function getLandingPageDescription(
   venueCount?: number
 ): string {
   if (venueType && district) {
-    const countPart = venueCount ? `Prohlédněte si ${venueCount} ověřených prostorů` : 'Prohlédněte si ověřené prostory'
+    const countPart = venueCount ? `Prohlédněte si ${venueCount} prostorů` : 'Prohlédněte si dostupné prostory'
     return `Najděte ideální ${VENUE_TYPE_SEO_NAMES[venueType].toLowerCase()} pro vaši akci v ${district.replace('Praha', 'Praze')}. ${countPart} s cenami a dostupností.`
   }
 
@@ -243,11 +243,11 @@ export function getLandingPageDescription(
   }
 
   if (district) {
-    const countPart = venueCount ? `Nabízíme ${venueCount} ověřených míst` : 'Nabízíme ověřená místa'
+    const countPart = venueCount ? `Nabízíme ${venueCount} míst` : 'Nabízíme místa'
     return `Objevte prostory pro firemní akce v ${district.replace('Praha', 'Praze')}. ${countPart} pro konference, teambuilding, svatby a další události.`
   }
 
-  return 'Najděte ideální prostor pro vaši firemní akci v Praze. Ověřené prostory s cenami a dostupností.'
+  return 'Najděte ideální prostor pro vaši firemní akci v Praze. Prostory s cenami a dostupností.'
 }
 
 // Get H1 heading for landing page
@@ -284,9 +284,9 @@ export function getLandingPageSEOContent(
       title: `Proč zvolit ${typeName} v městské části ${districtName}?`,
       paragraphs: [
         `Hledáte ideální ${typeName} pro vaši firemní akci, večírek nebo konferenci v lokalitě ${districtName}? Tato městská část Prahy nabízí širokou škálu možností, které vyhoví každému rozpočtu i požadavkům. ${typeNameCapitalized} v této lokalitě jsou oblíbenou volbou díky skvělé dostupnosti MHD a jedinečné atmosféře.`,
-        `Ať už plánujete formální setkání, prezentaci produktu nebo neformální teambuilding, ${districtName} má co nabídnout. Naše nabídka zahrnuje prověřené ${typeName}, které disponují potřebným technickým zázemím, možnostmi cateringu a profesionálním personálem připraveným pomoct s organizací vaší akce.`,
+        `Ať už plánujete formální setkání, prezentaci produktu nebo neformální teambuilding, ${districtName} má co nabídnout. Naše nabídka zahrnuje ${typeName}, které disponují potřebným technickým zázemím, možnostmi cateringu a profesionálním personálem připraveným pomoct s organizací vaší akce.`,
         `Výhodou prostor v této lokalitě je také dobrá dopravní dostupnost pro účastníky z celé Prahy i mimopražské hosty. Mnoho ${typeName} nabízí parkování nebo se nachází v blízkosti stanic metra či tramvajových zastávek.`,
-        `Vyberte si z našeho seznamu ověřených prostorů a zarezervujte si ten pravý prostor pro vaši akci. Každý prostor obsahuje detailní informace o kapacitě, vybavení, cenách a dostupných termínech.`
+        `Vyberte si z našeho seznamu a zarezervujte si ten pravý prostor pro vaši akci. Každý prostor obsahuje detailní informace o kapacitě, vybavení, cenách a dostupných termínech.`
       ]
     }
   }
@@ -297,7 +297,7 @@ export function getLandingPageSEOContent(
       paragraphs: [
         `Praha je domovem stovek úžasných míst pro pořádání akcí. Pokud hledáte konkrétně ${typeName}, jste na správném místě. Nabízíme široký výběr v kategorii ${typeName} po celém hlavním městě, od historického centra až po moderní obchodní čtvrtě na okraji Prahy.`,
         `Každý prostor v naší nabídce je detailně popsán, včetně kapacity pro sezení i stání, orientačních cen pronájmu a dostupného vybavení. ${typeNameCapitalized} jsou skvělou volbou pro firmy i soukromé osoby, které chtějí svou akci uspořádat v profesionálním prostředí.`,
-        `Při výběru prostoru zvažte nejen kapacitu, ale také dostupnost pro vaše hosty, možnosti parkování a technické vybavení. Mnoho prostor nabízí také catering nebo spolupráci s ověřenými dodavateli občerstvení.`,
+        `Při výběru prostoru zvažte nejen kapacitu, ale také dostupnost pro vaše hosty, možnosti parkování a technické vybavení. Mnoho prostor nabízí také catering nebo spolupráci s dodavateli občerstvení.`,
         `Prohlédněte si fotografie, přečtěte si popis a kontaktujte majitele prostoru přímo přes náš formulář. Ušetříte čas a získáte rychlou odpověď na vaše dotazy ohledně dostupnosti a ceny.`
       ]
     }

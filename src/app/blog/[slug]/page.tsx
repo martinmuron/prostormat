@@ -116,19 +116,6 @@ function addAnchorsToHeadings(html: string) {
   })
 }
 
-function extractTableOfContents(html: string) {
-  const toc: { id: string; title: string }[] = []
-  const headingRegex = /<h2>(.*?)<\/h2>/g
-  let match: RegExpExecArray | null
-
-  while ((match = headingRegex.exec(html)) !== null) {
-    const title = match[1]
-    toc.push({ id: slugify(title), title })
-  }
-
-  return toc
-}
-
 export async function generateMetadata({
   params,
 }: {

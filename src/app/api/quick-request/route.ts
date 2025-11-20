@@ -10,6 +10,7 @@ import { trackBulkFormSubmit } from "@/lib/meta-conversions-api"
 import { trackGA4ServerLead } from "@/lib/ga4-server-tracking"
 import { getSafeSentByUserId } from "@/lib/email-helpers"
 import { findMatchingVenues } from "@/lib/quick-request-utils"
+import { rateLimit, rateLimitConfigs, rateLimitResponse } from "@/lib/rate-limit"
 
 const trackingSchema = z.object({
   eventId: z.string(),
@@ -63,6 +64,12 @@ const payloadSchema = quickRequestSchema.extend({
 const QUICK_REQUEST_DEFAULT_EVENT_TYPE = 'rychla-poptavka' as const
 
 export async function POST(request: Request) {
+  // Rate limit: 10 requests per minute for quick request form
+  const rateLimitResult = rateLimit(request, "quick-request", rateLimitConfigs.form)
+  if (!rateLimitResult.success) {
+    return rateLimitResponse(rateLimitResult)
+  }
+
   try {
     const session = await getServerSession(authOptions)
     const body = await request.json()

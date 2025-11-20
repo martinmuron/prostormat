@@ -74,8 +74,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Verify signature
-    if (signature && !verifySignature(rawBody, signature, webhookSecret)) {
+    // Require and verify signature
+    if (!signature) {
+      console.error('Missing webhook signature');
+      return NextResponse.json(
+        { error: 'Missing signature' },
+        { status: 401 }
+      );
+    }
+
+    if (!verifySignature(rawBody, signature, webhookSecret)) {
       console.error('Invalid webhook signature');
       return NextResponse.json(
         { error: 'Invalid signature' },

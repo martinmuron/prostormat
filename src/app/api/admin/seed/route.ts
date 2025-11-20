@@ -5,6 +5,14 @@ import { prisma } from '@/lib/prisma'
 import bcrypt from 'bcryptjs'
 
 export async function POST(request: Request) {
+  // Disable seed route in production
+  if (process.env.NODE_ENV === "production") {
+    return NextResponse.json(
+      { error: "Seed route is disabled in production" },
+      { status: 403 }
+    )
+  }
+
   try {
     const session = await getServerSession(authOptions)
 
@@ -16,7 +24,13 @@ export async function POST(request: Request) {
     const body = await request.json()
     const { password, forceReset } = body
 
-    const expectedPassword = process.env.ADMIN_SEED_PASSWORD ?? "prostormat-seed-2025"
+    const expectedPassword = process.env.ADMIN_SEED_PASSWORD
+    if (!expectedPassword) {
+      return NextResponse.json(
+        { error: "ADMIN_SEED_PASSWORD not configured" },
+        { status: 500 }
+      )
+    }
 
     if (password !== expectedPassword) {
       return NextResponse.json(

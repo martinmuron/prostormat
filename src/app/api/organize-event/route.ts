@@ -3,6 +3,7 @@ import { z } from "zod"
 import { sendEmailFromTemplate } from "@/lib/email-service"
 import { trackOrganizaceSubmit } from "@/lib/meta-conversions-api"
 import { trackGA4ServerLead } from "@/lib/ga4-server-tracking"
+import { rateLimit, rateLimitConfigs, rateLimitResponse } from "@/lib/rate-limit"
 
 const trackingSchema = z.object({
   eventId: z.string(),
@@ -29,6 +30,12 @@ const organizeEventPayloadSchema = organizeEventSchema.extend({
 })
 
 export async function POST(request: NextRequest) {
+  // Rate limit: 10 requests per minute for organize event form
+  const rateLimitResult = rateLimit(request, "organize-event", rateLimitConfigs.form)
+  if (!rateLimitResult.success) {
+    return rateLimitResponse(rateLimitResult)
+  }
+
   try {
     const body = await request.json()
     const parsed = organizeEventPayloadSchema.parse(body)

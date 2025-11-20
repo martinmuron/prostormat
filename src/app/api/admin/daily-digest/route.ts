@@ -8,13 +8,19 @@ const DIGEST_RECIPIENT = "info@prostormat.cz"
 const TIMEZONE = "Europe/Prague"
 
 function isAuthorized(request: NextRequest): boolean {
+  // Allow Vercel cron jobs
   const cronHeader = request.headers.get("x-vercel-cron")
   if (cronHeader) {
     return true
   }
 
+  // Require CRON_SECRET in production
   if (!CRON_SECRET) {
-    console.warn("CRON_SECRET is not configured; allowing request.")
+    if (process.env.NODE_ENV === "production") {
+      console.error("CRON_SECRET is not configured in production")
+      return false
+    }
+    console.warn("CRON_SECRET is not configured; allowing request in development.")
     return true
   }
 

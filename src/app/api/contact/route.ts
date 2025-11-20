@@ -2,8 +2,15 @@ import { NextRequest, NextResponse } from "next/server"
 import { sendEmailFromTemplate } from "@/lib/email-service"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
+import { rateLimit, rateLimitConfigs, rateLimitResponse } from "@/lib/rate-limit"
 
 export async function POST(request: NextRequest) {
+  // Rate limit: 10 requests per minute for contact form
+  const rateLimitResult = rateLimit(request, "contact", rateLimitConfigs.form)
+  if (!rateLimitResult.success) {
+    return rateLimitResponse(rateLimitResult)
+  }
+
   try {
     const { name, email, subject, message } = await request.json()
 

@@ -13,6 +13,7 @@ import {
   generateVenueInquiryPaidNotificationEmail,
   generateVenueInquiryUnpaidNotificationEmail,
 } from "@/lib/email-templates"
+import { rateLimit, rateLimitConfigs, rateLimitResponse } from "@/lib/rate-limit"
 
 const trackingSchema = z.object({
   eventId: z.string(),
@@ -36,6 +37,12 @@ const inquiryPayloadSchema = inquirySchema.extend({
 })
 
 export async function POST(request: Request) {
+  // Rate limit: 10 requests per minute for venue inquiries
+  const rateLimitResult = rateLimit(request, "venues/inquiries", rateLimitConfigs.form)
+  if (!rateLimitResult.success) {
+    return rateLimitResponse(rateLimitResult)
+  }
+
   try {
     const session = await getServerSession(authOptions)
     const body = await request.json()

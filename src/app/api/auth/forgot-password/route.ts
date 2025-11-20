@@ -3,12 +3,19 @@ import { z } from "zod"
 import { db } from "@/lib/db"
 import crypto from "crypto"
 import { sendEmailFromTemplate } from "@/lib/email-service"
+import { rateLimit, rateLimitConfigs, rateLimitResponse } from "@/lib/rate-limit"
 
 const schema = z.object({
   email: z.string().email(),
 })
 
 export async function POST(req: Request) {
+  // Rate limit: 5 requests per minute for password reset
+  const rateLimitResult = rateLimit(req, "auth/forgot-password", rateLimitConfigs.auth)
+  if (!rateLimitResult.success) {
+    return rateLimitResponse(rateLimitResult)
+  }
+
   try {
     const body = await req.json()
     const { email } = schema.parse(body)

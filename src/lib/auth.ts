@@ -7,17 +7,19 @@ import { db } from "@/lib/db"
 
 const nextAuthSecret = process.env.NEXTAUTH_SECRET
 const isManagedEnvironment = process.env.VERCEL === "1"
+const isProduction = process.env.NODE_ENV === "production"
 
 if (!nextAuthSecret) {
   const message = "NEXTAUTH_SECRET is not set. Define it in your environment before starting the app."
-  if (isManagedEnvironment) {
+  if (isManagedEnvironment || isProduction) {
     throw new Error(message)
   }
   console.warn(`[auth] ${message}`)
 }
 
 export const authOptions: NextAuthOptions = {
-  secret: nextAuthSecret ?? "development-nextauth-secret",
+  // Only allow fallback in development
+  secret: nextAuthSecret || (isProduction ? undefined : "development-nextauth-secret"),
   adapter: PrismaAdapter(db) as Adapter,
   session: {
     strategy: "jwt",

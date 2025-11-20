@@ -10,6 +10,7 @@ import { trackGA4ServerLead } from '@/lib/ga4-server-tracking'
 import { trackVenueLead } from '@/lib/meta-conversions-api'
 import { resend, FROM_EMAIL } from '@/lib/resend'
 import { generateVenueSubmissionNotificationEmail, generateVenueSubmissionConfirmationEmail } from '@/lib/email-templates'
+import { rateLimit, rateLimitConfigs, rateLimitResponse } from '@/lib/rate-limit'
 
 function splitContactName(name: string | undefined) {
   if (!name) {
@@ -53,6 +54,12 @@ const submissionSchema = z.object({
 })
 
 export async function POST(request: NextRequest) {
+  // Rate limit: 10 requests per minute for venue submissions
+  const rateLimitResult = rateLimit(request, "venue-submissions", rateLimitConfigs.form)
+  if (!rateLimitResult.success) {
+    return rateLimitResponse(rateLimitResult)
+  }
+
   try {
     const rawBody = await request.json()
     const body = submissionSchema.parse(rawBody)

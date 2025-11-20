@@ -1,7 +1,14 @@
 import { NextResponse } from "next/server"
 import { resend } from "@/lib/resend"
+import { rateLimit, rateLimitConfigs, rateLimitResponse } from "@/lib/rate-limit"
 
 export async function POST(request: Request) {
+  // Rate limit: 10 requests per minute for services registration
+  const rateLimitResult = rateLimit(request, "services-registration", rateLimitConfigs.form)
+  if (!rateLimitResult.success) {
+    return rateLimitResponse(rateLimitResult)
+  }
+
   try {
     const data = await request.json()
 

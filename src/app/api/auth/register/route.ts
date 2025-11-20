@@ -12,6 +12,7 @@ import {
 import { resend } from "@/lib/resend"
 import { generateUserRegistrationAdminNotificationEmail } from "@/lib/email-templates"
 import { randomUUID } from "crypto"
+import { rateLimit, rateLimitConfigs, rateLimitResponse } from "@/lib/rate-limit"
 
 const trackingSchema = z.object({
   eventId: z.string(),
@@ -32,6 +33,12 @@ const payloadSchema = registerSchema.extend({
 })
 
 export async function POST(request: Request) {
+  // Rate limit: 5 requests per minute for registration
+  const rateLimitResult = rateLimit(request, "auth/register", rateLimitConfigs.auth)
+  if (!rateLimitResult.success) {
+    return rateLimitResponse(rateLimitResult)
+  }
+
   try {
     const body = await request.json()
     const { tracking, ...validatedData } = payloadSchema.parse(body)

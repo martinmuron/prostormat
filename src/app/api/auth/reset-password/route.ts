@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { z } from "zod"
 import { db } from "@/lib/db"
 import bcrypt from "bcryptjs"
+import { rateLimit, rateLimitConfigs, rateLimitResponse } from "@/lib/rate-limit"
 
 const schema = z.object({
   token: z.string().min(10),
@@ -9,6 +10,12 @@ const schema = z.object({
 })
 
 export async function POST(req: Request) {
+  // Rate limit: 5 requests per minute for password reset
+  const rateLimitResult = rateLimit(req, "auth/reset-password", rateLimitConfigs.auth)
+  if (!rateLimitResult.success) {
+    return rateLimitResponse(rateLimitResult)
+  }
+
   try {
     const body = await req.json()
     const { token, password } = schema.parse(body)

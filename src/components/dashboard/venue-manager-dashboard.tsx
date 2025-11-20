@@ -322,12 +322,6 @@ export function VenueManagerDashboard({ data }: VenueManagerDashboardProps) {
                     +{paidDetails.length - 3} dalších prostorů s platbou
                   </p>
                 )}
-                <Link href="mailto:info@prostormat.cz">
-                  <Button className="bg-blue-600 hover:bg-blue-700 text-white w-full">
-                    <Settings className="h-4 w-4 mr-2" />
-                    Domluvit další kroky
-                  </Button>
-                </Link>
               </div>
             </div>
           )}

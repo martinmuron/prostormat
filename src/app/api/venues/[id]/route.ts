@@ -184,6 +184,17 @@ export async function PATCH(
       },
     })
 
+    // If managerId changed, also update all child venues to have the same manager
+    if (managerIdChanged && session.user.role === "admin") {
+      await db.venue.updateMany({
+        where: { parentId: id },
+        data: {
+          managerId: body.managerId || null,
+          updatedAt: new Date(),
+        },
+      })
+    }
+
     revalidatePath("/prostory", "page")
     revalidatePath(`/prostory/${updatedVenue.slug}`, "page")
     revalidatePath(`/admin/venues/${updatedVenue.id}/edit`, "page")

@@ -6,7 +6,7 @@ import { Check, Calendar } from "lucide-react"
 
 export const metadata: Metadata = {
   title: "Služby pro eventy | Prostormat",
-  description: "Nabízíte služby pro firemní akce, teambuildingy a svatby? Přidejte se zdarma na Prostormat. Spouštíme 1. 12. 2025.",
+  description: "Nabízíte služby pro firemní akce, teambuildingy a svatby? Přidejte se zdarma na Prostormat. Spouštíme 10. 12. 2025.",
   keywords: [
     "služby pro eventy",
     "catering firemní akce",
@@ -21,7 +21,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "Služby pro eventy | Prostormat",
-    description: "Nabízíte služby pro firemní akce, teambuildingy a svatby? Přidejte se zdarma na Prostormat. Spouštíme 1. 12. 2025.",
+    description: "Nabízíte služby pro firemní akce, teambuildingy a svatby? Přidejte se zdarma na Prostormat. Spouštíme 10. 12. 2025.",
     url: "https://prostormat.cz/sluzby",
     siteName: "Prostormat",
     locale: "cs_CZ",
@@ -61,7 +61,7 @@ export default function SluzbyPage() {
           <ScrollReveal>
             <div className="flex items-center justify-center gap-3 mb-2">
               <Calendar className="w-6 h-6" />
-              <span className="text-2xl font-bold">Spouštíme 1. 12. 2025</span>
+              <span className="text-2xl font-bold">Spouštíme 10. 12. 2025</span>
             </div>
             <p className="text-blue-100">
               Registrujte se již nyní a buďte mezi prvními
@@ -104,7 +104,7 @@ export default function SluzbyPage() {
                 Registrace je ZDARMA
               </p>
               <p className="text-gray-600">
-                Zaregistrujte se nyní a buďte připraveni na spuštění 1. 12. 2025
+                Zaregistrujte se nyní a buďte připraveni na spuštění 10. 12. 2025
               </p>
             </div>
           </ScrollReveal>

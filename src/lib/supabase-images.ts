@@ -94,7 +94,8 @@ export function getOptimizedImageUrl(imagePath: string, size?: ImageSize): strin
   const config = sizeConfig[size ?? 'medium'];
 
   // Use Supabase render endpoint for image transformations
-  return `${supabaseUrl}/storage/v1/render/image/public/${SUPABASE_STORAGE_BUCKET}/${normalisedPath}?width=${config.width}&quality=${config.quality}`;
+  // resize=contain preserves aspect ratio without cropping
+  return `${supabaseUrl}/storage/v1/render/image/public/${SUPABASE_STORAGE_BUCKET}/${normalisedPath}?width=${config.width}&quality=${config.quality}&resize=contain`;
 }
 
 /**

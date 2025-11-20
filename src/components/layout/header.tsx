@@ -19,6 +19,7 @@ const navLinks = [
   { href: "/catering", label: "Catering" },
   { href: "/organizace-akce", label: "Organizace akce" },
   { href: "/eventove-agentury", label: "Eventové agentury" },
+  { href: "/sluzby", label: "Služby pro eventy" },
   { href: "/blog", label: "Blog" },
   { href: "/ceny", label: "Ceník" },
   { href: "/faq", label: "FAQ" },

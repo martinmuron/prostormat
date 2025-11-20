@@ -42,6 +42,7 @@ export async function POST(request: Request) {
         password: hashedPassword,
         name: name ?? email.split('@')[0],
         role: 'venue_manager',
+        emailVerified: new Date(), // Auto-verify when admin creates user
       },
       select: {
         id: true,

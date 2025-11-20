@@ -246,11 +246,13 @@ export default function EventRequestsPage() {
       variant="plain"
       className="bg-gradient-to-br from-rose-50 via-white to-pink-50 pb-16"
       actions={
-        <Link href="/event-board/novy">
-          <Button size="lg" className="bg-black text-white hover:bg-gray-800 min-w-[200px] rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl">
-            Přidat akci
-          </Button>
-        </Link>
+        !hasVenueAccess ? (
+          <Link href="/rychla-poptavka">
+            <Button size="lg" className="bg-black text-white hover:bg-gray-800 min-w-[200px] rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl">
+              Přidat akci
+            </Button>
+          </Link>
+        ) : null
       }
       tone="rose"
       size="md"

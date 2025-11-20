@@ -185,11 +185,11 @@ export async function PATCH(
     })
 
     // If managerId changed, also update all child venues to have the same manager
-    if (managerIdChanged && session.user.role === "admin") {
+    if (managerIdChanged && session.user.role === "admin" && body.managerId) {
       await db.venue.updateMany({
         where: { parentId: id },
         data: {
-          managerId: body.managerId || null,
+          managerId: body.managerId,
           updatedAt: new Date(),
         },
       })

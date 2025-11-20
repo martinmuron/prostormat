@@ -31,7 +31,7 @@ interface QuickRequestLog {
     capacityStanding?: number | null
     capacitySeated?: number | null
     contactEmail?: string | null
-    venueTypes?: string[]
+    venueType?: string | null
   }
 }
 
@@ -602,9 +602,9 @@ export default function AdminQuickRequestsPage() {
     }
 
     return selectedRequest.logs.filter((log) => {
-      // Check if venue has any of the selected types
-      const venueTypes = log.venue.venueTypes || []
-      return venueTypes.some((type: string) => selectedVenueTypes.includes(type))
+      // Check if venue type matches any of the selected types
+      const venueType = log.venue.venueType
+      return venueType ? selectedVenueTypes.includes(venueType) : false
     })
   }, [selectedRequest, selectedVenueTypes])
 

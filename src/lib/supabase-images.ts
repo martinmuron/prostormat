@@ -86,9 +86,9 @@ export function getOptimizedImageUrl(imagePath: string, size?: ImageSize): strin
 
   // Size configurations for Supabase Image Transformations
   const sizeConfig = {
-    thumbnail: { width: 400, quality: 75 },
-    medium: { width: 800, quality: 80 },
-    full: { width: 1600, quality: 85 },
+    thumbnail: { width: 480, quality: 85 },
+    medium: { width: 800, quality: 85 },
+    full: { width: 1600, quality: 90 },
   };
 
   const config = sizeConfig[size ?? 'medium'];

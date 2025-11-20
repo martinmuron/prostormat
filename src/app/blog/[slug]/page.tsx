@@ -2,7 +2,7 @@ import type { Metadata } from "next"
 import Link from "next/link"
 import Image from "next/image"
 import { notFound } from "next/navigation"
-import { Calendar, ArrowLeft, Share2, Clock, BookOpen, ChevronRight } from "lucide-react"
+import { Calendar, ArrowLeft, Share2, Clock, BookOpen } from "lucide-react"
 
 import { db } from "@/lib/db"
 import { staticBlogPosts } from "@/data/blog-posts"
@@ -201,7 +201,6 @@ export default async function BlogPostPage({
   const tags = parseTags(post.tags)
   const readingTime = estimateReadingTime(post.content)
   const contentWithAnchors = addAnchorsToHeadings(post.content)
-  const tableOfContents = extractTableOfContents(post.content)
   const seoDescription = post.metaDescription ?? post.excerpt ?? (stripHtml(post.content).slice(0, 155).trim() || "Článek z blogu Prostormat.")
   const canonicalUrl = absoluteUrl(`/blog/${post.slug}`)
   const breadcrumbSchema = generateBreadcrumbSchema([
@@ -298,41 +297,12 @@ export default async function BlogPostPage({
         </div>
       )}
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid lg:grid-cols-[minmax(0,3fr)_minmax(0,1fr)] gap-10">
-          <article className="prose prose-lg max-w-none prose-headings:scroll-mt-24 prose-a:text-blue-600">
-            <div
-              dangerouslySetInnerHTML={{ __html: contentWithAnchors }}
-            />
-          </article>
-
-          <aside className="hidden lg:flex flex-col gap-6">
-            <div className="rounded-3xl border border-gray-200 bg-white shadow-sm p-6">
-              <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-[0.3em] mb-4">Obsah článku</h3>
-              <div className="space-y-3 text-sm">
-                {tableOfContents.length === 0 && (
-                  <p className="text-gray-500">Obsah bude doplněn.</p>
-                )}
-                {tableOfContents.map((item) => (
-                  <a key={item.id} href={`#${item.id}`} className="block text-gray-600 hover:text-gray-900 transition-colors">
-                    {item.title}
-                  </a>
-                ))}
-              </div>
-            </div>
-
-            <div className="rounded-3xl border border-blue-100 bg-blue-50/60 p-6 text-blue-900">
-              <h4 className="text-sm font-semibold uppercase tracking-[0.2em] mb-3">Tip Prostormat</h4>
-              <p className="text-sm leading-relaxed">
-                Plánujete vlastní akci? Procházejte databázi ověřených prostorů a vybírejte podle lokality, kapacity i atmosféry. Rádi vám s výběrem pomůžeme.
-              </p>
-              <Link href="/rychla-poptavka" className="inline-flex items-center gap-2 text-sm font-semibold mt-4 text-blue-700">
-                Zadání poptávky
-                <ChevronRight className="w-4 h-4" />
-              </Link>
-            </div>
-          </aside>
-        </div>
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <article className="prose prose-lg max-w-none prose-headings:scroll-mt-24 prose-a:text-blue-600">
+          <div
+            dangerouslySetInnerHTML={{ __html: contentWithAnchors }}
+          />
+        </article>
 
         <footer className="mt-16 rounded-3xl border border-gray-200 bg-white shadow-sm p-6 sm:p-8">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">

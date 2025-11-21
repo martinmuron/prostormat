@@ -17,14 +17,9 @@ export function VenueRemovedPage({ venueName, district }: VenueRemovedPageProps)
           <Building2 className="w-8 h-8 text-gray-500" />
         </div>
 
-        <h1 className="text-2xl font-bold text-gray-900 mb-3">
+        <h1 className="text-2xl font-bold text-gray-900 mb-8">
           {venueName ? `${venueName} již není k dispozici` : "Prostor již není k dispozici"}
         </h1>
-
-        <p className="text-gray-600 mb-8">
-          Tento prostor byl odstraněn z naší platformy. Může to být z důvodu ukončení spolupráce,
-          změny majitele nebo jiných provozních důvodů.
-        </p>
 
         <div className="space-y-4">
           <Link href="/prostory" className="block">

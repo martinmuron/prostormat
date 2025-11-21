@@ -2,12 +2,11 @@ import type { Metadata } from "next"
 import Link from "next/link"
 import Image from "next/image"
 import { notFound } from "next/navigation"
-import { Calendar, ArrowLeft, Share2, Clock, BookOpen } from "lucide-react"
+import { Calendar, ArrowLeft, Clock, BookOpen } from "lucide-react"
 
 import { db } from "@/lib/db"
 import { staticBlogPosts } from "@/data/blog-posts"
 import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
 import { absoluteUrl, DEFAULT_OG_IMAGE, stripHtml } from "@/lib/seo"
 import { generateBlogPostingSchema, generateBreadcrumbSchema, schemaToJsonLd } from "@/lib/schema-markup"
 
@@ -201,7 +200,6 @@ export default async function BlogPostPage({
     slug: post.slug,
     contentHtml: post.content,
     coverImage: post.coverImage,
-    authorName: post.author?.name ?? undefined,
     publishedAt: post.publishedAt,
     tags,
   })
@@ -216,120 +214,114 @@ export default async function BlogPostPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={schemaToJsonLd(articleSchema)}
       />
-      <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-white pb-16">
-        <div className="relative overflow-hidden border-b border-gray-200 bg-white">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
-          <Link href="/blog" className="inline-flex items-center text-sm font-medium text-gray-500 hover:text-gray-700 mb-6">
+      <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-white pb-20 animate-fade-in">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <Link 
+            href="/blog" 
+            className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium text-gray-600 bg-white/50 border border-gray-200 hover:bg-white hover:text-gray-900 hover:shadow-sm transition-all duration-200 mb-12 backdrop-blur-sm"
+          >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Zpět na všechny články
           </Link>
 
-          <div className="space-y-6">
-            <div className="flex flex-wrap items-center gap-3 text-xs uppercase tracking-[0.28em] text-blue-600 font-semibold">
+          <div className="max-w-4xl mx-auto text-center space-y-8 mb-16">
+            <div className="flex flex-wrap items-center justify-center gap-3 text-xs uppercase tracking-[0.2em] text-blue-600 font-bold">
               <span>Blog Prostormat</span>
-              <span className="inline-block h-px w-8 bg-blue-200" />
+              <span className="h-1 w-1 rounded-full bg-blue-300" />
               <span>{new Date(post.publishedAt).toLocaleDateString('cs-CZ')}</span>
-              <span className="inline-block h-px w-8 bg-blue-200" />
-              <span>{readingTime} min čtení</span>
+              <span className="h-1 w-1 rounded-full bg-blue-300" />
+              <span className="flex items-center gap-1">
+                <Clock className="w-3 h-3" />
+                {readingTime} min čtení
+              </span>
             </div>
 
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 leading-tight">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 tracking-tight leading-[1.1]">
               {post.title}
             </h1>
 
             {post.excerpt && (
-              <p className="text-lg sm:text-xl text-gray-600 max-w-3xl">
+              <p className="text-xl text-gray-600 leading-relaxed max-w-3xl mx-auto">
                 {post.excerpt}
               </p>
             )}
 
-            <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500">
-              <span className="inline-flex items-center gap-2">
-                <AuthorBadge name={post.author?.name || post.author?.email || 'Prostormat tým'} />
-              </span>
-              <span className="inline-flex items-center gap-2">
-                <Clock className="w-4 h-4" />
-                {readingTime} min čtení
-              </span>
+            <div className="flex flex-wrap items-center justify-center gap-4">
               {tags.length > 0 && (
                 <div className="flex flex-wrap gap-2">
                   {tags.map((tag: string) => (
-                    <Badge key={tag} variant="secondary" className="bg-slate-100 text-slate-600 border border-slate-200">
+                    <Badge key={tag} variant="secondary" className="bg-blue-50 text-blue-700 hover:bg-blue-100 border-blue-100 transition-colors">
                       {tag}
                     </Badge>
                   ))}
                 </div>
               )}
-              <Button variant="outline" size="sm" className="rounded-full border-gray-300 hover:bg-gray-50">
-                <Share2 className="w-4 h-4 mr-2" />
-                Sdílet článek
-              </Button>
+            </div>
+          </div>
+
+          {post.coverImage && (
+            <div className="relative max-w-6xl mx-auto mb-16">
+              <div className="group relative overflow-hidden rounded-[2.5rem] shadow-2xl shadow-gray-200/50 border border-gray-100">
+                <Image
+                  src={post.coverImage}
+                  alt={post.title}
+                  width={1600}
+                  height={900}
+                  className="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-105"
+                  priority
+                />
+                <div className="absolute inset-0 rounded-[2.5rem] ring-1 ring-inset ring-black/5" />
+              </div>
+            </div>
+          )}
+
+          <div className="max-w-3xl mx-auto">
+            <article className="prose prose-lg prose-slate max-w-none 
+              prose-headings:font-bold prose-headings:tracking-tight prose-headings:text-gray-900 
+              prose-p:text-gray-600 prose-p:leading-loose
+              prose-a:text-blue-600 prose-a:font-semibold prose-a:no-underline hover:prose-a:text-blue-700 hover:prose-a:underline
+              prose-strong:text-gray-900 prose-strong:font-bold
+              prose-img:rounded-2xl prose-img:shadow-lg
+              prose-blockquote:border-l-blue-500 prose-blockquote:bg-blue-50/50 prose-blockquote:py-2 prose-blockquote:px-6 prose-blockquote:rounded-r-lg prose-blockquote:not-italic
+              prose-li:marker:text-blue-500"
+            >
+              <div
+                dangerouslySetInnerHTML={{ __html: contentWithAnchors }}
+              />
+            </article>
+
+            <div className="mt-16 pt-8 border-t border-gray-100">
+              <div className="bg-white rounded-3xl p-8 sm:p-10 shadow-xl shadow-gray-200/40 border border-gray-100">
+                <div className="flex flex-col items-center text-center gap-6">
+                  <div className="space-y-2">
+                    <h3 className="text-2xl font-bold text-gray-900">Líbil se vám článek?</h3>
+                    <p className="text-gray-600 max-w-lg mx-auto">
+                      Objevte ty nejlepší prostory pro vaši příští akci nebo nám dejte vědět, co hledáte.
+                    </p>
+                  </div>
+                  
+                  <div className="flex flex-col sm:flex-row w-full sm:w-auto gap-4">
+                    <Link 
+                      href="/prostory" 
+                      className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full bg-white border-2 border-gray-100 text-gray-900 font-semibold hover:border-gray-300 hover:bg-gray-50 transition-all duration-200"
+                    >
+                      <BookOpen className="w-5 h-5" />
+                      Prohlédnout prostory
+                    </Link>
+                    <Link 
+                      href="/rychla-poptavka" 
+                      className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full bg-blue-600 text-white font-semibold hover:bg-blue-700 shadow-lg shadow-blue-600/20 hover:shadow-blue-600/40 transition-all duration-200"
+                    >
+                      <Calendar className="w-5 h-5" />
+                      Nezávazná poptávka
+                    </Link>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
-
-      {post.coverImage && (
-        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 -mt-12 mb-12">
-          <div className="overflow-hidden rounded-3xl shadow-xl border border-gray-200">
-            <Image
-              src={post.coverImage}
-              alt={post.title}
-              width={1600}
-              height={900}
-              className="w-full h-auto object-cover"
-              priority
-            />
-          </div>
-        </div>
-      )}
-
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <article className="prose prose-lg max-w-none prose-headings:scroll-mt-24 prose-a:text-blue-600">
-          <div
-            dangerouslySetInnerHTML={{ __html: contentWithAnchors }}
-          />
-        </article>
-
-        <footer className="mt-16 rounded-3xl border border-gray-200 bg-white shadow-sm p-6 sm:p-8">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div>
-              <h4 className="text-sm font-semibold text-gray-700 uppercase tracking-[0.25em]">Autor článku</h4>
-              <p className="text-lg font-semibold text-gray-900 mt-1">
-                {post.author?.name || post.author?.email || 'Prostormat tým'}
-              </p>
-              <p className="text-sm text-gray-500">
-                Tipy a strategie pro úspěšné eventy v České republice.
-              </p>
-            </div>
-            <div className="flex gap-3">
-              <Link href="/prostory" className="inline-flex items-center gap-2 rounded-full border border-gray-300 px-6 py-3 text-sm font-semibold text-gray-700 hover:bg-gray-50">
-                <BookOpen className="w-4 h-4" />
-                Prohlédnout prostory
-              </Link>
-              <Link href="/rychla-poptavka" className="inline-flex items-center gap-2 rounded-full bg-blue-600 px-6 py-3 text-sm font-semibold text-white hover:bg-blue-700">
-                <Calendar className="w-4 h-4" />
-                Zadání poptávky
-              </Link>
-            </div>
-          </div>
-        </footer>
-      </div>
-    </div>
     </>
-  )
-}
-
-function AuthorBadge({ name }: { name: string }) {
-  const initials = name
-    .split(" ")
-    .map((part) => part[0])
-    .join("")
-    .slice(0, 2)
-    .toUpperCase()
-  return (
-    <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-blue-600/10 text-blue-700 text-xs font-semibold">
-      {initials || "PT"}
-    </span>
   )
 }

@@ -18,13 +18,20 @@ import { buildVenueMetaDescription, buildVenueKeywords, absoluteUrl, DEFAULT_OG_
 import { VenueViewTracker } from "@/components/analytics/venue-view-tracker"
 import { getOptimizedImageUrl } from "@/lib/supabase-images"
 import { formatDisplayAddress } from "@/lib/utils"
+import { VenueRemovedPage } from "@/components/venue/venue-removed-page"
 
 export const revalidate = 1800 // Regenerate at most every 30 minutes; edits trigger on-demand revalidation
 export const dynamicParams = true // Allow on-demand generation of pages
 
 const PUBLIC_STATUSES: string[] = ["published", "active"]
+const REMOVED_STATUSES: string[] = ["removed", "deleted", "archived"]
 
-async function getVenue(slug: string) {
+type VenueResult =
+  | { status: 'ok'; venue: NonNullable<Awaited<ReturnType<typeof db.venue.findUnique>>> }
+  | { status: 'not_found' }
+  | { status: 'removed'; venueName?: string; district?: string }
+
+async function getVenue(slug: string): Promise<VenueResult> {
   try {
     const venue = await db.venue.findUnique({
       where: {
@@ -71,6 +78,16 @@ async function getVenue(slug: string) {
       return { status: 'not_found' }
     }
 
+    // Venue was explicitly removed - return 410 Gone
+    if (REMOVED_STATUSES.includes(venue.status)) {
+      return {
+        status: 'removed',
+        venueName: venue.name,
+        district: venue.district ?? undefined
+      }
+    }
+
+    // Venue exists but not public (draft, pending, etc.) - treat as not found
     if (!PUBLIC_STATUSES.includes(venue.status)) {
       return { status: 'not_found' }
     }
@@ -90,6 +107,17 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params
   const result = await getVenue(slug)
+
+  if (result.status === 'removed') {
+    return {
+      title: `${result.venueName || 'Prostor'} již není k dispozici - Prostormat`,
+      description: 'Tento prostor byl odstraněn z naší platformy. Prohlédněte si jiné event prostory v Praze.',
+      robots: {
+        index: false,
+        follow: true,
+      },
+    }
+  }
 
   if (result.status !== 'ok') {
     return {
@@ -166,6 +194,16 @@ export default async function VenueDetailPage({
 }) {
   const { slug } = await params
   const result = await getVenue(slug)
+
+  // Venue was removed - show helpful page with 410 semantics
+  if (result.status === 'removed') {
+    return (
+      <VenueRemovedPage
+        venueName={result.venueName}
+        district={result.district}
+      />
+    )
+  }
 
   if (result.status !== 'ok') {
     notFound()

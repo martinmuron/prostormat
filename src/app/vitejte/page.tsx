@@ -20,11 +20,12 @@ export default async function VerifiedWelcomePage() {
           <p className="text-sm font-medium text-emerald-600 uppercase tracking-wide">
             E-mail ověřen
           </p>
-          <h1 className="mt-4 text-3xl sm:text-4xl font-bold text-slate-900 break-words">
-            Vítejte,&nbsp;
-            <span className="break-all">{displayName}</span>
-            !
+          <h1 className="mt-4 text-2xl sm:text-3xl font-bold text-slate-900">
+            Vítejte!
           </h1>
+          <p className="mt-2 text-base sm:text-lg text-slate-700 break-all">
+            {displayName}
+          </p>
           <p className="mt-4 text-base sm:text-lg text-slate-600 leading-relaxed">
             Jsme rádi, že jste s námi. Váš účet je aktivní a připravený na první akci.
             Vyberte si další krok – můžete rovnou procházet prostory nebo poslat rychlou poptávku

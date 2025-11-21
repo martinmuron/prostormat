@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -131,7 +131,45 @@ export function AdminVenueEditForm({ venue }: AdminVenueEditFormProps) {
   const [isMarkingPaid, setIsMarkingPaid] = useState(false)
   const [paymentNotes, setPaymentNotes] = useState("")
   const [approvingClaimId, setApprovingClaimId] = useState<string | null>(null)
+  const [existingUser, setExistingUser] = useState<{ name: string | null; email: string; id: string } | null>(null)
+  const [isCheckingUser, setIsCheckingUser] = useState(false)
   const pendingClaims = venue.claims ?? []
+
+  useEffect(() => {
+    const checkUser = async () => {
+      const trimmedEmail = managerEmail.trim()
+      
+      if (!trimmedEmail) {
+        setExistingUser(null)
+        return
+      }
+
+      // If the email matches the current manager (and we have that info), we could skip or just verify.
+      // Let's verify to be consistent.
+      
+      setIsCheckingUser(true)
+      try {
+        const response = await fetch(
+          `/api/admin/users/find-by-email?email=${encodeURIComponent(trimmedEmail)}`
+        )
+        
+        if (response.ok) {
+          const data = await response.json()
+          setExistingUser(data.user)
+        } else {
+          setExistingUser(null)
+        }
+      } catch (error) {
+        console.error("Error checking user:", error)
+        setExistingUser(null)
+      } finally {
+        setIsCheckingUser(false)
+      }
+    }
+
+    const timeoutId = setTimeout(checkUser, 500)
+    return () => clearTimeout(timeoutId)
+  }, [managerEmail])
 
   const [formData, setFormData] = useState<AdminVenueFormState>({
     name: venue.name ?? "",
@@ -915,31 +953,63 @@ export function AdminVenueEditForm({ venue }: AdminVenueEditFormProps) {
 
                     <div>
                       <Label htmlFor="managerEmail">Email správce prostoru (volitelné)</Label>
-                      <Input
-                        id="managerEmail"
-                        type="email"
-                        value={managerEmail}
-                        onChange={(e) => setManagerEmail(e.target.value)}
-                        placeholder="manazer@example.com"
-                      />
-                      <p className="text-xs text-gray-500 mt-1">
-                        {venue.manager?.email ? `Aktuální správce: ${venue.manager?.name || 'Neuvedeno'} (${venue.manager?.email})` : 'Prostor nemá přiřazeného správce'}
-                      </p>
+                      <div className="relative">
+                        <Input
+                          id="managerEmail"
+                          type="email"
+                          value={managerEmail}
+                          onChange={(e) => setManagerEmail(e.target.value)}
+                          placeholder="manazer@example.com"
+                          className={existingUser ? "border-blue-300 bg-blue-50" : ""}
+                        />
+                        {isCheckingUser && (
+                          <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                            <div className="h-4 w-4 animate-spin rounded-full border-2 border-gray-300 border-t-blue-600" />
+                          </div>
+                        )}
+                      </div>
+                      
+                      {existingUser ? (
+                        <div className="mt-2 text-sm text-blue-700 bg-blue-50 p-3 rounded-md border border-blue-200 flex items-start gap-2">
+                          <CheckCircle2 className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                          <div>
+                            <p className="font-medium">Uživatel nalezen: {existingUser.name || existingUser.email}</p>
+                            <p className="text-xs mt-1 opacity-90">
+                              Tento uživatel již v systému existuje. Při přiřazení mu bude odeslán pouze informační e-mail (bez hesla).
+                            </p>
+                          </div>
+                        </div>
+                      ) : (
+                        <p className="text-xs text-gray-500 mt-1">
+                          {venue.manager?.email ? `Aktuální správce: ${venue.manager?.name || 'Neuvedeno'} (${venue.manager?.email})` : 'Prostor nemá přiřazeného správce'}
+                        </p>
+                      )}
                     </div>
 
-                    <div>
-                      <Label htmlFor="managerPassword">Heslo pro nového správce</Label>
-                      <Input
-                        id="managerPassword"
-                        type="password"
-                        value={managerPassword}
-                        onChange={(e) => setManagerPassword(e.target.value)}
-                        placeholder="Zadejte heslo (min. 8 znaků)"
-                      />
-                      <p className="text-xs text-gray-500 mt-1">
-                        Pokud email dosud neexistuje, vytvoříme nové konto správce s tímto heslem.
-                      </p>
-                    </div>
+                    {!existingUser && managerEmail.trim().length > 0 && !isCheckingUser && (
+                      <div className="animate-in fade-in slide-in-from-top-2 duration-300">
+                        <Label htmlFor="managerPassword">Heslo pro nového správce</Label>
+                        <Input
+                          id="managerPassword"
+                          type="password"
+                          value={managerPassword}
+                          onChange={(e) => setManagerPassword(e.target.value)}
+                          placeholder="Zadejte heslo (min. 8 znaků)"
+                          required={!existingUser && !!managerEmail}
+                        />
+                        <p className="text-xs text-gray-500 mt-1 flex items-center gap-1">
+                          <Star className="h-3 w-3 text-yellow-500" />
+                          Vytvoříme nový účet a heslo odešleme v uvítacím e-mailu.
+                        </p>
+                      </div>
+                    )}
+
+                    {existingUser && (
+                       <div className="hidden">
+                         {/* Hidden input to prevent browser autofill confusion or to clear state if needed, 
+                             though logically we just don't render the password field */}
+                       </div>
+                    )}
 
                     <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                       <div className="flex items-start gap-3">

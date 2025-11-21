@@ -26,12 +26,7 @@ export const dynamicParams = true // Allow on-demand generation of pages
 const PUBLIC_STATUSES: string[] = ["published", "active"]
 const REMOVED_STATUSES: string[] = ["removed", "deleted", "archived"]
 
-type VenueResult =
-  | { status: 'ok'; venue: NonNullable<Awaited<ReturnType<typeof db.venue.findUnique>>> }
-  | { status: 'not_found' }
-  | { status: 'removed'; venueName?: string; district?: string }
-
-async function getVenue(slug: string): Promise<VenueResult> {
+async function getVenue(slug: string) {
   try {
     const venue = await db.venue.findUnique({
       where: {

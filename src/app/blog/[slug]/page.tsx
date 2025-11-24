@@ -9,6 +9,7 @@ import { staticBlogPosts } from "@/data/blog-posts"
 import { Badge } from "@/components/ui/badge"
 import { absoluteUrl, DEFAULT_OG_IMAGE, stripHtml } from "@/lib/seo"
 import { generateBlogPostingSchema, generateBreadcrumbSchema, schemaToJsonLd } from "@/lib/schema-markup"
+import { Breadcrumbs } from "@/components/ui/breadcrumbs"
 
 // Revalidate blog post pages every 60 seconds
 export const revalidate = 60
@@ -216,13 +217,15 @@ export default async function BlogPostPage({
       />
       <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-white pb-20 animate-fade-in">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <Link 
-            href="/blog" 
-            className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium text-gray-600 bg-white/50 border border-gray-200 hover:bg-white hover:text-gray-900 hover:shadow-sm transition-all duration-200 mb-12 backdrop-blur-sm"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Zpět na všechny články
-          </Link>
+          {/* Breadcrumbs Navigation */}
+          <Breadcrumbs
+            items={[
+              { name: 'Domů', url: '/' },
+              { name: 'Blog', url: '/blog' },
+              { name: post.title, url: `/blog/${post.slug}` },
+            ]}
+            className="mb-8"
+          />
 
           <div className="max-w-4xl mx-auto text-center space-y-8 mb-16">
             <div className="flex flex-wrap items-center justify-center gap-3 text-xs uppercase tracking-[0.2em] text-blue-600 font-bold">

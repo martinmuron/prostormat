@@ -326,3 +326,116 @@ export function generateCollectionPageSchema({
 
   return schema
 }
+
+/**
+ * Generate LocalBusiness schema for the homepage
+ * Improves local SEO by identifying Prostormat as a local business
+ * https://schema.org/LocalBusiness
+ */
+export function generateLocalBusinessSchema() {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'LocalBusiness',
+    '@id': `${SITE_URL}/#localbusiness`,
+    name: 'Prostormat',
+    description: 'Rozsáhlý katalog event prostorů v Praze. Najděte perfektní prostor pro vaši firemní akci, svatbu, teambuilding nebo konferenci.',
+    url: SITE_URL,
+    logo: absoluteUrl('/images/logo-black.svg'),
+    image: absoluteUrl('/images/prostormat_sharing.jpg'),
+    address: {
+      '@type': 'PostalAddress',
+      addressLocality: 'Praha',
+      addressCountry: 'CZ',
+    },
+    geo: {
+      '@type': 'GeoCoordinates',
+      latitude: 50.0755,
+      longitude: 14.4378,
+    },
+    areaServed: {
+      '@type': 'City',
+      name: 'Praha',
+    },
+    priceRange: 'Zdarma',
+    email: 'info@prostormat.cz',
+    sameAs: [
+      'https://www.instagram.com/prostormatcz',
+    ],
+    openingHoursSpecification: {
+      '@type': 'OpeningHoursSpecification',
+      dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+      opens: '09:00',
+      closes: '18:00',
+    },
+  }
+}
+
+interface ServiceSchemaOptions {
+  name: string
+  description: string
+  url: string
+  provider?: string
+  areaServed?: string
+  serviceType?: string
+}
+
+/**
+ * Generate Service schema for service pages
+ * https://schema.org/Service
+ */
+export function generateServiceSchema({
+  name,
+  description,
+  url,
+  provider = 'Prostormat',
+  areaServed = 'Praha',
+  serviceType,
+}: ServiceSchemaOptions) {
+  const schema: Record<string, unknown> = {
+    '@context': 'https://schema.org',
+    '@type': 'Service',
+    name,
+    description,
+    url,
+    provider: {
+      '@type': 'Organization',
+      name: provider,
+      url: SITE_URL,
+    },
+    areaServed: {
+      '@type': 'City',
+      name: areaServed,
+    },
+  }
+
+  if (serviceType) {
+    schema.serviceType = serviceType
+  }
+
+  return schema
+}
+
+/**
+ * Generate ItemList schema for service offerings
+ * https://schema.org/ItemList
+ */
+export function generateServiceListSchema(services: Array<{ name: string; description: string }>) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    itemListElement: services.map((service, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      item: {
+        '@type': 'Service',
+        name: service.name,
+        description: service.description,
+        provider: {
+          '@type': 'Organization',
+          name: 'Prostormat',
+          url: SITE_URL,
+        },
+      },
+    })),
+  }
+}

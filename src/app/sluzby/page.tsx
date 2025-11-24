@@ -3,6 +3,7 @@ import { PageHero } from "@/components/layout/page-hero"
 import { ScrollReveal } from "@/components/ui/scroll-reveal"
 import { ServicesForm } from "@/components/pages/services-form"
 import { Check, Calendar } from "lucide-react"
+import { generateServiceSchema, generateServiceListSchema, schemaToJsonLd } from "@/lib/schema-markup"
 
 export const metadata: Metadata = {
   title: "Služby pro eventy | Prostormat",
@@ -43,9 +44,38 @@ export const metadata: Metadata = {
   }
 }
 
+// Service categories offered through the platform
+const SERVICE_CATEGORIES = [
+  { name: "Catering", description: "Cateringové služby pro firemní akce, konference a svatby" },
+  { name: "Technika a AV", description: "Ozvučení, osvětlení a audiovizuální technika pro eventy" },
+  { name: "Dekorace a florista", description: "Květinové aranžmá a dekorace pro slavnostní příležitosti" },
+  { name: "Fotograf a kameraman", description: "Profesionální foto a video dokumentace akcí" },
+  { name: "Moderátor a DJ", description: "Moderátorské služby a hudební doprovod" },
+  { name: "Koordinace a plánování", description: "Organizace a koordinace eventů na klíč" },
+]
+
 export default function SluzbyPage() {
+  const serviceSchema = generateServiceSchema({
+    name: "Služby pro eventy",
+    description: "Nabízíte služby pro firemní akce, teambuildingy a svatby? Přidejte se zdarma na Prostormat a získejte přístup k poptávkám od organizátorů akcí.",
+    url: "https://prostormat.cz/sluzby",
+    serviceType: "Event Services Platform",
+  })
+
+  const serviceListSchema = generateServiceListSchema(SERVICE_CATEGORIES)
+
   return (
     <div className="min-h-screen bg-white">
+      {/* Schema.org markup */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={schemaToJsonLd(serviceSchema)}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={schemaToJsonLd(serviceListSchema)}
+      />
+
       {/* Hero */}
       <PageHero
         tone="blue"

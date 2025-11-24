@@ -14,6 +14,7 @@ import { VENUE_TYPES } from "@/types"
 import type { VenueType } from "@/types"
 import { MapPin, Users, Instagram } from "lucide-react"
 import { generateVenueSchema, generateBreadcrumbSchema, schemaToJsonLd } from "@/lib/schema-markup"
+import { Breadcrumbs } from "@/components/ui/breadcrumbs"
 import { buildVenueMetaDescription, buildVenueKeywords, absoluteUrl, DEFAULT_OG_IMAGE } from "@/lib/seo"
 import { VenueViewTracker } from "@/components/analytics/venue-view-tracker"
 import { getOptimizedImageUrl } from "@/lib/supabase-images"
@@ -255,6 +256,15 @@ export default async function VenueDetailPage({
       />
 
       <div className="max-w-7xl mx-auto px-6 py-12">
+        {/* Breadcrumbs Navigation */}
+        <Breadcrumbs
+          items={[
+            { name: 'Domů', url: '/' },
+            { name: 'Prostory', url: '/prostory' },
+            { name: venue.name, url: `/prostory/${venue.slug}` },
+          ]}
+          className="mb-6"
+        />
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
           {/* Main Content */}
           <div className="lg:col-span-2">

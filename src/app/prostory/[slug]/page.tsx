@@ -24,7 +24,7 @@ export const revalidate = 1800 // Regenerate at most every 30 minutes; edits tri
 export const dynamicParams = true // Allow on-demand generation of pages
 
 const PUBLIC_STATUSES: string[] = ["published", "active"]
-const REMOVED_STATUSES: string[] = ["removed", "deleted", "archived"]
+const REMOVED_STATUSES: string[] = ["removed", "deleted", "archived", "hidden"]
 
 async function getVenue(slug: string) {
   try {

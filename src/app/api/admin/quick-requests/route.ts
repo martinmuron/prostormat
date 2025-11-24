@@ -71,6 +71,11 @@ export async function GET(request: Request) {
       take: pageSize,
       include: {
         logs: {
+          where: {
+            venue: {
+              parentId: null, // Only show parent venues, not sub-locations
+            },
+          },
           include: {
             venue: {
               select: {
@@ -81,6 +86,7 @@ export async function GET(request: Request) {
                 capacitySeated: true,
                 contactEmail: true,
                 venueType: true,
+                district: true,
               },
             },
           },

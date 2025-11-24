@@ -101,8 +101,9 @@ export async function findMatchingVenues(criteria: {
   const andConditions: Prisma.VenueWhereInput[] = []
 
   if (trimmedLocation) {
-    // Treat "Celá Praha" and "Praha" the same - match all Praha districts
-    if (trimmedLocation === "Celá Praha" || trimmedLocation === "Praha") {
+    // Treat "Celá Praha", "Praha", "praha" etc. the same - match all Praha districts
+    const normalizedLocation = trimmedLocation.toLowerCase()
+    if (normalizedLocation === "celá praha" || normalizedLocation === "praha") {
       andConditions.push({
         district: {
           startsWith: "Praha",

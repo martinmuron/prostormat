@@ -1012,7 +1012,9 @@ export default function AdminQuickRequestsPage() {
                           <tr key={log.id} className="align-top">
                             <td className="px-4 py-3">
                               <div className="font-medium text-gray-900">{log.venue.name}</div>
-                              <div className="text-xs text-gray-500">{log.venue.district || "Bez lokality"}</div>
+                              {log.venue.district && (
+                                <div className="text-xs text-gray-500">{log.venue.district}</div>
+                              )}
                               {log.venue.contactEmail && (
                                 <div className="text-xs text-gray-500">{log.venue.contactEmail}</div>
                               )}

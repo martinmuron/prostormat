@@ -21,8 +21,11 @@ const eventRequestSchema = z.object({
   contactPhone: z.string().optional(),
 })
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    const { searchParams } = new URL(request.url)
+    const showPast = searchParams.get("showPast") === "true"
+
     let hasVenueAccess = false
     const session = await getServerSession(authOptions)
 
@@ -30,12 +33,23 @@ export async function GET() {
       hasVenueAccess = await hasActiveVenueAccess(session.user.id)
     }
 
+    const now = new Date()
+    const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+
     const requests = await db.eventRequest.findMany({
       where: {
         status: "active",
+        // Filter out past events unless showPast is true
+        ...(!showPast && {
+          OR: [
+            { eventDate: { gte: startOfToday } },
+            { eventDate: null }, // Include events without a date
+          ],
+        }),
       },
       orderBy: {
-        createdAt: "desc",
+        // Sort by event date descending (furthest future first, counting down to today)
+        eventDate: "desc",
       },
       include: {
         user: {

@@ -118,6 +118,7 @@ export default function EventRequestsPage() {
   const [requests, setRequests] = useState<EventRequest[]>([])
   const [loading, setLoading] = useState(true)
   const [hasVenueAccess, setHasVenueAccess] = useState(false)
+  const [showPastEvents, setShowPastEvents] = useState(false)
   const [filters, setFilters] = useState({
     location: "all",
     guestCount: "all",
@@ -131,7 +132,8 @@ export default function EventRequestsPage() {
     }
     try {
       setLoading(true)
-      const response = await fetch('/api/event-requests')
+      const url = showPastEvents ? '/api/event-requests?showPast=true' : '/api/event-requests'
+      const response = await fetch(url)
       if (response.ok) {
         const data = await response.json()
         setRequests(data.requests || [])
@@ -149,7 +151,7 @@ export default function EventRequestsPage() {
     } finally {
       setLoading(false)
     }
-  }, [status])
+  }, [status, showPastEvents])
 
   useEffect(() => {
     fetchRequests()
@@ -361,6 +363,24 @@ export default function EventRequestsPage() {
                 </Select>
               </div>
             )}
+          </div>
+
+          {/* Show past events toggle */}
+          <div className="mt-4 flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setShowPastEvents(!showPastEvents)}
+              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                showPastEvents ? 'bg-amber-600' : 'bg-gray-300'
+              }`}
+            >
+              <span
+                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                  showPastEvents ? 'translate-x-6' : 'translate-x-1'
+                }`}
+              />
+            </button>
+            <span className="text-sm text-gray-700">Zobrazit i proběhlé akce</span>
           </div>
         </div>
       </div>

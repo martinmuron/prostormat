@@ -7,6 +7,7 @@ import { Calendar, ArrowLeft, Clock, BookOpen } from "lucide-react"
 import { db } from "@/lib/db"
 import { staticBlogPosts } from "@/data/blog-posts"
 import { Badge } from "@/components/ui/badge"
+import { Breadcrumbs } from "@/components/ui/breadcrumbs"
 import { absoluteUrl, DEFAULT_OG_IMAGE, stripHtml } from "@/lib/seo"
 import { generateBlogPostingSchema, generateBreadcrumbSchema, schemaToJsonLd } from "@/lib/schema-markup"
 
@@ -216,8 +217,15 @@ export default async function BlogPostPage({
       />
       <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-white pb-20 animate-fade-in">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <Link 
-            href="/blog" 
+          <Breadcrumbs
+            items={[
+              { label: "Blog", href: "/blog" },
+              { label: post.title, href: `/blog/${post.slug}` },
+            ]}
+            className="mb-8"
+          />
+          <Link
+            href="/blog"
             className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium text-gray-600 bg-white/50 border border-gray-200 hover:bg-white hover:text-gray-900 hover:shadow-sm transition-all duration-200 mb-12 backdrop-blur-sm"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />

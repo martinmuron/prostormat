@@ -9,6 +9,7 @@ import { GoogleVenueMap } from "@/components/maps/google-venue-map"
 import { RelatedVenues } from "@/components/venue/related-venues"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { Breadcrumbs } from "@/components/ui/breadcrumbs"
 import { db } from "@/lib/db"
 import { VENUE_TYPES } from "@/types"
 import type { VenueType } from "@/types"
@@ -255,6 +256,12 @@ export default async function VenueDetailPage({
       />
 
       <div className="max-w-7xl mx-auto px-6 py-12">
+        <Breadcrumbs
+          items={[
+            { label: "Prostory", href: "/prostory" },
+            { label: venue.name, href: `/prostory/${venue.slug}` },
+          ]}
+        />
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
           {/* Main Content */}
           <div className="lg:col-span-2">

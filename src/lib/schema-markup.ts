@@ -326,3 +326,51 @@ export function generateCollectionPageSchema({
 
   return schema
 }
+
+interface BlogSchemaOptions {
+  title: string
+  description: string
+  url: string
+  posts?: Array<{
+    title: string
+    url: string
+    datePublished: string
+    image?: string | null
+  }>
+}
+
+/**
+ * Generate Blog schema for blog listing pages
+ * https://schema.org/Blog
+ */
+export function generateBlogSchema({
+  title,
+  description,
+  url,
+  posts,
+}: BlogSchemaOptions) {
+  const schema: Record<string, unknown> = {
+    '@context': 'https://schema.org',
+    '@type': 'Blog',
+    name: title,
+    description: description,
+    url: url,
+    publisher: {
+      '@type': 'Organization',
+      name: 'Prostormat',
+      url: SITE_URL,
+    },
+  }
+
+  if (posts && posts.length > 0) {
+    schema.blogPost = posts.map((post) => ({
+      '@type': 'BlogPosting',
+      headline: post.title,
+      url: post.url,
+      datePublished: post.datePublished,
+      image: post.image ? getOptimizedImageUrl(post.image, 'medium') : undefined,
+    }))
+  }
+
+  return schema
+}

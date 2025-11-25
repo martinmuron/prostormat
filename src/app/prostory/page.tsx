@@ -4,8 +4,9 @@ import type { Metadata } from "next"
 import { VenueFilters } from "@/components/venue/venue-filters"
 import { InfiniteVenueList } from "@/components/venue/infinite-venue-list"
 import { PageHero } from "@/components/layout/page-hero"
-import { DEFAULT_OG_IMAGE, DEFAULT_OG_IMAGES } from "@/lib/seo"
+import { DEFAULT_OG_IMAGE, DEFAULT_OG_IMAGES, SITE_URL } from "@/lib/seo"
 import { fetchRandomizedVenuePage, getCurrentSeed } from "@/lib/venue-order"
+import { generateCollectionPageSchema, schemaToJsonLd } from "@/lib/schema-markup"
 
 export const revalidate = 300
 
@@ -228,6 +229,12 @@ export default async function VenuesPage({
   const resolvedSearchParams = await searchParams
   const currentPage = Math.max(1, Number.parseInt(resolvedSearchParams.page ?? "1", 10) || 1)
 
+  const collectionSchema = generateCollectionPageSchema({
+    title: "Event prostory v Praze pro firemní akce",
+    description: "Prohlédněte si ověřené prostory v Praze pro firemní akce, teambuildingy, večírky i svatby. Filtrovat můžete podle typu, kapacity i lokality.",
+    url: `${SITE_URL}/prostory`,
+  })
+
   const hero = (
     <PageHero
       eyebrow="Výběr prostorů"
@@ -245,18 +252,24 @@ export default async function VenuesPage({
     </PageHero>
   )
   return (
-    <div className="min-h-screen bg-white">
-      {hero}
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={schemaToJsonLd(collectionSchema)}
+      />
+      <div className="min-h-screen bg-white">
+        {hero}
 
-      {/* Venue Grid */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-12 sm:pt-16 pb-8 sm:pb-12">
-        <Suspense fallback={<VenueGridSkeleton />}>
-          <VenueContent
-            searchParams={resolvedSearchParams}
-            currentPage={currentPage}
-          />
-        </Suspense>
+        {/* Venue Grid */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-12 sm:pt-16 pb-8 sm:pb-12">
+          <Suspense fallback={<VenueGridSkeleton />}>
+            <VenueContent
+              searchParams={resolvedSearchParams}
+              currentPage={currentPage}
+            />
+          </Suspense>
+        </div>
       </div>
-    </div>
+    </>
   )
 }

@@ -8,7 +8,8 @@ import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 import { db } from "@/lib/db"
 import { staticBlogPosts } from "@/data/blog-posts"
-import { DEFAULT_OG_IMAGE, DEFAULT_OG_IMAGES } from "@/lib/seo"
+import { DEFAULT_OG_IMAGE, DEFAULT_OG_IMAGES, SITE_URL } from "@/lib/seo"
+import { generateBlogSchema, schemaToJsonLd } from "@/lib/schema-markup"
 
 // Revalidate blog page every 60 seconds to show new posts
 export const revalidate = 60
@@ -196,6 +197,18 @@ async function BlogGrid() {
           content: post.content,
         }))
 
+  const blogSchema = generateBlogSchema({
+    title: "Blog o firemních akcích a event marketingu",
+    description: "Tipy na prostory, inspirace pro firemní akce, svatby a teambuildingy v Praze. Čerstvé novinky a know-how od týmu Prostormat.",
+    url: `${SITE_URL}/blog`,
+    posts: displayPosts.map((post) => ({
+      title: post.title,
+      url: `${SITE_URL}/blog/${post.slug}`,
+      datePublished: typeof post.publishedAt === 'string' ? post.publishedAt : new Date(post.publishedAt).toISOString(),
+      image: post.coverImage,
+    })),
+  })
+
   if (displayPosts.length === 0) {
     return (
       <div className="text-center py-20">
@@ -210,7 +223,12 @@ async function BlogGrid() {
   const [featuredPost, ...otherPosts] = displayPosts
 
   return (
-    <div className="space-y-12">
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={schemaToJsonLd(blogSchema)}
+      />
+      <div className="space-y-12">
       <section className="relative overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-sm">
         <div className="grid lg:grid-cols-2">
           <div className="relative h-72 sm:h-96 lg:h-full">
@@ -277,7 +295,8 @@ async function BlogGrid() {
           </div>
         </section>
       )}
-    </div>
+      </div>
+    </>
   )
 }
 

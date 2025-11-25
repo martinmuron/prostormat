@@ -627,8 +627,8 @@ export default function HomePage() {
               <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-3xl p-8 sm:p-10 border-2 border-dashed border-gray-300 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative overflow-hidden transition-all duration-300 hover:border-gray-400 hover:shadow-md opacity-90">
                 {/* Coming Soon Badge */}
                 <div className="absolute top-4 right-4 sm:top-6 sm:right-6">
-                  <span className="bg-gray-200 text-gray-700 px-4 py-2 rounded-full text-sm sm:text-base font-semibold flex items-center gap-2">
-                    <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <span className="bg-gray-200 text-gray-700 px-3 py-1.5 rounded-full text-xs sm:text-sm font-semibold flex items-center gap-1.5">
+                    <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                     Připravujeme

@@ -37,12 +37,12 @@ export async function GET() {
 
   // Venue images
   for (const venue of venues) {
-    const images = Array.isArray(venue.images) ? venue.images : []
+    const images = (Array.isArray(venue.images) ? venue.images : []) as string[]
     if (images.length === 0) continue
 
     const imageXml = images
       .slice(0, 10) // Max 10 images per URL
-      .map((imagePath) => {
+      .map((imagePath: string) => {
         const imageUrl = getOptimizedImageUrl(imagePath, "medium")
         if (!imageUrl) return ""
 

@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { cn } from "@/lib/utils"
-import { Calendar, Mail, MapPin, Users, RefreshCw, Send, Trash, Zap, ChevronLeft, ChevronRight, Filter, X } from "lucide-react"
+import { Calendar, Mail, MapPin, Users, RefreshCw, Send, Trash, Zap, ChevronLeft, ChevronRight, Filter, X, Sparkles } from "lucide-react"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 
@@ -55,6 +55,10 @@ interface QuickRequestItem {
   totalVenues: number
   pendingCount: number
   logs: QuickRequestLog[]
+  // AI analysis fields
+  aiAnalyzedAt?: Date | null
+  aiRecommendedVenues?: string[]
+  aiAnalysisReason?: string | null
 }
 
 const STATUS_OPTIONS = [
@@ -74,10 +78,11 @@ type StatusValue = typeof STATUS_OPTIONS[number]["value"]
 type TimeFilterValue = typeof TIME_FILTER_OPTIONS[number]["value"]
 
 type ApiLog = Omit<QuickRequestLog, "sentAt"> & { sentAt: string | null }
-type ApiQuickRequest = Omit<QuickRequestItem, "createdAt" | "lastSentAt" | "logs" | "eventDate"> & {
+type ApiQuickRequest = Omit<QuickRequestItem, "createdAt" | "lastSentAt" | "logs" | "eventDate" | "aiAnalyzedAt"> & {
   createdAt: string
   lastSentAt: string | null
   eventDate: string | null
+  aiAnalyzedAt: string | null
   logs: ApiLog[]
 }
 
@@ -157,6 +162,10 @@ export default function AdminQuickRequestsPage() {
   const [venueTypeCounts, setVenueTypeCounts] = useState<VenueTypeCount[]>([])
   const [pollingRequestId, setPollingRequestId] = useState<string | null>(null)
 
+  // AI analysis state
+  const [analyzingId, setAnalyzingId] = useState<string | null>(null)
+  const [venueListTab, setVenueListTab] = useState<"all" | "ai">("all")
+
   const fetchRequests = useCallback(async (status: StatusValue, page: number = 1, time: TimeFilterValue = "upcoming") => {
     setLoading(true)
     setError(null)
@@ -187,6 +196,7 @@ export default function AdminQuickRequestsPage() {
         createdAt: new Date(item.createdAt),
         lastSentAt: toDate(item.lastSentAt),
         eventDate: toDate(item.eventDate),
+        aiAnalyzedAt: toDate(item.aiAnalyzedAt),
         logs: item.logs.map((log) => ({
           ...log,
           sentAt: toDate(log.sentAt),
@@ -247,9 +257,11 @@ export default function AdminQuickRequestsPage() {
     if (selectedRequestId) {
       fetchVenueTypeCounts(selectedRequestId)
       setSelectedVenueTypes([]) // Reset filter when switching requests
+      setVenueListTab("all") // Reset to all venues tab when switching requests
     } else {
       setVenueTypeCounts([])
       setSelectedVenueTypes([])
+      setVenueListTab("all")
     }
   }, [selectedRequestId, fetchVenueTypeCounts])
 
@@ -429,6 +441,9 @@ export default function AdminQuickRequestsPage() {
       setBulkSendingId(requestId)
       setPollingRequestId(requestId) // Start polling for real-time progress
 
+      // Get the current request for AI venue IDs
+      const currentRequest = requests.find((r) => r.id === requestId)
+
       try {
         const response = await fetch(`/api/admin/quick-requests/${requestId}/send-all`, {
           method: "POST",
@@ -436,6 +451,10 @@ export default function AdminQuickRequestsPage() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
+            // Pass AI-recommended venue IDs when on AI tab
+            venueIds: venueListTab === "ai" && currentRequest?.aiRecommendedVenues?.length
+              ? currentRequest.aiRecommendedVenues
+              : undefined,
             venueTypes: selectedVenueTypes.length > 0 ? selectedVenueTypes : undefined,
           }),
         })
@@ -498,7 +517,7 @@ export default function AdminQuickRequestsPage() {
         setBulkSendingId(null)
       }
     },
-    [updateRequest, selectedVenueTypes]
+    [updateRequest, selectedVenueTypes, venueListTab, requests]
   )
 
   const handleResendFailed = useCallback(
@@ -595,18 +614,33 @@ export default function AdminQuickRequestsPage() {
 
   const selectedRequest = selectedRequestId ? requests.find((request) => request.id === selectedRequestId) ?? null : null
 
-  // Filter logs by selected venue types
+  // Get AI recommended venue IDs set for quick lookup
+  const aiRecommendedSet = useMemo(() => {
+    if (!selectedRequest?.aiRecommendedVenues) return new Set<string>()
+    return new Set(selectedRequest.aiRecommendedVenues)
+  }, [selectedRequest?.aiRecommendedVenues])
+
+  // Filter logs by selected venue types AND AI tab
   const filteredLogs = useMemo(() => {
-    if (!selectedRequest || selectedVenueTypes.length === 0) {
-      return selectedRequest?.logs || []
+    if (!selectedRequest) return []
+
+    let logs = selectedRequest.logs
+
+    // Filter by AI recommendations if on AI tab
+    if (venueListTab === "ai" && aiRecommendedSet.size > 0) {
+      logs = logs.filter((log) => aiRecommendedSet.has(log.venueId))
     }
 
-    return selectedRequest.logs.filter((log) => {
-      // Check if venue type matches any of the selected types
-      const venueType = log.venue.venueType
-      return venueType ? selectedVenueTypes.includes(venueType) : false
-    })
-  }, [selectedRequest, selectedVenueTypes])
+    // Filter by venue types if selected
+    if (selectedVenueTypes.length > 0) {
+      logs = logs.filter((log) => {
+        const venueType = log.venue.venueType
+        return venueType ? selectedVenueTypes.includes(venueType) : false
+      })
+    }
+
+    return logs
+  }, [selectedRequest, selectedVenueTypes, venueListTab, aiRecommendedSet])
 
   const filteredPendingCount = useMemo(() => {
     return filteredLogs.filter((log) => log.emailStatus === "pending").length
@@ -617,7 +651,7 @@ export default function AdminQuickRequestsPage() {
   }, [filteredLogs])
 
   // Determine if we're using a filter - when no filter, use aggregate counts (updated by polling)
-  const isFiltered = selectedVenueTypes.length > 0
+  const isFiltered = selectedVenueTypes.length > 0 || venueListTab === "ai"
 
   // Display counts - use aggregate when unfiltered (polling updates these), filtered counts when filtered
   const displaySentCount = isFiltered ? filteredSentCount : (selectedRequest?.sentCount ?? 0)
@@ -652,6 +686,43 @@ export default function AdminQuickRequestsPage() {
       }
     },
     []
+  )
+
+  const handleAiAnalyze = useCallback(
+    async (requestId: string) => {
+      setAnalyzingId(requestId)
+      try {
+        const response = await fetch(`/api/admin/quick-requests/${requestId}/analyze`, {
+          method: "POST",
+        })
+
+        if (!response.ok) {
+          const data = await response.json().catch(() => ({}))
+          throw new Error(data.error || "AI analýza se nezdařila")
+        }
+
+        const data = await response.json()
+
+        // Update the request with AI results
+        updateRequest(requestId, (request) => ({
+          ...request,
+          aiAnalyzedAt: new Date(),
+          aiRecommendedVenues: data.recommendedVenueIds,
+          aiAnalysisReason: data.reasoning,
+        }))
+
+        // Switch to AI tab
+        setVenueListTab("ai")
+
+        alert(`AI doporučila ${data.recommendedCount} z ${data.totalVenues} prostorů.\n\nZdůvodnění: ${data.reasoning}`)
+      } catch (err) {
+        console.error(err)
+        alert(err instanceof Error ? err.message : "AI analýza se nezdařila")
+      } finally {
+        setAnalyzingId(null)
+      }
+    },
+    [updateRequest]
   )
 
   return (
@@ -824,6 +895,28 @@ export default function AdminQuickRequestsPage() {
                           Čeká {displayPendingCount}
                         </Badge>
                       )}
+                      {selectedRequest.aiAnalyzedAt && (
+                        <Badge variant="outline" className="border-violet-200 bg-violet-50 text-violet-700">
+                          <Sparkles className="h-3 w-3 mr-1" />
+                          AI: {selectedRequest.aiRecommendedVenues?.length ?? 0}
+                        </Badge>
+                      )}
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleAiAnalyze(selectedRequest.id)}
+                        disabled={analyzingId === selectedRequest.id || bulkSendingId === selectedRequest.id}
+                        className="rounded-lg border-violet-200 bg-violet-50 text-violet-700 hover:bg-violet-100"
+                      >
+                        {analyzingId === selectedRequest.id ? (
+                          <RefreshCw className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <>
+                            <Sparkles className="h-4 w-4" />
+                            {selectedRequest.aiAnalyzedAt ? "Znovu analyzovat" : "Analyzovat s AI"}
+                          </>
+                        )}
+                      </Button>
                       <Button
                         variant="destructive"
                         size="sm"
@@ -895,6 +988,47 @@ export default function AdminQuickRequestsPage() {
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-6">
+                  {/* AI Tab Switcher - only show if AI analysis was done */}
+                  {selectedRequest.aiAnalyzedAt && (
+                    <div className="rounded-lg border border-violet-200 bg-violet-50 p-4">
+                      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                        <div className="flex items-center gap-2">
+                          <Sparkles className="h-5 w-5 text-violet-600" />
+                          <div>
+                            <p className="text-sm font-semibold text-violet-900">AI analýza dokončena</p>
+                            <p className="text-xs text-violet-700">{selectedRequest.aiAnalysisReason}</p>
+                          </div>
+                        </div>
+                        <div className="flex rounded-lg border border-violet-300 bg-white p-1">
+                          <button
+                            type="button"
+                            onClick={() => setVenueListTab("all")}
+                            className={cn(
+                              "px-3 py-1.5 text-sm font-medium rounded-md transition-colors",
+                              venueListTab === "all"
+                                ? "bg-violet-600 text-white"
+                                : "text-violet-700 hover:bg-violet-100"
+                            )}
+                          >
+                            Všechny prostory ({selectedRequest.totalVenues})
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setVenueListTab("ai")}
+                            className={cn(
+                              "px-3 py-1.5 text-sm font-medium rounded-md transition-colors",
+                              venueListTab === "ai"
+                                ? "bg-violet-600 text-white"
+                                : "text-violet-700 hover:bg-violet-100"
+                            )}
+                          >
+                            AI doporučené ({selectedRequest.aiRecommendedVenues?.length ?? 0})
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
                   {/* Venue Type Filter */}
                   {venueTypeCounts.length > 0 && (
                     <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
@@ -980,16 +1114,25 @@ export default function AdminQuickRequestsPage() {
                           size="sm"
                           onClick={() => handleSendAll(selectedRequest.id)}
                           disabled={bulkSendingId === selectedRequest.id || resendingFailedId === selectedRequest.id || sendingLogId !== null}
-                          className="rounded-lg"
+                          className={cn(
+                            "rounded-lg",
+                            venueListTab === "ai" && "bg-violet-600 hover:bg-violet-700"
+                          )}
                         >
                           {bulkSendingId === selectedRequest.id ? (
                             <Send className="h-4 w-4 animate-spin" />
                           ) : (
                             <>
-                              <Send className="h-4 w-4" />
-                              {selectedVenueTypes.length > 0
-                                ? `Odeslat filtrovaným (${filteredPendingCount})`
-                                : "Odeslat všem"}
+                              {venueListTab === "ai" ? (
+                                <Sparkles className="h-4 w-4" />
+                              ) : (
+                                <Send className="h-4 w-4" />
+                              )}
+                              {venueListTab === "ai"
+                                ? `Odeslat AI doporučeným (${filteredPendingCount})`
+                                : selectedVenueTypes.length > 0
+                                  ? `Odeslat filtrovaným (${filteredPendingCount})`
+                                  : "Odeslat všem"}
                             </>
                           )}
                         </Button>

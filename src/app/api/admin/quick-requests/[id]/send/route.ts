@@ -9,6 +9,7 @@ import { generateQuickRequestVenueNotificationEmail } from "@/lib/email-template
 
 const sendSchema = z.object({
   venueId: z.string().optional(),
+  venueIds: z.array(z.string()).optional(), // For AI-filtered venue list
   venueTypes: z.array(z.string()).optional(),
 })
 
@@ -24,7 +25,7 @@ export async function POST(
 
   const { id } = await context.params
   const json = await request.json().catch(() => ({}))
-  const { venueId, venueTypes } = sendSchema.parse(json)
+  const { venueId, venueIds, venueTypes } = sendSchema.parse(json)
 
   const broadcast = await prisma.venueBroadcast.findUnique({
     where: { id },
@@ -40,6 +41,10 @@ export async function POST(
       // Allow resending to any venue if specific venueId is provided
       // Otherwise only send to pending
       ...(venueId ? { venueId } : { emailStatus: "pending" }),
+      // Filter by venue IDs if provided (for AI-filtered list)
+      ...(venueIds && venueIds.length > 0 && !venueId
+        ? { venueId: { in: venueIds } }
+        : {}),
       // Filter by venue types if provided
       ...(venueTypes && venueTypes.length > 0 && !venueId
         ? {

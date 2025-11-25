@@ -131,6 +131,10 @@ export async function GET(request: Request) {
       totalVenues,
       pendingCount,
       logs,
+      // AI analysis fields
+      aiAnalyzedAt: broadcast.aiAnalyzedAt,
+      aiRecommendedVenues: broadcast.aiRecommendedVenues ?? [],
+      aiAnalysisReason: broadcast.aiAnalysisReason,
     }
   })
 

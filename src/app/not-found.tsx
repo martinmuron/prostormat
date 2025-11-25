@@ -1,16 +1,6 @@
-import type { Metadata } from "next"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { Home, Search, HelpCircle, ArrowLeft } from "lucide-react"
-
-export const metadata: Metadata = {
-  title: "Stránka nenalezena | Prostormat",
-  description: "Omlouváme se, ale stránka kterou hledáte neexistuje nebo byla přesunuta.",
-  robots: {
-    index: false,
-    follow: true,
-  },
-}
+import { Home, Search } from "lucide-react"
 
 export default function NotFound() {
   return (

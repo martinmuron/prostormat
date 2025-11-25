@@ -1,4 +1,5 @@
 import type { Prisma } from "@prisma/client"
+import type { Metadata } from "next"
 import { Suspense } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
@@ -7,6 +8,43 @@ import { ScrollReveal } from "@/components/ui/scroll-reveal"
 import { Skeleton } from "@/components/ui/skeleton"
 import { db } from "@/lib/db"
 import { Upload, MessageSquare, Euro, ArrowRight, Zap, Clock, Search } from "lucide-react"
+import { DEFAULT_OG_IMAGES, SITE_URL } from "@/lib/seo"
+
+export const metadata: Metadata = {
+  title: "Prostormat – Najděte perfektní prostor pro vaši akci v Praze",
+  description:
+    "Stovky ověřených event prostorů v Praze na jednom místě. Firemní akce, svatby, konference, teambuilding. Rychlá poptávka nebo přímé vyhledávání. Bez provizí.",
+  keywords: [
+    "event prostory Praha",
+    "pronájem prostoru na akci",
+    "firemní akce Praha",
+    "svatební prostor Praha",
+    "konferenční prostory",
+    "teambuilding Praha",
+    "lofty Praha",
+    "restaurace na akci",
+    "Prostormat",
+  ],
+  alternates: {
+    canonical: SITE_URL,
+  },
+  openGraph: {
+    title: "Prostormat – Najděte perfektní prostor pro vaši akci v Praze",
+    description:
+      "Stovky ověřených event prostorů v Praze. Firemní akce, svatby, konference, teambuilding. Rychlá poptávka nebo přímé vyhledávání.",
+    url: SITE_URL,
+    siteName: "Prostormat",
+    images: [...DEFAULT_OG_IMAGES],
+    locale: "cs_CZ",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Prostormat – Najděte perfektní prostor pro vaši akci",
+    description:
+      "Stovky ověřených event prostorů v Praze. Firemní akce, svatby, konference, teambuilding.",
+  },
+}
 
 // Fully static homepage; revalidation is triggered from the admin panel when slots change.
 export const revalidate = false

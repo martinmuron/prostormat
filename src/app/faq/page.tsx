@@ -1,8 +1,8 @@
 import type { Metadata } from "next"
 import { FAQPage } from "@/components/pages/faq-page"
 import { faqItems } from "@/data/faq"
-import { DEFAULT_OG_IMAGE, DEFAULT_OG_IMAGES } from "@/lib/seo"
-import { generateFaqSchema, schemaToJsonLd } from "@/lib/schema-markup"
+import { DEFAULT_OG_IMAGE, DEFAULT_OG_IMAGES, SITE_URL } from "@/lib/seo"
+import { generateFaqSchema, generateBreadcrumbSchema, schemaToJsonLd } from "@/lib/schema-markup"
 
 export const metadata: Metadata = {
   title: "FAQ: Kompletní průvodce Prostormat – 34 odpovědí | Prostormat",
@@ -50,12 +50,20 @@ export const metadata: Metadata = {
 
 export default function FAQRoute() {
   const faqSchema = generateFaqSchema(faqItems)
+  const breadcrumbSchema = generateBreadcrumbSchema([
+    { name: "Domů", url: SITE_URL },
+    { name: "Časté dotazy", url: `${SITE_URL}/faq` },
+  ])
 
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={schemaToJsonLd(faqSchema)}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={schemaToJsonLd(breadcrumbSchema)}
       />
       <FAQPage />
     </>

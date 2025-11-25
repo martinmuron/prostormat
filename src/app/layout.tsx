@@ -6,7 +6,7 @@ import { SessionProvider } from "@/components/providers/session-provider"
 import { Header } from "@/components/layout/header"
 import { Footer } from "@/components/layout/footer"
 import GlobalClickSpark from "@/components/ui/click-spark"
-import { generateOrganizationSchema, generateWebSiteSchema, schemaToJsonLd } from "@/lib/schema-markup"
+import { generateOrganizationSchema, generateWebSiteSchema, generateLocalBusinessSchema, schemaToJsonLd } from "@/lib/schema-markup"
 import { DEFAULT_OG_IMAGE, DEFAULT_OG_IMAGES, SITE_URL } from "@/lib/seo"
 
 export const metadata: Metadata = {
@@ -75,6 +75,7 @@ export default function RootLayout({
 }) {
   const organizationSchema = generateOrganizationSchema()
   const webSiteSchema = generateWebSiteSchema()
+  const localBusinessSchema = generateLocalBusinessSchema()
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
   const metaPixelId = process.env.META_PIXEL_ID || '796426231881929'
   let supabaseOrigin: string | null = null
@@ -106,6 +107,10 @@ export default function RootLayout({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={schemaToJsonLd(webSiteSchema)}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={schemaToJsonLd(localBusinessSchema)}
         />
 
         <Script

@@ -28,7 +28,7 @@ function showLoginOverlayDOM(buttonRect: DOMRect) {
 
   // Calculate position - using fixed positioning, so no need for scrollY/scrollX
   const top = buttonRect.bottom + 8
-  const left = Math.max(8, buttonRect.right - 240)
+  const left = Math.max(8, buttonRect.right - 320)
 
   // Create overlay HTML
   container.innerHTML = `
@@ -45,7 +45,7 @@ function showLoginOverlayDOM(buttonRect: DOMRect) {
         box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
         z-index: 9999;
         font-size: 14px;
-        width: 240px;
+        width: 320px;
         text-align: center;
         animation: fadeIn 0.2s ease-out;
       "
@@ -64,7 +64,7 @@ function showLoginOverlayDOM(buttonRect: DOMRect) {
         }
       </style>
       <p style="font-weight: 500; margin-bottom: 8px;">Pro uložení do oblíbených</p>
-      <a href="/prihlaseni">se přihlaste</a>
+      <span>se </span><a href="/prihlaseni">přihlaste</a>
       <span> nebo </span>
       <a href="/registrace">vytvořte účet zdarma</a>
     </div>

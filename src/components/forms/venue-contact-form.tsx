@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { useSession } from "next-auth/react"
-import Link from "next/link"
 import { trackGA4LokaceSubmit } from "@/lib/ga4-tracking"
 import { createTrackingContext } from "@/lib/tracking-utils"
 
@@ -124,7 +123,7 @@ export function VenueContactForm({ venueId, venueName }: VenueContactFormProps) 
 
   return (
     <div className="relative">
-      <form onSubmit={handleSubmit(onSubmit)} className={`space-y-4 ${!session ? 'blur-sm pointer-events-none' : ''}`}>
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div>
           <label className="block text-callout font-medium text-black mb-2">
             Jméno *
@@ -208,43 +207,18 @@ export function VenueContactForm({ venueId, venueName }: VenueContactFormProps) 
           )}
         </div>
 
-        <Button 
-          type="submit" 
-          className="w-full" 
+        <Button
+          type="submit"
+          className="w-full"
           disabled={isSubmitting}
         >
           {isSubmitting ? "Odesílám..." : "Odeslat dotaz"}
         </Button>
 
         <p className="text-caption text-gray-500">
-          Odesláním souhlasíte s předáním vašich kontaktních údajů provozovateli prostoru.
+          Odesláním souhlasíte s předáním vašich kontaktních údajů provozovateli prostoru a se zasíláním informačních e-mailů z naší platformy.
         </p>
       </form>
-
-      {!session && (
-        <div className="absolute inset-0 flex items-center justify-center bg-white/80 backdrop-blur-sm rounded-lg">
-          <div className="text-center p-6 bg-white rounded-lg shadow-lg border-2 border-black max-w-sm">
-            <h3 className="text-lg font-bold text-black mb-4">
-              Přihlaste se pro odeslání dotazu
-            </h3>
-            <p className="text-sm text-gray-600 mb-6">
-              Pro kontaktování majitele prostoru se musíte nejprve přihlásit nebo zaregistrovat.
-            </p>
-            <div className="flex flex-col gap-3">
-              <Link href="/prihlaseni">
-                <Button className="w-full bg-black text-white hover:bg-gray-800 transition-all duration-200 font-medium rounded-xl">
-                  Přihlásit se
-                </Button>
-              </Link>
-              <Link href="/registrace">
-                <Button variant="outline" className="w-full border-2 border-black text-black hover:bg-black hover:text-white transition-all duration-200 font-medium rounded-xl">
-                  Zaregistrovat se
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   )
 }

@@ -406,10 +406,10 @@ export function QuickRequestPage() {
                   )}
                 </Button>
                 <p className="text-sm text-gray-500 text-center mt-3">
-                  Poptávka bude odeslána pouze prostorům, které odpovídají vašim kritériím
+                  Poptávka bude odeslána pouze prostorům, které odpovídají vašim kritériím.
                 </p>
                 <p className="text-xs text-gray-500 text-center mt-2">
-                  Odesláním také automaticky vytvoříte poptávku na Event Boardu, aby se vám mohly ozvat další prostory.
+                  Odesláním souhlasíte se zasíláním informačních e-mailů z naší platformy a s automatickým vytvořením poptávky na Event Boardu.
                 </p>
               </div>
             </form>

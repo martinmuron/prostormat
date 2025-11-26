@@ -2,11 +2,12 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
+import { useSession } from "next-auth/react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { VENUE_TYPES, PRAGUE_DISTRICTS, CAPACITY_RANGES } from "@/types"
-import { Search, MapPin, Users, Calendar } from "lucide-react"
+import { Search, MapPin, Users, Calendar, Heart } from "lucide-react"
 
 interface VenueSuggestion {
   id: string
@@ -21,6 +22,7 @@ interface VenueFiltersProps {
     type?: string
     district?: string
     capacity?: string
+    favorites?: string
   }
 }
 
@@ -29,10 +31,12 @@ type FilterState = {
   type?: string
   district?: string
   capacity?: string
+  favorites?: boolean
 }
 
 export function VenueFilters({ initialValues }: VenueFiltersProps) {
   const router = useRouter()
+  const { data: session } = useSession()
 
   const computeFilterValue = (value?: string) => {
     if (!value || value === "all") return undefined
@@ -46,6 +50,7 @@ export function VenueFilters({ initialValues }: VenueFiltersProps) {
       type: hasSearch ? undefined : computeFilterValue(initialValues.type),
       district: hasSearch ? undefined : computeFilterValue(initialValues.district),
       capacity: hasSearch ? undefined : computeFilterValue(initialValues.capacity),
+      favorites: initialValues.favorites === "true",
     }
   })
   const [isSearchMode, setIsSearchMode] = useState(Boolean(initialValues.q))
@@ -62,9 +67,10 @@ export function VenueFilters({ initialValues }: VenueFiltersProps) {
       type: hasSearch ? undefined : computeFilterValue(initialValues.type),
       district: hasSearch ? undefined : computeFilterValue(initialValues.district),
       capacity: hasSearch ? undefined : computeFilterValue(initialValues.capacity),
+      favorites: initialValues.favorites === "true",
     })
     setIsSearchMode(hasSearch)
-  }, [initialValues.q, initialValues.type, initialValues.district, initialValues.capacity])
+  }, [initialValues.q, initialValues.type, initialValues.district, initialValues.capacity, initialValues.favorites])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -83,6 +89,25 @@ export function VenueFilters({ initialValues }: VenueFiltersProps) {
     if (filters.capacity) {
       params.set("capacity", filters.capacity)
     }
+    if (filters.favorites) {
+      params.set("favorites", "true")
+    }
+
+    const paramsString = params.toString()
+    router.push(paramsString ? `/prostory?${paramsString}` : '/prostory')
+  }
+
+  const toggleFavorites = () => {
+    const newFavorites = !filters.favorites
+    setFilters(prev => ({ ...prev, favorites: newFavorites }))
+
+    // Immediately update URL
+    const params = new URLSearchParams()
+    if (filters.q.trim()) params.set("q", filters.q.trim())
+    if (filters.type) params.set("type", filters.type)
+    if (filters.district) params.set("district", filters.district)
+    if (filters.capacity) params.set("capacity", filters.capacity)
+    if (newFavorites) params.set("favorites", "true")
 
     const paramsString = params.toString()
     router.push(paramsString ? `/prostory?${paramsString}` : '/prostory')
@@ -330,6 +355,23 @@ export function VenueFilters({ initialValues }: VenueFiltersProps) {
               >
                 Najít ideální místo
               </Button>
+
+              {/* Favorites toggle - only visible for logged in users */}
+              {session?.user && (
+                <button
+                  type="button"
+                  onClick={toggleFavorites}
+                  className={`h-12 px-4 rounded-xl border-2 flex items-center gap-2 font-medium transition-all flex-shrink-0 ${
+                    filters.favorites
+                      ? 'bg-red-50 border-red-400 text-red-600 hover:bg-red-100'
+                      : 'bg-white border-gray-300 text-gray-600 hover:bg-gray-50 hover:border-gray-400'
+                  }`}
+                  title={filters.favorites ? 'Zobrazit všechny prostory' : 'Zobrazit pouze oblíbené'}
+                >
+                  <Heart className={`h-5 w-5 ${filters.favorites ? 'fill-red-500 text-red-500' : ''}`} />
+                  <span className="hidden xl:inline">{filters.favorites ? 'Oblíbené' : 'Oblíbené'}</span>
+                </button>
+              )}
             </div>
 
             {/* Mobile layout - vertical stack */}
@@ -417,12 +459,30 @@ export function VenueFilters({ initialValues }: VenueFiltersProps) {
                 </Select>
               </div>
 
-              <Button
-                type="submit"
-                className="w-full h-12 rounded-xl bg-blue-600 text-base font-semibold text-white shadow-md transition-all hover:bg-blue-700 flex items-center justify-center"
-              >
-                Najít ideální místo
-              </Button>
+              <div className="flex gap-3">
+                <Button
+                  type="submit"
+                  className="flex-1 h-12 rounded-xl bg-blue-600 text-base font-semibold text-white shadow-md transition-all hover:bg-blue-700 flex items-center justify-center"
+                >
+                  Najít ideální místo
+                </Button>
+
+                {/* Favorites toggle - only visible for logged in users */}
+                {session?.user && (
+                  <button
+                    type="button"
+                    onClick={toggleFavorites}
+                    className={`h-12 px-4 rounded-xl border-2 flex items-center justify-center gap-2 font-medium transition-all ${
+                      filters.favorites
+                        ? 'bg-red-50 border-red-400 text-red-600'
+                        : 'bg-white border-gray-300 text-gray-600'
+                    }`}
+                    title={filters.favorites ? 'Zobrazit všechny prostory' : 'Zobrazit pouze oblíbené'}
+                  >
+                    <Heart className={`h-5 w-5 ${filters.favorites ? 'fill-red-500 text-red-500' : ''}`} />
+                  </button>
+                )}
+              </div>
             </div>
           </div>
         )}

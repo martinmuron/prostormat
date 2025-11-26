@@ -66,6 +66,7 @@ model User {
   passwordResetTokens   PasswordResetToken[]
   venueClaims           VenueClaim[]
   venueSubmissions      VenueSubmissionRequest[]
+  venueFavorites        VenueFavorite[]
   createdAt             DateTime                 @default(now())
 
   @@map("prostormat_users")
@@ -122,6 +123,7 @@ model Venue {
   claims             VenueClaim[]
   homepageSlot       HomepageVenue?
   submissionRequests VenueSubmissionRequest[]
+  favorites          VenueFavorite[]
 
   @@map("prostormat_venues")
 }
@@ -371,4 +373,17 @@ model EmailTrigger {
   updatedAt   DateTime @updatedAt
 
   @@map("prostormat_email_triggers")
+}
+
+model VenueFavorite {
+  id        String   @id @default(cuid())
+  userId    String
+  venueId   String
+  createdAt DateTime @default(now())
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  venue Venue @relation(fields: [venueId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, venueId])
+  @@map("prostormat_venue_favorites")
 }

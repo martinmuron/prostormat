@@ -1,12 +1,15 @@
 import Link from "next/link"
 import { Suspense } from "react"
 import type { Metadata } from "next"
+import { getServerSession } from "next-auth"
+import { authOptions } from "@/lib/auth"
 import { VenueFilters } from "@/components/venue/venue-filters"
 import { InfiniteVenueList } from "@/components/venue/infinite-venue-list"
 import { PageHero } from "@/components/layout/page-hero"
 import { DEFAULT_OG_IMAGE, DEFAULT_OG_IMAGES, SITE_URL } from "@/lib/seo"
 import { fetchRandomizedVenuePage, getCurrentSeed } from "@/lib/venue-order"
 import { generateCollectionPageSchema, schemaToJsonLd } from "@/lib/schema-markup"
+import { db } from "@/lib/db"
 
 export const revalidate = 300
 
@@ -16,6 +19,7 @@ interface SearchParams {
   district?: string
   capacity?: string
   page?: string
+  favorites?: string
 }
 
 const VENUES_PER_PAGE = 20
@@ -64,10 +68,16 @@ export async function generateMetadata({
 async function getInitialVenues(
   searchParams: SearchParams,
   pageNumber: number,
+  favoriteVenueIds?: string[],
 ) {
   try {
     const seed = getCurrentSeed()
     const offset = (pageNumber - 1) * VENUES_PER_PAGE
+
+    // If favorites filter is on but user has no favorites, return empty
+    if (searchParams.favorites === "true" && favoriteVenueIds && favoriteVenueIds.length === 0) {
+      return { seed, venues: [], totalCount: 0, hasMore: false }
+    }
 
     const result = await fetchRandomizedVenuePage({
       filters: {
@@ -77,6 +87,7 @@ async function getInitialVenues(
         capacity: searchParams.capacity ?? null,
         statuses: PUBLIC_STATUSES,
         includeSubvenues: false,
+        venueIds: searchParams.favorites === "true" ? favoriteVenueIds : undefined,
       },
       seed,
       take: VENUES_PER_PAGE,
@@ -122,23 +133,29 @@ function VenueGridSkeleton() {
 async function VenueContent({
   searchParams,
   currentPage,
+  favoriteVenueIds,
 }: {
   searchParams: SearchParams
   currentPage: number
+  favoriteVenueIds?: string[]
 }) {
   const { venues, totalCount, hasMore, seed } = await getInitialVenues(
     searchParams,
     currentPage,
+    favoriteVenueIds,
   )
 
   if (venues.length === 0) {
+    const isFavoritesFilter = searchParams.favorites === "true"
     return (
       <div className="text-center py-8 sm:py-12">
         <h3 className="text-lg sm:text-title-3 text-black mb-3 sm:mb-4">
-          Žádné prostory nebyly nalezeny
+          {isFavoritesFilter ? "Zatím nemáte žádné oblíbené prostory" : "Žádné prostory nebyly nalezeny"}
         </h3>
         <p className="text-sm sm:text-body text-gray-600 mb-4 sm:mb-6">
-          Zkuste upravit filtry nebo vyhledat jiné prostory.
+          {isFavoritesFilter
+            ? "Klikněte na srdíčko u prostoru pro přidání do oblíbených."
+            : "Zkuste upravit filtry nebo vyhledat jiné prostory."}
         </p>
       </div>
     )
@@ -229,6 +246,21 @@ export default async function VenuesPage({
   const resolvedSearchParams = await searchParams
   const currentPage = Math.max(1, Number.parseInt(resolvedSearchParams.page ?? "1", 10) || 1)
 
+  // Get user's favorite venue IDs if favorites filter is active
+  let favoriteVenueIds: string[] | undefined
+  if (resolvedSearchParams.favorites === "true") {
+    const session = await getServerSession(authOptions)
+    if (session?.user?.id) {
+      const favorites = await db.venueFavorite.findMany({
+        where: { userId: session.user.id },
+        select: { venueId: true }
+      })
+      favoriteVenueIds = favorites.map(f => f.venueId)
+    } else {
+      favoriteVenueIds = []
+    }
+  }
+
   const collectionSchema = generateCollectionPageSchema({
     title: "Event prostory v Praze pro firemní akce",
     description: "Prohlédněte si ověřené prostory v Praze pro firemní akce, teambuildingy, večírky i svatby. Filtrovat můžete podle typu, kapacity i lokality.",
@@ -266,6 +298,7 @@ export default async function VenuesPage({
             <VenueContent
               searchParams={resolvedSearchParams}
               currentPage={currentPage}
+              favoriteVenueIds={favoriteVenueIds}
             />
           </Suspense>
         </div>

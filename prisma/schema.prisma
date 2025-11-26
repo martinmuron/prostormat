@@ -63,6 +63,7 @@ model User {
   venueBroadcasts       VenueBroadcast[]
   emailFlowLogs         EmailFlowLog[]
   eventRequestFavorites EventRequestFavorite[]
+  venueFavorites        VenueFavorite[]
   passwordResetTokens   PasswordResetToken[]
   venueClaims           VenueClaim[]
   venueSubmissions      VenueSubmissionRequest[]
@@ -122,6 +123,7 @@ model Venue {
   claims             VenueClaim[]
   homepageSlot       HomepageVenue?
   submissionRequests VenueSubmissionRequest[]
+  favorites          VenueFavorite[]
 
   @@map("prostormat_venues")
 }
@@ -318,6 +320,19 @@ model EventRequestFavorite {
 
   @@unique([userId, eventRequestId])
   @@map("prostormat_event_request_favorites")
+}
+
+model VenueFavorite {
+  id        String   @id @default(cuid())
+  userId    String
+  venueId   String
+  createdAt DateTime @default(now())
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  venue Venue @relation(fields: [venueId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, venueId])
+  @@map("prostormat_venue_favorites")
 }
 
 model VenueSubmissionRequest {

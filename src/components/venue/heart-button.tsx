@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback, useRef } from "react"
 import { useSession } from "next-auth/react"
 import { Button } from "@/components/ui/button"
 import { Heart } from "lucide-react"
@@ -11,12 +11,96 @@ interface HeartButtonProps {
   size?: "sm" | "icon" | "default"
 }
 
+// Create or get the overlay container
+function getOrCreateOverlayContainer(): HTMLDivElement {
+  let container = document.getElementById('heart-login-overlay-container') as HTMLDivElement
+  if (!container) {
+    container = document.createElement('div')
+    container.id = 'heart-login-overlay-container'
+    document.body.appendChild(container)
+  }
+  return container
+}
+
+// Show the login overlay using direct DOM manipulation
+function showLoginOverlayDOM(buttonRect: DOMRect) {
+  const container = getOrCreateOverlayContainer()
+
+  // Calculate position - using fixed positioning, so no need for scrollY/scrollX
+  const top = buttonRect.bottom + 8
+  const left = Math.max(8, buttonRect.right - 240)
+
+  // Create overlay HTML
+  container.innerHTML = `
+    <div
+      id="heart-login-overlay"
+      style="
+        position: fixed;
+        top: ${top}px;
+        left: ${left}px;
+        background-color: rgb(17, 24, 39);
+        color: white;
+        padding: 12px 16px;
+        border-radius: 12px;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        z-index: 9999;
+        font-size: 14px;
+        width: 240px;
+        text-align: center;
+        animation: fadeIn 0.2s ease-out;
+      "
+    >
+      <style>
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(-8px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        #heart-login-overlay a {
+          color: rgb(96, 165, 250);
+          text-decoration: underline;
+        }
+        #heart-login-overlay a:hover {
+          color: rgb(147, 197, 253);
+        }
+      </style>
+      <p style="font-weight: 500; margin-bottom: 8px;">Pro uložení do oblíbených</p>
+      <a href="/prihlaseni">se přihlaste</a>
+      <span> nebo </span>
+      <a href="/registrace">vytvořte účet zdarma</a>
+    </div>
+  `
+
+  // Auto-hide after 3 seconds
+  setTimeout(() => {
+    hideLoginOverlayDOM()
+  }, 3000)
+}
+
+// Hide the login overlay
+function hideLoginOverlayDOM() {
+  const container = document.getElementById('heart-login-overlay-container')
+  if (container) {
+    container.innerHTML = ''
+  }
+}
+
 export function HeartButton({ venueId, className = "", size = "icon" }: HeartButtonProps) {
-  const { data: session } = useSession()
+  const { data: session, status } = useSession()
   const userId = session?.user?.id ?? null
   const [isFavorited, setIsFavorited] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
-  const [showLoginOverlay, setShowLoginOverlay] = useState(false)
+  const [isMounted, setIsMounted] = useState(false)
+  const buttonRef = useRef<HTMLButtonElement>(null)
+
+  // Only render on client
+  useEffect(() => {
+    setIsMounted(true)
+
+    // Cleanup on unmount
+    return () => {
+      hideLoginOverlayDOM()
+    }
+  }, [])
 
   const checkFavoriteStatus = useCallback(async () => {
     if (!userId) {
@@ -45,10 +129,15 @@ export function HeartButton({ venueId, className = "", size = "icon" }: HeartBut
   }, [checkFavoriteStatus, userId, venueId])
 
   const toggleFavorite = async () => {
+    console.log('HeartButton clicked, session:', session, 'status:', status)
     if (!session?.user?.id) {
-      // Show overlay for non-authenticated users
-      setShowLoginOverlay(true)
-      setTimeout(() => setShowLoginOverlay(false), 3000)
+      // Show overlay for non-authenticated users using direct DOM manipulation
+      console.log('No session, showing login overlay via DOM')
+
+      if (buttonRef.current) {
+        const rect = buttonRef.current.getBoundingClientRect()
+        showLoginOverlayDOM(rect)
+      }
       return
     }
 
@@ -65,7 +154,7 @@ export function HeartButton({ venueId, className = "", size = "icon" }: HeartBut
       if (response.ok) {
         const data = await response.json()
         setIsFavorited(data.isFavorited)
-        
+
         // Show a subtle success message
         if (data.isFavorited) {
           console.log('Venue added to favorites!')
@@ -83,36 +172,40 @@ export function HeartButton({ venueId, className = "", size = "icon" }: HeartBut
     }
   }
 
-  return (
-    <div className="relative">
+  // Don't render until client-side mounted
+  if (!isMounted) {
+    return (
       <Button
         variant="secondary"
         size={size}
-        onClick={toggleFavorite}
-        disabled={isLoading}
-        className={`transition-all duration-200 ${className} ${
-          isFavorited
-            ? 'bg-red-50 hover:bg-red-100 border-red-200 text-red-600'
-            : 'bg-white hover:bg-gray-50 border-gray-200 text-gray-600'
-        }`}
-        title={isFavorited ? 'Odebrat z oblíbených' : 'Přidat do oblíbených'}
+        disabled
+        className={`transition-all duration-200 ${className} bg-white border-gray-200 text-gray-600`}
+        title="Přidat do oblíbených"
       >
-        <Heart 
-          className={`h-5 w-5 transition-all duration-200 ${
-            isFavorited ? 'fill-red-500 text-red-500' : 'text-gray-500'
-          } ${isLoading ? 'animate-pulse' : ''}`}
-        />
+        <Heart className="h-5 w-5 text-gray-500" />
       </Button>
-      
-      {/* Login Overlay */}
-      {showLoginOverlay && (
-        <div className="absolute -top-16 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white px-3 py-2 rounded-lg shadow-lg z-50 text-xs sm:text-sm animate-fade-in max-w-[200px] sm:max-w-none text-center">
-          <div className="relative">
-            Musíte se přihlásit pro použití této funkce
-            <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-gray-900"></div>
-          </div>
-        </div>
-      )}
-    </div>
+    )
+  }
+
+  return (
+    <Button
+      ref={buttonRef}
+      variant="secondary"
+      size={size}
+      onClick={toggleFavorite}
+      disabled={isLoading || status === 'loading'}
+      className={`transition-all duration-200 ${className} ${
+        isFavorited
+          ? 'bg-red-50 hover:bg-red-100 border-red-200 text-red-600'
+          : 'bg-white hover:bg-gray-50 border-gray-200 text-gray-600'
+      }`}
+      title={isFavorited ? 'Odebrat z oblíbených' : 'Přidat do oblíbených'}
+    >
+      <Heart
+        className={`h-5 w-5 transition-all duration-200 ${
+          isFavorited ? 'fill-red-500 text-red-500' : 'text-gray-500'
+        } ${isLoading ? 'animate-pulse' : ''}`}
+      />
+    </Button>
   )
 }

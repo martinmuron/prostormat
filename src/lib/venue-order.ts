@@ -39,6 +39,7 @@ type VenueQueryFilters = {
   capacity?: string | null
   statuses: string[]
   includeSubvenues?: boolean
+  venueIds?: string[]
 }
 
 type RandomizedVenueRow = {
@@ -125,6 +126,7 @@ function buildWhereClause({
   capacity,
   statuses,
   includeSubvenues = false,
+  venueIds,
 }: VenueQueryFilters): Prisma.Sql {
   const conditions: Prisma.Sql[] = []
 
@@ -134,6 +136,14 @@ function buildWhereClause({
 
   if (statuses.length > 0) {
     conditions.push(buildStatusCondition(statuses))
+  }
+
+  // Filter by specific venue IDs (for favorites)
+  if (venueIds && venueIds.length > 0) {
+    const idsArray = Prisma.sql`ARRAY[${Prisma.join(
+      venueIds.map((id) => Prisma.sql`${id}`),
+    )}]::text[]`
+    conditions.push(Prisma.sql`v."id" = ANY(${idsArray})`)
   }
 
   if (q && q.trim().length > 0) {

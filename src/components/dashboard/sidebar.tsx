@@ -28,6 +28,7 @@ import {
   Sparkles,
   Zap,
   BadgePercent,
+  Eye,
 } from "lucide-react"
 
 type DashboardNavItem = {
@@ -55,6 +56,7 @@ function buildNavigation(userRole: string): DashboardNavGroup[] {
         label: "Prostory",
         items: [
           { name: "Správa prostorů", href: "/admin/venues", icon: Building },
+          { name: "Zobrazit jako prostor", href: "/admin/view-as-venue", icon: Eye },
           { name: "Homepage výběr", href: "/admin/venues#homepage", icon: Sparkles },
           { name: "Priority & nabídky", href: "/admin/venues#priority", icon: BadgePercent },
         ],
